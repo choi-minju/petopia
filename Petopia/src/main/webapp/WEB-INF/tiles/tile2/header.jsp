@@ -3,6 +3,7 @@
 	
 <%@ page import="java.net.InetAddress" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<% String ctxPath = request.getContextPath(); %>
 
 <div>
 <div class="header">
@@ -12,28 +13,28 @@
   </div>
 </div>
 
-<div class="navbar">
-  <div class="dropdown">
+<div class="navbar1">
+  <div class="dropdown1">
   <div class="row">
-    <button class="btn dropbtn">병원/약국찾기
+    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원/약국찾기
     </button>
-    <button class="btn dropbtn">병원예약관리 
+    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원예약관리 
     </button>
-    <button class="btn dropbtn">상담 
+    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담 
     </button>
-    <button class="btn dropbtn">반려동물수첩 
+    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">반려동물수첩 
     </button>
-    <button class="btn dropbtn">커뮤니티 
+    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티 
     </button>
    </div>
     <div class="dropdown-content"> 
-      <div class="row">
+      <div class="row"> 
           <div class="column" id="search">
           </div>
         <div class="column" id="reservation">
-          <a href="#">병원예약</a>
-          <a href="#">예약내역</a>
-          <a href="#">예치금관리</a>
+          <a href="<%= ctxPath %>/reservation.pet">병원예약</a>
+          <a href="<%= ctxPath %>/reservationList.pet">예약내역</a>
+          <a href="<%= ctxPath %>/deposit.pet">예치금관리</a>
         </div>
         <div class="column" id="consult">
           <a href="#">1:1 문의상담</a>
@@ -52,7 +53,6 @@
         </div>
       </div>
     </div>
-  </div> 
+   </div>
 </div>
 </div>
-

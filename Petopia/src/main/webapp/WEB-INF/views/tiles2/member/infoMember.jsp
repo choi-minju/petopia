@@ -112,7 +112,6 @@
 				var data = $(this).val().trim();
 				if(data == ""){
 					$(this).parent().find(".error").show();
-					return;
 				} else{
 					$(this).parent().find(".error").hide();
 				} // end of if~else
@@ -127,7 +126,6 @@
 			
 			if(!isUseEmail){
 				$(".useridError").show();
-				return;
 			}
 			else{
 				$(".useridError").hide();
@@ -144,8 +142,6 @@
 			var isUsePasswd = regExp_pw.test(passwd);
 			if(passwd.length != 0 && !isUsePasswd){
 				$(".pwdError").show();
-				$(this).val("");
-				return;
 			}
 			else{
 				$(".pwdError").hide();
@@ -160,7 +156,6 @@
 			if(password != pwdcheck){
 				$(".pwdCheckError").show();
 				$(this).val("");
-				return;
 			} else {
 				$(".pwdCheckError").hide();
 			}	
@@ -177,80 +172,15 @@
 			if(phone.length != 0 &&(!isUsePhone || phone.length != 11)) {
 				$(".phoneError").show();
 				$(this).val("");
-				return;
-			} else{
+				$(this).focus();
+			}
+			else{
 				$(".phoneError").hide();
 			}	
 		});
 		
-		$("#goJoinBtn").click(function(){
-			
-			// 유효성 검사
-			$(".must").each(function() {
-				var data = $(this).val().trim();
-				if(data == ""){
-					$(this).parent().find(".error").show();
-					return;
-				} else{
-					$(this).parent().find(".error").hide();
-				} // end of if~else
-			});// end of $(".must").each();
-			
-			// 아이디 유효성 검사
-			var userid = $("#userid").val();
-			var regExp_EMAIL = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
-			var isUseEmail = regExp_EMAIL.test(userid);
-			
-			if(!isUseEmail){
-				$(".useridError").show();
-				return;
-			}
-			else{
-				$(".useridError").hide();
-			}	
 		
-			// 아이디 중복 검사 --> ajax
-			
-			
-			// 비밀번호 유효성 검사
-			var passwd = $("#pwd").val();
-			var regExp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
-			var isUsePasswd = regExp_pw.test(passwd);
-			if(passwd.length != 0 && !isUsePasswd){
-				$(".pwdError").show();
-				$(this).val("");
-				return;
-			}
-			else{
-				$(".pwdError").hide();
-			}
-			
-			// 비밀번호 체크
-			var password = $("#pwd").val();
-			var pwdcheck = $("#pwdCheck").val();
-			
-			if(password != pwdcheck){
-				$(".pwdCheckError").show();
-				$(this).val("");
-				return;
-			} else {
-				$(".pwdCheckError").hide();
-			}	
-			
-			// 핸드폰 검사
-			var phone = $("#phone").val();
-			var isUsePhone = false;
-			var regExp_Phone = /^[0-9]+$/g;
-
-			isUsePhone = regExp_Phone.test(phone);
-			
-			if(phone.length != 0 &&(!isUsePhone || phone.length != 11)) {
-				$(".phoneError").show();
-				$(this).val("");
-				return;
-			} else{
-				$(".phoneError").hide();
-			}	
+		$("#goJoinBtn").click(function(){
 			
 			if(!$("input:radio[name=gender]").is(":checked")) {
 				alert("성별을 선택하셔야 합니다.");
@@ -263,25 +193,10 @@
 				return;
 			}
 			
-			// 3. 폼에 있는 값들 중에서 체크박스에 체크가 되어진 행들만 활성화 시키고 체크가 안되어진 행들은 비활성화 시키도록 한다.
-            //    비활성화 되어진 것들의 값들은 frm.action = "orderAdd.do";로 안 넘어간다.
-            //    참고로 checkbox는 체크가 되어진 것들의 값만 frm.action = "orderAdd.do";로 넘어간다.
-            var index = 0;
-            $(".tagsNo").each(function(){
-               if(!$(this).is(':checked')) {
-                  // 체크가 안 된 것은 폼점송이 안되어지도록 비활성화 한다.
-                  $(this).parent().find(":input[name=tagName]").attr("disabled", true);
-                  /* $("#saleprice"+index).attr("disabled", true);
-                  $("#oqty"+index).attr("disabled", true);
-                  $("#cartno"+index).attr("disabled", true); */
-               }
-               index++;
-            }); // end of $(".chkboxpnum").each();
-			
 			var frm = document.joinFrm;
 			frm.action = "<%=request.getContextPath()%>/joinMemberInsert.pet";
 			frm.method = "POST";
-			//frm.submit();
+			frm.submit();
 			
 		}); // end of click
 		
@@ -290,25 +205,26 @@
 	
 </script>
 
-<div class="col-sm-12">
-	<div class="col-sm-offset-2 col-md-8" style="background-color: #f2f2f2;">
+<div class="col-sm-12" style="margin-top: 20px;">
+	<div class="col-sm-offset-2 col-md-8" style="background-color: white;">
 		
 		<div class="col-sm-12" align="center">
-			<h2>일반회원 회원가입</h2>
+			<h2>일반회원 회원수정</h2>
 		</div>
 		<div class="col-sm-12">
 			<form name="joinFrm" enctype="multipart/form-data">
 				<div class="col-sm-offset-2 col-md-8 preview-image" style="margin-bottom: 20px;">
 					<div class="row">
 						<div class="col-sm-3">
-							<div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
+							<div class="profile" style="background-color: #f2f2f2; height: 150px; border-radius: 100%;" align="center">
 								<label for="input-file">프로필</label>
 								<input type="file" class="upload-hidden must" id="input-file" name="profileimg"/>
 							</div>
 						</div>
 						<div class="col-sm-9" style="padding-top: 28px;">
 							<span style="color: #999;">ID(email)</span>
-							<input type="text" class="form-control must" id="userid" name="userid" />
+							<input type="text" class="form-control must" id="userid" name="userid" value="hongkd" readonly="readonly"/>
+							<input type="hidden" class="form-control must" id="membertype" name="membertype" value="1" />
 							<span class="error">필수 입력사항입니다.</span>
 							<span class="useridError" style="color: red;">아이디는 이메일 형식으로 입력해야합니다.<br/></span>
 							<span class="useridDuplicate" style="color: red;">아이디 중복체크를 하셔야합니다.<br/></span>
@@ -381,8 +297,8 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '시설상태'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="" name="tagNo" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="text" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
+										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -397,8 +313,8 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '서비스'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="" name="tagNo" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="text" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
+										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -413,8 +329,8 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '가격'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="" name="tagNo" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
+										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -429,8 +345,8 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '전문분야'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="" name="tagNo" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
+										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -445,8 +361,8 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '시간'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="" name="tagNo" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
+										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -461,8 +377,8 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '편의시설'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="" name="tagNo" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
+										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
