@@ -64,11 +64,11 @@
         bean 으로 등록되어진 클래스만이 스프링컨테이너가 자동적으로 관리를 해줄 수 있게 된다. --> 
    
    <!-- ==== #44. 양방향 암호화 알고리즘인 AES256 를 사용하여 복호화 하기위한 클래스(파라미터가 있는 생성자) 의존객체 bean 생성하기 ===== -->    
-   <!--  <beans:bean id="aes" class="com.spring.common.AES256"> 
+  <beans:bean id="aes" class="com.final2.petopia.common.AES256"> 
        <beans:constructor-arg> 
-          <beans:value>qwer1234$abcd0070#ZA</beans:value>  qwer1234$abcd0070#ZA 은 각자 com.spring.common.MyKey 에 사용되어지는 암호화/복호화 키이다. 
+          <beans:value>qwer1234$abcd0070#ZA</beans:value>
        </beans:constructor-arg> 
-    </beans:bean> -->
+    </beans:bean>
    
 
         

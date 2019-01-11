@@ -15,5 +15,25 @@
 		from recommend_tag
 		order by tag_UID
 	</select>
+	
+	<select id="selectMemberSeq" resultType="int">
+		select seq_member.nextval
+		from dual
+	</select>
+	
+	<insert id="insertMemberByMvo" parameterType="com.final2.petopia.model.MemberDAO">
+		insert into member(idx, userid, pwd, name, nickname, birthday, gender, phone, profileimg, fileName, membertype)
+		values(#{idx}, #{userid}, #{pwd}, #{name}, #{nickname}, #{birthday}, #{gender}, #{phone}, #{profileimg}, #{fileName}, 1)
+	</insert>
+	
+	<insert id="insertLogin_logByMvo" parameterType="com.final2.petopia.model.MemberDAO">
+		insert into login_log(idx, fk_userid, fk_pwd, lastlogindate)
+		values(#{idx}, #{userid}, #{pwd}, sysdate)
+	</insert>
+	
+	<insert id="insertHave_tagByTagList" parameterType="HashMap">
+		insert into have_tag(fk_tag_UID, fk_idx, fk_tag_name) values
+		(#{FK_TAG_UID}, #{FK_IDX}, #{FK_TAG_NAME})
+	</insert>
 
 </mapper>

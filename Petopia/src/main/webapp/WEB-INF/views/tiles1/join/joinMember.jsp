@@ -281,7 +281,7 @@
 			var frm = document.joinFrm;
 			frm.action = "<%=request.getContextPath()%>/joinMemberInsert.pet";
 			frm.method = "POST";
-			//frm.submit();
+			frm.submit();
 			
 		}); // end of click
 		
@@ -303,7 +303,7 @@
 						<div class="col-sm-3">
 							<div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
 								<label for="input-file">프로필</label>
-								<input type="file" class="upload-hidden must" id="input-file" name="profileimg"/>
+								<input type="file" class="upload-hidden must" id="input-file" name="attach"/>
 							</div>
 						</div>
 						<div class="col-sm-9" style="padding-top: 28px;">

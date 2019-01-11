@@ -22,16 +22,16 @@ public class MemberVO {
 	private String registerdate;	// 가입일자
 	
 	private String fileName;        // 톰캣에 저장될 프로필사진명
-	private String orgFilename;     // 원본 프로필사진명
+	private String profileimg;      // 원본 프로필사진명
 	private String fileSize;		// 파일 크기
 	
-	private MultipartFile profileimg; // 진짜 파일
+	private MultipartFile attach; // 진짜 파일
 	
 	public MemberVO() {}
 
 	public MemberVO(int idx, String userid, String pwd, String name, String nickname, String birthday, String gender,
 			String phone, String membertype, String fk_level_UID, int point, int totaldeposit, int noshow,
-			String registerdate, String fileName, String orgFilename, String fileSize, MultipartFile profileimg) {
+			String registerdate, String fileName, String profileimg, String fileSize, MultipartFile attach) {
 		this.idx = idx;
 		this.userid = userid;
 		this.pwd = pwd;
@@ -47,9 +47,9 @@ public class MemberVO {
 		this.noshow = noshow;
 		this.registerdate = registerdate;
 		this.fileName = fileName;
-		this.orgFilename = orgFilename;
-		this.fileSize = fileSize;
 		this.profileimg = profileimg;
+		this.fileSize = fileSize;
+		this.attach = attach;
 	}
 
 	public int getIdx() {
@@ -172,12 +172,12 @@ public class MemberVO {
 		this.fileName = fileName;
 	}
 
-	public String getOrgFilename() {
-		return orgFilename;
+	public String getProfileimg() {
+		return profileimg;
 	}
 
-	public void setOrgFilename(String orgFilename) {
-		this.orgFilename = orgFilename;
+	public void setProfileimg(String profileimg) {
+		this.profileimg = profileimg;
 	}
 
 	public String getFileSize() {
@@ -188,12 +188,12 @@ public class MemberVO {
 		this.fileSize = fileSize;
 	}
 
-	public MultipartFile getProfileimg() {
-		return profileimg;
+	public MultipartFile getAttach() {
+		return attach;
 	}
 
-	public void setProfileimg(MultipartFile profileimg) {
-		this.profileimg = profileimg;
+	public void setAttach(MultipartFile attach) {
+		this.attach = attach;
 	}
-	
+
 } // end of class MemberVO

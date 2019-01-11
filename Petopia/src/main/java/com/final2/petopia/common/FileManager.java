@@ -1,4 +1,4 @@
-﻿package com.final2.petopia.controller;
+﻿package com.final2.petopia.common;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;

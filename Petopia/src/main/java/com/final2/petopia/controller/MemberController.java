@@ -1,6 +1,9 @@
 package com.final2.petopia.controller;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.final2.petopia.common.AES256;
+import com.final2.petopia.common.FileManager;
+import com.final2.petopia.common.SHA256;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.service.InterMemberService;
 
@@ -22,6 +28,9 @@ public class MemberController {
 	
 	@Autowired
 	private InterMemberService service;
+	
+	@Autowired
+	private AES256 aes;
 	
 	@Autowired
 	private FileManager fileManager;
@@ -45,9 +54,9 @@ public class MemberController {
 	@RequestMapping(value="/joinMemberInsert.pet", method={RequestMethod.POST})
 	public String joinMemberInsert(MultipartHttpServletRequest req, MemberVO mvo) {
 		
-		MultipartFile profileimg = mvo.getProfileimg();
+		MultipartFile attach = mvo.getAttach();
 		
-		if(!profileimg.isEmpty()) {
+		if(!attach.isEmpty()) {
 			HttpSession session = req.getSession();
 			String root = session.getServletContext().getRealPath("/");
 			String path = root+"resources"+File.separator+"profiles";
@@ -60,26 +69,66 @@ public class MemberController {
 			long fileSize = 0; // 파일크기를 읽어오기 위한 용도
 			
 			try {
-				bytes = profileimg.getBytes(); // 첨부된 파일을 바이트 단위로 파일을 다 읽어오는 것
+				bytes = attach.getBytes(); // 첨부된 파일을 바이트 단위로 파일을 다 읽어오는 것
 				
-				newFileName = fileManager.doFileUpload(bytes, profileimg.getOriginalFilename(), path);
+				newFileName = fileManager.doFileUpload(bytes, attach.getOriginalFilename(), path);
 				// 첨부된 파일을 WAS(톰캣)의 디스크로 파일올리기를 하는 것
 				
 				System.out.println(">>> 확인용 newFileName ==> "+newFileName);
 				
 				mvo.setFileName(newFileName);
-				mvo.setOrgFilename(profileimg.getOriginalFilename());
+				mvo.setProfileimg(attach.getOriginalFilename());
 				
 			} catch (Exception e) {
 				e.printStackTrace();
 			} // end of try~catch
 		} // end of if --> 첨부파일
 		
-		System.out.println("userid : "+mvo.getUserid()+", pwd : "+mvo.getPwd()+", name : "+mvo.getName());
-		System.out.println("nicname : "+mvo.getNickname()+", birthday : "+mvo.getBirthday()+", gender : "+mvo.getGender());
-		System.out.println("phone : "+mvo.getPhone());
+		String[] tagNoArr = req.getParameterValues("tagNo");
+		String[] tagNameArr = req.getParameterValues("tagName");
 		
-		return "join/joinMember.tiles1";
+		/*System.out.println("userid : "+mvo.getUserid()+", pwd : "+mvo.getPwd()+", name : "+mvo.getName());
+		System.out.println("nicname : "+mvo.getNickname()+", birthday : "+mvo.getBirthday()+", gender : "+mvo.getGender());
+		System.out.println("phone : "+mvo.getPhone()+", newFileName : "+mvo.getFileName()+", OriginalFilename : "+mvo.getOrgFilename());
+		
+		for(int i=0; i<tagNoArr.length; i++) {
+			
+			System.out.println("tagNoArr[i]: "+tagNoArr[i]);
+			System.out.println("tagNameArr[i]: "+tagNameArr[i]);
+			
+		} // end of for */
+		
+		try {
+			// member pwd, phone 암호화
+			mvo.setPwd(SHA256.encrypt(mvo.getPwd()));
+			mvo.setPhone(aes.encrypt(mvo.getPhone()));
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		} // end of try-catch
+		
+		int result = 0;
+		if(tagNoArr != null && tagNameArr != null) {
+			// 태그가 있는 경우 회원가입
+			result = service.insertMemberByMvoTagList(mvo, tagNoArr, tagNameArr);
+		} else {
+			// 태그가 없는 경우 회원가입
+			result = service.insertMemberByMvo(mvo);
+		} // end of if~else
+		
+		String msg = "";
+		String loc = "";
+		if(result == 1) {
+			msg = "회원가입 성공!";
+			loc = req.getContextPath()+"/index.pet";
+		} else {
+			msg = "회원가입 실패!";
+			loc = "javascript:histroy.back();";
+		} // end of if
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
 	} // end of joinMemberInsert()
 	
 	@RequestMapping(value="/login.pet", method={RequestMethod.GET})
