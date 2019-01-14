@@ -91,21 +91,23 @@
 <div class="navbar1">
   <div class="dropdown1">
   <div class="row">
-    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원/약국찾기
-    </button>
-    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원예약관리 
-    </button>
-    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담 
-    </button>
-    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">반려동물수첩 
-    </button>
-    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티 
-    </button>
-   </div>
+  		<div class="col-md-2"></div>
+	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원/약국찾기
+	    </button>
+	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원예약관리 
+	    </button>
+	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담 
+	    </button>
+	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">반려동물수첩 
+	    </button>
+	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티 
+	    </button>
+    </div>
     <div class="dropdown-content"> 
-      <div class="row"> 
-          <div class="column" id="search">
-          </div>
+      <div class="row">
+      	<div class="col-md-2"></div>
+        <div class="column" id="search">
+        </div>
         <div class="column" id="reservation">
           <a href="<%= ctxPath %>/reservation.pet">병원예약</a>
           <a href="<%= ctxPath %>/reservationList.pet">예약내역</a>

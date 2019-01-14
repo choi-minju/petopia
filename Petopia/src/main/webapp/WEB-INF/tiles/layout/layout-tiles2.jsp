@@ -104,10 +104,11 @@ body {
 
 /* 드롭다운 메뉴 css */
 .navbar1 {
+  float: both;
   overflow: hidden ; 
   background-color: white ;
   font-family: Arial, Helvetica, sans-serif ;
-  border-radius: 0px ;
+  border-radius: 0px;
 }
 
 .navbar1 a {
@@ -133,7 +134,7 @@ body {
   padding: 14px 16px ;
   background-color: inherit ;
   font: inherit ;
-  width: 18% ;
+  width: 10% ;
   margin: 0 ;
   margin-left: 1% ;
   margin-right: 1% ;
@@ -170,7 +171,7 @@ body {
 .column {
   float: left ;
   text-align: center ;
-  width: 18% ;
+  width: 10% ;
   background-color: white ;
   height: 250px ;
   padding: 0px ;

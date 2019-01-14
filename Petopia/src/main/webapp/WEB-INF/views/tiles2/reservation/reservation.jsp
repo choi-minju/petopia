@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 	
-
-<script src="/static/js/fullcalendar/locale/ko.js"></script>
 <style>
 .container-fluid {
 	padding-top: 70px;
@@ -60,7 +58,7 @@
           center: 'title',
           right: 'agendaWeek' 
         },
-        defaultView: 'agendaWeek',
+        defaultView: 'agenda',
         dayClick: function(date) {
           alert('clicked ' + date.format());
         },
@@ -70,7 +68,7 @@
         visibleRange: function(currentDate) {
             return {
               start: currentDate.clone().subtract(1, 'days'),
-              end: currentDate.clone().add(3, 'days') // exclusive end, so 3
+              end: currentDate.clone().add(14, 'days') // exclusive end, so 3
             };
          }
       });
