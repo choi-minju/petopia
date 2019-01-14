@@ -13,4 +13,14 @@ public interface InterMemberService {
 	int insertMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr); // 태그가 있는 경우 회원가입
 	int insertMemberByMvo(MemberVO mvo); // 태그가 없는 경우 회원가입
 
+	// *** 아이디 중복 체크 *** //
+	int selectMemberIdIsUsed(String userid);
+
+	// *** 로그인 *** //
+	MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap);
+
+	// *** 아이디로 회원정보 조회 *** //
+	MemberVO selectMemberByUserid(String userid); // 회원정보 조회
+	List<HashMap<String, String>> selectHave_tagByIdx(int idx); // 저장된 사용자 태그 조회
+
 }

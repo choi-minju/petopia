@@ -1,6 +1,7 @@
+<%@page import="com.final2.petopia.model.MemberVO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <style type="text/css">
 	.btns {
 		margin-top: 5px;
@@ -11,13 +12,60 @@
 
 	$(document).ready(function(){
 		
-		$("#loginBtn").click(function(){
-			
+		$("#pwd").keydown(function(event){
+			if(event.keyCode == 13) {
+				goLogin();
+			}
 		});
+		
+		$("#loginBtn").click(function(){
+			goLogin();
+		}); // end of $("#loginBtn").click()
 	}); // end of $(document).ready();
 	
+	function goLogin() {
+		var userid = $("#userid").val().trim();
+		var pwd = $("#pwd").val().trim();
+		
+		if(userid == null || userid == "") {
+			alert("아이디를 입력하세요!");
+			
+			return;
+		}
+		
+		if(pwd == null || pwd == "") {
+			alert("비밀번호를 입력하세요!");
+			
+			return;
+		}
+		
+		var frm = document.loginFrm;
+		frm.action = "<%=request.getContextPath()%>/loginSelect.pet";
+		frm.method = "POST";
+		frm.submit();
+	} // end of function goLogin()
+	
 </script>
-
+<%
+	MemberVO loginuser = (MemberVO)request.getAttribute("loginuser");
+	if(loginuser == null) {
+		Cookie[] cookies = request.getCookies();
+		
+		String cookie_key = "";
+		String cookie_value = "";
+		boolean flag = false;
+		
+		if(cookies != null) {
+			for(Cookie cookie : cookies) {
+				cookie_key = cookie.getName();
+				if("saveUserid".equals(cookie_key)) {
+					cookie_value = cookie.getValue();
+					flag = true;
+					break;
+				} // end of if
+			} // end of for
+		} // end of if
+%>
 <div class="col-sm-12">
 	<div class="row" align="center">
 		<div class="col-sm-offset-2 col-md-8" style="background-color: #f2f2f2; margin-bottom: 20px; padding-bottom: 20px;">
@@ -27,21 +75,29 @@
 				<form name="loginFrm">
 					<div class="form-group">
 						<div class="input-group">
-							<input type="text" class="form-control" id="uLogin" placeholder="Login">
+							<input type="text" class="form-control" id="userid" name="userid" placeholder="Login"
+							<% if(flag == true) { %>
+								value=<%=cookie_value %>
+							<%} %>
+							>
 							<label for="uLogin" class="input-group-addon glyphicon glyphicon-user"></label>
 						</div>
 					</div> <!-- /.form-group -->
 
 					<div class="form-group">
 						<div class="input-group">
-							<input type="password" class="form-control" id="uPassword" placeholder="Password">
+							<input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password">
 							<label for="uPassword" class="input-group-addon glyphicon glyphicon-lock"></label>
 						</div> <!-- /.input-group -->
 					</div> <!-- /.form-group -->
 
 					<div class="checkbox" align="left">
 						<label>
-							<input type="checkbox"> Remember me
+							<input type="checkbox" name="saveUserid"
+								<% if(flag == true) { %>
+								checked="checked"
+								<%} %>
+							> Remember me
 						</label>
 					</div> <!-- /.checkbox -->
 					
@@ -60,7 +116,6 @@
 			</div>
 		</div>
 	</div>
-	
 
 	<div class="modal fade" id="idFindModal" role="dialog">
 		<div class="modal-dialog modal-sm">
@@ -195,3 +250,9 @@
 		</div>
 	</div>
 </div>
+<% } else { %>
+	<script type="text/javascript">
+		alert("이미 로그인 하셨습니다!!");
+		location.href=histroy.back();
+	</script>
+<%	} %>

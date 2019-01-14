@@ -13,4 +13,15 @@ public interface InterMemberDAO {
 	int insertLogin_logByMvo(MemberVO mvo); // login_log 테이블 insert
 	int insertHave_tagByTagList(List<HashMap<String, String>> selectTagList); // have_tag 테이블 insert
 
+	// *** 아이디 중복 체크 *** //
+	int selectMemberIdIsUsed(String userid);
+
+	// *** 로그인 *** //
+	MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap); // 로그인
+	void updateLoginDateByUserid(HashMap<String, String> loginMap); // 마지막 로그인 날짜 기록하기
+
+	// *** 아이디로 회원정보 조회 *** //
+	MemberVO selectMemberByUserid(String userid); // 회원정보 조회
+	List<HashMap<String, String>> selectHave_tagByIdx(int idx); // 저장된 사용자 태그 조회
+
 }

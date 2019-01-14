@@ -50,18 +50,10 @@ public class MemberDAO implements InterMemberDAO {
 	@Override
 	public int insertHave_tagByTagList(List<HashMap<String, String>> selectTagList) {
 		int result = 0;
-		System.out.println("????");
-		for(HashMap<String, String> selectTag : selectTagList) {// 여기에 안들어옴!!!!!!!
-			System.out.println("FK_TAG_UID: "+selectTag.get("FK_TAG_UID"));
-			System.out.println("FK_TAG_NAME: "+selectTag.get("FK_TAG_NAME"));
-			System.out.println("FK_IDX: "+selectTag.get("FK_IDX"));
-			
+		for(HashMap<String, String> selectTag : selectTagList) {
 			int n = sqlsession.insert("member.insertHave_tagByTagList", selectTag);
 			
 			if(n == 0) {
-				System.out.println("FK_TAG_UID: "+selectTag.get("FK_TAG_UID"));
-				System.out.println("FK_TAG_NAME: "+selectTag.get("FK_TAG_NAME"));
-				System.out.println("FK_IDX: "+selectTag.get("FK_IDX"));
 				return 0;
 			} else {
 				result = 1;
@@ -70,5 +62,45 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return result;
 	} // end of public int insertHave_tagByTagList(List<HashMap<String, String>> selectTagList)
+
+	// *** 아이디 중복 체크 *** //
+	@Override
+	public int selectMemberIdIsUsed(String userid) {
+		int cnt = sqlsession.selectOne("member.selectMemberIdIsUsed", userid);
+		
+		return cnt;
+	} // end of public int selectMemberIdIsUsed(String userid)
+
+	// *** 로그인 *** //
+	// 로그인
+	@Override
+	public MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap) {
+		MemberVO loginuser = sqlsession.selectOne("member.loginSelectByUseridPwd", loginMap);
+		
+		return loginuser;
+	} // end of public MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap)
+
+	// 마지막 로그인 날짜 기록하기
+	@Override
+	public void updateLoginDateByUserid(HashMap<String, String> loginMap) {
+		sqlsession.update("member.updateLoginDateByUserid", loginMap);
+	} // end of public void updateLoginDateByUserid(HashMap<String, String> loginMap)
+
+	// *** 아이디로 회원정보 조회 *** //
+	// 회원정보 조회
+	@Override
+	public MemberVO selectMemberByUserid(String userid) {
+		MemberVO mvo = sqlsession.selectOne("member.selectMemberByUserid", userid);
+		
+		return mvo;
+	} // end of public MemberVO selectMemberByUserid(String userid)
+
+	// 저장된 사용자 태그 조회
+	@Override
+	public List<HashMap<String, String>> selectHave_tagByIdx(int idx) {
+		List<HashMap<String, String>> haveTagList = sqlsession.selectList("member.selectHave_tagByIdx", idx);
+		
+		return haveTagList;
+	} // end of public List<HashMap<String, String>> selectHave_tagByIdx(int idx)
 
 }

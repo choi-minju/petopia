@@ -70,9 +70,6 @@
 	$(document).ready(function(){
 		$(".upload-hidden").hide();
 		$(".error").hide();
-		$(".useridError").hide();
-		$(".useridDuplicate").hide();
-		$(".useridUsed").hide();
 		$(".pwdError").hide();
 		$(".pwdCheckError").hide();
 		$(".phoneError").hide();
@@ -98,6 +95,7 @@
 				if (!$(this)[0].files[0].type.match(/image\//)) return; 
 				var reader = new FileReader(); 
 				reader.onload = function(e){ 
+					$("#beforeProfile").hide();
 					var src = e.target.result; parent.prepend('<div class="profile upload-display"><div class="upload-thumb-wrap"><img width="100%" src="'+src+'" class="upload-thumb radius-box"></div></div>'); 
 				} 
 				reader.readAsDataURL($(this)[0].files[0]); 
@@ -105,6 +103,17 @@
 				$(".profile").css('background-color','#f2f2f2');
 			}
 		}); // end of imgChange
+		
+		// 태그
+		//<c:forEach var="haveTag" items="${haveTagList}">
+		//	$("#tag${haveTag.FK_TAG_UID}").prop("checked", true);
+		//</c:forEach>
+		
+		for(var i=0; i<"${haveTagList.size()}"; i++) {
+			var haveTag = "${haveTagList[1]}"; // "${haveTagList["+i+"]}"가 안됨
+			console.log(haveTag);
+			$("#tag${haveTag.FK_TAG_UID}").prop("checked", true);
+		} 
 		
 		// 유효성 검사
 		$(".must").each(function() {
@@ -117,23 +126,6 @@
 				} // end of if~else
 			}); // end of $(this).blur();
 		});// end of $(".must").each();
-		
-		// 아이디 유효성 검사
-		$("#userid").blur(function(){
-			var userid = $(this).val();
-			var regExp_EMAIL = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
-			var isUseEmail = regExp_EMAIL.test(userid);
-			
-			if(!isUseEmail){
-				$(".useridError").show();
-			}
-			else{
-				$(".useridError").hide();
-			}	
-		});
-		
-		// 아이디 중복 검사 --> ajax
-		
 		
 		// 비밀번호 유효성 검사
 		$("#pwd").blur(function(){
@@ -179,7 +171,6 @@
 			}	
 		});
 		
-		
 		$("#goJoinBtn").click(function(){
 			
 			if(!$("input:radio[name=gender]").is(":checked")) {
@@ -187,19 +178,12 @@
 				return;
 			} // end of if
 			
-			var isCheckedAgree = $("input:checkbox[id=agree]").is(":checked");
-			if(!isCheckedAgree){
-				alert("이용약관에 동의하셔야 가입 가능합니다.");
-				return;
-			}
-			
 			var frm = document.joinFrm;
-			frm.action = "<%=request.getContextPath()%>/joinMemberInsert.pet";
+			frm.action = "<%=request.getContextPath()%>/updateMemberInsert.pet";
 			frm.method = "POST";
 			frm.submit();
 			
 		}); // end of click
-		
 		
 	}); // end of $(document).ready();
 	
@@ -217,18 +201,15 @@
 					<div class="row">
 						<div class="col-sm-3">
 							<div class="profile" style="background-color: #f2f2f2; height: 150px; border-radius: 100%;" align="center">
+								<img id="beforeProfile" width="100%" src="<%=request.getContextPath() %>/resources/profiles/${mvo.fileName}" class="upload-thumb radius-box">
 								<label for="input-file">프로필</label>
 								<input type="file" class="upload-hidden must" id="input-file" name="profileimg"/>
 							</div>
 						</div>
 						<div class="col-sm-9" style="padding-top: 28px;">
 							<span style="color: #999;">ID(email)</span>
-							<input type="text" class="form-control must" id="userid" name="userid" value="hongkd" readonly="readonly"/>
+							<input type="text" class="form-control must" id="userid" name="userid" value="${mvo.userid}" readonly="readonly"/>
 							<input type="hidden" class="form-control must" id="membertype" name="membertype" value="1" />
-							<span class="error">필수 입력사항입니다.</span>
-							<span class="useridError" style="color: red;">아이디는 이메일 형식으로 입력해야합니다.<br/></span>
-							<span class="useridDuplicate" style="color: red;">아이디 중복체크를 하셔야합니다.<br/></span>
-							<span class="useridUsed" style="color: red;">아이디가 중복되었습니다.</span>
 						</div>
 					</div>
 					<br>
@@ -253,13 +234,13 @@
 					<div class="row">
 						<div class="col-sm-6">
 							<span style="color: #999;">name</span>
-							<input type="text" class="form-control must" id="name" name="name"/>
+							<input type="text" class="form-control must" id="name" name="name" value="${mvo.name}"/>
 							<span class="error">필수 입력사항입니다.</span>
 						</div>
 						
 						<div class="col-sm-6">
 							<span style="color: #999;">nickname</span>
-							<input type="text" class="form-control must" id="nickname" name="nickname"/>
+							<input type="text" class="form-control must" id="nickname" name="nickname" value="${mvo.nickname}"/>
 							<span class="error">필수 입력사항입니다.</span>
 						</div>
 					</div><!-- row -->
@@ -267,14 +248,25 @@
 					<div class="row">
 						<div class="col-sm-6">
 							<span style="color: #999;">birthday</span>
-							<input type="date" class="form-control must" id="birthday" name="birthday"/>
+							<input type="date" class="form-control must" id="birthday" name="birthday" value="${mvo.birthday}"/>
 							<span class="error">필수 입력사항입니다.</span>
 						</div>
 						
 						<div class="col-sm-6">
 							<span style="color: #999;">gender</span><br>
-							<input type="radio" class="" id="genderMale" name="gender" value="1"/> <label for="genderMale" style="color: #999;">남성</label>
-							<input type="radio" class="" id="genderFemale" name="gender" value="2"/> <label for="genderFemale" style="color: #999;">여성</label>
+							<input type="radio" class="" id="genderMale" name="gender" value="1"
+							<c:if test="${mvo.gender == 1}">
+								checked="checked"
+							</c:if>
+							>
+							&nbsp;<label for="genderMale" style="color: #999;">남성</label>
+							
+							<input type="radio" class="" id="genderFemale" name="gender" value="2"
+							<c:if test="${mvo.gender == 2}">
+								checked="checked"
+							</c:if>
+							>
+							&nbsp;<label for="genderFemale" style="color: #999;">여성</label>
 							<br>
 							<span class="error">필수 입력사항입니다.</span>
 						</div>
@@ -283,7 +275,7 @@
 					<div class="row">
 						<div class="col-sm-6">
 							<span style="color: #999;">phone</span>
-							<input type="text" class="form-control must" id="phone" name="phone"/>
+							<input type="text" class="form-control must" id="phone" name="phone" value="${mvo.phone}"/>
 							<span class="error">필수 입력사항입니다.</span>
 							<span class="phoneError" style="color: red;">휴대전화는 11자 숫자만 가능합니다.</span>
 						</div>
@@ -297,8 +289,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '시설상태'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}">
+										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
+										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -313,8 +306,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '서비스'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
+										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -329,8 +323,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '가격'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
+										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -345,8 +340,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '전문분야'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
+										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -361,8 +357,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '시간'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
+										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -377,16 +374,13 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '편의시설'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="" name="tag" value="${tag.TAG_UID}"/> <label style="color: #999;" for="tag1">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
+										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
 						</div>
-					</div><!-- row -->
-					
-					<div class="row" align="center" style="margin-top: 3%;">
-						<input type="checkbox" class="" id="agree" name="agree"/> <label style="color: #999;" for="agree">서비스 이용 및 약관에 동의합니다.</label>
 					</div><!-- row -->
 					
 					<hr style="height: 1px; background-color: #d9d9d9;border: none;"/>

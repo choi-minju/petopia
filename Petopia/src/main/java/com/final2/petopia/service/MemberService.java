@@ -55,6 +55,8 @@ public class MemberService implements InterMemberService {
 			selectTagMap.put("FK_TAG_UID", tagNoArr[i]);
 			selectTagMap.put("FK_TAG_NAME", tagNameArr[i]);
 			selectTagMap.put("FK_IDX", String.valueOf(idx));
+			
+			selectTagList.add(selectTagMap);
 		} // end of for
 		
 		int n3 = dao.insertHave_tagByTagList(selectTagList);
@@ -73,8 +75,75 @@ public class MemberService implements InterMemberService {
 	// 태그가 없는 경우 회원가입
 	@Override
 	public int insertMemberByMvo(MemberVO mvo) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+		int result = 0;
+		
+		// 회원가입할 회원번호 받아오기
+		int idx = dao.selectMemberNoSeq();
+		
+		// 회원번호 mvo에 넣기
+		mvo.setIdx(idx);
+		
+		// member 테이블 insert
+		int n1 = dao.insertMemberByMvo(mvo);
+
+		// login_log 테이블 insert
+		int n2 = dao.insertLogin_logByMvo(mvo);
+		
+		if(n1*n2 == 0) {
+			// 회원가입 실패
+			result = 0;
+		} else {
+			// 회원가입 성공
+			result = 1;
+		} // end of if~else
+		
+		return result;
+	} // end of public int insertMemberByMvo(MemberVO mvo)
+
+	// *** 아이디 중복 체크 *** //
+	@Override
+	public int selectMemberIdIsUsed(String userid) {
+		int cnt  = dao.selectMemberIdIsUsed(userid);
+		
+		return cnt;
+	} // end of public int selectMemberIdIsUsed(String userid)
+
+	// *** 로그인 *** //
+	@Override
+	public MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap) {
+		MemberVO loginuser = dao.loginSelectByUseridPwd(loginMap);
+		
+		if(loginuser == null) {
+			return null;
+		} else if(loginuser.getLastlogindategap() >= 12) {
+			// 마지막 로그인 날짜 확인 후 12개월 이상이면 휴면으로
+			loginuser.setIdleStatus(true);
+			
+			return loginuser;
+		} else {
+			// 마지막 로그인 날짜 기록하기
+			dao.updateLoginDateByUserid(loginMap);
+			
+			return loginuser;
+		} // end of if~else
+		
+	} // public MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap)
+
+	// *** 아이디로 회원정보 조회 *** //
+	// 회원정보 조회
+	@Override
+	public MemberVO selectMemberByUserid(String userid) {
+		MemberVO mvo = dao.selectMemberByUserid(userid);
+		
+		return mvo;
+	} // end of public MemberVO selectMemberByUserid(String userid)
+
+	// 저장된 사용자 태그 조회
+	@Override
+	public List<HashMap<String, String>> selectHave_tagByIdx(int idx) {
+		List<HashMap<String, String>> haveTagList = dao.selectHave_tagByIdx(idx);
+		
+		return haveTagList;
+	} // end of public List<HashMap<String, String>> selectHave_tagByIdx(int idx)
 	
 }

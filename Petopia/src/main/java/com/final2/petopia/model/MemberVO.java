@@ -15,11 +15,16 @@ public class MemberVO {
 	private String gender;			// 성별
 	private String phone;			// 연락처
 	private String membertype;		// 회원타입
-	private String fk_level_UID;	// 등급번호
 	private int point;				// 포인트
 	private int totaldeposit;		// 누적예치금
 	private int noshow;				// 노쇼지수
 	private String registerdate;	// 가입일자
+	private String lastlogindate;	// 마지막 로그인일자
+	private int member_status;		// 회원 상태(0:탈퇴, 1:활동)
+	
+	private int lastlogindategap;	// 마지막 로그인일자와 현재날짜 사이의 개월수
+	
+	private boolean idleStatus;	// 휴면인지 아닌지
 	
 	private String fileName;        // 톰캣에 저장될 프로필사진명
 	private String profileimg;      // 원본 프로필사진명
@@ -30,8 +35,9 @@ public class MemberVO {
 	public MemberVO() {}
 
 	public MemberVO(int idx, String userid, String pwd, String name, String nickname, String birthday, String gender,
-			String phone, String membertype, String fk_level_UID, int point, int totaldeposit, int noshow,
-			String registerdate, String fileName, String profileimg, String fileSize, MultipartFile attach) {
+			String phone, String membertype, int point, int totaldeposit, int noshow,
+			String registerdate, String lastlogindate, int member_status, int lastlogindategap, boolean idleStatus,
+			String fileName, String profileimg, String fileSize, MultipartFile attach) {
 		this.idx = idx;
 		this.userid = userid;
 		this.pwd = pwd;
@@ -41,11 +47,14 @@ public class MemberVO {
 		this.gender = gender;
 		this.phone = phone;
 		this.membertype = membertype;
-		this.fk_level_UID = fk_level_UID;
 		this.point = point;
 		this.totaldeposit = totaldeposit;
 		this.noshow = noshow;
 		this.registerdate = registerdate;
+		this.lastlogindate = lastlogindate;
+		this.member_status = member_status;
+		this.lastlogindategap = lastlogindategap;
+		this.idleStatus = idleStatus;
 		this.fileName = fileName;
 		this.profileimg = profileimg;
 		this.fileSize = fileSize;
@@ -124,14 +133,6 @@ public class MemberVO {
 		this.membertype = membertype;
 	}
 
-	public String getFk_level_UID() {
-		return fk_level_UID;
-	}
-
-	public void setFk_level_UID(String fk_level_UID) {
-		this.fk_level_UID = fk_level_UID;
-	}
-
 	public int getPoint() {
 		return point;
 	}
@@ -162,6 +163,38 @@ public class MemberVO {
 
 	public void setRegisterdate(String registerdate) {
 		this.registerdate = registerdate;
+	}
+
+	public String getLastlogindate() {
+		return lastlogindate;
+	}
+
+	public void setLastlogindate(String lastlogindate) {
+		this.lastlogindate = lastlogindate;
+	}
+
+	public int getMember_status() {
+		return member_status;
+	}
+
+	public void setMember_status(int member_status) {
+		this.member_status = member_status;
+	}
+
+	public int getLastlogindategap() {
+		return lastlogindategap;
+	}
+
+	public void setLastlogindategap(int lastlogindategap) {
+		this.lastlogindategap = lastlogindategap;
+	}
+
+	public boolean isIdleStatus() {
+		return idleStatus;
+	}
+
+	public void setIdleStatus(boolean idleStatus) {
+		this.idleStatus = idleStatus;
 	}
 
 	public String getFileName() {
