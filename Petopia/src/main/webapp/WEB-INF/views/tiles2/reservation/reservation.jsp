@@ -51,27 +51,62 @@
 	      events: 'https://fullcalendar.io/demo-events.json'
 	   });
  */
-      $('#calendar').fullCalendar({
-        selectable: true,
-        header: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'agendaWeek' 
-        },
-        defaultView: 'agenda',
-        dayClick: function(date) {
-          alert('clicked ' + date.format());
-        },
-        select: function(startDate, endDate) {
-          alert('selected ' + endDate.format());
-        },
-        visibleRange: function(currentDate) {
-            return {
-              start: currentDate.clone().subtract(1, 'days'),
-              end: currentDate.clone().add(14, 'days') // exclusive end, so 3
-            };
-         }
-      });
+	
+ 	
+    $('#calendar').fullCalendar({
+      selectable: true,
+      header: {
+        left: 'prev,next week',
+        center: 'title',
+        right: 'month,agendaWeek,agendaDay' 
+      },
+      defaultView: 'agenda',
+      visibleRange: function(currentDate) {
+          return {
+            start: currentDate.clone().subtract(1, 'days'),
+            end: currentDate.clone().add(7, 'days') // exclusive end, so 3
+          };
+      },
+      events: function(start, end, timezone, callback){
+    	  var form_data = {"idx_biz": "5"};
+        	
+        	$.ajax({
+        		url: "selectScheduleList.pet",
+        		type: "GET",
+        		data: form_data,
+        		dataType: "JSON",
+        		success: function(json){
+        			var events = [];
+        			$.each(json, function(entryIndex, entry){
+        				events.push({
+        					id: entryIndex,
+            				title: entry.title, 
+            				start: entry.start,
+            				end: entry.end,
+        				});
+        				
+        				if(entry.schedule_status=="1"){
+        					color: "gray"
+        				}
+        				else {
+    						color: "green"
+    					}
+        			});
+        			callback(events);
+        		},// end of success
+        		error: function(request, status, error){
+        			if(request.readyState == 0 || request.status == 0) return;
+        			else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+        		}
+        	});// end of $.ajax
+      }	
+      ,	
+      eventClick: function(eventObj) {
+     		alert(eventObj.title);
+     	    $(this).css('border-color', 'red');
+
+     	}
+    });
 	 
 		
      
