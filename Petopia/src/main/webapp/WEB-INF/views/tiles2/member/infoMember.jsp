@@ -2,6 +2,13 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<%@ page import="java.util.*" %>
+
+<%
+	// 선택한 태그 리스트 불러오기
+	List<HashMap<String, String>> haveTagList =  (List<HashMap<String, String>>)request.getAttribute("haveTagList");
+%>
+
 <style type="text/css">
 	.profile label { 
 		display: inline-block; 
@@ -68,6 +75,7 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
+				
 		$(".upload-hidden").hide();
 		$(".error").hide();
 		$(".pwdError").hide();
@@ -104,16 +112,13 @@
 			}
 		}); // end of imgChange
 		
-		// 태그
-		//<c:forEach var="haveTag" items="${haveTagList}">
-		//	$("#tag${haveTag.FK_TAG_UID}").prop("checked", true);
-		//</c:forEach>
-		
-		for(var i=0; i<"${haveTagList.size()}"; i++) {
-			var haveTag = "${haveTagList[1]}"; // "${haveTagList["+i+"]}"가 안됨
-			console.log(haveTag);
-			$("#tag${haveTag.FK_TAG_UID}").prop("checked", true);
-		} 
+		// 태그 보여주기
+		<%
+			for(int i=0; i<haveTagList.size(); i++) {
+				String tagUid = haveTagList.get(i).get("FK_TAG_UID"); %>
+				
+				$("#tag<%=tagUid%>").prop("checked", true);
+		<%    }	%>
 		
 		// 유효성 검사
 		$(".must").each(function() {
@@ -171,15 +176,15 @@
 			}	
 		});
 		
-		$("#goJoinBtn").click(function(){
+		$("#goEditBtn").click(function(){
 			
 			if(!$("input:radio[name=gender]").is(":checked")) {
 				alert("성별을 선택하셔야 합니다.");
 				return;
 			} // end of if
 			
-			var frm = document.joinFrm;
-			frm.action = "<%=request.getContextPath()%>/updateMemberInsert.pet";
+			var frm = document.editFrm;
+			frm.action = "<%=request.getContextPath()%>/updateMember.pet";
 			frm.method = "POST";
 			frm.submit();
 			
@@ -196,7 +201,7 @@
 			<h2>일반회원 회원수정</h2>
 		</div>
 		<div class="col-sm-12">
-			<form name="joinFrm" enctype="multipart/form-data">
+			<form name="editFrm" enctype="multipart/form-data">
 				<div class="col-sm-offset-2 col-md-8 preview-image" style="margin-bottom: 20px;">
 					<div class="row">
 						<div class="col-sm-3">
@@ -204,6 +209,7 @@
 								<img id="beforeProfile" width="100%" src="<%=request.getContextPath() %>/resources/profiles/${mvo.fileName}" class="upload-thumb radius-box">
 								<label for="input-file">프로필</label>
 								<input type="file" class="upload-hidden must" id="input-file" name="profileimg"/>
+								<input type="hidden" name="beforeFile" value="${mvo.fileName}" size="40">
 							</div>
 						</div>
 						<div class="col-sm-9" style="padding-top: 28px;">
@@ -390,7 +396,7 @@
 							<button type="button" class="btns" style="color: #999;" onclick="javascript:location.href='<%=request.getContextPath()%>/index.pet'">CANCEL</button>
 						</div>
 						<div class="col-sm-offset-1 col-sm-5">
-							<button type="button" id="goJoinBtn" class="btns" style="color: rgb(252, 118, 106);">SUBMIT</button>
+							<button type="button" id="goEditBtn" class="btns" style="color: rgb(252, 118, 106);">SUBMIT</button>
 						</div>
 					</div>
 				</div>

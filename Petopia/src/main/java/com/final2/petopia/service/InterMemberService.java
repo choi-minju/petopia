@@ -23,4 +23,8 @@ public interface InterMemberService {
 	MemberVO selectMemberByUserid(String userid); // 회원정보 조회
 	List<HashMap<String, String>> selectHave_tagByIdx(int idx); // 저장된 사용자 태그 조회
 
+	// *** 회원수정 *** //
+	int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr); // 태그가 있는 회원수정
+	int updateMemberByMvo(MemberVO mvo); // 태그가 없는 회원수정
+
 }

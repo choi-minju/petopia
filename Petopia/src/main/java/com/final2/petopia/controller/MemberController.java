@@ -259,15 +259,99 @@ public class MemberController {
 			
 			System.out.println("FK_TAG_UID: "+haveTagMap.get("FK_TAG_UID"));
 			System.out.println("FK_TAG_NAME: "+haveTagMap.get("FK_TAG_NAME"));
-			
-		} // end of for
-*/		
+			 
+		} // end of for	*/	
+		
 		req.setAttribute("tagList", tagList);
 		req.setAttribute("mvo", mvo);
 		req.setAttribute("haveTagList", haveTagList);
 		
 		return "member/infoMember.tiles2";
 	} // end of requireLogin_infoMember
+	
+	@RequestMapping(value="/updateMember.pet", method={RequestMethod.POST})
+	public String updateMember(MultipartHttpServletRequest req, MemberVO mvo) {
+		
+		MultipartFile attach = mvo.getAttach();
+		
+		if(!attach.isEmpty()) {
+			String beforeFile = req.getParameter("beforeFile");
+			
+			HttpSession session = req.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			String path = root+"resources"+File.separator+"profiles";
+			
+			System.out.println(">>> 확인용 path => "+path);
+			
+			String newFileName = "";
+			
+			byte[] bytes = null; // 첨부파일을 WAS(톰캣)에 저장할때 사용되는 용도
+			long fileSize = 0; // 파일크기를 읽어오기 위한 용도
+			
+			try {
+				fileManager.doFileDelete(beforeFile, path);
+				
+				bytes = attach.getBytes(); // 첨부된 파일을 바이트 단위로 파일을 다 읽어오는 것
+				
+				newFileName = fileManager.doFileUpload(bytes, attach.getOriginalFilename(), path);
+				// 첨부된 파일을 WAS(톰캣)의 디스크로 파일올리기를 하는 것
+				
+				System.out.println(">>> 확인용 newFileName ==> "+newFileName);
+				
+				mvo.setFileName(newFileName);
+				mvo.setProfileimg(attach.getOriginalFilename());
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} // end of try~catch
+		} // end of if --> 첨부파일
+		
+		String[] tagNoArr = req.getParameterValues("tagNo");
+		String[] tagNameArr = req.getParameterValues("tagName");
+		
+		System.out.println("userid : "+mvo.getUserid()+", pwd : "+mvo.getPwd()+", name : "+mvo.getName());
+		System.out.println("nicname : "+mvo.getNickname()+", birthday : "+mvo.getBirthday()+", gender : "+mvo.getGender());
+		System.out.println("phone : "+mvo.getPhone()+", newFileName : "+mvo.getFileName()+", OriginalFilename : "+mvo.getProfileimg());
+		
+		for(int i=0; i<tagNoArr.length; i++) {
+			
+			System.out.println("tagNoArr[i]: "+tagNoArr[i]);
+			System.out.println("tagNameArr[i]: "+tagNameArr[i]);
+			
+		} // end of for
+		
+		try {
+			// member pwd, phone 암호화
+			mvo.setPwd(SHA256.encrypt(mvo.getPwd()));
+			mvo.setPhone(aes.encrypt(mvo.getPhone()));
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		} // end of try-catch
+		
+		int result = 0;
+		if(tagNoArr != null && tagNameArr != null) {
+			// 태그가 있는 경우 회원수정
+			result = service.updateMemberByMvoTagList(mvo, tagNoArr, tagNameArr);
+		} else {
+			// 태그가 없는 경우 회원수정
+			result = service.updateMemberByMvo(mvo);
+		} // end of if~else
+		
+		String msg = "";
+		String loc = "";
+		if(result == 1) {
+			msg = "회원수정 성공!";
+			loc = req.getContextPath()+"/infoMember.pet";
+		} else {
+			msg = "회원가입 실패!";
+			loc = "javascript:histroy.back();";
+		} // end of if
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} // end of editMember()
 
 	@RequestMapping(value="/adminListMember.pet", method={RequestMethod.GET})
 	public String adminListMember() {

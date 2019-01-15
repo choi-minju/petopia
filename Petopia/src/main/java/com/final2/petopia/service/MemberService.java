@@ -145,5 +145,57 @@ public class MemberService implements InterMemberService {
 		
 		return haveTagList;
 	} // end of public List<HashMap<String, String>> selectHave_tagByIdx(int idx)
+
+	// *** 회원수정 *** //
+	// 태그가 있는 회원수정
+	@Override
+	public int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr) {
+		int result = 0;
+		
+		// member 테이블의 정보수정
+		int n1 = dao.updateMemberByMvo(mvo);
+		
+		// login_log 테이블의 정보수정
+		int n2 = dao.updateLogin_logByMvo(mvo);
+		
+		// 해당 사용자의 태그 모두 지우기
+		int n3 = dao.deleteHave_tagByIdx(mvo.getIdx());
+		
+		// 선택된 태그 새로 넣기
+		List<HashMap<String, String>> selectTagList = new ArrayList<HashMap<String, String>>();
+		
+		for(int i=0; i<tagNoArr.length; i++) {
+			HashMap<String, String> selectTagMap = new HashMap<String, String>();
+			selectTagMap.put("FK_TAG_UID", tagNoArr[i]);
+			selectTagMap.put("FK_TAG_NAME", tagNameArr[i]);
+			selectTagMap.put("FK_IDX", String.valueOf(mvo.getIdx()));
+			
+			selectTagList.add(selectTagMap);
+		} // end of for
+		
+		int n4 = dao.insertHave_tagByTagList(selectTagList);
+		
+		if(n1*n2*n3*n4 == 0) {
+			result = 0;
+		} else {
+			result = 1; 
+		}
+		
+		return result;
+	} // end of public int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr)
+
+	// 태그가 없는 회원수정
+	@Override
+	public int updateMemberByMvo(MemberVO mvo) {
+		int result = 0;
+		
+		// member 테이블의 정보수정
+		
+		// login_log 테이블의 정보수정
+		
+		// 해당 사용자의 태그 모두 지우기
+		
+		return result;
+	} // end of public int updateMemberByMvo(MemberVO mvo)
 	
 }

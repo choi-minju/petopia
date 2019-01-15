@@ -24,4 +24,9 @@ public interface InterMemberDAO {
 	MemberVO selectMemberByUserid(String userid); // 회원정보 조회
 	List<HashMap<String, String>> selectHave_tagByIdx(int idx); // 저장된 사용자 태그 조회
 
+	// *** 회원수정 *** //
+	int updateMemberByMvo(MemberVO mvo); // member 테이블의 정보수정
+	int updateLogin_logByMvo(MemberVO mvo); // login_log 테이블의 정보수정
+	int deleteHave_tagByIdx(int idx); // 해당 사용자의 태그 모두 지우기
+
 }
