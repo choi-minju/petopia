@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style type="text/css">
 	.profile label { 
@@ -112,7 +111,6 @@
 				var data = $(this).val().trim();
 				if(data == ""){
 					$(this).parent().find(".error").show();
-					return;
 				} else{
 					$(this).parent().find(".error").hide();
 				} // end of if~else
@@ -120,7 +118,6 @@
 		});// end of $(".must").each();
 		
 		// 아이디 유효성 검사
-		var cnt = 0;
 		$("#userid").blur(function(){
 			var userid = $(this).val();
 			var regExp_EMAIL = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
@@ -128,28 +125,14 @@
 			
 			if(!isUseEmail){
 				$(".useridError").show();
-				return;
 			}
 			else{
 				$(".useridError").hide();
-				
-				var data = {"userid":$("#userid").val()};
-				$.ajax({
-					url: "<%=request.getContextPath()%>/idDuplicateCheck.pet",
-					type: "GET",
-					data: data,
-					dataType: "JSON",
-					success: function(json){
-						$(".useridUsed").show();
-						$(".useridUsed").html(json.MSG);
-						cnt = json.CNT;
-					},
-					error: function(request, status, error) {
-						alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-					}
-				}); // end of ajax
-			} // end of if~else
+			}	
 		});
+		
+		// 아이디 중복 검사 --> ajax
+		
 		
 		// 비밀번호 유효성 검사
 		$("#pwd").blur(function(){
@@ -158,8 +141,6 @@
 			var isUsePasswd = regExp_pw.test(passwd);
 			if(passwd.length != 0 && !isUsePasswd){
 				$(".pwdError").show();
-				$(this).val("");
-				return;
 			}
 			else{
 				$(".pwdError").hide();
@@ -174,7 +155,6 @@
 			if(password != pwdcheck){
 				$(".pwdCheckError").show();
 				$(this).val("");
-				return;
 			} else {
 				$(".pwdCheckError").hide();
 			}	
@@ -191,84 +171,15 @@
 			if(phone.length != 0 &&(!isUsePhone || phone.length != 11)) {
 				$(".phoneError").show();
 				$(this).val("");
-				return;
-			} else{
+				$(this).focus();
+			}
+			else{
 				$(".phoneError").hide();
 			}	
 		});
 		
-		$("#goJoinBtn").click(function(){
-			
-			// 유효성 검사
-			$(".must").each(function() {
-				var data = $(this).val().trim();
-				if(data == ""){
-					$(this).parent().find(".error").show();
-					return;
-				} else{
-					$(this).parent().find(".error").hide();
-				} // end of if~else
-			});// end of $(".must").each();
-			
-			// 아이디 유효성 검사
-			var userid = $("#userid").val();
-			var regExp_EMAIL = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
-			var isUseEmail = regExp_EMAIL.test(userid);
-			
-			if(!isUseEmail){
-				$(".useridError").show();
-				return;
-			}
-			else{
-				$(".useridError").hide();
-			}	
 		
-			// 아이디 중복 검사 --> ajax
-			if(cnt == null || cnt != 0) {
-				alert("아이디 중복 검사를 하셔야 합니다!!");
-				
-				return;
-			}
-			
-			// 비밀번호 유효성 검사
-			var passwd = $("#pwd").val();
-			var regExp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
-			var isUsePasswd = regExp_pw.test(passwd);
-			if(passwd.length != 0 && !isUsePasswd){
-				$(".pwdError").show();
-				$(this).val("");
-				return;
-			}
-			else{
-				$(".pwdError").hide();
-			}
-			
-			// 비밀번호 체크
-			var password = $("#pwd").val();
-			var pwdcheck = $("#pwdCheck").val();
-			
-			if(password != pwdcheck){
-				$(".pwdCheckError").show();
-				$(this).val("");
-				return;
-			} else {
-				$(".pwdCheckError").hide();
-			}	
-			
-			// 핸드폰 검사
-			var phone = $("#phone").val();
-			var isUsePhone = false;
-			var regExp_Phone = /^[0-9]+$/g;
-
-			isUsePhone = regExp_Phone.test(phone);
-			
-			if(phone.length != 0 &&(!isUsePhone || phone.length != 11)) {
-				$(".phoneError").show();
-				$(this).val("");
-				return;
-			} else{
-				$(".phoneError").hide();
-			}	
+		$("#goJoinBtn").click(function(){
 			
 			if(!$("input:radio[name=gender]").is(":checked")) {
 				alert("성별을 선택하셔야 합니다.");
@@ -281,31 +192,13 @@
 				return;
 			}
 			
-			// 3. 폼에 있는 값들 중에서 체크박스에 체크가 되어진 행들만 활성화 시키고 체크가 안되어진 행들은 비활성화 시키도록 한다.
-            //    비활성화 되어진 것들의 값들은 frm.action = "orderAdd.do";로 안 넘어간다.
-            //    참고로 checkbox는 체크가 되어진 것들의 값만 frm.action = "orderAdd.do";로 넘어간다.
-			var index = 0;
-            $(".tagsNo").each(function(){
-				if(!$(this).is(':checked')) {
-					// 체크가 안 된 것은 폼점송이 안되어지도록 비활성화 한다.
-					$(this).parent().find(":input[name=tagName]").attr("disabled", true);
-				} else {
-					index++;
-               } // if~else
-            }); // end of $(".chkboxpnum").each();
-            
-            if(index > 5) {
-            	alert("조건은 최대 5개까지만 가능합니다.");
-            	
-            	return;
-            } // end of if
-			
 			var frm = document.joinFrm;
 			frm.action = "<%=request.getContextPath()%>/joinMemberInsert.pet";
 			frm.method = "POST";
 			frm.submit();
 			
 		}); // end of click
+		
 		
 	}); // end of $(document).ready();
 	
@@ -315,7 +208,7 @@
 	<div class="col-sm-offset-2 col-md-8" style="background-color: #f2f2f2;">
 		
 		<div class="col-sm-12" align="center">
-			<h2>일반회원 회원가입</h2>
+			<h2>일반회원 회원수정</h2>
 		</div>
 		<div class="col-sm-12">
 			<form name="joinFrm" enctype="multipart/form-data">
@@ -324,16 +217,17 @@
 						<div class="col-sm-3">
 							<div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
 								<label for="input-file">프로필</label>
-								<input type="file" class="upload-hidden must" id="input-file" name="attach"/>
+								<input type="file" class="upload-hidden must" id="input-file" name="profileimg"/>
 							</div>
 						</div>
 						<div class="col-sm-9" style="padding-top: 28px;">
 							<span style="color: #999;">ID(email)</span>
-							<input type="text" class="form-control must" id="userid" name="userid" />
+							<input type="text" class="form-control must" id="userid" name="userid" value="hongkd" readonly="readonly"/>
+							<input type="hidden" class="form-control must" id="membertype" name="membertype" value="1" />
 							<span class="error">필수 입력사항입니다.</span>
 							<span class="useridError" style="color: red;">아이디는 이메일 형식으로 입력해야합니다.<br/></span>
 							<span class="useridDuplicate" style="color: red;">아이디 중복체크를 하셔야합니다.<br/></span>
-							<span class="useridUsed"></span>
+							<span class="useridUsed" style="color: red;">아이디가 중복되었습니다.</span>
 						</div>
 					</div>
 					<br>
@@ -399,15 +293,12 @@
 							<span style="color: #999;">시설상태</span>
 						</div>
 						<div class="col-sm-10">
-							<c:forEach var="tag" items="${tagList}">
-								<c:if test="${tag.TAG_TYPE == '시설상태'}">
-									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
-										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
-									</div>
-								</c:if>
-							</c:forEach>
+							<input type="checkbox" class="" id="tag1" name="tag" value="깨끗함"/> <label style="color: #999;" for="tag1">#깨끗함</label>
+							<input type="checkbox" class="" id="tag2" name="tag" value="세련됨"/> <label style="color: #999;" for="tag2">#세련됨</label>
+							<input type="checkbox" class="" id="tag3" name="tag" value="동물친화적"/> <label style="color: #999;" for="tag3">#동물친화적</label>
+							<input type="checkbox" class="" id="tag4" name="tag" value="대형병원"/> <label style="color: #999;" for="tag4">#대형병원</label>
+							<input type="checkbox" class="" id="tag5" name="tag" value="종합병원"/> <label style="color: #999;" for="tag5">#종합병원</label>
+							<input type="checkbox" class="" id="tag6" name="tag" value="편안한"/> <label style="color: #999;" for="tag6">#편안한</label>
 						</div>
 					</div><!-- row -->
 					
@@ -416,85 +307,11 @@
 							<span style="color: #999;">서비스</span>
 						</div>
 						<div class="col-sm-10">
-							<c:forEach var="tag" items="${tagList}">
-								<c:if test="${tag.TAG_TYPE == '서비스'}">
-									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
-										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
-									</div>
-								</c:if>
-							</c:forEach>
+							<input type="checkbox" class="" id="tag7" name="tag" value="친절한"/> <label style="color: #999;" for="tag7">#친절한</label>
+							<input type="checkbox" class="" id="tag8" name="tag" value="친절한"/> <label style="color: #999;" for="tag8">#세심한</label>
+							<input type="checkbox" class="" id="tag9" name="tag" value="친절한"/> <label style="color: #999;" for="tag9">#잘봐주는</label>
 						</div>
-					</div><!-- row -->
-					
-					<div class="row tagList3" style="margin-top: 3%;">
-						<div class="col-sm-2">
-							<span style="color: #999;">가격</span>
-						</div>
-						<div class="col-sm-10">
-							<c:forEach var="tag" items="${tagList}">
-								<c:if test="${tag.TAG_TYPE == '가격'}">
-									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
-										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
-									</div>
-								</c:if>
-							</c:forEach>
-						</div>
-					</div><!-- row -->
-					
-					<div class="row tagList4" style="margin-top: 3%;">
-						<div class="col-sm-2">
-							<span style="color: #999;">전문분야</span>
-						</div>
-						<div class="col-sm-10">
-							<c:forEach var="tag" items="${tagList}">
-								<c:if test="${tag.TAG_TYPE == '전문분야'}">
-									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
-										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
-									</div>
-								</c:if>
-							</c:forEach>
-						</div>
-					</div><!-- row -->
-					
-					<div class="row tagList5" style="margin-top: 3%;">
-						<div class="col-sm-2">
-							<span style="color: #999;">시간</span>
-						</div>
-						<div class="col-sm-10">
-							<c:forEach var="tag" items="${tagList}">
-								<c:if test="${tag.TAG_TYPE == '시간'}">
-									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
-										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
-									</div>
-								</c:if>
-							</c:forEach>
-						</div>
-					</div><!-- row -->
-					
-					<div class="row tagList6" style="margin-top: 3%;">
-						<div class="col-sm-2">
-							<span style="color: #999;">편의시설</span>
-						</div>
-						<div class="col-sm-10">
-							<c:forEach var="tag" items="${tagList}">
-								<c:if test="${tag.TAG_TYPE == '편의시설'}">
-									<div class="col-sm-4">
-										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
-										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
-									</div>
-								</c:if>
-							</c:forEach>
-						</div>
-					</div><!-- row -->
+					</div><!-- row --><!-- 이 외의 것은 DB 연결후에 하기!!! -->
 					
 					<div class="row" align="center" style="margin-top: 3%;">
 						<input type="checkbox" class="" id="agree" name="agree"/> <label style="color: #999;" for="agree">서비스 이용 및 약관에 동의합니다.</label>

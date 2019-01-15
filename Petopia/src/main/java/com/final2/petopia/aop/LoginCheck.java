@@ -23,7 +23,7 @@ import com.final2.petopia.model.MemberVO;
 public class LoginCheck {
 
 //	#포인트컷 생성하기; execution(public(생략가능) *(리턴타입 모두) com.spring..(com.spring다음 패키지 유무 상관없음)*Controller(controller객체).requireLogin_*(..)) 
-	@Pointcut("execution(public * com.spring..*Controller.requireLogin_*(..))")
+	@Pointcut("execution(public * com.final2..*Controller.requireLogin_*(..))")
 	public void requireLogin() {}	// 포인트컷의 식별자는 메소드명으로 지정
 	
 //	#Advice 만들기(보조업무); BeforeAdvice 선언 및 실행 내용 구현하기
@@ -42,7 +42,7 @@ public class LoginCheck {
 			try {
 //			2) 로그인 하지 않은 경우 로그인 페이지로 이동
 				msg="로그인 후 이용 가능 합니다.";
-				loc=req.getContextPath()+"/login.action";
+				loc=req.getContextPath()+"/login.pet";
 				
 				req.setAttribute("msg", msg);
 				req.setAttribute("loc", loc);
