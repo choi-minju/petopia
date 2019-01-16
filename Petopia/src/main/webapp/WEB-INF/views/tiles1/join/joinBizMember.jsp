@@ -336,7 +336,7 @@
          
             <div class="row">
                <div class="col-sm-4" style="padding-top: 35px;">
-                  <span style="color: #999;">ID(email)</span>
+                  <label style="color: #999;">ID(email)</label>
                   <input type="text" class="requiredInfo form-control" id="userid" name="userid" />
                   <span class="error" id="iderror">사용하실 수 없는 ID이거나 이메일 형식에 맞지 않습니다.</span>
                </div>
@@ -345,30 +345,30 @@
             
             <div class="row">
 	            <div class="col-sm-4" style="padding-top: 35px;">
-	                  <span style="color: #999;">password</span>
+	                  <label style="color: #999;">password</label>
 	                  <input type="password" class="requiredInfo form-control" id="pwd" name="pwd" />
 	                  <span id="error_passwd">암호는 영문자,숫자,특수기호가 혼합된 8~15 글자로만 입력가능합니다.</span>
 	            </div>
 	            <div class="col-sm-4" style="padding-top: 35px;">
-	                  <span style="color: #999;">password Check</span>
+	                  <label style="color: #999;">password Check</label>
 	                  <input type="password" class="requiredInfo form-control" id="pwdcheck" name="pwdcheck" />
 	                  <span class="error">암호가 일치하지 않습니다.</span>
 	            </div>
             </div>
             
             <div class="row" style="padding-top: 20px;" align="center">
-               <div class="col-sm-3">
-                  <span style="color: #999;">병원/약국명</span>
+               <div class="col-sm-3 text-left">
+                  <label  style="color: #999;">병원/약국명</label>
                   <input type="text" class="requiredInfo form-control" id="bizname" name="bizname"/>
                   <span class="error">필수입력 사항입니다.</span>
                </div>
-               <div class="col-xs-2">
-                  <span style="color: #999;">대표자명</span>
+               <div class="col-xs-2 text-left">
+                  <label style="color: #999;">대표자명</label>
                   <input type="text" class="requiredInfo form-control" id="ceoname" name="ceoname"/>
                   <span class="error">필수입력 사항입니다.</span>
 	               </div>
-               <div class="col-sm-3" style="width:18%;">
-                  <span style="color: #999;">사업자번호</span>
+               <div class="col-sm-3 text-left" style="width:18%;">
+                  <label style="color: #999;">사업자번호</label>
                   <input type="text" class="requiredInfo form-control" id="biznumber" name="biznumber"/>
                   <span class="error">필수입력 사항입니다.</span>
                </div>
@@ -376,7 +376,7 @@
             
             <div class="row" style="padding-top: 20px;" >
                <div class="col-sm-3">
-                  <span style="color: #999;">대표 연락처</span>
+                  <label style="color: #999;">대표 연락처</label>
                   <input type="text" class="requiredInfo form-control" id="ceonumber" name="ceonumber" style="width: 80%;"/>
                   <span class="error">필수입력 사항입니다.</span>
                </div>
@@ -384,7 +384,7 @@
             
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-3" style="width: 15%;">
-                  <span style="color: #999;">주소</span> 
+                  <label style="color: #999;">주소</label> 
                   <input type="text" class="requiredInfo form-control" id="sample6_postcode" placeholder="우편번호">
                   <span class="error">필수입력 사항입니다.</span>
                </div>
@@ -403,14 +403,14 @@
 
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-6">
-                  <span style="color: #999;">대표 이미지</span>
+                  <label style="color: #999;">대표 이미지</label>
                   <input type="file" class="form-control" id="ceoimage" name="ceoimage"/>
                </div>
             </div>
             
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-6">
-                  <span style="color: #999;">추가 이미지</span>
+                  <label style="color: #999;">추가 이미지</label>
                   <input type="file" class="form-control" id="addimage" name="addimage"/>
                </div>
                <div style="margin-top:23px;">
@@ -418,33 +418,39 @@
                </div>
             </div><!-- row -->
             
+                 
             <div class="row" style="padding-top: 20px;">
-               <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-                  <span style="color: #999;">진료시간(운영시간)</span>
-                  <select class="requiredInfo form-control">
-                  <option selected="selected" value="">평일</option>
-                  <option value="">월~금(주 5)</option>
-                  <option value="">화~금(주 4)</option>
-                  <option value="">월,수,금(주 3)</option>
-                  </select>
-               </div>
+	            <div class="col-sm-6">
+	            <label style="color: #999;">진료시간(운영시간)</label><BR>
+	               <div class="col-sm-4" style="padding-left: 0px;">
+	                  <select class="requiredInfo form-control">
+	                  <option selected="selected" value="">평일</option>
+	                  <option value="">월~금(주 5)</option>
+	                  <option value="">화~금(주 4)</option>
+	                  <option value="">월,수,금(주 3)</option>
+	                  </select>
+	               </div>
+	               
+	               <div class="col-sm-4" style="padding-right: 0px;">
+	               		<input type="time" class="requiredInfo form-control" >
+	               </div>
+	               <div class="col-sm-4" style="padding-right: 0px;">
+	               		<input type="time" class="requiredInfo form-control">
+	               </div>
+	            </div>
                
-               <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-               		<input type="time" class="requiredInfo form-control" style="margin-top: 20px;">
-               </div>
-               <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-               		<input type="time" class="requiredInfo form-control" style="margin-top: 20px;">
-               </div>
-               
-               <div class="col-sm-2" style="margin-left: 12%;">
-               <span style="color: #999;">일요일/공휴일</span>
-               		<input type="text" class="requiredInfo form-control" style="width: 130%;">
+               <div class="col-sm-6">
+	               <div class="col-sm-12" style="margin-left: 12%;">
+	               <label style="color: #999;">일요일/공휴일</label>
+	               		<input type="text" class="requiredInfo form-control" >
+	               </div>
                </div>
             </div><!-- row -->
             
+            
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-                  <span style="color: #999;">점심시간</span>
+                  <label style="color: #999;">점심시간</label>
                   <input type="time" class="requiredInfo form-control">
                </div>
                
@@ -453,7 +459,7 @@
                </div>
                	
                <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-               <span style="color: #999;">토요일</span>
+               <label style="color: #999;">토요일</label>
                		<input type="time" class="requiredInfo form-control">
                </div>
                
@@ -464,14 +470,14 @@
             
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-6">
-                  <span style="color: #999;">특이사항</span>
+                  <label style="color: #999;">특이사항</label>
                   <input type="text" class="requiredInfo form-control" id="birthday" name="birthday"/>
                </div>
             </div>
             
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-6">
-                  <span style="color: #999;">진료/처방 가능 동물군 (다중 선택 가능)</span><br/>
+                  <label style="color: #999;">진료/처방 가능 동물군 (다중 선택 가능)</label><br/>
                   <div style="margin-top: 10px;">
 	                  <button type="button" class="btn1">강아지</button>
 	                  <button type="button" class="btn1">고양이</button>
@@ -483,8 +489,8 @@
             
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-3">
-                  <span style="color: #999;">의료진 소개</span><br/>
-                  <span style="color: #999;">(성함 및 직책병기)</span>
+                  <label style="color: #999;">의료진 소개</label><br/>
+                  <label style="color: #999;">(성함 및 직책병기)</label>
                   <input type="text" class="requiredInfo form-control" id="birthday" name="birthday" style="width: 100%"/>
                </div>
                 <div style="margin-top: 45px;">
@@ -506,7 +512,7 @@
             
             <div class="row tagList1" style="margin-top: 3%;">
                <div class="col-sm-2">
-                  <span style="color: #999;">시설상태</span>
+                  <label style="color: #999;">시설상태</label>
                </div>
                <div class="col-sm-10">
                   <input type="checkbox" class="" id="tag1" name="tag" value="깨끗함"/> <label style="color: #999;" for="tag1">#깨끗함</label>
@@ -520,7 +526,7 @@
             
             <div class="row tagList2" style="margin-top: 3%;">
                <div class="col-sm-2">
-                  <span style="color: #999;">서비스</span>
+                  <label style="color: #999;">서비스</label>
                </div>
                <div class="col-sm-10">
                   <input type="checkbox" class="" id="tag7" name="tag" value="친절한"/> <label style="color: #999;" for="tag7">#친절한</label>
