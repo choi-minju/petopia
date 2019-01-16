@@ -18,7 +18,7 @@ public class ChatVO {
 	
 	public ChatVO(int va_UID, int fk_idx, int fk_idx_biz, String chatcode, String fk_userid, String fk_name_biz,
 			String fk_docname, String usermessage, String docmessage, String umtime, String dmtime) {
-		super();
+
 		this.va_UID = va_UID;
 		this.fk_idx = fk_idx;
 		this.fk_idx_biz = fk_idx_biz;

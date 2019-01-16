@@ -230,7 +230,7 @@ public class MyUtil {
 		while(!(pageNo > totalPage || loop > blockSize)){
 			
 			if (pageNo == currentShowPageNo)
-				str_pageNo = "&nbsp;<span style=\"color:red; font-size:12pt; font-weight:bold; text-decoration:underline;\">"+pageNo+ "</span>&nbsp;";
+				str_pageNo = "&nbsp;<span style=\"color:#fc766b; font-weight:bold; text-decoration:underline;\">"+pageNo+"</span>&nbsp;";
 			else
 				str_pageNo = "&nbsp;<a href=\""+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&colname="+colname+"&search="+search+"&period="+period+"\" >"+pageNo+"</a>" + "&nbsp;";
 			

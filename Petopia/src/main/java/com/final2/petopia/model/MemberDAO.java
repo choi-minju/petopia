@@ -107,22 +107,24 @@ public class MemberDAO implements InterMemberDAO {
 	// member 테이블의 정보수정
 	@Override
 	public int updateMemberByMvo(MemberVO mvo) {
-		int result = 0;
+		int result = sqlsession.update("member.updateMemberByMvo", mvo);
+		
 		return result;
 	} // end of public int updateMemberByMvo(MemberVO mvo)
 
 	// login_log 테이블의 정보수정
 	@Override
 	public int updateLogin_logByMvo(MemberVO mvo) {
-		int result = 0;
+		int result = sqlsession.update("member.updateLogin_logByMvo", mvo);
+		
 		return result;
 	} // end of public int updateLogin_logByMvo(MemberVO mvo)
 
 	// 해당 사용자의 태그 모두 지우기
 	@Override
 	public int deleteHave_tagByIdx(int idx) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+		int result = sqlsession.delete("member.deleteHave_tagByIdx", idx);
+		return result;
+	} // end of public int deleteHave_tagByIdx(int idx)
 
 }

@@ -149,6 +149,7 @@ public class MemberService implements InterMemberService {
 	// *** 회원수정 *** //
 	// 태그가 있는 회원수정
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr) {
 		int result = 0;
 		
@@ -184,16 +185,25 @@ public class MemberService implements InterMemberService {
 		return result;
 	} // end of public int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr)
 
-	// 태그가 없는 회원수정
+	// 태그가 없는 회원수정 
 	@Override
 	public int updateMemberByMvo(MemberVO mvo) {
 		int result = 0;
 		
 		// member 테이블의 정보수정
+		int n1 = dao.updateMemberByMvo(mvo);
 		
 		// login_log 테이블의 정보수정
+		int n2 = dao.updateLogin_logByMvo(mvo);
 		
 		// 해당 사용자의 태그 모두 지우기
+		int n3 = dao.deleteHave_tagByIdx(mvo.getIdx()); 
+		
+		if(n1*n2*n3 == 0) {
+			result = 0;
+		} else {
+			result = 1;
+		}
 		
 		return result;
 	} // end of public int updateMemberByMvo(MemberVO mvo)
