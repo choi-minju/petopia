@@ -281,9 +281,6 @@
 				return;
 			}
 			
-			// 3. 폼에 있는 값들 중에서 체크박스에 체크가 되어진 행들만 활성화 시키고 체크가 안되어진 행들은 비활성화 시키도록 한다.
-            //    비활성화 되어진 것들의 값들은 frm.action = "orderAdd.do";로 안 넘어간다.
-            //    참고로 checkbox는 체크가 되어진 것들의 값만 frm.action = "orderAdd.do";로 넘어간다.
 			var index = 0;
             $(".tagsNo").each(function(){
 				if(!$(this).is(':checked')) {
@@ -311,7 +308,7 @@
 	
 </script>
 
-<div class="col-sm-12">
+<div class="col-sm-12" style="margin-top: 8%; margin-bottom: 8%">
 	<div class="col-sm-offset-2 col-md-8" style="background-color: #f2f2f2;">
 		
 		<div class="col-sm-12" align="center">

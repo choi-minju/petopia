@@ -65,13 +65,7 @@
 	
 </script>
 
-<div class="col-sm-12">
-	<button type="button" class="btn" onclick="javascript:location.href='<%=request.getContextPath()%>/login.pet'">로그인</button>
-	<button type="button" class="btn" onclick="javascript:location.href='<%=request.getContextPath()%>/infoMember.pet'">회원수정</button>
-	<button type="button" class="btn" onclick="javascript:location.href='<%=request.getContextPath()%>/adminListMember.pet'">회원리스트</button>
-</div>
-
-<div class="col-sm-12">
+<div class="col-sm-12" style="margin-top: 8%; margin-bottom: 8%">
 	<div class="col-sm-offset-2 col-sm-8" style="background-color: #f2f2f2"> <!-- 색 : rgb(252, 118, 106) -->
 		<div class="col-sm-12" align="center">
 			<h2>가입하기</h2>

@@ -1,14 +1,11 @@
+<%@page import="java.util.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-<%@ page import="java.util.*" %>
-
 <%
 	// 선택한 태그 리스트 불러오기
 	List<HashMap<String, String>> haveTagList =  (List<HashMap<String, String>>)request.getAttribute("haveTagList");
 %>
-
 <style type="text/css">
 	.profile label { 
 		display: inline-block; 
@@ -75,12 +72,17 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
-				
 		$(".upload-hidden").hide();
 		$(".error").hide();
 		$(".pwdError").hide();
 		$(".pwdCheckError").hide();
 		$(".phoneError").hide();
+		
+		$("#userid").val("${mvo.userid}");
+		$("#name").val("${mvo.name}");
+		$("#nickname").val("${mvo.nickname}");
+		$("#birthday").val("${mvo.birthday}");
+		$("#phone").val("${mvo.phone}");
 		
 		// 이미지 크기 맞춤
 	    $('.profile').css('height', $(".profile").width()-1);
@@ -126,6 +128,7 @@
 				var data = $(this).val().trim();
 				if(data == ""){
 					$(this).parent().find(".error").show();
+					return;
 				} else{
 					$(this).parent().find(".error").hide();
 				} // end of if~else
@@ -139,6 +142,8 @@
 			var isUsePasswd = regExp_pw.test(passwd);
 			if(passwd.length != 0 && !isUsePasswd){
 				$(".pwdError").show();
+				$(this).val("");
+				return;
 			}
 			else{
 				$(".pwdError").hide();
@@ -153,6 +158,7 @@
 			if(password != pwdcheck){
 				$(".pwdCheckError").show();
 				$(this).val("");
+				return;
 			} else {
 				$(".pwdCheckError").hide();
 			}	
@@ -169,19 +175,85 @@
 			if(phone.length != 0 &&(!isUsePhone || phone.length != 11)) {
 				$(".phoneError").show();
 				$(this).val("");
-				$(this).focus();
-			}
-			else{
+				return;
+			} else{
 				$(".phoneError").hide();
 			}	
 		});
 		
 		$("#goEditBtn").click(function(){
 			
+			// 유효성 검사
+			$(".must").each(function() {
+				var data = $(this).val().trim();
+				if(data == ""){
+					$(this).parent().find(".error").show();
+					return;
+				} else{
+					$(this).parent().find(".error").hide();
+				} // end of if~else
+			});// end of $(".must").each();
+			
+			// 비밀번호 유효성 검사
+			var passwd = $("#pwd").val();
+			var regExp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
+			var isUsePasswd = regExp_pw.test(passwd);
+			if(passwd.length != 0 && !isUsePasswd){
+				$(".pwdError").show();
+				$(this).val("");
+				return;
+			}
+			else{
+				$(".pwdError").hide();
+			}
+			
+			// 비밀번호 체크
+			var password = $("#pwd").val();
+			var pwdcheck = $("#pwdCheck").val();
+			
+			if(password != pwdcheck){
+				$(".pwdCheckError").show();
+				$(this).val("");
+				return;
+			} else {
+				$(".pwdCheckError").hide();
+			}	
+			
+			// 핸드폰 검사
+			var phone = $("#phone").val();
+			var isUsePhone = false;
+			var regExp_Phone = /^[0-9]+$/g;
+
+			isUsePhone = regExp_Phone.test(phone);
+			
+			if(phone.length != 0 &&(!isUsePhone || phone.length != 11)) {
+				$(".phoneError").show();
+				$(this).val("");
+				return;
+			} else{
+				$(".phoneError").hide();
+			}
+			
 			if(!$("input:radio[name=gender]").is(":checked")) {
 				alert("성별을 선택하셔야 합니다.");
 				return;
 			} // end of if
+			
+			var index = 0;
+            $(".tagsNo").each(function(){
+				if(!$(this).is(':checked')) {
+					// 체크가 안 된 것은 폼점송이 안되어지도록 비활성화 한다.
+					$(this).parent().find(":input[name=tagName]").attr("disabled", true);
+				} else {
+					index++;
+               } // if~else
+            }); // end of $(".chkboxpnum").each();
+            
+            if(index > 5) {
+            	alert("조건은 최대 5개까지만 가능합니다.");
+            	
+            	return;
+            } // end of if
 			
 			var frm = document.editFrm;
 			frm.action = "<%=request.getContextPath()%>/updateMember.pet";
@@ -194,28 +266,27 @@
 	
 </script>
 
-<div class="col-sm-12" style="margin-top: 20px;">
-	<div class="col-sm-offset-2 col-md-8" style="background-color: white;">
+<div class="container" > 
+	<div class="col-sm-12" style="background-color: #f2f2f2; margin-top: 5%;">
 		
 		<div class="col-sm-12" align="center">
-			<h2>일반회원 회원수정</h2>
-		</div>
+			<h2>일반회원 회원가입</h2>
+		</div> 
 		<div class="col-sm-12">
 			<form name="editFrm" enctype="multipart/form-data">
 				<div class="col-sm-offset-2 col-md-8 preview-image" style="margin-bottom: 20px;">
 					<div class="row">
 						<div class="col-sm-3">
-							<div class="profile" style="background-color: #f2f2f2; height: 150px; border-radius: 100%;" align="center">
+							<div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
 								<img id="beforeProfile" width="100%" src="<%=request.getContextPath() %>/resources/profiles/${mvo.fileName}" class="upload-thumb radius-box">
-								<label for="input-file">프로필</label>
-								<input type="file" class="upload-hidden must" id="input-file" name="profileimg"/>
 								<input type="hidden" name="beforeFile" value="${mvo.fileName}" size="40">
+								<label for="input-file">프로필</label>
+								<input type="file" class="upload-hidden must" id="input-file" name="attach"/>
 							</div>
 						</div>
 						<div class="col-sm-9" style="padding-top: 28px;">
 							<span style="color: #999;">ID(email)</span>
-							<input type="text" class="form-control must" id="userid" name="userid" value="${mvo.userid}" readonly="readonly"/>
-							<input type="hidden" class="form-control must" id="membertype" name="membertype" value="1" />
+							<input type="text" class="form-control must" id="userid" name="userid" readonly="readonly"/>
 						</div>
 					</div>
 					<br>
@@ -240,13 +311,13 @@
 					<div class="row">
 						<div class="col-sm-6">
 							<span style="color: #999;">name</span>
-							<input type="text" class="form-control must" id="name" name="name" value="${mvo.name}"/>
+							<input type="text" class="form-control must" id="name" name="name"/>
 							<span class="error">필수 입력사항입니다.</span>
 						</div>
 						
 						<div class="col-sm-6">
 							<span style="color: #999;">nickname</span>
-							<input type="text" class="form-control must" id="nickname" name="nickname" value="${mvo.nickname}"/>
+							<input type="text" class="form-control must" id="nickname" name="nickname"/>
 							<span class="error">필수 입력사항입니다.</span>
 						</div>
 					</div><!-- row -->
@@ -254,7 +325,7 @@
 					<div class="row">
 						<div class="col-sm-6">
 							<span style="color: #999;">birthday</span>
-							<input type="date" class="form-control must" id="birthday" name="birthday" value="${mvo.birthday}"/>
+							<input type="date" class="form-control must" id="birthday" name="birthday"/>
 							<span class="error">필수 입력사항입니다.</span>
 						</div>
 						
@@ -281,7 +352,7 @@
 					<div class="row">
 						<div class="col-sm-6">
 							<span style="color: #999;">phone</span>
-							<input type="text" class="form-control must" id="phone" name="phone" value="${mvo.phone}"/>
+							<input type="text" class="form-control must" id="phone" name="phone"/>
 							<span class="error">필수 입력사항입니다.</span>
 							<span class="phoneError" style="color: red;">휴대전화는 11자 숫자만 가능합니다.</span>
 						</div>
@@ -295,9 +366,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '시설상태'}">
 									<div class="col-sm-4">
-										<input type="checkbox" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}">
+										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}">
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
-										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -312,9 +383,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '서비스'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
-										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -329,9 +400,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '가격'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
-										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -346,9 +417,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '전문분야'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
-										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -363,9 +434,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '시간'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
-										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -380,9 +451,9 @@
 							<c:forEach var="tag" items="${tagList}">
 								<c:if test="${tag.TAG_TYPE == '편의시설'}">
 									<div class="col-sm-4">
-										<input type="checkbox" class="" id="tag${tag.TAG_UID}" name="tag" value="${tag.TAG_UID}"/>
+										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">&#35;${tag.TAG_NAME}</label>
-										<input type="hidden" name="tag" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>

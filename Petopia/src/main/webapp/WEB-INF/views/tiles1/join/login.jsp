@@ -66,7 +66,8 @@
 			} // end of for
 		} // end of if
 %>
-<div class="col-sm-12">
+
+<div class="col-sm-12" style="margin-top: 5%; margin-bottom: 5%">
 	<div class="row" align="center">
 		<div class="col-sm-offset-2 col-md-8" style="background-color: #f2f2f2; margin-bottom: 20px; padding-bottom: 20px;">
 			<div class="col-sm-offset-4 col-sm-4">

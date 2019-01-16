@@ -270,12 +270,14 @@ public class MemberController {
 	} // end of requireLogin_infoMember
 	
 	@RequestMapping(value="/updateMember.pet", method={RequestMethod.POST})
-	public String updateMember(MultipartHttpServletRequest req, MemberVO mvo) {
-		
+	public String requireLogin_updateMember(MultipartHttpServletRequest req, HttpServletResponse res, MemberVO mvo) {
 		MultipartFile attach = mvo.getAttach();
 		
+		String beforeFile = req.getParameter("beforeFile");
+		String[] tagNoArr = req.getParameterValues("tagNo");
+		String[] tagNameArr = req.getParameterValues("tagName");
+		
 		if(!attach.isEmpty()) {
-			String beforeFile = req.getParameter("beforeFile");
 			
 			HttpSession session = req.getSession();
 			String root = session.getServletContext().getRealPath("/");
@@ -306,19 +308,15 @@ public class MemberController {
 			} // end of try~catch
 		} // end of if --> 첨부파일
 		
-		String[] tagNoArr = req.getParameterValues("tagNo");
-		String[] tagNameArr = req.getParameterValues("tagName");
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
-		System.out.println("userid : "+mvo.getUserid()+", pwd : "+mvo.getPwd()+", name : "+mvo.getName());
+		// mvo에 idx 넣기
+		mvo.setIdx(loginuser.getIdx());
+		
+		System.out.println("idx: "+mvo.getIdx()+", userid : "+mvo.getUserid()+", pwd : "+mvo.getPwd()+", name : "+mvo.getName());
 		System.out.println("nicname : "+mvo.getNickname()+", birthday : "+mvo.getBirthday()+", gender : "+mvo.getGender());
 		System.out.println("phone : "+mvo.getPhone()+", newFileName : "+mvo.getFileName()+", OriginalFilename : "+mvo.getProfileimg());
-		
-		for(int i=0; i<tagNoArr.length; i++) {
-			
-			System.out.println("tagNoArr[i]: "+tagNoArr[i]);
-			System.out.println("tagNameArr[i]: "+tagNameArr[i]);
-			
-		} // end of for
 		
 		try {
 			// member pwd, phone 암호화
@@ -329,12 +327,31 @@ public class MemberController {
 		} // end of try-catch
 		
 		int result = 0;
-		if(tagNoArr != null && tagNameArr != null) {
-			// 태그가 있는 경우 회원수정
-			result = service.updateMemberByMvoTagList(mvo, tagNoArr, tagNameArr);
+		if(attach.isEmpty()) {
+			// 첨부파일이 없는 경우 --> 기존의 이미지 파일을 쓰는 경우
+			if(tagNoArr != null && tagNameArr != null) {
+				// 태그가 있는 경우 회원수정
+				//result = service.updateMemberByMvoTagListNoProfile(mvo);
+			} else {
+				// 태그가 없는 경우 회원수정
+				//result = service.updateMemberByMvoNoProfile(mvo);
+			} // end of if~else
 		} else {
-			// 태그가 없는 경우 회원수정
-			result = service.updateMemberByMvo(mvo);
+			// 첨부 파일이 있는 경우
+			if(tagNoArr != null && tagNameArr != null) {
+				// 태그가 있는 경우 회원수정
+				/*for(int i=0; i<tagNoArr.length; i++) {
+					
+					System.out.println("tagNoArr[i]: "+tagNoArr[i]);
+					System.out.println("tagNameArr[i]: "+tagNameArr[i]);
+					
+				} // end of for
+				*/
+				result = service.updateMemberByMvoTagList(mvo, tagNoArr, tagNameArr);
+			} else {
+				// 태그가 없는 경우 회원수정
+				result = service.updateMemberByMvo(mvo);
+			} // end of if~else
 		} // end of if~else
 		
 		String msg = "";

@@ -85,4 +85,24 @@
 		from have_tag
 		where fk_idx = #{idx}
 	</select>
+	
+	<!-- *** 회원수정 *** -->
+	<!-- member 테이블의 정보수정 -->
+	<update id="updateMemberByMvo" parameterType="com.final2.petopia.model.MemberVO">
+		update member set pwd = #{pwd}, name = #{name}, nickname = #{nickname}, gender = #{gender}, phone = #{phone}
+			, profileimg = #{profileimg}, fileName = #{fileName}
+		where idx = #{idx}
+	</update>
+	
+	<!-- login_log 테이블의 정보수정 -->
+	<update id="updateLogin_logByMvo" parameterType="com.final2.petopia.model.MemberVO">
+		update login_log set fk_pwd = #{pwd}
+		where idx = #{idx}
+	</update>
+	
+	<!-- 해당 사용자의 태그 모두 지우기 -->
+	<delete id="deleteHave_tagByIdx" parameterType="int">
+		delete from have_tag where fk_idx = #{idx}
+	</delete>
+	
 </mapper>

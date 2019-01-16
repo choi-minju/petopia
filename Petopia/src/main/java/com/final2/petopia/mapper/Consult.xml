@@ -2,4 +2,135 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
 <mapper namespace="consult">
+
+<!-- consultAddEnd >>> 1:1상담 글쓰기 // consult:insert -->
+<insert id="insertConsultByCvo" parameterType="com.final2.petopia.model.ConsultVO">
+	insert into consult(consult_UID, fk_idx, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret)
+	values(seq_consult_UID.nextval, #{fk_idx}, #{cs_pet_type}, #{cs_title}, #{cs_contents}, default, default, #{cs_secret})
+</insert>
+
+
+<!-- [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount -->
+<select id="selectTotalCountWithSearch" parameterType="HashMap" resultType="int">
+	select count(*)
+	from
+	(
+	    select consult_UID, fk_idx, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
+	    from consult C JOIN member M
+	    on C.fk_idx = M.idx
+	)
+	where ${COLNAME} like '%'||#{SEARCH}||'%'
+</select>
+
+
+<!-- [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount -->
+<select id="selectTotalCountNoSearch" resultType="int">
+	select count(*)
+	from consult
+</select>
+
+<!-- [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select -->
+<select id="selectConsultListPaging" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultVO">
+	select consult_UID, fk_idx, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
+	from 
+	(
+	    select rownum AS RNO, consult_UID, fk_idx, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
+	    from
+	    (
+	        select consult_UID, fk_idx, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
+	        from consult C JOIN member M
+	        on C.fk_idx = M.idx
+	    )
+	    where 1=1
+	    <if test='SEARCH != null and SEARCH != "" and SEARCH != "null" '>
+	    and ${COLNAME} like '%'||#{SEARCH}||'%'
+	    </if>
+	    order by consult_UID desc
+	) T
+	where RNO between #{STARTRNO} and #{ENDRNO}
+</select>
+
+<!-- [조회수 증가 X] 글 상세보기 -->
+<select id="selectConsultDetailNoCount" parameterType="String" resultType="com.final2.petopia.model.ConsultVO">
+	select previous, previousTitle
+		 , consult_UID, fk_idx, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
+		 , next, nextTitle
+	from 
+	(
+	    select lag(consult_UID,1) over(order by consult_UID desc) as previous
+	         , lag(cs_title,1) over(order by consult_UID desc) as previousTitle
+	         , consult_UID, fk_idx, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
+	         , lead(consult_UID,1) over(order by consult_UID desc) as next
+	         , lead(cs_title,1) over(order by consult_UID desc) as nextTitle
+	    from consult C JOIN member M
+	    on C.fk_idx = M.idx
+	) V
+	where V.consult_UID = #{consult_UID}
+</select>
+
+<!-- [조회수 증가 O] 글 상세보기 -->
+<update id="updateConsultDetailAddCount" parameterType="String" >
+	update consult set cs_hit = cs_hit + 1
+	where consult_UID = #{consult_UID}
+</update>
+
+<!-- 원글상세 수정 update -->
+<update id="updateConsultDetail" parameterType="HashMap">
+	update consult set cs_title=#{CS_TITLE}, cs_contents=#{CS_CONTENTS}, cs_writeday=sysdate, cs_secret=#{CS_SECRET}
+	where consult_UID = #{CONSULT_UID}
+</update>
+
+<!-- 원글상세 삭제 delete-->
+<delete id="deleteConsult" parameterType="String" >
+	delete from consult
+	where consult_UID = #{CONSULT_UID}
+</delete>
+
+
+
+<!-- 원글에 달린 댓글갯수 select 
+<select id="selectCommentWithConsult" parameterType="String" resultType="int">
+	select count(*)
+	from consult_comment
+	where fk_consult_UID = #{CONSULT_UID}
+</select>
+-->
+<!-- 원글에 달린 댓글삭제 delete 
+<delete id="deleteConsult" parameterType="String">
+	delete from consult_comment
+	where fk_consult_UID = #{CONSULT_UID}
+</delete>
+-->
+
+<!-- [consult_comment]commentvo 댓글쓰기 insert 
+<insert id="insertComment" parameterType="com.final2.petopia.model.ConsultCommentVO">
+	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
+	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, #{}, default, default, default, default)
+</insert>
+-->
+
+<!-- [consult]commentCount 원글의 댓글갯수 1 update -->
+<update id="updateConsultCommentCount" parameterType="String" >
+	update consult set commentCount = commentCount + 1
+	where consult_UID = #{CONSULT_UID}
+</update>
+
+<!-- 댓글리스트 select -->
+<select id="selectCommentList">
+	select cscmt_nickname, cscmt_contents, cscmt_writeday
+	from
+	(
+	    select rownum AS rno, cscmt_nickname, cscmt_contents, cscmt_writeday
+	    from
+	    (
+	        select cscmt_nickname, cscmt_contents, cscmt_writeday
+	        from consult_comment
+	        where fk_consult_UID = #{CONSULT_UID}
+	        order by fk_consult_UID desc
+	    ) V
+	) T
+	where rno between #{RNO1} and #{RNO2}
+</select>
+
+
 </mapper>

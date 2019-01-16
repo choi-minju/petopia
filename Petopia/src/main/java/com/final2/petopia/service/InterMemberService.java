@@ -24,7 +24,14 @@ public interface InterMemberService {
 	List<HashMap<String, String>> selectHave_tagByIdx(int idx); // 저장된 사용자 태그 조회
 
 	// *** 회원수정 *** //
+	// 프로필 사진이 있는 경우
 	int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr); // 태그가 있는 회원수정
 	int updateMemberByMvo(MemberVO mvo); // 태그가 없는 회원수정
+	// 프로필 사진이 있는 경우
+	//int updateMemberByMvoTagListNoProfile(MemberVO mvo); // 태그가 있는 회원수정
+	//int updateMemberByMvoNoProfile(MemberVO mvo); 
+
+	
+	
 
 }
