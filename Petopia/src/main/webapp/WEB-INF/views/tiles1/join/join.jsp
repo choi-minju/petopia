@@ -65,7 +65,7 @@
 	
 </script>
 
-<div class="col-sm-12" style="margin-top: 8%; margin-bottom: 8%">
+<div class="col-sm-12" style="margin-top: 10%; margin-bottom: 10%">
 	<div class="col-sm-offset-2 col-sm-8" style="background-color: #f2f2f2"> <!-- 색 : rgb(252, 118, 106) -->
 		<div class="col-sm-12" align="center">
 			<h2>가입하기</h2>
