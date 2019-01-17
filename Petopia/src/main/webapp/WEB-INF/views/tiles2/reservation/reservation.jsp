@@ -123,17 +123,29 @@
       }	
       ,	
       eventClick: function(eventObj) {
-     		alert(eventObj.start);
+    	  	$(this).css('border-color', 'rgb(252, 118, 110)');
+			$(this).css('backgroundColor', 'rgb(252, 118, 106)');
+			
+     		alert("선택완료");
      	    $(this).css('border-color', 'rgb(252, 118, 110)');
 			$(this).css('backgroundColor', 'rgb(252, 118, 106)');
 			
-			$("#schedule_UID").text(eventObj.start);
+			$("#schedule_date").text(eventObj.start);
+			$("#schedule_UID").val(eventObj.id);
      	}
     });
 	 
-		
-     
  });
+ 
+ 
+ function goReset(){
+	 $("#mypetopt").html("");
+	 $("#animalopt").val("");
+	 
+	 $("#schedule_date").html("");
+	 $("#schedule_UID").val("");
+	 
+ }
 </script>
 <div class="container">
 	<!-- Container (Pricing Section) -->
@@ -206,16 +218,17 @@
 	  </div>
 	  <form>
 	  <div class="row">
-	  	 <div class="col-sm-12 col-xs-12">
+	  	 <div class="col-sm-8 col-xs-8 col-sm-offset-2">
 	      <div class="panel panel-info text-center">
 	        <div class="panel-heading">
-	          <h6>Choose Result</h6>
+	          <h5>Choose Result</h5>
 	        </div>
 	        <div class="panel-body text-left">
 	        <div class="row">
+	        <div class="col-md-8 col-xs-12">
 	          <p>
-	          	<label class="label label-info"> 이름 </label>
-	          	<span class="noneBorderText">이름</span>
+	          	<label class="label label-info"> 병원명 </label>
+	          	<span class="noneBorderText">강서머시기동물병원</span>
 	          	<input type="hidden"  value="홍길동"/>
 	          </p>
 	          <p>
@@ -225,14 +238,19 @@
 	          </p>
 	          <p>
 	          	<label class="label label-info"> 진료과 </label>
-	          	<span class="noneBorderText">고양이</span>
-	          	<input type="hidden"  value="홍길동"/>
+	          	<span class="noneBorderText" id="mypetopt">고양이</span>
+	          	<input type="hidden" id="animalopt" name="animalopt" value="고양이"/>
 	          </p>
 	          <p>
 	          	<label class="label label-info"> 진료일 </label>
-	          	<span class="noneBorderText" id="schedule_UID"></span>
-	          	<input type="hidden" name="schedule_date" value="홍길동"/>
+	          	<span class="noneBorderText" id="schedule_date"></span>
+	          	<input type="hidden" name="schedule_UID" id="schedule_UID" />
 	          </p>
+	         </div>
+	         <div class="col-md-4 col-xs-12 text-right" style="position:absolute; right:5%; bottom:20%;">
+	         	<button type="button" class="btn btn-info">예약하기</button>
+	         	<button type="button" class="btn btn-default" onClick="goReset();">초기화</button>
+	         </div>
 	        </div>
 	       </div>
 	      </div>      
