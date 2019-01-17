@@ -12,7 +12,7 @@
   font-size: 13px;
   height: 13px; 
   border-bottom: 1px solid #A6A6A6;
-}
+} 
 </style>
 
 <script type="text/javascript">
