@@ -75,7 +75,10 @@
        object-position: top;
        border-radius: 50%;
    }
-
+   
+   .petKind li{
+   		display:inline-block;
+   }
 
   </style>
   
@@ -151,7 +154,7 @@
 	  </div>
 
 	  <div class="col-md-4" style="border: 1px solid red;">		
-		<ul style="list-style-type: none;">
+		<ul class="petKind" style="list-style-type: none;">
 	  		<li>어떤 종류인가요?</li>
 	  		<li>
   			<select id="selectbasic" name="selectbasic" class="form-control">
@@ -159,6 +162,8 @@
 		      <option value="">종류</option>
 		      <option value="">종류</option>
 		    </select>
+		    </li>
+		    <li>
 			<input type="search" id="searchinput" class="form-control input-md" name="searchinput" placeholder="기타" />    
 			</li>
 	  	</ul>

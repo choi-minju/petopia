@@ -3,11 +3,32 @@
 
 <style>
 
-  #wrap {
-    width: 1100px;
-    margin: 0 auto;
-    padding-top: 10%;
-  }
+	div #title {
+		text-align: center; 
+		margin-top: 5%;
+	}
+	
+	li {
+		list-style-type: none;
+	}
+	
+	ul .petname {
+		display:table; 
+		margin-left:auto; 
+		margin-right:auto;
+	}
+	
+	ul .img {
+		text-align: center;
+		border-radius: 50%;
+	}
+	
+  	#wrap {
+    	width: 1100px;
+	    margin: 0 auto;
+	    margin-bottom: 10%;
+	    padding-top: 10%;
+	}
 
   #external-events {
     float: right;
@@ -48,13 +69,16 @@
 
   #calendar {
     float: left;
-    width: 900px;
+    width: 80%;
   }
-  
-  .profile {
+ /* 
+  .profileimg {
+  	margin-left: auto;
+	margin-right: auto;
+	display: block;
   	border-radius: 50%;
   }
-
+*/
   fieldset {
     display: block;
     margin-inline-start: 2px;
@@ -132,47 +156,37 @@
 
 </script>
 
-
+<!-- container 시작 -->
 <div class="container">
-	<h2 style="text-align: center;">케어관리</h2>
+	<div id="title"><h2>케어관리</h2></div>
 	
-	<div class="row" style="margin-top: 5%;">
-		<div class="col-md-3">
-			<li style="list-style-type: none;">
-				<ul><span>동물명</span></ul>
-				<ul><img src="resources/img/care/dog.png" class="profile" /></ul>
+	<!-- profile 시작 -->
+	<div class="row profilebody">
+		<div class="col-sm-6 col-lg-3">
+			<li> 
+				<ul><div class="petname">동물명</div></ul>
+				<ul><div class="img"><img src="resources/img/care/dog.png" /></div></ul>
 			</li>
 		</div>
 
-		<div class="col-md-3">
-			<li style="list-style-type: none;">
-				<ul><span>동물명</span></ul>
-				<ul><img src="resources/img/care/dog.png" class="profile" /></ul>
-			</li>
-		</div>
-
-		<div class="col-md-3">
-			<li style="list-style-type: none;">
-				<ul><span>동물명</span></ul>
-				<ul><img src="resources/img/care/dog.png" class="profile" /></ul>
-			</li>
-		</div>
-
+	<!-- profile 끝 -->	
 	</div>
 	
-	<div id='wrap' style="margin-bottom: 10%;">
+	<!-- 메인 content 시작 -->
+	<div id='wrap'>
 	   
-		<!-- 캘린더 content -->	
-	    <div id='calendar' style="border: 0px solid green;"></div>
+		<!-- calendar 시작 -->	
+	    <div id='calendar' class="col-lg-9" style="border: 1px solid red;">
+	    <!-- calendar 끝-->
+	    </div>
 	 
-		<div class="row">
-			 
-			<li style="list-style-type: none;">
-				<ul><div align="center">동물명</div></ul>
-				<ul><div align="center"><img src="resources/img/care/dog.png" class="profile" /></div></ul>
-				<ul><div align="center" style="border: 1px solid gray;">ㅇㅇㅇ일째 목욕을 안해주었어요</div></ul>
+		<!-- info 사이드 시작 -->
+		<div class="row" class="col-lg-3" style="border: 1px solid green;">			 
+			<li>
+				<ul><div class="petname">동물명</div></ul>
+				<ul><div class="img"><img src="resources/img/care/dog.png" /></div></ul>
+				<ul><div class="petname">ㅇㅇㅇ일째 목욕을 안해주었어요</div></ul>
 			</li>
-			
 		</div>
 	
 		<div class="row">
@@ -262,7 +276,7 @@
 		</div>
 
 	</fieldset>  
-	  
+<!-- container 끝 -->	  
 </div>
 
 
