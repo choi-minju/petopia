@@ -29,6 +29,12 @@ public class CareController {
 	}
 	
 	
+	@RequestMapping(value="/careView2.pet", method={RequestMethod.GET})
+	public String view2(HttpServletRequest req) {
+		
+		return "care/view.tiles2";
+	}
+	
 	//===== 반려동물 등록페이지 요청 =====
 	@RequestMapping(value="/careRegister.pet", method={RequestMethod.GET})
 	public String register(HttpServletRequest req) {
