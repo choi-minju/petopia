@@ -63,14 +63,14 @@
 		where member_status = 1 and fk_userid = #{USERID} and fk_pwd = #{PWD}
 	</update>
 	
-	<!-- *** 아이디로 회원정보 조회 *** -->
-	<select id="selectMemberByUserid" parameterType="String" resultType="com.final2.petopia.model.MemberVO">
+	<!-- *** 회원번호로 회원정보 조회 *** -->
+	<select id="selectMemberByIdx" parameterType="int" resultType="com.final2.petopia.model.MemberVO">
 		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.birthday, a.gender, a.phone
 		    , a.profileimg, a.filename, a.membertype, a.point, a.totaldeposit
 		    , a.noshow, a.registerdate, b.lastlogindate, b.member_status
 		from member a JOIN login_log b
 		ON a.idx = b.idx
-		where b.member_status = 1 and userid = #{userid}
+		where b.member_status = 1 and a.idx = #{idx}
 	</select>
 	
 	<!-- 저장된 사용자 태그 조회 -->
@@ -105,4 +105,15 @@
 		delete from have_tag where fk_idx = #{idx}
 	</delete>
 	
+	<!-- 파일 수정이 없는 회원 정보 수정  -->
+	<update id="updateMemberByMvoNoProfile" parameterType="com.final2.petopia.model.MemberVO">
+		update member set pwd = #{pwd}, name = #{name}, nickname = #{nickname}, gender = #{gender}, phone = #{phone}
+		where idx = #{idx}
+	</update>
+	
+	<!-- *** 회원 탈퇴 *** -->
+	<update id="deleteMemberByIdx" parameterType="int">
+		update login_log set member_status = 0
+		where idx = #{idx}
+	</update>
 </mapper>

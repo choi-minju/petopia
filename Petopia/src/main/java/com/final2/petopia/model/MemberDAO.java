@@ -89,8 +89,8 @@ public class MemberDAO implements InterMemberDAO {
 	// *** 아이디로 회원정보 조회 *** //
 	// 회원정보 조회
 	@Override
-	public MemberVO selectMemberByUserid(String userid) {
-		MemberVO mvo = sqlsession.selectOne("member.selectMemberByUserid", userid);
+	public MemberVO selectMemberByIdx(int idx) {
+		MemberVO mvo = sqlsession.selectOne("member.selectMemberByIdx", idx);
 		
 		return mvo;
 	} // end of public MemberVO selectMemberByUserid(String userid)
@@ -126,5 +126,22 @@ public class MemberDAO implements InterMemberDAO {
 		int result = sqlsession.delete("member.deleteHave_tagByIdx", idx);
 		return result;
 	} // end of public int deleteHave_tagByIdx(int idx)
+
+	// 파일 수정이 없는 회원 정보 수정 
+	// member 테이블의 정보수정(프로필 사진 변경 X)
+	@Override
+	public int updateMemberByMvoNoProfile(MemberVO mvo) {
+		int result = sqlsession.update("member.updateMemberByMvoNoProfile", mvo);
+		
+		return result;
+	} // end of public int updateMemberByMvoNoProfile(MemberVO mvo)
+
+	// *** 회원 탈퇴 *** //
+	@Override
+	public int deleteMemberByIdx(int idx) {
+		int result = sqlsession.update("member.deleteMemberByIdx", idx);
+		
+		return result;
+	} // end of public int deleteMemberByIdx(int idx)
 
 }

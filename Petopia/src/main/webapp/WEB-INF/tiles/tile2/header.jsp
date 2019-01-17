@@ -80,7 +80,7 @@
            <span class="caret"></span></a>
            <ul class="dropdown-menu">
              <li><a href="#">반려동물수첩</a></li>
-             <li><a href="#">나의정보보기</a></li>
+             <li><a href="<%= ctxPath %>/infoMember.pet">나의정보보기</a></li>
              <li><a href="#">나의병원리뷰</a></li>
              <li><a href="#">나의병원관리</a></li>
            </ul>
@@ -92,48 +92,80 @@
 </nav>
 </div>
 
-<div class="navbar1">
-  <div class="dropdown1">
-  <div class="row">
-  		<div class="col-md-2"></div>
-	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원/약국찾기
-	    </button>
-	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원예약관리 
-	    </button>
-	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담 
-	    </button>
-	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">반려동물수첩 
-	    </button>
-	    <button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티 
-	    </button>
-    </div>
-    <div class="dropdown-content"> 
-      <div class="row">
-      	<div class="col-md-2"></div>
-        <div class="column" id="search">
-        </div>
-        <div class="column" id="reservation">
-          <a href="<%= ctxPath %>/reservation.pet">병원예약</a>
-          <a href="<%= ctxPath %>/reservationList.pet">예약내역</a>
-          <a href="<%= ctxPath %>/deposit.pet">예치금관리</a>
-        </div>
-        <div class="column" id="consult">
-          <a href="#">1:1 문의상담</a>
-          <a href="#">화상진료</a>
-        </div>
-        <div class="column" id="petCare">
-          <a href="#">반려동물관리</a>
-          <a href="#">반려동물케어</a>
-          <a href="#">진료기록관리</a>
-          <a href="#">나의 병원리뷰</a>
-        </div>
-        <div class="column" id="board">
-          <a href="#">공지사항</a>
-          <a href="#">이벤트</a>
-          <a href="#">자유게시판</a>
-        </div>
-      </div>
-    </div>
-   </div>
-</div>
+<c:if test="${sessionScope.loginuser != null && sessionScope.loginuser.membertype == 1 }">
+	<div class="navbar1">
+		<div class="dropdown1">
+			<div class="row">
+				<div class="col-md-2"></div>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원/약국찾기</button>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원예약관리</button>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담</button>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">반려동물수첩</button>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티</button>
+			</div>
+			<div class="dropdown-content"> 
+				<div class="row">
+					<div class="col-md-2"></div>
+					<div class="column" id="search">
+					</div>
+					<div class="column" id="reservation">
+						<a href="<%= ctxPath %>/reservation.pet">병원예약</a>
+						<a href="<%= ctxPath %>/reservationList.pet">예약내역</a>
+						<a href="<%= ctxPath %>/deposit.pet">예치금관리</a>
+					</div>
+					<div class="column" id="consult">
+						<a href="#">1:1 문의상담</a>
+						<a href="#">화상진료</a>
+					</div>
+					<div class="column" id="petCare">
+						<a href="#">반려동물관리</a>
+						<a href="#">반려동물케어</a>
+						<a href="#">진료기록관리</a>
+						<a href="#">나의 병원리뷰</a>
+					</div>
+					<div class="column" id="board">
+						<a href="#">공지사항</a>
+						<a href="#">이벤트</a>
+						<a href="#">자유게시판</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</c:if>
+
+<c:if test="${sessionScope.loginuser != null && sessionScope.loginuser.membertype == 3 }">
+	<div class="navbar1">
+	   	<div class="dropdown1">
+	   		<div class="row">
+				<div class="col-md-3"></div>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">회원관리</button>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">리뷰관리</button>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담</button>
+				<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티관리</button>
+			</div>
+			
+			<div class="dropdown-content"> 
+				<div class="row">
+					<div class="col-md-3"></div>
+					<div class="column" id="adminMember">
+						<a href="<%= ctxPath %>/adminMember.pet">일반회원</a>
+						<a href="<%= ctxPath %>/adminBiz_member.pet">병원회원</a>
+					</div>
+					<div class="column" id="adminReview">
+					</div>
+					<div class="column" id="adminConsult">
+						<a href="#">1:1 문의상담</a>
+						<a href="#">화상진료</a>
+					</div>
+					<div class="column" id="adminBoard">
+						<a href="#">공지사항</a>
+						<a href="#">이벤트</a>
+						<a href="#">자유게시판</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</c:if>
 </div>

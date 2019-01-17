@@ -260,7 +260,18 @@
 			frm.method = "POST";
 			frm.submit();
 			
-		}); // end of click
+		}); // end of $("#goEditBtn").click();
+		
+		$("#goQuitBtn").click(function(){
+			var bool = confirm("정말로 탈퇴하시겠습니까?");
+			
+			if(bool) {
+				// 회원탈퇴
+				location.href="<%=request.getContextPath()%>/deleteMember.pet";
+			} else {
+				alert("취소!");
+			}
+		}); // end of $("#goQuitBtn").click();
 		
 	}); // end of $(document).ready();
 	
@@ -278,7 +289,7 @@
 					<div class="row">
 						<div class="col-sm-3">
 							<div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
-								<img id="beforeProfile" width="100%" src="<%=request.getContextPath() %>/resources/profiles/${mvo.fileName}" class="upload-thumb radius-box">
+								<img id="beforeProfile" width="100%" src="<%=request.getContextPath() %>/resources/img/member/profiles/${mvo.fileName}" class="upload-thumb radius-box">
 								<input type="hidden" name="beforeFile" value="${mvo.fileName}" size="40">
 								<label for="input-file">프로필</label>
 								<input type="file" class="upload-hidden must" id="input-file" name="attach"/>
@@ -463,11 +474,14 @@
 					<hr style="height: 1px; background-color: #d9d9d9;border: none;"/>
 				
 					<div class="row">
-						<div class="col-sm-offset-1 col-sm-5">
+						<div class="col-sm-offset-1 col-sm-3">
 							<button type="button" class="btns" style="color: #999;" onclick="javascript:location.href='<%=request.getContextPath()%>/index.pet'">CANCEL</button>
 						</div>
-						<div class="col-sm-offset-1 col-sm-5">
+						<div class="col-sm-offset-1 col-sm-3">
 							<button type="button" id="goEditBtn" class="btns" style="color: rgb(252, 118, 106);">SUBMIT</button>
+						</div>
+						<div class="col-sm-offset-1 col-sm-3">
+							<button type="button" id="goQuitBtn" class="btns" style="color: rgb(252, 118, 106);">QUIT</button>
 						</div>
 					</div>
 				</div>
