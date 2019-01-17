@@ -32,7 +32,7 @@
 
   #external-events {
     float: right;
-    width: 250px;
+    /* width: 250px; */
     /* margin-left: 20px; */
     /* border: 1px solid #ccc; */
     /* background: #eee; */
@@ -187,12 +187,11 @@
 				<ul><div class="img"><img src="resources/img/care/dog.png" /></div></ul>
 				<ul><div class="petname">ㅇㅇㅇ일째 목욕을 안해주었어요</div></ul>
 			</li>
-		</div>
-	
-		<div class="row">
-	
-			<div id='external-events' style="border: 0px solid red;">
-		      <li style="list-style-type: none;">
+		</div> 
+		
+		
+		<div id='external-events' style="border: 1px solid red;">
+			<li style="list-style-type: none;">
 		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;식사</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;간식</div></ul>
 		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;용변</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;미용</div></ul>
 		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;목욕</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;양치</div></ul>
@@ -207,7 +206,7 @@
 		      </p>
 		    </div>
 	    
-	    </div>
+	 
 	
 	    <div style='clear:both'></div>
 	  
