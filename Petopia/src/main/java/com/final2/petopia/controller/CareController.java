@@ -19,7 +19,7 @@ public class CareController {
 		
 		return "care/index.tiles2";
 	}
-	//
+	
 	
 	//===== 특정 반려동물관리 상세페이지 요청 =====
 	@RequestMapping(value="/careView.pet", method={RequestMethod.GET})
@@ -28,7 +28,7 @@ public class CareController {
 		return "care/view.tiles2";
 	}
 	
-	// 깃이그노어 테스트3
+	
 	//===== 반려동물 등록페이지 요청 =====
 	@RequestMapping(value="/careRegister.pet", method={RequestMethod.GET})
 	public String register(HttpServletRequest req) {
