@@ -132,7 +132,7 @@
   .clear { clear: both }
 
   #calendar {
-    max-width: 900px;
+    max-width: 80%;
     margin: 40px auto;
     padding: 0 10px;
   }
