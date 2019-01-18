@@ -25,36 +25,41 @@
 	
   	#wrap {
     	width: 1100px;
-	    margin: 0 auto;
+	    margin: 0px auto;
 	    margin-bottom: 10%;
 	    padding-top: 10%;
 	}
+	
+	.info {
+		margin: 0px auto;
+	}
 
-  #external-events {
-    float: right;
-    /* width: 250px; */
-    /* margin-left: 20px; */
-    /* border: 1px solid #ccc; */
-    /* background: #eee; */
-    text-align: center;
-  }
+	#external-events {
+		float: right;
+		 margin: 0px auto;
+		/* width: 250px; */
+		/* margin-left: 20px; */
+		/* border: 1px solid #ccc; */
+		/* background: #eee; */
+		text-align: center;
+	}
 
-  #external-events h4 {
-    font-size: 16px;
-    margin-top: 0;
-    padding-top: 1em;
-  }
+	#external-events h4 {
+		font-size: 16px;
+		margin-top: 0;
+		padding-top: 1em;
+	}
 
-  #external-events .fc-event {
-  	display: inline-block;
-    margin: 0px auto;
-    padding: 10px;
-    width: 60px;
-    border: 1px solid black;
-    background-color: transparent;
-    color: black;
-    cursor: pointer;
-  }
+	#external-events .fc-event {
+		display: inline-block;
+		margin: 0px auto;
+		padding: 10px;
+		width: 60px;
+		border: 1px solid black;
+		background-color: transparent;
+		color: black;
+		cursor: pointer;
+	}
 
   #external-events p {
     margin: 1.5em 0;
@@ -69,7 +74,7 @@
 
   #calendar {
     float: left;
-    width: 80%;
+    width: 70%;
   }
  /* 
   .profileimg {
@@ -176,21 +181,22 @@
 	<div id='wrap'>
 	   
 		<!-- calendar 시작 -->	
-	    <div id='calendar' class="col-lg-9" style="border: 1px solid red;">
+	    <div id='calendar' class="col-lg-8">
 	    <!-- calendar 끝-->
 	    </div>
-	 
+	   
 		<!-- info 사이드 시작 -->
-		<div class="row" class="col-lg-3" style="border: 1px solid green;">			 
-			<li>
-				<ul><div class="petname">동물명</div></ul>
-				<ul><div class="img"><img src="resources/img/care/dog.png" /></div></ul>
-				<ul><div class="petname">ㅇㅇㅇ일째 목욕을 안해주었어요</div></ul>
-			</li>
-		</div> 
+		<div class="row" class="col-lg-4" style="border: 1px solid green;">			 
+			<div style="border: 1px solid blue; margin: 0px auto;">
+				<li>
+					<ul><div class="petname info">동물명</div></ul>
+					<ul><div class="img info"><img src="resources/img/care/dog.png" /></div></ul>
+					<ul><div class="petname info">ㅇㅇㅇ일째 목욕을 안해주었어요</div></ul>
+				</li>
+	  		</div>
 		
 		
-		<div id='external-events' style="border: 1px solid red;">
+			<div id='external-events' style="border: 1px solid red;">
 			<li style="list-style-type: none;">
 		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;식사</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;간식</div></ul>
 		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;용변</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;미용</div></ul>
@@ -205,7 +211,7 @@
 		        <label for='drop-remove'>remove after drop</label>
 		      </p>
 		    </div>
-	    
+	    	</div> 
 	 
 	
 	    <div style='clear:both'></div>
