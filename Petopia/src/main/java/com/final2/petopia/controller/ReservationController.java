@@ -1,7 +1,5 @@
 package com.final2.petopia.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.final2.petopia.model.Biz_MemberVO;
 import com.final2.petopia.model.ScheduleVO;
 import com.final2.petopia.service.InterReservationService;
 
@@ -26,27 +25,25 @@ public class ReservationController {
 	@RequestMapping(value="/reservation.pet", method= {RequestMethod.GET})
 	public String index(HttpServletRequest req) {
 		
-		String idx = req.getParameter("idx");
+		String idx_biz = req.getParameter("idx_biz");
+		
+		idx_biz="5";
 		
 		
-/*		String biz_idx = req.getParameter("biz_idx");
-		List<HashMap<String, String>> bizScheduleList = service.selectBizScheduleByBiz_idx(biz_idx);
+		Biz_MemberVO bizmvo = service.selectBizMemberVOByIdx_biz(idx_biz);
 		
-		req.setAttribute("bizScheduleList", bizScheduleList);
-*/
+		req.setAttribute("bizmvo", bizmvo);
+
 		return "reservation/reservation.tiles2";
 	}
 	
 	@RequestMapping(value="/selectScheduleList.pet", method= {RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, String>> selectScheduleList(HttpServletRequest req) {
-//		***JSONObject를 대체할 HashMap객체 생성
 		List<HashMap<String, String>> returnMapList = new ArrayList<HashMap<String, String>>();
 		
-//		1) 뷰에서 보낸 파라미터값 가져오기
 		String idx_biz = req.getParameter("idx_biz");
 		
-//		3) 부모글번호에 해당하는 댓글 갯수 가져오기 
 		List<ScheduleVO> scheduleList = service.selectScheduleListByIdx_biz(idx_biz);
 		
 		for(ScheduleVO svo : scheduleList) {

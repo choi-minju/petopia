@@ -22,4 +22,11 @@ public class ReservationDAO implements InterReservationDAO {
 		return scheduleList;
 	}
 
+//	#병원 회원 정보 가져오기
+	@Override
+	public Biz_MemberVO selectBizMemberVOByIdx_biz(String idx_biz) {
+		Biz_MemberVO bizmvo = sqlsession.selectOne("reservation.selectBizMemberVOByIdx_biz", idx_biz);
+		return bizmvo;
+	}
+
 }

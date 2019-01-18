@@ -8,4 +8,10 @@
 		where fk_idx_biz=#{idx_biz}
 		order by schedule_date
 	</select>
+	<select id="selectBizMemberVOByIdx_biz" parameterType="String" resultType="com.final2.petopia.model.Biz_MemberVO">
+		select idx as idx_biz, name, phone
+		from member
+		where idx=#{idx_biz}
+	</select>
+	
 </mapper>

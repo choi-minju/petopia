@@ -14,7 +14,6 @@
   border-bottom: 1px solid #A6A6A6;
 } 
 </style>
-
 <script type="text/javascript">
  $(document).ready(function(){
 	 /* $(".myPetList").hide();
@@ -83,7 +82,7 @@
           };
       },
       events: function(start, end, timezone, callback){
-    	  var form_data = {"idx_biz": "5"};
+    	  var form_data = {"idx_biz": "8"};
         	
         	$.ajax({
         		url: "selectScheduleList.pet",
@@ -123,15 +122,17 @@
       }	
       ,	
       eventClick: function(eventObj) {
-    	  	$(this).css('border-color', 'rgb(252, 118, 110)');
-			$(this).css('backgroundColor', 'rgb(252, 118, 106)');
-			
-     		alert("선택완료");
-     	    $(this).css('border-color', 'rgb(252, 118, 110)');
-			$(this).css('backgroundColor', 'rgb(252, 118, 106)');
-			
-			$("#schedule_date").text(eventObj.start);
-			$("#schedule_UID").val(eventObj.id);
+    	  
+    	  $(this).click(function(){
+    		  alert("선택완료");
+	       	  $(this).css('border-color', 'rgb(252, 118, 110)');
+	  		  $(this).css('backgroundColor', 'rgb(252, 118, 106)');
+	  			
+	  		  $("#schedule_date").text(eventObj.start);
+	  		  $("#schedule_UID").val(eventObj.id);
+    	  });
+    	  $(this).unbind("click");
+     		
      	}
     });
 	 
@@ -228,17 +229,17 @@
 	        <div class="col-md-8 col-xs-12">
 	          <p>
 	          	<label class="label label-info"> 병원명 </label>
-	          	<span class="noneBorderText">강서머시기동물병원</span>
+	          	<span class="noneBorderText">${bizmvo.name}</span>
 	          	<input type="hidden"  value="홍길동"/>
 	          </p>
 	          <p>
 	          	<label class="label label-info"> 연락처 </label>
-	          	<span class="noneBorderText">010-8888-7777</span>
+	          	<span class="noneBorderText">${bizmvo.phone}</span>
 	          	<input type="hidden"  value="홍길동"/>
 	          </p>
 	          <p>
 	          	<label class="label label-info"> 진료과 </label>
-	          	<span class="noneBorderText" id="mypetopt">고양이</span>
+	          	<span class="noneBorderText" id="mypetopt"></span>
 	          	<input type="hidden" id="animalopt" name="animalopt" value="고양이"/>
 	          </p>
 	          <p>
