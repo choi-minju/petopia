@@ -8,7 +8,8 @@ import com.final2.petopia.model.MemberVO;
 public interface InterMemberService {
 
 	List<HashMap<String, String>> selectRecommendTagList(); // 태그 리스트 보여주기
-
+	
+	// *** 사용자 *** //
 	// *** 회원가입 *** //
 	int insertMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr); // 태그가 있는 경우 회원가입
 	int insertMemberByMvo(MemberVO mvo); // 태그가 없는 경우 회원가입
@@ -34,7 +35,16 @@ public interface InterMemberService {
 	// *** 회원 탈퇴 *** //
 	int deleteMemberByIdx(int idx);
 
-	
-	
+	// *** 관리자 *** //
+	// *** 회원목록 ***//
+	// 해당하는 총회원 수
+	int selectTotalCount(); // 검색 X
+	int selectTotalCountBySearch(HashMap<String, String> paraMap); // 검색 O
+
+	// memberList 조회
+	List<MemberVO> selectMemberList(HashMap<String, String> paraMap); // 검색 X 정렬 X
+	List<MemberVO> selectMemberListByOrderBy(HashMap<String, String> paraMap); // 검색 X 정렬 O
+	List<MemberVO> selectMemberListBySearch(HashMap<String, String> paraMap); // 검색 O 정렬 X
+	List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, String> paraMap); // 검색 O 정렬 O
 
 }

@@ -100,7 +100,7 @@
 <script type="text/javascript">
 
 	$(document).ready(function(){
-		/* select 시작 */
+		/* ======================================= select 시작 ======================================= */
 		var x, i, j, selElmnt, a, b, c;
 		/*look for any elements with the class "custom-select":*/
 		x = document.getElementsByClassName("custom-select");
@@ -173,27 +173,34 @@
 		/*if the user clicks anywhere outside the select box,
 		then close all select boxes:*/
 		document.addEventListener("click", closeAllSelect);
-		/* select 끝 */
+		/* ======================================= select 끝 ======================================= */
+		
+		showMemberList("1");
 		
 		$("#searchBtn").click(function(){
-			var searchData = {"orderBy":$("#orderBy").val(),
-							 "searchWhat":$("#searchWhat").val(),
-							 "search":$("#search").val()};
 			
-			$.ajax({
-				url: "",
-				type: "GET",
-				data: searchData,
-				dataType: "JSON",
-				success: function(){},
-	    		error: function(request, status, error){ 
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				}
-			}); // end of ajax
 		}); // end of 
 		
 		
 	}); // $(document).ready();
+	
+	function showMemberList(currentShowPageNo) {
+		var searchData = {"currentShowPageNo":currentShowPageNo,
+						  "orderBy":$("#orderBy").val(),
+						  "searchWhat":$("#searchWhat").val(),
+						  "search":$("#search").val()};
+		
+		$.ajax({
+			url: "<%=request.getContextPath()%>/selectMemberList.pet",
+			type: "GET",
+			data: searchData,
+			dataType: "JSON",
+			success: function(){},
+			error: function(request, status, error){ 
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // end of ajax
+	} // end of function showMemberList(currentShowPageNo)
 </script>
 
 <div class="container">
@@ -211,9 +218,10 @@
 				<div class="col-sm-offset-4 col-sm-6"><%-- 이름, 닉네임, 아이디로 검색 --%>
 					<div class="custom-select" style="width:20%; float: left;">
   						<select name="searchWhat" id="searchWhat">
-							<option value="">정렬</option>
-							<option value="1">이름순</option>
-							<option value="2">noShow순</option>
+							<option value="">검색</option>
+							<option value="userid">아이디</option>
+							<option value="name">이름</option>
+							<option value="nickname">닉네임</option>
 						</select>
 					</div>
 					<input type="text" name="search" id="search" class="" placeholder="Search..">

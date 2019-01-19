@@ -408,6 +408,79 @@ public class MemberController {
 		return "admin/member/listMember.tiles2";
 	} // end of requireLoginAdmin_infoMember
 	
+	@RequestMapping(value="/selectMemberList.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<MemberVO> requireLoginAdmin_selectMemberList(HttpServletRequest req, HttpServletResponse res) {
+		
+		List<MemberVO> memberList = null;
+		
+		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
+		
+		String searchWhat = req.getParameter("searchWhat");
+		String search = req.getParameter("search");
+		String orderBy = req.getParameter("orderBy");
+		
+		// 페이징처리
+		int totalCount = 0;
+		int sizePerPage = 10;
+		int currentShowPageNo = 0;
+		int totalPage = 0;
+		
+		int startRno = 0;
+		int endRno = 0;
+		
+		int blockSize = 10;
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("SEARCHWHAT", searchWhat);
+		paraMap.put("SEARCH", search);
+		paraMap.put("ORDERBY", orderBy);
+		
+		// 해당하는 총회원 수
+		if(search == null) {
+			totalCount = service.selectTotalCount();
+		} else if(search != null) {
+			totalCount = service.selectTotalCountBySearch(paraMap);
+		}
+		
+		// 총페이지
+		totalPage = (int)Math.ceil((double)totalCount/sizePerPage);
+		
+		// 페이지 currentShowPageNo
+		if(str_currentShowPageNo == null || "".equals(str_currentShowPageNo)) {
+			currentShowPageNo = 1;
+		} else {
+			try {
+				currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+				
+				if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+					currentShowPageNo = 1;
+				}
+			} catch (NumberFormatException e) {
+				currentShowPageNo = 1;
+			} // end of try~catch
+		} // end of if~else
+		
+		startRno = ((currentShowPageNo-1) * sizePerPage) + 1;
+		endRno = (currentShowPageNo * sizePerPage);
+		
+		paraMap.put("STARTRNO", String.valueOf(startRno));
+		paraMap.put("ENDRNO", String.valueOf(endRno));
+		
+		// member List조회
+		if(search == null && orderBy == null) {
+			memberList = service.selectMemberList(paraMap);
+		} else if(search == null && orderBy != null) {
+			memberList = service.selectMemberListByOrderBy(paraMap);
+		} else if(search != null && orderBy == null) {
+			memberList = service.selectMemberListBySearch(paraMap);
+		} else if(search != null && orderBy != null) {
+			memberList = service.selectMemberListBySearchOrderBy(paraMap);
+		} // end of if~else if
+		
+		return memberList;
+	}
+	
 	@RequestMapping(value="/adminInfoMember.pet", method={RequestMethod.GET})
 	public String adminInfoMember(HttpServletRequest req) {
 		

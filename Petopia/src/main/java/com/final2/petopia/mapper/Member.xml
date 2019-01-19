@@ -116,4 +116,21 @@
 		update login_log set member_status = 0
 		where idx = #{idx}
 	</update>
+	
+	<!-- *** 관리자 *** --> 
+	<!-- *** 회원목록 *** -->
+	<!-- 해당하는 총회원 수 -->
+	<!-- 검색 X -->
+	<select id="selectTotalCount" resultType="int">
+		select count(*)
+		from member
+	</select>
+	
+	<!-- 검색 O -->
+	<select id="selectTotalCountBySearch" parameterType="HashMap" resultType="int">
+		select count(*)
+		from member
+		where ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+	</select>
+	
 </mapper>

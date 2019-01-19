@@ -144,4 +144,57 @@ public class MemberDAO implements InterMemberDAO {
 		return result;
 	} // end of public int deleteMemberByIdx(int idx)
 
+	
+	// *** 관리자 *** //
+	// *** 회원목록 ***//
+	// 해당하는 총회원 수
+	// 검색 X
+	@Override
+	public int selectTotalCount() {
+		int totalCount = sqlsession.selectOne("member.selectTotalCount");
+		
+		return totalCount;
+	} // end of public int selectTotalCount()
+
+	// 검색 O
+	@Override
+	public int selectTotalCountBySearch(HashMap<String, String> paraMap) {
+		int totalCount = sqlsession.selectOne("member.selectTotalCountBySearch", paraMap);
+		
+		return totalCount;
+	} // end of public int selectTotalCountBySearch(HashMap<String, String> paraMap)
+
+	// memberList 조회
+	// 검색 X 정렬 X
+	@Override
+	public List<MemberVO> selectMemberList(HashMap<String, String> paraMap) {
+		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberList", paraMap);
+		
+		return memberList;
+	} // end of public List<MemberVO> selectMemberList()
+
+	// 검색 X 정렬 O
+	@Override
+	public List<MemberVO> selectMemberListByOrderBy(HashMap<String, String> paraMap) {
+		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberListByOrderBy", paraMap);
+		
+		return memberList;
+	} // end of public List<MemberVO> selectMemberListByOrderBy(HashMap<String, String> paraMap)
+
+	// 검색 O 정렬 X
+	@Override
+	public List<MemberVO> selectMemberListBySearch(HashMap<String, String> paraMap) {
+		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberListBySearch", paraMap);
+		
+		return memberList;
+	} // end of public List<MemberVO> selectMemberListBySearch(HashMap<String, String> paraMap)
+
+	// 검색 O 정렬 O
+	@Override
+	public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, String> paraMap) {
+		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberListBySearchOrderBy", paraMap);
+		
+		return memberList;
+	} // end of public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, String> paraMap)
+
 }
