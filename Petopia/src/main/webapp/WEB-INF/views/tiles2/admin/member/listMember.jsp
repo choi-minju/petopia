@@ -177,8 +177,12 @@
 		
 		showMemberList("1");
 		
+		$("#orderBy").bind("change", function(){
+			showMemberList("1");
+		});
+		
 		$("#searchBtn").click(function(){
-			
+			showMemberList("1");
 		}); // end of 
 		
 		
@@ -195,7 +199,60 @@
 			type: "GET",
 			data: searchData,
 			dataType: "JSON",
-			success: function(){},
+			success: function(json){
+				var html = "";
+				
+				if(json.length > 0){
+					$.each(json,function(entryIndex,entry){
+						html += "<tr>"
+									+"<td><input type=\"checkbox\" id=\"memberno\" value=\""+entry.idx+"\"/></td>"
+									+"<td>"+entry.idx+"</td>"
+									+"<td>"+entry.userid+"</td>"
+									+"<td>"+entry.name+"</td>"
+									+"<td>"+entry.nickname+"</td>"
+									+"<td>"+entry.phone+"</td>"
+									+"<td>"+entry.noshow+"</td>"
+									+"<td>";
+						if(entry.lastlogindategap >= 12) {
+										html += "휴면";	
+						} else {
+							if(entry.member_status == 1) {
+										html += "회원";
+							} else if(entry.member_status == 0) {
+										html += "탈퇴"
+							} // end of if~else if
+						} // end of if~else
+							 html += "</td>"
+									+"<td>"
+										+"<a href=\"<%=request.getContextPath() %>/adminInfoMember.pet\">"
+											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/pencil-edit-square.png\">"
+										+"</a>&nbsp;";
+						if(entry.lastlogindategap >= 12) {
+									html += "<a>"
+											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/equalizer-music-controller.png\">"
+										+"</a>&nbsp;";
+						} else {
+							if(entry.member_status == 1) {
+									html += "<a>"
+											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/delete-button.png\">"
+										+"</a>&nbsp;";
+							} else if(entry.member_status == 0) {
+									html += "<a>"
+											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/verified.png\">"
+										+"</a>&nbsp;";
+							} // end of if~else if
+						} // end of if~else
+							html += "</td>"
+								+"</tr>";
+					}); // end of each
+				} else {
+					html += "<tr>"
+						 + "<td colspan='7' align='center'>회원이 없습니다.</td>"
+						 + "</tr>";
+				} //  end of if ~ else
+				
+				$("#result").empty().html(html);
+			},
 			error: function(request, status, error){ 
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
@@ -210,8 +267,9 @@
 				<div class="col-sm-2">
 					<select class="form-control" id="orderBy" name="orderBy" style="height: 45px;">
 						<option value="">정렬</option>
-						<option value="1">이름순</option>
-						<option value="2">no-show많은순</option>
+						<option value="name">이름순</option>
+						<option value="noshow">no-show많은순</option>
+						<option value="regdate">신규가입순</option>
 					</select>
 				</div>
 				
@@ -235,39 +293,19 @@
 				<table class="table" style="margin-top: 20px;width: 100%;">
 					<thead style="background-color: #f2f2f2;">
 						<tr>
-							<th align="center"></th>
-							<th align="center">번호</th>
-							<th align="center">이름</th>
-							<th align="center">연락처</th>
-							<th align="center">대표반려동물명</th>
-							<th align="center">no show 경고횟수</th>
-							<th align="center">관리</th>
+							<th width="5%" align="center"></th>
+							<th width="5%" align="center">번호</th>
+							<th width="20%" align="center">아이디</th>
+							<th width="10%" align="center">이름</th>
+							<th width="10%" align="center">닉네임</th>
+							<th width="10%" align="center">휴대전화</th>
+							<th width="10%" align="center">no show</th>
+							<th width="10%" align="center">회원상태</th>
+							<th width="20%" align="center">관리</th>
 						</tr>
 					</thead>
 					
-					<tbody>
-						<tr>
-							<td><input type="checkbox"/></td>
-							<td>1</td>
-							<td>홍길동</td>
-							<td>010-1234-5678</td>
-							<td>멍멍</td>
-							<td>green(5회)</td>
-							<td>
-								<a href="<%=request.getContextPath() %>/adminInfoMember.pet">
-									<img src="<%=request.getContextPath() %>/resources/img/memberIcon/pencil-edit-square.png">
-								</a>
-								<a onclick=""> <!-- 휴면일 경우 회원으로 바꿀건지 confrim 띄우고 바꾸기 -->
-									<img src="<%=request.getContextPath() %>/resources/img/memberIcon/equalizer-music-controller.png">
-								</a>
-								<a onclick=""> <!-- 회원일 경우 탈퇴할 건지 confrim 띄우고 바꾸기 -->
-									<img src="<%=request.getContextPath() %>/resources/img/memberIcon/delete-button.png">
-								</a>
-								<a onclick=""> <!-- 탈퇴한 경우 다시 회원으로 할 건지 confrim 띄우고 바꾸기 -->
-									<img src="<%=request.getContextPath() %>/resources/img/memberIcon/verified.png">
-								</a>
-							</td>
-						</tr>
+					<tbody id="result">
 					</tbody>
 				</table>
 			</div>

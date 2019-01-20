@@ -431,15 +431,17 @@ public class MemberController {
 		
 		int blockSize = 10;
 		
-		HashMap<String, String> paraMap = new HashMap<String, String>();
+		HashMap<String, Object> paraMap = new HashMap<String, Object>();
 		paraMap.put("SEARCHWHAT", searchWhat);
 		paraMap.put("SEARCH", search);
 		paraMap.put("ORDERBY", orderBy);
 		
+		System.out.println("searchWhat: "+searchWhat+", search: "+search+", orderBy: "+orderBy);
+		
 		// 해당하는 총회원 수
-		if(search == null) {
+		if(search == null || "".equals(search)) {
 			totalCount = service.selectTotalCount();
-		} else if(search != null) {
+		} else if(search != null && !"".equals(search)) {
 			totalCount = service.selectTotalCountBySearch(paraMap);
 		}
 		
@@ -468,18 +470,26 @@ public class MemberController {
 		paraMap.put("ENDRNO", String.valueOf(endRno));
 		
 		// member List조회
-		if(search == null && orderBy == null) {
+		if((search == null || "".equals(search)) && (orderBy == null || "".equals(orderBy))) {
 			memberList = service.selectMemberList(paraMap);
-		} else if(search == null && orderBy != null) {
-			memberList = service.selectMemberListByOrderBy(paraMap);
-		} else if(search != null && orderBy == null) {
+		} else if((search == null || "".equals(search)) && (orderBy != null && !"".equals(orderBy))) {
+			memberList = service.selectMemberListByOrderBy(paraMap); // 정렬 안 됨 ㅜㅜㅜ
+		} else if((search != null && !"".equals(search)) && (orderBy == null || "".equals(orderBy))) {
 			memberList = service.selectMemberListBySearch(paraMap);
-		} else if(search != null && orderBy != null) {
+		} else if((search != null && !"".equals(search)) && (orderBy != null && !"".equals(orderBy))) {
 			memberList = service.selectMemberListBySearchOrderBy(paraMap);
 		} // end of if~else if
 		
+		for(MemberVO mvo : memberList) {
+			try {
+				mvo.setPhone(aes.decrypt(mvo.getPhone()));
+			} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+				e.printStackTrace();
+			} // end of try-catch
+		} // end of for
+		
 		return memberList;
-	}
+	} // end of public List<MemberVO> requireLoginAdmin_selectMemberList(HttpServletRequest req, HttpServletResponse res)
 	
 	@RequestMapping(value="/adminInfoMember.pet", method={RequestMethod.GET})
 	public String adminInfoMember(HttpServletRequest req) {

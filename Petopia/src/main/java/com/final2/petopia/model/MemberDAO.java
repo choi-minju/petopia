@@ -158,43 +158,49 @@ public class MemberDAO implements InterMemberDAO {
 
 	// 검색 O
 	@Override
-	public int selectTotalCountBySearch(HashMap<String, String> paraMap) {
+	public int selectTotalCountBySearch(HashMap<String, Object> paraMap) {
 		int totalCount = sqlsession.selectOne("member.selectTotalCountBySearch", paraMap);
 		
 		return totalCount;
-	} // end of public int selectTotalCountBySearch(HashMap<String, String> paraMap)
+	} // end of public int selectTotalCountBySearch(HashMap<String, Object> paraMap)
 
 	// memberList 조회
 	// 검색 X 정렬 X
 	@Override
-	public List<MemberVO> selectMemberList(HashMap<String, String> paraMap) {
-		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberList", paraMap);
+	public List<MemberVO> selectMemberList(HashMap<String, Object> paraMap) {
+		sqlsession.selectList("member.selectMemberList", paraMap);
+		
+		List<MemberVO> memberList = (List<MemberVO>)paraMap.get("MEMBERLIST");
 		
 		return memberList;
 	} // end of public List<MemberVO> selectMemberList()
 
 	// 검색 X 정렬 O
 	@Override
-	public List<MemberVO> selectMemberListByOrderBy(HashMap<String, String> paraMap) {
-		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberListByOrderBy", paraMap);
+	public List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap) {
+		sqlsession.selectList("member.selectMemberListByOrderBy", paraMap);
+		
+		List<MemberVO> memberList = (List<MemberVO>)paraMap.get("MEMBERLIST");
 		
 		return memberList;
-	} // end of public List<MemberVO> selectMemberListByOrderBy(HashMap<String, String> paraMap)
+	} // end of public List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap)
 
 	// 검색 O 정렬 X
 	@Override
-	public List<MemberVO> selectMemberListBySearch(HashMap<String, String> paraMap) {
-		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberListBySearch", paraMap);
+	public List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap) {
+		sqlsession.selectList("member.selectMemberListBySearch", paraMap);
+		
+		List<MemberVO> memberList = (List<MemberVO>)paraMap.get("MEMBERLIST");
 		
 		return memberList;
-	} // end of public List<MemberVO> selectMemberListBySearch(HashMap<String, String> paraMap)
+	} // end of public List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap)
 
 	// 검색 O 정렬 O
 	@Override
-	public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, String> paraMap) {
+	public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap) {
 		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberListBySearchOrderBy", paraMap);
 		
 		return memberList;
-	} // end of public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, String> paraMap)
+	} // end of public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap)
 
 }

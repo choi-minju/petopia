@@ -38,12 +38,12 @@ public interface InterMemberDAO {
 	// *** 회원목록 ***//
 	// 해당하는 총회원 수
 	int selectTotalCount(); // 검색 X
-	int selectTotalCountBySearch(HashMap<String, String> paraMap); // 검색 O
+	int selectTotalCountBySearch(HashMap<String, Object> paraMap); // 검색 O
 	
 	// memberList 조회
-	List<MemberVO> selectMemberList(HashMap<String, String> paraMap); // 검색 X 정렬 X
-	List<MemberVO> selectMemberListByOrderBy(HashMap<String, String> paraMap); // 검색 X 정렬 O
-	List<MemberVO> selectMemberListBySearch(HashMap<String, String> paraMap); // 검색 O 정렬 X
-	List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, String> paraMap); // 검색 O 정렬 O
+	List<MemberVO> selectMemberList(HashMap<String, Object> paraMap); // 검색 X 정렬 X
+	List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap); // 검색 X 정렬 O
+	List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap); // 검색 O 정렬 X
+	List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap); // 검색 O 정렬 O
 
 }

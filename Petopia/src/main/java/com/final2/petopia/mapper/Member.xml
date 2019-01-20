@@ -133,4 +133,51 @@
 		where ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
 	</select>
 	
+	<!-- 해당 회원 리스트 조회 -->
+	<resultMap type="com.final2.petopia.model.MemberVO" id="selectMemberList_resultMap">
+		<result property="idx"				column="IDX"				javaType="int"/>
+		<result property="userid"			column="USERID"				javaType="String"/>
+		<result property="name"				column="NAME"				javaType="String"/>
+		<result property="nickname"			column="NICKNAME"			javaType="String"/>
+		<result property="phone"			column="PHONE"				javaType="String"/>
+		<result property="noshow"			column="NOSHOW"				javaType="int"/>
+		<result property="member_status"	column="MEMBER_STATUS"		javaType="int"/>
+		<result property="lastlogindategap"	column="LASTLOGINDATEGAP"	javaType="int"/>
+	</resultMap>
+	
+	<!-- 검색X 정렬X -->
+	<parameterMap type="HashMap" id="selectMemberList_paraMap">
+		<parameter property="STARTRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="ENDRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="MEMBERLIST"	mode="OUT"	jdbcType="CURSOR"	resultMap="selectMemberList_resultMap"/>
+	</parameterMap>
+	
+	<select id="selectMemberList" statementType="CALLABLE" parameterMap="selectMemberList_paraMap">
+		{ call pcd_selectMemberList(?,?,?) }
+	</select>
+	
+	<!-- 검색 X 정렬 O -->
+	<parameterMap type="HashMap" id="selectMemberListByOrderBy_paraMap">
+		<parameter property="STARTRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="ENDRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="ORDERBY"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="MEMBERLIST"	mode="OUT"	jdbcType="CURSOR"	resultMap="selectMemberList_resultMap"/>
+	</parameterMap>
+	
+	<select id="selectMemberListByOrderBy" statementType="CALLABLE" parameterMap="selectMemberListByOrderBy_paraMap">
+		{ call selectMemberListByOrderBy(?,?,?,?) }
+	</select>
+	
+	<!-- 검색 O 정렬 X -->
+	<parameterMap type="HashMap" id="selectMemberListBySearch_paraMap">
+		<parameter property="STARTRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="ENDRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="SEARCHWHAT"	mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="SEARCH"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="MEMBERLIST"	mode="OUT"	jdbcType="CURSOR"	resultMap="selectMemberList_resultMap"/>
+	</parameterMap>
+	
+	<select id="selectMemberListBySearch" statementType="CALLABLE" parameterMap="selectMemberListBySearch_paraMap">
+		{ call selectMemberListBySearch(?,?,?,?,?) }
+	</select>
 </mapper>

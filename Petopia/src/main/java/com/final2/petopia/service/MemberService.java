@@ -290,43 +290,43 @@ public class MemberService implements InterMemberService {
 
 	// 검색 O
 	@Override
-	public int selectTotalCountBySearch(HashMap<String, String> paraMap) {
+	public int selectTotalCountBySearch(HashMap<String, Object> paraMap) {
 		int totalCount = dao.selectTotalCountBySearch(paraMap);
 		
 		return totalCount;
-	} // end of public int selectTotalCountBySearch(HashMap<String, String> paraMap)
+	} // end of public int selectTotalCountBySearch(HashMap<String, Object> paraMap)
 
 	// memberList 조회
 	// 검색 X 정렬 X
 	@Override
-	public List<MemberVO> selectMemberList(HashMap<String, String> paraMap) {
+	public List<MemberVO> selectMemberList(HashMap<String, Object> paraMap) {
 		List<MemberVO> memberList = dao.selectMemberList(paraMap);
 		
 		return memberList;
-	} // end of public List<MemberVO> selectMemberList(HashMap<String, String> paraMap)
+	} // end of public List<MemberVO> selectMemberList(HashMap<String, Object> paraMap)
 
 	// 검색 X 정렬 O
 	@Override
-	public List<MemberVO> selectMemberListByOrderBy(HashMap<String, String> paraMap) {
+	public List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap) {
 		List<MemberVO> memberList = dao.selectMemberListByOrderBy(paraMap);
 		
 		return memberList;
-	} // end of public List<MemberVO> selectMemberListByOrderBy(HashMap<String, String> paraMap)
+	} // end of public List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap)
 
 	// 검색 O 정렬 X
 	@Override
-	public List<MemberVO> selectMemberListBySearch(HashMap<String, String> paraMap) {
+	public List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap) {
 		List<MemberVO> memberList = dao.selectMemberListBySearch(paraMap);
 		
 		return memberList;
-	} // end of public List<MemberVO> selectMemberListBySearch(HashMap<String, String> paraMap)
+	} // end of public List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap)
 
 	// 검색 O 정렬 O
 	@Override
-	public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, String> paraMap) {
+	public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap) {
 		List<MemberVO> memberList = dao.selectMemberListBySearchOrderBy(paraMap);
 		
 		return memberList;
-	} // end of public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, String> paraMap)
+	} // end of public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap)
 
 }
