@@ -267,7 +267,7 @@
 			
 			if(bool) {
 				// 회원탈퇴
-				location.href="<%=request.getContextPath()%>/deleteMember.pet";
+				location.href="<%=request.getContextPath()%>/updateMemberStatusOutByIdx.pet";
 			} else {
 				alert("취소!");
 			}

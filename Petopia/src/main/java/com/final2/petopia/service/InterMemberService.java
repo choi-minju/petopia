@@ -33,7 +33,7 @@ public interface InterMemberService {
 	int updateMemberByMvoNoProfile(MemberVO mvo); // 태그가 없는 회원수정
 
 	// *** 회원 탈퇴 *** //
-	int deleteMemberByIdx(int idx);
+	int updateMemberStatusOutByIdx(int idx);
 
 	// *** 관리자 *** //
 	// *** 회원목록 ***//Object
@@ -46,5 +46,11 @@ public interface InterMemberService {
 	List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap); // 검색 X 정렬 O
 	List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap); // 검색 O 정렬 X
 	List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap); // 검색 O 정렬 O
+
+	// *** 회원 휴면 해제 *** //
+	int updateAdminMemberDateByIdx(int idx);
+
+	// *** 회원 복원 *** //
+	int updateMemberStatusInByIdx(int idx);
 
 }

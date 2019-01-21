@@ -205,13 +205,13 @@
 				if(json.length > 0){
 					$.each(json,function(entryIndex,entry){
 						html += "<tr>"
-									+"<td><input type=\"checkbox\" id=\"memberno\" value=\""+entry.idx+"\"/></td>"
-									+"<td>"+entry.idx+"</td>"
+									+"<td align='center'><input type=\"checkbox\" id=\"memberno\" value=\""+entry.idx+"\"/></td>"
+									+"<td align='center'>"+entry.idx+"</td>"
 									+"<td>"+entry.userid+"</td>"
 									+"<td>"+entry.name+"</td>"
 									+"<td>"+entry.nickname+"</td>"
-									+"<td>"+entry.phone+"</td>"
-									+"<td>"+entry.noshow+"</td>"
+									+"<td>"+entry.phone.substr(0,3)+"-"+entry.phone.substr(3,4)+"-"+entry.phone.substr(7)+"</td>"
+									+"<td align='center'>"+entry.noshow+"</td>"
 									+"<td>";
 						if(entry.lastlogindategap >= 12) {
 										html += "휴면";	
@@ -224,20 +224,20 @@
 						} // end of if~else
 							 html += "</td>"
 									+"<td>"
-										+"<a href=\"<%=request.getContextPath() %>/adminInfoMember.pet\">"
+										+"<a href=\"<%=request.getContextPath() %>/adminInfoMember.pet?idx="+entry.idx+"\">"
 											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/pencil-edit-square.png\">"
 										+"</a>&nbsp;";
 						if(entry.lastlogindategap >= 12) {
-									html += "<a>"
+									html += "<a onclick='memberUpdate("+entry.idx+")'>"
 											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/equalizer-music-controller.png\">"
 										+"</a>&nbsp;";
 						} else {
 							if(entry.member_status == 1) {
-									html += "<a>"
+									html += "<a onclick='memberOut("+entry.idx+")'>"
 											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/delete-button.png\">"
 										+"</a>&nbsp;";
 							} else if(entry.member_status == 0) {
-									html += "<a>"
+									html += "<a onclick='memberIn("+entry.idx+")'>"
 											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/verified.png\">"
 										+"</a>&nbsp;";
 							} // end of if~else if
@@ -250,6 +250,8 @@
 						 + "<td colspan='7' align='center'>회원이 없습니다.</td>"
 						 + "</tr>";
 				} //  end of if ~ else
+					
+				showPageBar(currentShowPageNo, $("#orderBy").val(), $("#searchWhat").val(), $("#search").val());
 				
 				$("#result").empty().html(html);
 			},
@@ -258,9 +260,149 @@
 			}
 		}); // end of ajax
 	} // end of function showMemberList(currentShowPageNo)
+	
+	function showPageBar(currentShowPageNo, orderBy, searchWhat, search) {
+		
+		var pageBarData = {"currentShowPageNo":currentShowPageNo,
+						   "orderBy":orderBy,
+						   "searchWhat":searchWhat,
+						   "search":search};
+		
+		$.ajax({
+			url: "<%=request.getContextPath()%>/selectMemberListPageBar.pet",
+			type: "GET",
+			data: pageBarData,
+			dataType: "JSON",
+			success: function(json){
+				var html = "";
+				
+				var totalPage = json;
+				var blockSize = 5;
+				var loop = 1;
+				
+				var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+				
+				if(pageNo != 1) {
+					html += "<li><a href=\"javascript:showMemberList("+(pageNo-1)+")\">이전</a></li>";
+				} // end of if
+				
+				while(!(loop > blockSize || pageNo > totalPage)) {
+					
+					if(pageNo == currentShowPageNo) {
+						html += "<li><a style='color:black;'>"+pageNo+"</a></li>";
+					} else {
+						html += "<li><a href=\"javascript:showMemberList("+pageNo+")\">"+pageNo+"</a></li>";
+					} // end of if~else
+						
+					pageNo++;
+					loop++;
+					
+				} // end of while
+					
+				if(!(pageNo > totalPage)) {
+					html += "<li><a href=\"javascript:showMemberList("+(pageNo+1)+")\">다음</a></li>";
+				} // end of if
+				
+				$("#pageBar").empty().html(html);
+			},
+			error: function(request, status, error){ 
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // end of ajax
+		
+	} // end of function showPageBar()
+	
+	// *** 휴면계정 해제 *** //
+	function memberUpdate(idx) { 
+		var bool = confirm("해당 회원의 상태를 휴면 해제로 변경하시겠습니까?");
+		
+		var data = {"idx":idx};
+		
+		if(bool) {
+			$.ajax({
+				url: "<%=request.getContextPath()%>/updateAdminMemberDateByIdx.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					if(json == 0) {
+						alert("휴면 해제가 실패되었습니다.");
+						showMemberList("1");
+					} else {
+						alert("휴면 해제되었습니다.");
+						showMemberList("1");
+					} // end of if~else
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax
+		} else {
+			alert("취소되었습니다.");
+		} // end of if~else
+	} // end of function memberUpdate(idx)
+	
+	// *** 회원 탈퇴 ***//
+	function memberOut(idx) { // 탈퇴
+		var bool = confirm("해당 회원의 상태를 탈퇴 상태로 변경하시겠습니까?");
+	
+		var data = {"idx":idx};
+	
+		if(bool) {
+			$.ajax({
+				url: "<%=request.getContextPath()%>/updateAdminMemberStatusOutByIdx.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					if(json == 0) {
+						alert("탈퇴가 실패되었습니다.");
+						showMemberList("1");
+					} else {
+						alert("탈퇴되었습니다.");
+						showMemberList("1");
+					} // end of if~else
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax
+		} else {
+			alert("취소되었습니다.");
+		} // end of if~else
+	} // end of function memberOut(idx)
+	
+	function memberIn(idx) { // 복귀
+		var bool = confirm("해당 회원의 상태를 활동 상태로 변경하시겠습니까?");
+		
+		var data = {"idx":idx};
+	
+		if(bool) {
+			$.ajax({
+				url: "<%=request.getContextPath()%>/updateAdminMemberStatusInByIdx.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					if(json == 0) {
+						alert("복원이 실패되었습니다.");
+						showMemberList("1");
+					} else {
+						alert("복원되었습니다.");
+						showMemberList("1");
+					} // end of if~else
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax
+		} else {
+			alert("취소되었습니다.");
+		} // end of if~else
+	} // end of function memberIn(idx)
 </script>
 
-<div class="container">
+<div class="container" style="margin-top: 15px; margin-bottom: 15px;">
 	<div class="col-sm-12" style="margin-top: 20px;background-color: white;">
 		<form name="searchFrm">
 			<div class="row" style="margin-top: 10px; margin-bottom: 10px; padding-left: 4%; padding-right: 4%;">
@@ -293,15 +435,15 @@
 				<table class="table" style="margin-top: 20px;width: 100%;">
 					<thead style="background-color: #f2f2f2;">
 						<tr>
-							<th width="5%" align="center"></th>
-							<th width="5%" align="center">번호</th>
-							<th width="20%" align="center">아이디</th>
+							<th width="5%" 	align="center"></th>
+							<th width="5%" 	align="center">번호</th>
+							<th width="25%" align="center">아이디</th>
 							<th width="10%" align="center">이름</th>
 							<th width="10%" align="center">닉네임</th>
-							<th width="10%" align="center">휴대전화</th>
+							<th width="15%" align="center">휴대전화</th>
 							<th width="10%" align="center">no show</th>
 							<th width="10%" align="center">회원상태</th>
-							<th width="20%" align="center">관리</th>
+							<th width="10%" align="center">관리</th>
 						</tr>
 					</thead>
 					
@@ -313,7 +455,7 @@
 		
 		<div class="row" align="center">
 			<div class="col-sm-12">
-				<ul class="pagination pagination-sm">
+				<ul class="pagination pagination-sm" id="pageBar">
 				  	<li><a href="#">이전</a></li>
 				    <li><a href="#">1</a></li>
 				    <li><a href="#">2</a></li>

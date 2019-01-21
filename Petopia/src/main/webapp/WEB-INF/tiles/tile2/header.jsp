@@ -49,6 +49,26 @@
      
 </style>
 
+<script src='https://developers.kakao.com/sdk/js/kakao.min.js'></script>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+	});
+	
+	function logOut() {
+		alert("dddddd");
+		Kakao.init('b5a80832c3cb255d6b0092b12fa51f95'); //카카오에서 제공 myceo.co.kr 수정
+		Kakao.Auth.logout(
+			function(obj) {
+				if(obj==true){}else{}
+				 location.href='<%=request.getContextPath()%>/home.pet';
+			 }
+		);
+	} // end of logOut
+	
+</script>
+
 <div>
 	<div class="header">
 		<!-- <a href="#default" class="logo">PETOPIA</a>
@@ -75,7 +95,7 @@
 							<li><a href="<%= ctxPath %>/login.pet" >로그인</a></li>
 						</c:if>
 						<c:if test="${sessionScope.loginuser != null }">
-							<li><a href="<%= ctxPath %>/logout.pet">로그아웃</a></li>
+							<li><a onclick="logOut();" href="<%= ctxPath %>/logout.pet">[${sessionScope.loginuser.nickname }] 로그아웃</a></li>
 							<c:if test="${sessionScope.loginuser != null && sessionScope.loginuser.membertype != 3 }"><%-- 관리자일 경우 없애기 --%>
 								<li class="dropdown">
 									<a class="dropdown-toggle" data-toggle="dropdown" href="#">마이페이지

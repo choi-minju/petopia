@@ -271,8 +271,8 @@ public class MemberService implements InterMemberService {
 
 	// *** 회원 탈퇴 *** //
 	@Override
-	public int deleteMemberByIdx(int idx) {
-		int result = dao.deleteMemberByIdx(idx);
+	public int updateMemberStatusOutByIdx(int idx) {
+		int result = dao.updateMemberStatusOutByIdx(idx);
 		
 		return result;
 	} // end of public int deleteMemberByIdx(int idx)
@@ -328,5 +328,22 @@ public class MemberService implements InterMemberService {
 		
 		return memberList;
 	} // end of public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap)
+
+	
+	// *** 회원 휴면 해제 *** //
+	@Override
+	public int updateAdminMemberDateByIdx(int idx) {
+		int result = dao.updateAdminMemberDateByIdx(idx);
+		
+		return result;
+	} // end of public int updateAdminMemberDateByIdx(int idx)
+
+	// *** 회원 복원 *** //
+	@Override
+	public int updateMemberStatusInByIdx(int idx) {
+		int result = dao.updateMemberStatusInByIdx(idx);
+		
+		return result;
+	} // end of public int updateMemberStatusInByIdx(int idx)
 
 }

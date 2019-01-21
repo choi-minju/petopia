@@ -37,6 +37,7 @@ public class MemberController {
 	@Autowired
 	private FileManager fileManager;
 	
+	// *** 회원가입 *** //
 	@RequestMapping(value="/join.pet", method={RequestMethod.GET})
 	public String join() {
 		
@@ -222,6 +223,39 @@ public class MemberController {
 		return "msg";
 	} // end of public String loginSelect()
 	
+	// *** 카카오 로그인 *** //
+	@RequestMapping(value="/kakaoLogin.pet", method={RequestMethod.POST})
+	public String kakaoLogin(HttpServletRequest req) {
+		
+		String userid = req.getParameter("userid");
+		String nickname = req.getParameter("nickname");
+		System.out.println("userid: "+userid+", nickname: "+nickname);
+		String msg = "";
+		String loc = "";
+		if(userid != null && !"".equals(userid)) {
+			MemberVO loginuser = new MemberVO();
+			loginuser.setUserid(userid);
+			loginuser.setNickname(nickname);
+			
+			HttpSession session = req.getSession();
+			session.setAttribute("loginuser", loginuser);
+			
+			msg = "로그인 성공";
+			loc = req.getContextPath()+"/index.pet";
+			System.out.println("로그인성공!");
+		} else {
+			msg = "로그인 실패";
+			loc = req.getContextPath()+"/login.pet";
+			System.out.println("로그인실패!");
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} // 
+	
+	// *** 로그아웃 *** //
 	@RequestMapping(value="/logout.pet", method={RequestMethod.GET})
 	public String logout(HttpServletRequest req, HttpSession session) {
 		session.invalidate();
@@ -372,8 +406,8 @@ public class MemberController {
 	} // end of editMember()
 	
 	// *** 회원 탈퇴 *** //
-	@RequestMapping(value="/deleteMember.pet", method={RequestMethod.GET})
-	public String requireLogin_deleteMember(HttpServletRequest req, HttpServletResponse res) {
+	@RequestMapping(value="/updateMemberStatusOutByIdx.pet", method={RequestMethod.GET})
+	public String requireLogin_updateMemberStatusOutByIdx(HttpServletRequest req, HttpServletResponse res) {
 		
 		// 회원 번호
 		HttpSession session = req.getSession();
@@ -382,7 +416,7 @@ public class MemberController {
 		int idx = loginuser.getIdx();
 		
 		// 회원 탈퇴 --> login_log의 status를 0으로
-		int result = service.deleteMemberByIdx(idx);
+		int result = service.updateMemberStatusOutByIdx(idx);
 		
 		String msg = "";
 		String loc = "";
@@ -400,8 +434,10 @@ public class MemberController {
 		req.setAttribute("loc", loc);
 		
 		return "msg";
-	} // end of public String requireLogin_deleteMember()
+	} // end of public String requireLogin_updateMemberStatusOutByIdx()
 
+	// *** 관리자 *** //
+	// *** 회원 목록 *** //
 	@RequestMapping(value="/adminMember.pet", method={RequestMethod.GET})
 	public String requireLoginAdmin_adminListMember(HttpServletRequest req, HttpServletResponse res) {
 		// 하는 중....
@@ -428,8 +464,6 @@ public class MemberController {
 		
 		int startRno = 0;
 		int endRno = 0;
-		
-		int blockSize = 10;
 		
 		HashMap<String, Object> paraMap = new HashMap<String, Object>();
 		paraMap.put("SEARCHWHAT", searchWhat);
@@ -491,14 +525,152 @@ public class MemberController {
 		return memberList;
 	} // end of public List<MemberVO> requireLoginAdmin_selectMemberList(HttpServletRequest req, HttpServletResponse res)
 	
-	@RequestMapping(value="/adminInfoMember.pet", method={RequestMethod.GET})
-	public String adminInfoMember(HttpServletRequest req) {
+	// 페이지바
+	@RequestMapping(value="/selectMemberListPageBar.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int selectMemberListPageBar(HttpServletRequest req) {
 		
-		List<HashMap<String, String>> tagList = service.selectRecommendTagList();
+		String searchWhat = req.getParameter("searchWhat");
+		String search = req.getParameter("search");
+		String orderBy = req.getParameter("orderBy");
 		
-		req.setAttribute("tagList", tagList);
+		// 페이징처리
+		int totalCount = 0;
+		int sizePerPage = 10;
+		int totalPage = 0;
 		
-		return "admin/member/adminInfoMember.tiles2";
-	} // end of public String adminInfoMember()
+		HashMap<String, Object> paraMap = new HashMap<String, Object>();
+		paraMap.put("SEARCHWHAT", searchWhat);
+		paraMap.put("SEARCH", search);
+		paraMap.put("ORDERBY", orderBy);
+		
+		System.out.println("searchWhat: "+searchWhat+", search: "+search+", orderBy: "+orderBy);
+		
+		// 해당하는 총회원 수
+		if(search == null || "".equals(search)) {
+			totalCount = service.selectTotalCount();
+		} else if(search != null && !"".equals(search)) {
+			totalCount = service.selectTotalCountBySearch(paraMap);
+		}
+		
+		// 총페이지
+		totalPage = (int)Math.ceil((double)totalCount/sizePerPage);
+		
+		return totalPage;
+	} // end of public int selectMemberListPageBar()
 	
+	// *** 회원 정보 *** //
+	@RequestMapping(value="/adminInfoMember.pet", method={RequestMethod.GET})
+	public String requireLoginAdmin_adminInfoMember(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_idx = req.getParameter("idx");
+		
+		MemberVO mvo = null;
+		List<HashMap<String, String>> haveTagList = null;
+		int idx = 0;
+		if(str_idx == null || "".equals(str_idx)) {
+			mvo = null;
+		} else {
+			try {
+				idx = Integer.parseInt(str_idx);
+				
+				mvo = service.selectMemberByIdx(idx);
+				haveTagList = service.selectHave_tagByIdx(idx);
+			} catch (NumberFormatException e) {
+				mvo = null;
+			} // try~catch
+		} // if~else
+		
+		if(mvo == null) {
+			// msg로 보내서 없다고 띄우고 뒤로가기!
+			req.setAttribute("msg", "해당하는 회원의 정보가 없습니다!");
+			req.setAttribute("loc", "javascript:histroy.back();");
+			
+			return "msg";
+		} else {
+			// 회원정보를 담아서 회원정보 페이지로
+			try {
+				mvo.setPhone(aes.decrypt(mvo.getPhone()));
+			} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+				e.printStackTrace();
+			} // end of try~catch
+			
+			req.setAttribute("mvo", mvo);
+			req.setAttribute("haveTagList", haveTagList);
+			
+			return "admin/member/adminInfoMember.tiles2";
+		} // end of if~else
+		
+	} // end of public String requireLoginAdmin_adminInfoMember()
+	
+	// *** 회원 휴면계정 해제 *** //
+	@RequestMapping(value="/updateAdminMemberDateByIdx.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLoginAdmin_updateAdminMemberDateByIdx(HttpServletRequest req, HttpServletResponse res) {
+		int result = 0;
+		
+		String str_idx = req.getParameter("idx");
+		
+		int idx = 0;
+		if(str_idx == null || "".equals(str_idx)) {
+			result = 0;
+		} else {
+			try {
+				idx = Integer.parseInt(str_idx);
+				
+				result = service.updateAdminMemberDateByIdx(idx);
+			} catch (NumberFormatException e) {
+				result = 0;
+			} // try~catch
+		} // if~else
+		
+		return result;
+	} // end of public int requireLoginAdmin_updateAdminMemberDateByIdx(HttpServletRequest req, HttpServletResponse res)
+	
+	@RequestMapping(value="/updateAdminMemberStatusOutByIdx.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLoginAdmin_updateAdminMemberStatusOutByIdx(HttpServletRequest req, HttpServletResponse res) {
+		int result = 0;
+		
+		String str_idx = req.getParameter("idx");
+		
+		int idx = 0;
+		if(str_idx == null || "".equals(str_idx)) {
+			result = 0;
+		} else {
+			try {
+				idx = Integer.parseInt(str_idx);
+				
+				result = service.updateMemberStatusOutByIdx(idx);
+			} catch (NumberFormatException e) {
+				result = 0;
+			} // try~catch
+		} // if~else
+		
+		return result;
+	} // end of public int requireLoginAdmin_updateAdminMemberStatusOutByIdx(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 회원 복원 *** //
+	@RequestMapping(value="/updateAdminMemberStatusInByIdx.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLoginAdmin_updateAdminMemberStatusInByIdx(HttpServletRequest req, HttpServletResponse res) {
+		int result = 0;
+		
+		String str_idx = req.getParameter("idx");
+		
+		int idx = 0;
+		if(str_idx == null || "".equals(str_idx)) {
+			result = 0;
+		} else {
+			try {
+				idx = Integer.parseInt(str_idx);
+				
+				result = service.updateMemberStatusInByIdx(idx);
+			} catch (NumberFormatException e) {
+				result = 0;
+			} // try~catch
+		} // if~else
+		
+		return result;
+	} // end of public int requireLoginAdmin_updateAdminMemberStatusInByIdx(HttpServletRequest req, HttpServletResponse res)
 }
