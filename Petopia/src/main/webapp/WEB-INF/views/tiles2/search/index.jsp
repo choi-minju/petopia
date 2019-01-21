@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
+<%
+	String ctxPath = request.getContextPath();
+%>
+    
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style type="text/css">
@@ -53,6 +57,26 @@
 	}
 	
 	
+	.card-img-top {
+		max-width: 100%;
+	}
+	
+	.card {
+		margin: 5%;
+	}
+	
+	.resultHeader h3 {
+		font-weight: bold; margin-bottom: 10%;
+	}
+	
+	.resultHeader select {
+		margin-top: 15%; margin-bottom: 10%; 
+		font-size: 8pt;
+	}
+	
+	#cnt {
+		font-weight: bold;
+	}
 
 </style>
 
@@ -63,6 +87,8 @@
 	$(document).ready(function(){
 
 		$("#myUL").hide();
+		$("#myInput").val("${searchWord}");		
+		$("#cnt").text("${cnt}");
 		
 	});
 
@@ -139,35 +165,106 @@
 
 
 <div class="container">
-	<div id="map" style="width:500px;height:400px;position:relative;overflow:hidden;"></div>
-	    
-	<%-- 다음 지도 api --%>
-	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=253c8ea93d1bdcc279a9c6f660649767&libraries=services,clusterer,drawing"></script>
-	<script>
-
-		var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-		    mapOption = { 
-		        center: new daum.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-		        level: 3 // 지도의 확대 레벨
-		    };
-	
-		var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-	
-		// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
-		var mapTypeControl = new daum.maps.MapTypeControl();
-	
-		// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
-		// daum.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
-		map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
-	
-		// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
-		var zoomControl = new daum.maps.ZoomControl();
-		map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+	<div class="row">
+		<div class="col-sm-7">
+			<div id="map" style="width:100%; height:100%; position:relative;overflow:hidden;"></div>
+			
+			<%-- 다음 지도 api --%>
+			<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=253c8ea93d1bdcc279a9c6f660649767&libraries=services,clusterer,drawing"></script>
+			<script>
 		
-	</script>
+				var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+				    mapOption = { 
+				        center: new daum.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+				        level: 3 // 지도의 확대 레벨
+				    };
+			
+				var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+			
+				// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+				var mapTypeControl = new daum.maps.MapTypeControl();
+			
+				// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+				// daum.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+				map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+			
+				// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+				var zoomControl = new daum.maps.ZoomControl();
+				map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+				
+		
+				// 주소-좌표 변환 객체를 생성합니다
+				var geocoder = new daum.maps.services.Geocoder();
+		
+				// 주소로 좌표를 검색합니다
+				geocoder.addressSearch('서울특별시 성동구 금호1가동', function(result, status) {
+		
+				    // 정상적으로 검색이 완료됐으면 
+				     if (status === daum.maps.services.Status.OK) {
+		
+				        var coords = new daum.maps.LatLng(result[0].y, result[0].x);
+		
+				        // 결과값으로 받은 위치를 마커로 표시합니다
+				        var marker = new daum.maps.Marker({
+				            map: map,
+				            position: coords
+				        });
+		
+				        // 인포윈도우로 장소에 대한 설명을 표시합니다
+				        var infowindow = new daum.maps.InfoWindow({
+				            content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>'
+				        });
+				        infowindow.open(map, marker);
+		
+				        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+				        map.setCenter(coords);
+				    } 
+				});
+				
+				
+			</script>
+		</div>
+	    <div class="col-sm-5" align="center">
+	    	<div class="row resultHeader">
+	    		<div class="col-sm-8">
+					<h3 align="right">검색결과 <span id="cnt"></span>건</h3>
+				</div>
+				<div class="col-sm-4">
+					<select class="form-control input-sm" >
+					        <option>평점순</option>
+					        <option>거리순</option>
+					</select>
+				</div>
+				<div style="width: 100%; height: 87%; overflow-y: auto;" >
+				    <div class="card text-left border-secondary">
+					  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/bbb.jpg" alt="Card image cap">
+					  	<div class="card-body">
+						    <h5 class="card-title">서서울동물병원</h5>
+						    <p class="card-text">평점 <span class="glyphicon glyphicon-star"></span>
+					    							<span class="glyphicon glyphicon-star"></span>
+					    							<span class="glyphicon glyphicon-star"></span>
+					    							<span class="glyphicon glyphicon-star"></span>
+					    							<span class="glyphicon glyphicon-star"></span></p>
+						    <a href="#" class="btn btn-primary">예약하기</a>
+						</div>
+				  	</div>
+				  	<div class="card text-left">
+					  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/bbb.jpg" alt="Card image cap">
+					  	<div class="card-body">
+						    <h5 class="card-title">Card title</h5>
+						    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+						    <a href="#" class="btn btn-primary">Go somewhere</a>
+						</div>
+				  	</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 
 <div class="container" style="margin: 10%;">
 
 </div>
+
+<div></div>
