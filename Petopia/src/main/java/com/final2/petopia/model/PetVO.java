@@ -92,11 +92,19 @@ public class PetVO {
 	public void setPet_weight(int pet_weight) {
 		this.pet_weight = pet_weight;
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> refs/remotes/origin/hyewon
 	public String getPet_gender() {
 		return pet_gender;
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> refs/remotes/origin/hyewon
 	public void setPet_gender(String pet_gender) {
 		this.pet_gender = pet_gender;
 	}
@@ -132,6 +140,7 @@ public class PetVO {
 	public void setPet_profileimg(String pet_profileimg) {
 		this.pet_profileimg = pet_profileimg;
 	}
+<<<<<<< HEAD
 	public String getShowPet_type(String pet_type){
 		if(pet_type.equals("cat")) {
 		pet_type="고양이";
@@ -148,3 +157,22 @@ public class PetVO {
 		return pet_type;
 	}
 } // end of class PetVO
+=======
+	
+	public String getShowPet_type(String pet_type){
+		 if(pet_type.equals("cat")) {
+		         pet_type="고양이";
+		      }
+		      else if(pet_type.equals("dog")) {
+		         pet_type="강아지";
+		      }
+		      else if(pet_type.equals("smallani")) {
+		         pet_type="소동물";
+		      }
+		      else if(pet_type.equals("etc")) {
+		         pet_type="기타분류";
+		      }
+		     return pet_type;
+		}
+} // end of class PetVO
+>>>>>>> refs/remotes/origin/hyewon

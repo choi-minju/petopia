@@ -1,6 +1,10 @@
 *.properties
 
 .settings/
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/hyewon
 
 # Compiled class file
 *.class

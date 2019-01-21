@@ -2,4 +2,45 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
 <mapper namespace="chart">
+
+<!-- 회원번호로 펫 uid 가져오기  -->
+<select id="selectpetuid" parameterType="String" resultType="int" >
+ select pet_UID
+from pet_info A join Member B
+on A.fk_idx= B.idx
+where A.fk_idx=#{idx}
+</select> 
+
+<!--  pet uid로 펫정보 가져오기  -->
+ <select id="selectpetinfo"  parameterType="String" resultType="com.final2.petopia.model.PetVO"> 
+select  pet_profileimg,pet_weight,pet_birthday,pet_name,
+    decode(pet_gender, '1', '수컷', '2', '암컷') as pet_gender
+from pet_info
+where pet_uid=#{pet_uid}
+</select> 
+
+
+<!-- 회원번호로 병원이름 가져오기 -->
+
+<select id="selectnickname" parameterType="String" resultType="String">
+ select  A.nickname as nickname
+    from member A join reservation B
+    on  B.fk_idx_biz =A.idx
+where A.membertype=2 and A.idx=#{idx}
+</select>
+<select id="selectreservedate" parameterType="String" resultType="com.final2.petopia.model.ReservationVO">
+select A.bookingdate, A.reservation_date
+from reservation A join member B
+on A.fk_idx=B.idx
+where B.idx=#{idx}
+</select>
+<!--  처방전 인서트 하기  -->
+<!-- <insert id="insertmychart" parameterType="HashMap">
+  insert into  chart(chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
+                   ,reservation_DATE,doc_name,cautions,chart_contents,
+                   payment_pay,payment_point,addpay,totalpay) 
+  values(chart_UID.nextval,#{PET_UID},#{IDX},#{CHART_TYPE},#{BIZ_NAME},#{DOCNAME},#{CAUTION},#{MEMO},default,default,default,default,)
+
+</insert> -->
+
 </mapper>

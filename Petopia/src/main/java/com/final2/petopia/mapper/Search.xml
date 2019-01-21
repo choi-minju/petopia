@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
 <mapper namespace="search">
+<<<<<<< HEAD
 	
 	<select id="addrCount" parameterType="String" resultType="int">
 		select count(*) as addrCnt
@@ -29,4 +30,6 @@
 		where name like '%' || #{searchWord} || '%'
 	</select>
 
+=======
+>>>>>>> refs/remotes/origin/hyewon
 </mapper>
