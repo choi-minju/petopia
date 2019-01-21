@@ -132,7 +132,11 @@
   .clear { clear: both }
 
   #calendar {
+<<<<<<< HEAD
+    max-width: 80%;
+=======
     max-width: 900px;
+>>>>>>> refs/remotes/origin/hyunjae
     margin: 40px auto;
     padding: 0 10px;
   }

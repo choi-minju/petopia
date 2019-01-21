@@ -51,5 +51,4 @@ public interface InterMemberDAO {
 
 	// *** 회원 복원 *** //
 	int updateMemberStatusInByIdx(int idx);
-
 }

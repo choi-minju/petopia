@@ -36,7 +36,7 @@ public class MemberController {
 	
 	@Autowired
 	private FileManager fileManager;
-	
+
 	// *** 회원가입 *** //
 	@RequestMapping(value="/join.pet", method={RequestMethod.GET})
 	public String join() {

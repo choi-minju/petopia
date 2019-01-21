@@ -4,10 +4,17 @@
 
 <style type="text/css">
 
-	.subjectstyle { color: #fc766b; 
+	.subjectstyle { color: #fc766b;
     	            cursor: pointer; }
 	
-	a {text-decoration: none;}
+	a{text-decoration: none;}
+	
+	.content {
+	   padding-top: 5px;
+	   padding-bottom: 5px;
+	   background-color: #eee;
+	   border: 0px solid #999;
+	}
 	
 </style>
 
@@ -76,14 +83,14 @@
 			<div class="col-xs-12 col-md-8" style="background-color: #ffffff;">
 				 
 				<form name="searchFrm" >
-				<select name="colname" id="colname" style="height:4%; width:23%; margin-left:20%;">
+				<select name="colname" id="colname" class="content" style="height:4%; width:23%; margin-left:20%;">
 					<option value="cs_title">제목</option>
-					<option value="name">작성자</option>
+					<option value="nickname">작성자</option>
 					<option value="cs_contents">글내용</option>
 				</select>
 				
 				<input type="text" name="search" id="search" size="30" style="border: 1px solid #999; border-radius: 25px;" />
-				<button type="button" style="background-color: #fc766b; border: 1px solid #fc766b; border-radius:50px; width:10%; height:4%; color:#ffffff; padding-right:10px; font-size:12px;" onClick="goSearch();">
+				<button type="button" style="background-color:#fc766b; border: 1px solid #fc766b; border-radius:50px; width:10%; height:4%; color:#ffffff; padding-right:10px; font-size:12px;" onClick="goSearch();">
 					<img src="<%=request.getContextPath() %>/resources/img/consultIcon/search-01-01.png" style="width:38%; padding-right:1px;">검색
 				</button> 
 				</form>
@@ -92,44 +99,44 @@
 		</div>
 		
 		<div class="row">
-			<div class="col-xs-1 col-md-1">글번호</div>
-			<div class="col-xs-5 col-md-5">글제목</div>	
-			<div class="col-xs-2 col-md-2">작성자</div>
-			<div class="col-xs-3 col-md-3">작성날짜</div>
-			<div class="col-xs-1 col-md-1">조회수</div>
+			<div class="col-xs-1 col-md-1 content">글번호</div>
+			<div class="col-xs-5 col-md-5 content">글제목</div>	
+			<div class="col-xs-2 col-md-2 content">작성자</div>
+			<div class="col-xs-3 col-md-3 content">작성날짜</div>
+			<div class="col-xs-1 col-md-1 content">조회수</div>
 		</div>
 		
 		<!-- 로그인한 사람만 보이도록 -->
 		<c:forEach var="consultvo" items="${consultList}">
 			<div class="row" style="border-bottom: 1px solid #bebebe;">
-				<div class="col-xs-1 col-md-1"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
-				<div class="col-xs-5 col-md-5 subject" align="left"  style="background-color: #ffffff;"  onClick="goDetail('${consultvo.consult_UID}', '${goBackURL}');">${consultvo.cs_title}
+				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
+				<div class="col-xs-5 col-md-5 subject content" align="left"  style="background-color: #ffffff;"  onClick="goDetail('${consultvo.consult_UID}', '${goBackURL}');">${consultvo.cs_title}
 				<span style="font-size:90%; color:#b2b3b2;">&nbsp;[댓글${consultvo.commentCount}]</span></div>	
-				<div class="col-xs-2 col-md-2"  style="background-color: #ffffff;">${consultvo.nickname}</div>
-				<div class="col-xs-3 col-md-3"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
-				<div class="col-xs-1 col-md-1"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
+				<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff;">${consultvo.nickname}</div>
+				<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
+				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
 			</div>
 		
 		<%-- 
 		<c:if test="${consultvo.cs_secret==1}"> <!-- ( (공개글 && (비공개글 && (아이디가 로그인한 유저랑 같을 경우||댓글을 단 수의사일 경우)) ) 
 			<div class="row" style="border-bottom: 1px solid #bebebe;">
-				<div class="col-xs-1 col-md-1"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
-				<div class="col-xs-5 col-md-5 subject" align="left"  style="background-color: #ffffff;"  onClick="goDetail('${consultvo.consult_UID}', '${goBackURL}');">${consultvo.cs_title}</div>	
-				<div class="col-xs-2 col-md-2"  style="background-color: #ffffff;">${consultvo.nickname}</div>
-				<div class="col-xs-3 col-md-3"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
-				<div class="col-xs-1 col-md-1"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
+				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
+				<div class="col-xs-5 col-md-5 subject content" align="left"  style="background-color: #ffffff;"  onClick="goDetail('${consultvo.consult_UID}', '${goBackURL}');">${consultvo.cs_title}</div>	
+				<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff;">${consultvo.nickname}</div>
+				<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
+				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
 			</div>
 		</c:if>
 		<c:if test="${consultvo.cs_secret==0}"> <!--  (비공개글 && 아이디가 로그인한 유저랑 다를 경우)
 			<div class="row" style="border-bottom: 1px solid #bebebe;">
-				<div class="col-xs-1 col-md-1"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
-				<div class="col-xs-5 col-md-5 subject" align="left" style="background-color: #ffffff; font-size:80%; color:#b2b3b2; padding-top:0.7%;">비공개글입니다. 작성자만 읽을 수 있습니다.</div>	
-				<div class="col-xs-2 col-md-2"  style="background-color: #ffffff;">${consultvo.nickname}</div>
-				<div class="col-xs-3 col-md-3"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
-				<div class="col-xs-1 col-md-1"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
+				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
+				<div class="col-xs-5 col-md-5 subject content" align="left" style="background-color: #ffffff; font-size:80%; color:#b2b3b2; padding-top:0.7%;">비공개글입니다. 작성자만 읽을 수 있습니다.</div>	
+				<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff;">${consultvo.nickname}</div>
+				<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
+				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
 			</div>
 		</c:if>
-		 --%>
+		--%>
 		</c:forEach>
 		
 		

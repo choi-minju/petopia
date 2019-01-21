@@ -138,12 +138,12 @@
 						</div>
 						<div class="column" id="consult">
 							<a href="#">1:1 문의상담</a>
-							<a href="#">화상진료</a>
+							<a href="<%= ctxPath %>/chat.pet">화상진료</a>
 						</div>
 						<div class="column" id="petCare">
 							<a href="#">반려동물관리</a>
 							<a href="#">반려동물케어</a>
-							<a href="#">진료기록관리</a>
+							<a href="<%= ctxPath %>/InsertMyChart.pet">진료기록관리</a>
 							<a href="#">나의 병원리뷰</a>
 						</div>
 						<div class="column" id="board">
@@ -179,7 +179,7 @@
 						</div>
 						<div class="column" id="adminConsult">
 							<a href="#">1:1 문의상담</a>
-							<a href="#">화상진료</a>
+							 <a href="">화상진료</a>
 						</div>
 						<div class="column" id="adminBoard">
 							<a href="#">공지사항</a>

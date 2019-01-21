@@ -218,5 +218,4 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return result;
 	} // end of public int updateMemberStatusInByIdx(int idx)
-
 }

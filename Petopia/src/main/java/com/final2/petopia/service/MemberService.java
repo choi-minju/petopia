@@ -345,5 +345,4 @@ public class MemberService implements InterMemberService {
 		
 		return result;
 	} // end of public int updateMemberStatusInByIdx(int idx)
-
 }

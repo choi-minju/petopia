@@ -9,6 +9,373 @@
 
 <style type="text/css">
 	
+<<<<<<< HEAD
+<<<<<<< HEAD
+	.jumbotron {
+    	min-height: 450px;
+	}
+	
+	.bg-grey {
+	    background-color: #f6f6f6;
+	}
+
+	.container-fluid {
+	  padding: 60px 50px;
+	}
+	
+	.logo {
+	  font-size: 200px;
+	}
+	
+	@media screen and (max-width: 768px) {
+	  .col-sm-4 {
+	    text-align: center;
+	    margin: 25px 0;
+	  }
+	}
+	
+	/* Add an pink color to all icons and set the font-size */
+	.logo-small {
+	  color: rgb(252,118,106);
+	  font-size: 50px;
+	}
+	
+	.logo {
+	  color: rgb(252,118,106);
+	  font-size: 200px;
+	}
+	
+	.carousel-control.right, .carousel-control.left {
+	  background-image: none;
+	  color: rgb(252,118,106);
+	}
+	
+	.carousel-indicators li {
+	  border-color: rgb(252,118,106);
+	}
+	
+	.carousel-indicators li.active {
+	  background-color: rgb(252,118,106);
+	}
+	
+	.item h4 {
+	  font-size: 19px;
+	  line-height: 1.375em;
+	  font-weight: 400;
+	  font-style: italic;
+	  margin: 70px 0;
+	}
+	
+	.item span {
+	  font-style: normal;
+	}
+	
+	.thumbnail {
+	  padding: 0 0 15px 0;
+	  border: 1px dotted #d9d9d9;
+	  border-radius: 0;
+	}
+	
+	.thumbnail img {
+	  width: 100%;
+	  margin-bottom: 10px;
+	}
+
+	.slideanim {visibility:hidden;}
+	.slide {
+	  /* The name of the animation */
+	  animation-name: slide;
+	  -webkit-animation-name: slide; 
+	  /* The duration of the animation */
+	  animation-duration: 1s; 
+	  -webkit-animation-duration: 1s;
+	  /* Make the element visible */
+	  visibility: visible; 
+	}
+	
+	/* Go from 0% to 100% opacity (see-through) and specify the percentage from when to slide in the element along the Y-axis */
+	@keyframes slide {
+	  0% {
+	    opacity: 0;
+	    transform: translateY(70%);
+	  } 
+	  100% {
+	    opacity: 1;
+	    transform: translateY(0%);
+	  } 
+	}
+	@-webkit-keyframes slide {
+	  0% {
+	    opacity: 0;
+	    -webkit-transform: translateY(70%);
+	  } 
+	  100% {
+	    opacity: 1;
+	    -webkit-transform: translateY(0%);
+	  }
+	}
+
+	#about {
+		margin-left: 10%;
+	}
+	
+	.glyphicon-globe {
+		margin-left: 30%;
+	}
+	
+	.search  {
+		margin-top: 3%;
+  	}
+  	
+  	.list-group {
+  		margin-top: 1%;
+  	}
+  	
+  	#myList {
+  		color: black;
+  	}
+  	
+
+</style>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		$(".search_submit").click(function(){
+			
+			goSearchbyword();
+			
+		});
+		
+		
+		$(".search").keydown(function(){
+			
+			if(event.KeyCode == 13) {
+				goSearchbyword();
+			}
+			
+		});
+
+		/* 
+	 	$("#inputlg").on("keyup", function() {
+		    var value = $(this).val().toLowerCase();
+		    $("#myList li").filter(function() {
+		      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+		    });
+		}); 
+		*/
+		
+
+	    // ========= **** 글자동완성  시작 **** ========= //
+		// 참고페이지 : http://jqueryui.com/autocomplete/
+	    /* $("#displayList").hide(); */
+	    
+	    $("#searchword").keyup(function(){
+			// 사용자가 텍스트박스 안에서 키보드를 눌렀다가 up 했을때 이벤트 발생함.
+			
+			var form_data = {searchWord:$("#inputlg").val() };
+			
+			var searchWord = $("#inputlg").val();
+			
+			$.ajax({
+				url: "getNumberbysearchWord.pet",
+				type: "GET",
+				data: form_data,
+				dataType: "JSON",
+				success: function(data){
+				
+					// console.log(data);
+					
+					var addrCnt = data.ADDRCOUNT;
+					var hsptCnt = data.HSPTALCOUNT;
+					var pharCnt = data.PHARMCOUNT;
+					
+					if(data.ADDRCOUNT == undefined) {
+		                  
+						// $("#myList").find("#resultWhere").empty().html("<span class='glyphicon glyphicon-map-marker'></span>&nbsp;&nbsp;지역별 : "+searchWord+"&nbsp; 검색 결과 없음");	
+						// $("#myList").find("#resultPharm").empty().html("<span class='glyphicon glyphicon-plus-sign'></span>&nbsp;&nbsp;약국 : "+searchWord+"&nbsp; 검색 결과 없음");	
+						// $("#myList").find("#resultHsptl").empty().html("<span class='glyphicon glyphicon-map-marker'></span>&nbsp;&nbsp;병원 : "+searchWord+"&nbsp; 검색 결과 없음");	
+
+						$("#myList").hide();
+
+					}
+					else {
+
+						// console.log(data.ADDRCOUNT);
+						// console.log(data.HSPTALCOUNT);
+						// console.log(data.PHARMCOUNT);
+						                  
+						$("#myList").find("#resultWhere").empty().html("<span class='glyphicon glyphicon-map-marker'></span>&nbsp;&nbsp;지역별&nbsp;&nbsp;:&nbsp;&nbsp;<span style='font-weight: bold;'>"+searchWord+"</span>&nbsp;&nbsp;"+addrCnt+"건");	
+						$("#myList").find("#resultPharm").empty().html("<span class='glyphicon glyphicon-plus-sign'></span>&nbsp;&nbsp;약국&nbsp;&nbsp;:&nbsp;&nbsp;<span style='font-weight: bold;'>"+searchWord+"</span>&nbsp;&nbsp;"+pharCnt+"건");	
+						$("#myList").find("#resultHsptl").empty().html("<span class='glyphicon glyphicon-home'></span>&nbsp;&nbsp;병원&nbsp;&nbsp;:&nbsp;&nbsp;<span style='font-weight: bold;'>"+searchWord+"</span>&nbsp;&nbsp;"+hsptCnt+"건");	
+
+						$("#resultWhere").show();	
+						$("#resultPharm").show();
+						$("#resultHsptl").show();
+						$("#myList").show();
+						
+						if((addrCnt == 0 && hsptCnt == 1 && pharCnt == 0) || 
+						   (addrCnt == 0 && hsptCnt == 0 && pharCnt == 1) ) {
+							
+							if(hsptCnt == 1) {
+								goDirect(searchWord,1); // 병원인경우
+							}
+							
+							if(pharCnt == 1) {
+								goDirect(searchWord,2); // 약국인경우
+							}
+							
+						}
+						
+					}
+					
+
+				},// end of success: function()------
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+				
+			});// end of $.ajax()-------------------
+			
+		});// end of keyup(function(){})-------------
+		
+		/* 
+		$("#displayList").click(function(event){
+			var word = "";
+			var $target = $(event.target);
+			
+			if($target.is(".first")) {
+				word = $target.text() + $target.next().text() + $target.next().next().text();
+			}
+			else if($target.is(".second")) {
+				word = $target.prev().text() + $target.text() + $target.next().text();
+			}
+			else if($target.is(".third")) {
+				word = $target.prev().prev().text() + $target.prev().text() + $target.text();
+			}
+			
+			$("#searchword").val(word); // 텍스트박스에 검색된 결과의 문자열을 입력해준다.
+			
+			// $(this).hide(); 
+			
+			goSearch("", word, "1");
+			makePageBar("", word, "1");
+		}); */
+		// ========= **** 글자동완성  끝 **** ========= //
+
+		
+	});
+
+
+	/* 아이콘 애니메이션 효과 */
+	$(window).scroll(function() {
+	  $(".slideanim").each(function(){
+	    var pos = $(this).offset().top;
+	
+	    var winTop = $(window).scrollTop();
+	    if (pos < winTop + 600) {
+	      $(this).addClass("slide");
+	    }
+	  });
+	});
+
+	// 검색결과가 1개인 경우 병원/약국 풀네임을 받아 보여주고, 바로 병원/약국 정보로 갈 수 있도록 링크 생성하기
+	function goDirect(word, num) {
+
+		var form_data = {searchWord:word }; // 키값:밸류값
+
+		$.ajax({
+			url: "wordCompleteAndSetDirect.pet",
+			type: "GET",
+			data: form_data,  // 위의 URL 페이지로 사용자가 보내는 ajax 요청 데이터.
+			dataType: "JSON", // ajax 요청에 의해 URL 페이지 서버로 부터 리턴받는 데이터 타입. xml, json, html, script, text 이 있음.
+			success: function(data){
+			
+				// 병원인경우 
+				if(num == 1) {
+					$("#resultWhere").hide();	
+					$("#resultPharm").hide();
+					$("#resultHsptl").empty().html("<span class='glyphicon glyphicon-home'></span>&nbsp;&nbsp;<span style='font-weight: bold; cursor:pointer;' onclick='goInfo("+data.idx_biz+");'>"+data.name+"</span>");	
+					
+					// $("#myList").empty().html("<li class='list-group-item' id='resultHsptl'><span class='glyphicon glyphicon-home'></span>&nbsp;&nbsp;<span style='font-weight: bold;'>"+data.name+"</span></li>");	
+				}
+				
+				// 약국인경우
+				if(num == 2) {
+					$("#resultWhere").hide();	
+					$("#resultPharm").empty().html("<span class='glyphicon glyphicon-plus-sign'></span>&nbsp;&nbsp;<span style='font-weight: bold; cursor:pointer;' onclick='goInfo("+data.idx_biz+");'>"+data.name+"</span>");
+					$("#resultHsptl").hide();	
+					
+					// $("#myList").empty().html("<li class='list-group-item' id='resultPharm'><span class='glyphicon glyphicon-plus-sign'></span>&nbsp;&nbsp;<span style='font-weight: bold;'>"+data.name+"</span></li>");	
+				}
+
+			},// end of success: function()------
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	
+		});
+		
+	}
+	
+	function goInfo(idx) {
+
+		<%-- location.href = "<%= cxtPath%>/search.pet?searchWord="+idx; --%>
+		
+	}
+	
+	
+	
+	function goSearchbyword() {
+
+		event.preventDefault();
+		<%-- 
+		var searchWord = $("#inputlg").val();
+		alert(searchWord);
+		location.href = "<%= cxtPath%>/search.pet?searchWord="+searchWord;
+		 --%>
+		
+		var Frm = document.searchFrm;
+		Frm.action = "<%= cxtPath%>/search.pet";
+		Frm.method = "GET";
+		Frm.submit();
+		
+	};
+
+
+</script>
+
+<div class="jumbotron text-center">
+	<h1>PETOPIA</h1> 
+	<p>동물병원/약국 검색·예약·결제, 나의 반려동물 관리까지 한번에</p>
+	<div class="row">
+	<div class="col-sm-4"></div>
+	<div class="col-sm-4">
+		<form class="justify-content-center" name="searchFrm">
+		<div class="input-group search justify-content-center">
+		    <input name="searchWord" id="inputlg" type="text" class="form-control input-lg" placeholder="이름/지역 검색">
+		    <div class="input-group-btn">
+		      <button id="inputlg" class="btn btn-default input-lg search_submit" type="submit">
+		        <i class="glyphicon glyphicon-search"></i>
+		      </button>
+		    </div>
+		</div>
+		</form>
+	</div>
+	<div class="col-sm-4"></div>
+	</div>
+	<div class="row">
+	<div class="col-sm-4"></div>
+	<div class="col-sm-4">
+	  <ul class="list-group" id="myList">
+	    <li class="list-group-item" id="resultWhere"><span class="glyphicon glyphicon-map-marker"></span>&nbsp;&nbsp;서울</li>
+	    <li class="list-group-item" id="resultPharm"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;서울약국</li>
+	    <li class="list-group-item" id="resultHsptl"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;서울병원</li>
+	  </ul>
+	</div>
+	<div class="col-sm-4"></div>
+=======
 	.bg-grey {
 	    background-color: #f6f6f6;
 	}
@@ -287,6 +654,287 @@
 	  	</div>
 	</div>
 	<div class="col-sm-5"></div>
+>>>>>>> refs/remotes/origin/hyewon
+=======
+	.bg-grey {
+	    background-color: #f6f6f6;
+	}
+
+	.container-fluid {
+	  padding: 60px 50px;
+	}
+	
+	.logo {
+	  font-size: 200px;
+	}
+	
+	@media screen and (max-width: 768px) {
+	  .col-sm-4 {
+	    text-align: center;
+	    margin: 25px 0;
+	  }
+	}
+	
+	/* Add an pink color to all icons and set the font-size */
+	.logo-small {
+	  color: rgb(252,118,106);
+	  font-size: 50px;
+	}
+	
+	.logo {
+	  color: rgb(252,118,106);
+	  font-size: 200px;
+	}
+	
+	.carousel-control.right, .carousel-control.left {
+	  background-image: none;
+	  color: rgb(252,118,106);
+	}
+	
+	.carousel-indicators li {
+	  border-color: rgb(252,118,106);
+	}
+	
+	.carousel-indicators li.active {
+	  background-color: rgb(252,118,106);
+	}
+	
+	.item h4 {
+	  font-size: 19px;
+	  line-height: 1.375em;
+	  font-weight: 400;
+	  font-style: italic;
+	  margin: 70px 0;
+	}
+	
+	.item span {
+	  font-style: normal;
+	}
+	
+	.thumbnail {
+	  padding: 0 0 15px 0;
+	  border: 1px dotted #d9d9d9;
+	  border-radius: 0;
+	}
+	
+	.thumbnail img {
+	  width: 100%;
+	  margin-bottom: 10px;
+	}
+
+	.slideanim {visibility:hidden;}
+	.slide {
+	  /* The name of the animation */
+	  animation-name: slide;
+	  -webkit-animation-name: slide; 
+	  /* The duration of the animation */
+	  animation-duration: 1s; 
+	  -webkit-animation-duration: 1s;
+	  /* Make the element visible */
+	  visibility: visible; 
+	}
+	
+	/* Go from 0% to 100% opacity (see-through) and specify the percentage from when to slide in the element along the Y-axis */
+	@keyframes slide {
+	  0% {
+	    opacity: 0;
+	    transform: translateY(70%);
+	  } 
+	  100% {
+	    opacity: 1;
+	    transform: translateY(0%);
+	  } 
+	}
+	@-webkit-keyframes slide {
+	  0% {
+	    opacity: 0;
+	    -webkit-transform: translateY(70%);
+	  } 
+	  100% {
+	    opacity: 1;
+	    -webkit-transform: translateY(0%);
+	  }
+	}
+
+	#about {
+		margin-left: 10%;
+	}
+	
+	.glyphicon-globe {
+		margin-left: 30%;
+	}
+	
+	.search  {
+		margin-top: 3%;
+  	}
+  	
+  	.list-group {
+  		margin-top: 1%;
+  	}
+  	
+
+</style>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		$(".search_submit").click(function(){
+			
+			goSearchbyword();
+			
+		});
+		
+		
+		$(".search").keydown(function(){
+			
+			if(event.KeyCode == 13) {
+				goSearchbyword();
+			}
+			
+		});
+		
+
+	    // ========= **** 글자동완성  시작 **** ========= //
+		// 참고페이지 : http://jqueryui.com/autocomplete/
+	    /* $("#displayList").hide(); */
+	    
+	    $("#searchword").keyup(function(){
+			// 사용자가 텍스트박스 안에서 키보드를 눌렀다가 up 했을때 이벤트 발생함.
+			
+			var form_data = {searchword:$("#searchword").val() }; // 키값:밸류값
+			
+			$.ajax({
+			//	url:"http://localhost:9090/MyMVC/wordSearchJSON.do" 또는
+				url: "wordSearchJSON.do",
+				type: "GET",
+				data: form_data,  // 위의 URL 페이지로 사용자가 보내는 ajax 요청 데이터.
+				dataType: "JSON", // ajax 요청에 의해 URL 페이지 서버로 부터 리턴받는 데이터 타입. xml, json, html, script, text 이 있음.
+				success: function(data){
+										
+					if(data.length > 0) { // 검색된 데이터가 있는 경우임. 만약에 조회된 데이터가 없을 경우 if(data == null) 이 아니고 if(data.length == 0) 이라고 써야 한다. 
+						                  // 왜냐하면  넘겨준 값이 new JSONArray() 이므로 null 이 아니기 때문이다..
+						
+						var resultHTML = "";
+					
+						$.each(data, function(entryIndex, entry){
+							var wordstr = entry.searchwordresult.trim();
+							var index = wordstr.toLowerCase().indexOf( $("#searchword").val().toLowerCase() );
+						//	console.log("index : " + index);
+							
+							var len = $("#searchword").val().length;
+							var result = "";
+							
+							result = "<span class='first' style='color:blue;'>" +wordstr.substr(0, index)+ "</span>" + "<span class='second' style='color:red; font-weight:bold;'>" +wordstr.substr(index, len)+ "</span>" + "<span class='third' style='color:blue;'>" +wordstr.substr(index+len)+ "</span>";  
+							
+							resultHTML += "<span style='cursor:pointer;'>"+ result +"</span><br/>"; 
+						});
+						
+						$("#displayList").html(resultHTML);
+						$("#displayList").show();
+					}
+					else { // 검색된 데이터가 없는 경우
+						$("#displayList").hide();
+					}
+
+				},// end of success: function()------
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});// end of $.ajax()-------------------
+			
+		});// end of keyup(function(){})-------------
+		
+		
+		$("#displayList").click(function(event){
+			var word = "";
+			var $target = $(event.target);
+			
+			if($target.is(".first")) {
+				word = $target.text() + $target.next().text() + $target.next().next().text();
+			}
+			else if($target.is(".second")) {
+				word = $target.prev().text() + $target.text() + $target.next().text();
+			}
+			else if($target.is(".third")) {
+				word = $target.prev().prev().text() + $target.prev().text() + $target.text();
+			}
+			
+			$("#searchword").val(word); // 텍스트박스에 검색된 결과의 문자열을 입력해준다.
+			
+			/* $(this).hide(); */
+			
+			goSearch("", word, "1");
+			makePageBar("", word, "1");
+		});
+		// ========= **** 글자동완성  끝 **** ========= //
+
+		
+	});
+
+
+	/* 아이콘 애니메이션 효과 */
+	$(window).scroll(function() {
+	  $(".slideanim").each(function(){
+	    var pos = $(this).offset().top;
+	
+	    var winTop = $(window).scrollTop();
+	    if (pos < winTop + 600) {
+	      $(this).addClass("slide");
+	    }
+	  });
+	});
+
+
+	function goSearchbyword() {
+
+		event.preventDefault();
+		<%-- 
+		var searchWord = $("#inputlg").val();
+		alert(searchWord);
+		location.href = "<%= cxtPath%>/search.pet?searchWord="+searchWord;
+		 --%>
+		
+		var Frm = document.searchFrm;
+		Frm.action = "<%= cxtPath%>/search.pet";
+		Frm.method = "GET";
+		Frm.submit();
+		
+	};
+
+
+</script>
+
+<div class="jumbotron text-center">
+	<h1>PETOPIA</h1> 
+	<p>동물병원/약국 검색·예약·결제, 나의 반려동물 관리까지 한번에</p>
+	<div class="row">
+	<div class="col-sm-4"></div>
+	<div class="col-sm-4">
+		<form class="form-inline justify-content-center" name="searchFrm">
+		<div class="input-group search justify-content-center">
+		    <input name="searchWord" id="inputlg" type="text" class="form-control input-lg" placeholder="이름/지역 검색">
+		    <div class="input-group-btn">
+		      <button id="inputlg" class="btn btn-default input-lg search_submit" type="submit">
+		        <i class="glyphicon glyphicon-search"></i>
+		      </button>
+		    </div>
+		</div>
+		</form>
+	</div>
+	<div class="col-sm-4"></div>
+	</div>
+	<div class="row">
+	<div class="col-sm-5"></div>
+	<div class="col-sm-2">
+		<div class="list-group justify-content-center">
+		    <a href="#" class="list-group-item"><i></i>서울</a>
+		    <a href="#" class="list-group-item">서울병원서울병원서울병원</a>
+		    <a href="#" class="list-group-item">서울약국서울약국서울약국</a>
+	  	</div>
+	</div>
+	<div class="col-sm-5"></div>
+>>>>>>> refs/remotes/origin/hyunjae
 	</div>
 </div>
 

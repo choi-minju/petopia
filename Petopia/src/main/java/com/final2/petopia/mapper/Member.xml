@@ -62,7 +62,6 @@
 		update login_log set lastlogindate = sysdate
 		where member_status = 1 and fk_userid = #{USERID} and fk_pwd = #{PWD}
 	</update>
-	
 	<!-- *** 회원번호로 회원정보 조회 *** -->
 	<select id="selectMemberByIdx" parameterType="int" resultType="com.final2.petopia.model.MemberVO">
 		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.birthday, a.gender, a.phone

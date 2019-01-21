@@ -30,11 +30,19 @@
         <c:if test="${sessionScope.loginuser != null }">
         <li><a href="<%= ctxPath %>/logout.pet">로그아웃</a></li>
         <li class="dropdown">
+<<<<<<< HEAD
            <a class="dropdown-toggle" data-toggle="dropdown">마이페이지
            <span class="caret"></span></a>
            <ul class="dropdown-menu">
              <li><a href="#">반려동물수첩</a></li>
              <li><a href="<%= ctxPath %>/infoMember.pet">나의정보보기</a></li>
+=======
+           <a class="dropdown-toggle" data-toggle="dropdown" href="#">마이페이지
+           <span class="caret"></span></a>
+           <ul class="dropdown-menu">
+             <li><a href="#">반려동물수첩</a></li>
+             <li><a href="#">나의정보보기</a></li>
+>>>>>>> refs/remotes/origin/hyunjae
              <li><a href="#">나의병원리뷰</a></li>
              <li><a href="#">나의병원관리</a></li>
            </ul>
