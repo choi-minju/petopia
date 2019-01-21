@@ -124,7 +124,7 @@
         <div class="column" id="petCare">
           <a href="#">반려동물관리</a>
           <a href="#">반려동물케어</a>
-          <a href="#">진료기록관리</a>
+          <a href="<%= ctxPath %>/InsertMyChart.pet">진료기록관리</a>
           <a href="#">나의 병원리뷰</a>
         </div>
         <div class="column" id="board">

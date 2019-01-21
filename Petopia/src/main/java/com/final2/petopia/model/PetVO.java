@@ -12,7 +12,7 @@ public class PetVO {
 	private String pet_birthday;	// 반려동물생일
 	private String pet_size;		// 사이즈
 	private int pet_weight;			// 몸무게
-	private int pet_gender;			// 성별
+	private String pet_gender;			// 성별
 	private int pet_neutral;		// 중성화여부
 	private String medical_history;	// 과거병력기재
 	private String allergy;			// 알러지내역
@@ -21,7 +21,7 @@ public class PetVO {
 	public PetVO() {}
 	
 	public PetVO(int pet_UID, int fk_idx, String pet_name, String pet_type, String pet_birthday, String pet_size,
-			int pet_weight, int pet_gender, int pet_neutral, String medical_history, String allergy,
+			int pet_weight, String pet_gender, int pet_neutral, String medical_history, String allergy,
 			String pet_profileimg) {
 		this.pet_UID = pet_UID;
 		this.fk_idx = fk_idx;
@@ -93,11 +93,11 @@ public class PetVO {
 		this.pet_weight = pet_weight;
 	}
 
-	public int getPet_gender() {
+	public String getPet_gender() {
 		return pet_gender;
 	}
 
-	public void setPet_gender(int pet_gender) {
+	public void setPet_gender(String pet_gender) {
 		this.pet_gender = pet_gender;
 	}
 
@@ -133,4 +133,19 @@ public class PetVO {
 		this.pet_profileimg = pet_profileimg;
 	}
 	
+	public String getShowPet_type(String pet_type){
+		 if(pet_type.equals("cat")) {
+		         pet_type="고양이";
+		      }
+		      else if(pet_type.equals("dog")) {
+		         pet_type="강아지";
+		      }
+		      else if(pet_type.equals("smallani")) {
+		         pet_type="소동물";
+		      }
+		      else if(pet_type.equals("etc")) {
+		         pet_type="기타분류";
+		      }
+		     return pet_type;
+		}
 } // end of class PetVO

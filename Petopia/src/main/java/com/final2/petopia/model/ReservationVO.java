@@ -4,6 +4,7 @@ public class ReservationVO {
 
 	int reservation_UID;       // 예약코드
 	int fk_idx;                //회원고유번호
+	int fk_idx_biz;				// 기업회원 고유번호 [190120] 기업회원 고유번호 추가
 	int fk_schedule_UID;       // 스케쥴코드
 	int fk_pet_UID;            // 반려동물코드
 	String bookingdate ;          // 예약완료일시
@@ -22,6 +23,14 @@ public class ReservationVO {
 	public void setFk_idx(int fk_idx) {
 		this.fk_idx = fk_idx;
 	}
+	// [190120] 기업회원 고유번호 getter setter 추가
+	public int getFk_idx_biz() {
+		return fk_idx_biz;
+	}
+	public void setFk_idx_biz(int fk_idx_biz) {
+		this.fk_idx_biz = fk_idx_biz;
+	}
+	// ----------------------------------
 	public int getFk_schedule_UID() {
 		return fk_schedule_UID;
 	}
@@ -59,11 +68,13 @@ public class ReservationVO {
 		this.reservation_type = reservation_type;
 	}
 	public ReservationVO() {}
-	public ReservationVO(int reservation_UID, int fk_idx, int fk_schedule_UID, int fk_pet_UID, String bookingdate,
+	// 기업회원 고유번호 추가된 생성자
+	public ReservationVO(int reservation_UID, int fk_idx, int fk_idx_biz, int fk_schedule_UID, int fk_pet_UID, String bookingdate,
 			String reservation_DATE, int reservation_status, int reservation_type) {
 		super();
 		this.reservation_UID = reservation_UID;
 		this.fk_idx = fk_idx;
+		this.fk_idx_biz = fk_idx_biz;
 		this.fk_schedule_UID = fk_schedule_UID;
 		this.fk_pet_UID = fk_pet_UID;
 		this.bookingdate = bookingdate;

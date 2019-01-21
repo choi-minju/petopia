@@ -4,9 +4,10 @@ show user;
 -- [190106] 계정관련 쿼리문, 예약결제환불 관련 테이블 및 시퀀스
 -- [190107] 1; 팀별 쿼리 병합
 -- [190107] 2; 기업회원상세 테이블의 특이사항을 빼고 찾아오는길 컬럼 추가
--- [190111] member , biz_info 컬럼 추가 (이미지 파일명), 제약조건명 수정
--- [190114] 회원 등급 삭제(fk컬럼, 테이블)
-
+-- [190111] member , biz_info 컬럼 추가 (이미지 파일명), 제약조건명 수정; 민주
+-- [190114] 회원 등급 삭제(fk컬럼, 테이블); 회의 결과
+-- [190118] consult 테이블, consult_comment 테이블 컬럼추가 및 변경; 지예
+-- [190120] reservation 테이블에 fk_idx_biz 컬럼 및 fk 제약조건 추가; 수미
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -380,8 +381,11 @@ increment by 1
 nomaxvalue
 nominvalue
 nocycle
-nocache; 	
+nocache;
 
+alter table reservation add fk_idx_biz NUMBER not null;
+alter table reservation add constraint fk_reservation_idx_biz FOREIGN KEY (fk_idx_biz) REFERENCES biz_info(idx_biz);
+                
 -- 반려동물정보
 CREATE TABLE pet_info (
 	pet_UID         NUMBER    NOT NULL, -- 반려동물코드
@@ -754,6 +758,12 @@ nominvalue
 nocycle
 nocache;
 
+alter table consult
+modify cs_writeday default sysdate;
+alter table consult
+modify cs_hit default 0;
+alter table consult
+add commentCount VARCHAR2(100) default 0 NOT NULL;
 
 -- 1:1상담 댓글
 CREATE TABLE consult_comment (
@@ -780,6 +790,9 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+alter table consult_comment
+modify cscmt_writeday default sysdate;
 
 -- 펫케어 이미지
 CREATE TABLE petcare_img (
@@ -1405,4 +1418,3 @@ ALTER TABLE funding_refund
 		REFERENCES funding_payment ( -- 펀딩결제
 			payment_UID -- 결제코드
 		);
-

@@ -129,28 +129,13 @@ color:rgb(252, 118, 106);
 			  schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source'
 			});
 		
-		$('#calendar').fullCalendar({
-
-			  eventSources: [
-
-			    // your event source
-			    {
-			      url: "<%=ctxPath%>/InsertMyChart.pet",
-			      type: 'POST',
-			      data: {
-			        custom_param1: 'something',
-			        custom_param2: 'somethingelse'
-			      },
-			      error: function() {
-			        alert('there was an error while fetching events!');
-			      },
-			      color: 'yellow',   // a non-ajax option
-			      textColor: 'black' // a non-ajax option
-			    }
-
-			  ]
-
-			});
+		 $("#register").click(function(){
+			 
+			var frm=document.registerFrm;
+			frm.addaction = "<%=ctxPath%>/InsertMyChartEnd.pet";
+			frm.method="POST";
+			frm.submit();
+		 });
 	});// end of $(document).ready()----------------------
 	
 
@@ -160,15 +145,15 @@ color:rgb(252, 118, 106);
 <div class="container divbox1">
    <h3 class="h3_1">진료기록 입력하기</h3>
    <div class="divbox2">
-    <a heref=""><img src="<%=ctxPath%>/resources/img/chart/cat1.jpg"  width="10%" height="13%" style="border-radius: 50%;"> </a>
+    <a heref=""><img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}"  width="10%" height="13%" style="border-radius: 50%;"> </a>
      <a heref=""><img src="<%=ctxPath%>/resources/img/chart/cat1.jpg"  width="10%" height="13%" style="border-radius: 50%;"> </a>
      <a heref=""><img src="<%=ctxPath%>/resources/img/chart/cat1.jpg"  width="10%" height="13%" style="border-radius: 50%;"> </a>
    </div>
   
   <div class="divbox3">
-	  <p style="padding-top:1%;">생년월일: 2000년도 9월 13일 </p>
-	  <p>성별:  여아</p>
-	  <p>몸무게: 소형 </p>
+	  <p style="padding-top:1%;">생년월일: ${pvo.pet_birthday}</p>
+	  <p>성별:   ${pvo.pet_gender}</p>
+	  <p>몸무게: ${pvo.pet_weight} kg</p>
   </div>
   
   <div id="calendar"  class="calendar divbox4">
@@ -185,12 +170,12 @@ color:rgb(252, 118, 106);
 		    <li><a data-toggle="tab" href="#menu3">Menu 3</a></li>
 	    </ul>
     </div>
-    
+    <form name="registerFrm">
     <div id="home" class="tab-pane fade in active" style="padding-left:2%;">
       
-       <h3 >동물사랑 병원</h3>
-       <p>진료예약일자: 2019년01월5일 </p>
-       <p>방문일자: 2019년01월8일 </p>
+       <h3>${nickname}</h3>
+       <p>진료예약일자:${rvo.bookingdate}  </p>
+       <p>방문일자: ${rvo.reservation_DATE}</p>
        <hr Style="width:100%; height:2%;"></hr>
        <div class="span col-md-10"><h3 style="font-weight:bold;color:pink; margin-top:0">진료결과 </h3></div>
        <div class="span col-md-10"><p>담당수의사: </p><input type="text" name="docname" style="margin-bottom: 1%;"/></div>
@@ -205,8 +190,8 @@ color:rgb(252, 118, 106);
 	       <p>진료비 총액:</p>
        </div>
       </div>
-        
-        <button type="button" class="btn2">등록하기</button>
+        </form>
+        <button type="button" class="btn2" id="register">등록하기</button>
     </div>
     </div>
   </div>

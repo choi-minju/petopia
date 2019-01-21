@@ -16,12 +16,36 @@ import org.springframework.stereotype.Repository;
 				int n =sqlsession.insert("chart.insertmychart",mychartmap);
 				return n;
 			}
-
+           //회원번호로 petuid 가져오기 
 			@Override
 			public int selectpetuid(String idx) {
+				
 				int n = sqlsession.selectOne("chart.selectpetuid", idx);
+				
 				return n;
 			}
+			//펫uid로 펫정보 가져오기 
+			@Override
+			public PetVO selectpetinfo(String pet_uid) {
+				PetVO petinfo = sqlsession.selectOne("chart.selectpetinfo",pet_uid);
+				
+				return petinfo;
+			}
+			//회원번호로 병원 이름 가져오기 
+			@Override
+			public String selectnickname(String idx) {
+				String nickname = sqlsession.selectOne("chart.selectnickname", idx);
+				System.out.println("nickname C" +nickname);
+				return nickname;
+			}
+			//회원번호로 예약날짜 알아오기 
+			@Override
+			public ReservationVO selectreservedate(String idx) {
+				ReservationVO reservedate = sqlsession.selectOne("chart.selectreservedate",idx);
+				return reservedate;
+			}
+			
+			
 
 
 			
