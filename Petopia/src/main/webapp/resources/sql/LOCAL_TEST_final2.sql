@@ -1666,7 +1666,7 @@ select * from user_sequences;
 insert into biz_info(idx_biz, biztype, repname, biznumber, postcode, addr1, addr2, latitude, longitude, prontimg
 , weekday, wdstart, wdend, lunchstart, lunchend, satstart, satend, dayoff, dog, cat, smallani, etc, easyway, intro)
 values (3, 1, '유재석', '3828839198', '23123', '서울특별시 동대문구 전농1동', '다일천사병원', '37.576869', '127.047577', 'dail.jpg'
-, '월,화,수,목,금', to_date('2019-01-17 08:00:00', 'yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 18:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 12:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 15:00:00','yyyy-mm-dd hh24:mi:ss'), '일', 1, 0, 0, 0, '시립대사거리에서 태양아파트 방향으로, 전농지구대 맞은편', '어서오세요 다일천사병원입니다. 강아지전문병원이에요.');
+, '월,화,수,목,금', to_date('2019-01-17 08:00:00', 'yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 18:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 12:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 15:00:00','yyyy-mm-dd hh24:mi:ss'), '일요일만 휴무', 1, 0, 0, 0, '시립대사거리에서 태양아파트 방향으로, 전농지구대 맞은편', '어서오세요 다일천사병원입니다. 강아지전문병원이에요.');
 
 
 insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
@@ -1681,7 +1681,7 @@ values (9,'친절한',3);
 insert into biz_info(idx_biz, biztype, repname, biznumber, postcode, addr1, addr2, latitude, longitude, prontimg
 , weekday, wdstart, wdend, lunchstart, lunchend, satstart, satend, dayoff, dog, cat, smallani, etc, easyway, intro)
 values (4, 1, '하하', '2948162923', '04057', '서울특별시 서대문구 홍제2동', '한솔동물병원', '37.586140', '126.948811', 'hansol.jpg'
-, '월,화,수,목,금', to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 21:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 12:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 15:00:00','yyyy-mm-dd hh24:mi:ss'), '일', 1, 0, 0, 0, '3호선 무악재역 1번출구에서 나온 방향으로 150미터아래 SK주유소 바로 옆', '안녕하세요 한솔동물병원입니다.');
+, '월,화,수,목,금', to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 21:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 12:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 15:00:00','yyyy-mm-dd hh24:mi:ss'), '일요일만 휴무', 1, 0, 0, 0, '3호선 무악재역 1번출구에서 나온 방향으로 150미터아래 SK주유소 바로 옆', '안녕하세요 한솔동물병원입니다.');
 
 
 insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
@@ -1700,7 +1700,7 @@ values (32,'간식',4);
 insert into biz_info(idx_biz, biztype, repname, biznumber, postcode, addr1, addr2, latitude, longitude, prontimg
 , weekday, wdstart, wdend, lunchstart, lunchend, satstart, satend, dayoff, dog, cat, smallani, etc, easyway, intro)
 values (5, 1, '박명수', '2917293817', '02720', '서울특별시 은평구 응암동', '24시스마트동물메디컬센터', '37.600714', '126.918242', 'medical.jpg'
-, '월,화,수,목,금', to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 20:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 14:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 14:00:00','yyyy-mm-dd hh24:mi:ss'), '공휴일', 1, 0, 0, 0, '3호선 응암역 3번 또는 4번 출구로 나와 은평 이마트 방향', '안녕하세요 24시간 돌보는 스마트동물메디컬 센터입니다. 부담없이 오세요~');
+, '월,화,수,목,금', to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 20:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 14:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 14:00:00','yyyy-mm-dd hh24:mi:ss'), '공휴일만 휴무', 1, 0, 0, 0, '3호선 응암역 3번 또는 4번 출구로 나와 은평 이마트 방향', '안녕하세요 24시간 돌보는 스마트동물메디컬 센터입니다. 부담없이 오세요~');
 
 insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
 values (6,'편안한',5);
@@ -1725,7 +1725,7 @@ commit;
 insert into biz_info(idx_biz, biztype, repname, biznumber, postcode, addr1, addr2, latitude, longitude, prontimg
 , weekday, wdstart, wdend, lunchstart, lunchend, satstart, satend, dayoff, dog, cat, smallani, etc, easyway, intro)
 values (6, 2, '양세형', '9583738495', '23123', '서울특별시 성동구 금호1가동', '금호동물약국', '37.559677', '127.024500', 'geumho.jpg'
-, '월,화,수,목,금', to_date('2019-01-17 08:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 20:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 12:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 08:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 15:00:00','yyyy-mm-dd hh24:mi:ss'), '공휴일', 0, 0, 0, 0, '3호선 옥수역 4번출구 바로 앞 옥수역 버스정류장에서 성동01번 버스를 타신 후 논골사거리 버스정류장에서 하차', '처방 확실하게 해드리겠습니다!!');
+, '월,화,수,목,금', to_date('2019-01-17 08:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 20:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 12:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 08:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 15:00:00','yyyy-mm-dd hh24:mi:ss'), '공휴일만 휴무', 0, 0, 0, 0, '3호선 옥수역 4번출구 바로 앞 옥수역 버스정류장에서 성동01번 버스를 타신 후 논골사거리 버스정류장에서 하차', '처방 확실하게 해드리겠습니다!!');
 
 
 insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
@@ -1739,7 +1739,7 @@ values (33,'용품',6);
 insert into biz_info(idx_biz, biztype, repname, biznumber, postcode, addr1, addr2, latitude, longitude, prontimg
 , weekday, wdstart, wdend, lunchstart, lunchend, satstart, satend, dayoff, dog, cat, smallani, etc, easyway, intro)
 values (7, 2, '정준하', '4827394837', '01025', '서울특별시 중구 회현동3가', '한국화이자동물약품', '37.565859', '126.984498', 'korea.jpg'
-, '월,화,수,목,금', to_date('2019-01-17 10:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 18:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 14:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 15:00:00','yyyy-mm-dd hh24:mi:ss'), '공휴일', 1, 0, 0, 0, '4호선 명동역 4번출구 바로 앞', '안녕하세요 한국화이자동물약품입니다.');
+, '월,화,수,목,금', to_date('2019-01-17 10:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 18:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 13:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 14:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 09:00:00','yyyy-mm-dd hh24:mi:ss'), to_date('2019-01-17 15:00:00','yyyy-mm-dd hh24:mi:ss'), '공휴일만 휴무', 1, 0, 0, 0, '4호선 명동역 4번출구 바로 앞', '안녕하세요 한국화이자동물약품입니다.');
 
 
 insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
@@ -1748,16 +1748,21 @@ insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
 values (8,'주차',7);
 
 
-update member set userid = userid || '@naver.com'
-where idx between 3 and 7
+update biz_info set dayoff = '일요일, 공휴일 휴무'
+where idx_biz = 8
+
+
 
 commit;
 
 -- 병원회원
 insert into member(idx, userid, pwd, name, nickname, birthday, gender, phone, profileimg, fileName, membertype
 , point, totaldeposit, noshow, registerdate)
-values(seq_member.nextval, 'slah8448@naver.com', '9695b88a59a1610320897fa84cb7e144cc51f2984520efb77111d94b402a8382', '서서울호수동물병원', 'slah8448', '20150105', 1, '0269598448', 'apeachprofile.png','201901142326455233.png',1
+values(seq_member.nextval, 'slah8448@naver.com', '9695b88a59a1610320897fa84cb7e144cc51f2984520efb77111d94b402a8382', '서서울호수동물병원', 'slah8448', '20150105', 1, 'spTAeO5ydUaLRUSt9gs4NQ==', 'apeachprofile.png','201901142326455233.png',1
 ,default, default, default, default);
+
+
+
 
 select *
 from member;
@@ -1765,10 +1770,37 @@ from member;
 insert into biz_info(idx_biz, biztype, repname,biznumber ,postcode,addr1,addr2,latitude,longitude,prontimg
 ,weekday,wdstart,wdend,lunchstart,lunchend,satstart,satend
 ,dayoff,dog,cat,smallani,etc,easyway,intro)
-values(4, 1, '심재하', '3170382390', '07921', '서울특별시 양천구 남부순환로 421', '신월동 1층', '37.530231', '126.832405', 'apeachprofile.png'
+values(8, 1, '심재하', '3170382390', '07921', '서울특별시 양천구 남부순환로 421', '신월동 1층', '37.530231', '126.832405', 'apeachprofile.png'
 ,'월~금', to_date('09:00', 'hh24:mi'), to_date('18:00', 'hh24:mi'), to_date('12:00', 'hh24:mi'), to_date('13:00', 'hh24:mi'), to_date('09:00', 'hh24:mi'), to_date('14:00', 'hh24:mi')
-, '휴무', 1, 1, 1, 1, '호텔서비스(전화문의)', '서서울호수공원 입구에서 김포공항 쪽으로 50m 정도만 더 오시면, 길건너편에 저희 서서울호수동물병원이 자리잡고 있습니다. 남부순환대로변에 있어서 찾기 쉬우실거에요~^^ 
-주차도 가능하고, 진료와 각종 수술 외에도 미용/분양/호텔/용품 등 반려동물에 관한 모든 서비스를 제공합니다. 많은 방문 부탁드리고, 저희 병원을 찾아주시는 모든 반려동물과 보호자님의 건강을 기원합니다~~^^♡');
+, '일요일, 공휴일 휴무', 1, 1, 1, 1, '서서울호수공원 입구에서 김포공항 쪽으로 50m 정도만 더 오시면, 길건너편에 저희 서서울호수동물병원이 자리잡고 있습니다.', '주차 가능하고, 진료와 각종 수술 외에도 미용/분양/호텔/용품 등 반려동물에 관한 모든 서비스를 제공합니다. 많은 방문 부탁드리고, 저희 병원을 찾아주시는 모든 반려동물과 보호자님의 건강을 기원합니다~~^^♡');
+
+
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (2,'세련됨',8);
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (4,'대형병원',8);
+
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (8,'주차',8);
+
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (9,'친절한',8);
+
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (17,'중성화수술전문',8);
+
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (31,'호텔',8);
+
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (34,'미용',8);
+
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (35,'분양',8);
+
+insert into have_tag(fk_tag_uid, fk_tag_name, fk_idx)
+values (33,'용품',8);
+
 
 
 commit;
@@ -1833,5 +1865,27 @@ select *
 from member;
 
 
+select idx_biz, to_char(wdstart,'hh24:mi') as wdstart, to_char(wdend,'hh24:mi') as wdend, to_char(lunchstart, 'hh24:mi') as lunchstart, to_char(lunchend, 'hh24:mi') as lunchend, to_char(satstart, 'hh24:mi') as satstart, to_char(satend, 'hh24:mi') as satend
+from biz_info;
+
 select *
 from biz_info;
+
+----------------------------------------------------------- 190118 -------------------------------------------------------------
+
+
+alter table consult
+modify cs_writeday default sysdate;
+alter table consult
+modify cs_hit default 0;
+alter table consult
+add commentCount VARCHAR2(100) default 0 NOT NULL;
+alter table consult_comment
+modify cscmt_writeday default sysdate;
+
+
+update biz_info set dayoff = '일'
+where idx_biz in (3,4)
+
+commit;
+

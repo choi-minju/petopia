@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
+<%
+	String ctxPath = request.getContextPath();
+%>
+    
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style type="text/css">
@@ -53,6 +57,26 @@
 	}
 	
 	
+	.card-img-top {
+		max-width: 100%;
+	}
+	
+	.card {
+		margin: 5%;
+	}
+	
+	.resultHeader h3 {
+		font-weight: bold; margin-bottom: 10%;
+	}
+	
+	.resultHeader select {
+		margin-top: 15%; margin-bottom: 10%; 
+		font-size: 8pt;
+	}
+	
+	#cnt {
+		font-weight: bold;
+	}
 
 </style>
 
@@ -63,8 +87,8 @@
 	$(document).ready(function(){
 
 		$("#myUL").hide();
-		
-		$("#myInput").val("${searchWord}");
+		$("#myInput").val("${searchWord}");		
+		$("#cnt").text("${cnt}");
 		
 	});
 
@@ -177,7 +201,6 @@
 		
 				    // 정상적으로 검색이 완료됐으면 
 				     if (status === daum.maps.services.Status.OK) {
-				    	 
 		
 				        var coords = new daum.maps.LatLng(result[0].y, result[0].x);
 		
@@ -202,8 +225,39 @@
 			</script>
 		</div>
 	    <div class="col-sm-5" align="center">
-			<h3 style="font-weight: bold; margin-bottom: 10%;">검색결과 X건</h3>
-			<div style="border: 1px solid black; width: 100%; height: 87%;" ></div>
+	    	<div class="row resultHeader">
+	    		<div class="col-sm-8">
+					<h3 align="right">검색결과 <span id="cnt"></span>건</h3>
+				</div>
+				<div class="col-sm-4">
+					<select class="form-control input-sm" >
+					        <option>평점순</option>
+					        <option>거리순</option>
+					</select>
+				</div>
+				<div style="width: 100%; height: 87%; overflow-y: auto;" >
+				    <div class="card text-left border-secondary">
+					  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/bbb.jpg" alt="Card image cap">
+					  	<div class="card-body">
+						    <h5 class="card-title">서서울동물병원</h5>
+						    <p class="card-text">평점 <span class="glyphicon glyphicon-star"></span>
+					    							<span class="glyphicon glyphicon-star"></span>
+					    							<span class="glyphicon glyphicon-star"></span>
+					    							<span class="glyphicon glyphicon-star"></span>
+					    							<span class="glyphicon glyphicon-star"></span></p>
+						    <a href="#" class="btn btn-primary">예약하기</a>
+						</div>
+				  	</div>
+				  	<div class="card text-left">
+					  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/bbb.jpg" alt="Card image cap">
+					  	<div class="card-body">
+						    <h5 class="card-title">Card title</h5>
+						    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+						    <a href="#" class="btn btn-primary">Go somewhere</a>
+						</div>
+				  	</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -213,6 +267,4 @@
 
 </div>
 
-<div>
-
-</div>
+<div></div>

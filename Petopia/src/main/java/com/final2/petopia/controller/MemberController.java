@@ -171,6 +171,7 @@ public class MemberController {
 		
 		String userid = req.getParameter("userid");
 		String pwd = req.getParameter("pwd");
+		
 		String saveUserid = req.getParameter("saveUserid");
 		
 		pwd = SHA256.encrypt(pwd);
