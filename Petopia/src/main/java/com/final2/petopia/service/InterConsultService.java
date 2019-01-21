@@ -45,6 +45,9 @@ public interface InterConsultService {
 	// 댓글리스트 select
 	List<ConsultCommentVO> selectCommentList(HashMap<String, String> paraMap);
 
+	// 댓글 총 갯수
+	int selectCommentTotalCount(HashMap<String, String> paraMap);
+
 
 	
 	

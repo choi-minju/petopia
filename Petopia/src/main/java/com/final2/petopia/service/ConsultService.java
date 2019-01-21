@@ -61,8 +61,6 @@ public class ConsultService implements InterConsultService {
 		ConsultVO consultvo = dao.selectConsultDetailNoCount(consult_UID);
 		
 		if( userid!=null && !consultvo.getUserid().equals(userid) ) {
-			// 조회수 증가는 로그인되어져 있는 상태에서
-			// 다른 사람이 작성한 글을 읽었을때만 조회수 증가하도록한다.
 			dao.updateConsultDetailAddCount(consult_UID); // 조회수증가
 			consultvo = dao.selectConsultDetailNoCount(consult_UID); // 글상세보기
 		}
@@ -123,6 +121,10 @@ public class ConsultService implements InterConsultService {
 		int result1 = 0;
 		int result2 = 0;
 		
+		if( commentvo.getFk_cmt_id() > 0 ) {
+			int group_odr = dao.getGroupOdrMax()+1; // 댓글그룹순서 최대값 받아옴 + 1
+			commentvo.setCscmt_g_odr(group_odr);
+		}
 		result1 = dao.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert
 		
 		if(result1==1) {
@@ -137,6 +139,13 @@ public class ConsultService implements InterConsultService {
 	public List<ConsultCommentVO> selectCommentList(HashMap<String, String> paraMap) {
 		List<ConsultCommentVO> commentList = dao.selectCommentList(paraMap);
 		return commentList;
+	}
+
+	// 댓글 총 갯수
+	@Override
+	public int selectCommentTotalCount(HashMap<String, String> paraMap) {
+		int totalCount = dao.selectCommentTotalCount(paraMap);
+		return totalCount;
 	}
 
 	

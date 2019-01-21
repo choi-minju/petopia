@@ -47,4 +47,10 @@ public interface InterConsultDAO {
 	// 댓글리스트 select
 	List<ConsultCommentVO> selectCommentList(HashMap<String, String> paraMap);
 
+	// 댓글 총 갯수 select
+	int selectCommentTotalCount(HashMap<String, String> paraMap);
+
+	// 댓글그룹순서 최대값
+	int getGroupOdrMax();
+
 }
