@@ -129,6 +129,7 @@ public class MemberService implements InterMemberService {
 		
 	} // public MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap)
 
+<<<<<<< HEAD
 	// *** 회원번호로 회원정보 조회 *** //
 	// 회원정보 조회
 	@Override
@@ -346,4 +347,85 @@ public class MemberService implements InterMemberService {
 		return result;
 	} // end of public int updateMemberStatusInByIdx(int idx)
 
+=======
+	// *** 아이디로 회원정보 조회 *** //
+	// 회원정보 조회
+	@Override
+	public MemberVO selectMemberByUserid(String userid) {
+		MemberVO mvo = dao.selectMemberByUserid(userid);
+		
+		return mvo;
+	} // end of public MemberVO selectMemberByUserid(String userid)
+
+	// 저장된 사용자 태그 조회
+	@Override
+	public List<HashMap<String, String>> selectHave_tagByIdx(int idx) {
+		List<HashMap<String, String>> haveTagList = dao.selectHave_tagByIdx(idx);
+		
+		return haveTagList;
+	} // end of public List<HashMap<String, String>> selectHave_tagByIdx(int idx)
+
+	// *** 회원수정 *** //
+	// 태그가 있는 회원수정
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr) {
+		int result = 0;
+		
+		// member 테이블의 정보수정
+		int n1 = dao.updateMemberByMvo(mvo);
+		
+		// login_log 테이블의 정보수정
+		int n2 = dao.updateLogin_logByMvo(mvo);
+		
+		// 해당 사용자의 태그 모두 지우기
+		int n3 = dao.deleteHave_tagByIdx(mvo.getIdx());
+		
+		// 선택된 태그 새로 넣기
+		List<HashMap<String, String>> selectTagList = new ArrayList<HashMap<String, String>>();
+		
+		for(int i=0; i<tagNoArr.length; i++) {
+			HashMap<String, String> selectTagMap = new HashMap<String, String>();
+			selectTagMap.put("FK_TAG_UID", tagNoArr[i]);
+			selectTagMap.put("FK_TAG_NAME", tagNameArr[i]);
+			selectTagMap.put("FK_IDX", String.valueOf(mvo.getIdx()));
+			
+			selectTagList.add(selectTagMap);
+		} // end of for
+		
+		int n4 = dao.insertHave_tagByTagList(selectTagList);
+		
+		if(n1*n2*n3*n4 == 0) {
+			result = 0;
+		} else {
+			result = 1; 
+		}
+		
+		return result;
+	} // end of public int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr)
+
+	// 태그가 없는 회원수정 
+	@Override
+	public int updateMemberByMvo(MemberVO mvo) {
+		int result = 0;
+		
+		// member 테이블의 정보수정
+		int n1 = dao.updateMemberByMvo(mvo);
+		
+		// login_log 테이블의 정보수정
+		int n2 = dao.updateLogin_logByMvo(mvo);
+		
+		// 해당 사용자의 태그 모두 지우기
+		int n3 = dao.deleteHave_tagByIdx(mvo.getIdx()); 
+		
+		if(n1*n2*n3 == 0) {
+			result = 0;
+		} else {
+			result = 1;
+		}
+		
+		return result;
+	} // end of public int updateMemberByMvo(MemberVO mvo)
+	
+>>>>>>> refs/remotes/origin/hyunjae
 }

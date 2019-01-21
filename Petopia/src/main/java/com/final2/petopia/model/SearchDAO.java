@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 package com.final2.petopia.model;
 
 import java.util.ArrayList;
@@ -62,3 +63,13 @@ public class SearchDAO {
 
 }
 >>>>>>> refs/remotes/origin/hyewon
+=======
+package com.final2.petopia.model;
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class SearchDAO {
+
+}
+>>>>>>> refs/remotes/origin/hyunjae

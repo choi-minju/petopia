@@ -3,6 +3,7 @@
 
 <mapper namespace="search">
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 	<select id="addrCount" parameterType="String" resultType="int">
 		select count(*) as addrCnt
@@ -32,4 +33,6 @@
 
 =======
 >>>>>>> refs/remotes/origin/hyewon
+=======
+>>>>>>> refs/remotes/origin/hyunjae
 </mapper>

@@ -61,6 +61,7 @@ public class LoginCheck {
 		}
 	}	// end of before()
 	
+<<<<<<< HEAD
 //	#포인트컷 생성하기; execution(public(생략가능) *(리턴타입 모두) com.spring..(com.spring다음 패키지 유무 상관없음)*Controller(controller객체).requireLogin_*(..)) 
 	@Pointcut("execution(public * com.final2..*Controller.requireLoginAdmin_*(..))")
 	public void requireLoginAdmin() {}	// 포인트컷의 식별자는 메소드명으로 지정
@@ -99,4 +100,7 @@ public class LoginCheck {
 			}
 		}
 	}	// end of Adminbefore()
+=======
+	
+>>>>>>> refs/remotes/origin/hyunjae
 }

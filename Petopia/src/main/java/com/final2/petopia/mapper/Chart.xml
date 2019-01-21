@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
 <mapper namespace="chart">
+<<<<<<< HEAD
 
 <!-- 회원번호로 펫 uid 가져오기  -->
 <select id="selectpetuid" parameterType="String" resultType="int" >
@@ -43,4 +44,6 @@ where B.idx=#{idx}
 
 </insert> -->
 
+=======
+>>>>>>> refs/remotes/origin/hyunjae
 </mapper>
