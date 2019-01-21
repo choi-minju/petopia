@@ -1,17 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="reservation">
+	<!-- [190121] selectScheduleListByIdx_biz select절에 where 조건절 추가 -->
 	<select id="selectScheduleListByIdx_biz" parameterType="String" resultType="com.final2.petopia.model.ScheduleVO">
 		select schedule_UID, fk_idx_biz, to_char(schedule_date, 'yyyy-mm-dd hh24:mi') as schedule_date, schedule_status, to_char((schedule_date+30/(24*60)), 'yyyy-mm-dd hh24:mi') as endtime
 		from schedule
-		where fk_idx_biz=#{idx_biz}
+		where schedule_date > sysdate and fk_idx_biz=#{idx_biz}
 		order by schedule_date
 	</select>
 	<select id="selectBizMemberVOByIdx_biz" parameterType="String" resultType="com.final2.petopia.model.Biz_MemberVO">
-		select idx as idx_biz, name, phone
+		select idx as idx_biz, name, phone 
 		from member
 		where idx=#{idx_biz}
 	</select>
+	<!-- [190119]  -->
+	<!-- #로그인 회원 idx로 펫 리스트 select하기 -->
+	<select id="selectPetListByIdx" parameterType="int" resultType="com.final2.petopia.model.PetVO">
+		select pet_UID, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		from pet_info
+		where fk_idx=#{idx}
+	</select>
+	<!-- #pet_UID로 펫 1마리의 정보 select하기 -->
+	<select id="selectPetOneByPet_UID" parameterType="String" resultType="com.final2.petopia.model.PetVO">
+		select pet_UID, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		from pet_info
+		where pet_UID=#{pet_UID}
+	</select>
+	
+	<!-- [190120] -->
+	<!-- #예약VO로 예약테이블에 insert하기; 결제가 없는 예약 -->
+	<insert id="insertReservationByRvo" parameterType="com.final2.petopia.model.ReservationVO">
+		insert into reservation(reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, bookingdate, reservation_DATE, reservation_status, reservation_type)
+		values(seq_reservation_UID.nextval, #{fk_idx}, #{fk_idx_biz}, #{fk_schedule_UID}, #{fk_pet_UID}, default, to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi'), 2, #{reservation_type})
+	</insert>
+	
+	<update id="updateScheduleStatusBySUID" parameterType="String">
+		update schedule set schedule_status = 1 where schedule_UID=#{fk_schedule_UID}
+	</update>
+	
+	<select id="selectReservation_Seq" resultType="String">
+		select seq_reservation_UID.nextval as seq
+		from dual
+	</select>
+	<!-- #예약VO로 예약테이블에 insert하기; 결제가 있는 예약 -->
+	<insert id="insertReservationSurgeryByRvo" parameterType="com.final2.petopia.model.ReservationVO">
+		insert into reservation(reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, bookingdate, reservation_DATE, reservation_status, reservation_type)
+		values(#{reservation_UID}, #{fk_idx}, #{fk_idx_biz}, #{fk_schedule_UID}, #{fk_pet_UID}, default, to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi'), 1, #{reservation_type})
+	</insert>
+	
+	<!-- #회원번호로 예치금 잔액 가져오기 -->
+	<select id="selectSumDepositByIdx" parameterType="String" resultType="Integer">
+		select sum(depositcoin)
+		from deposit
+		where fk_idx = #{idx}
+	</select>
+	<!-- #회원번호로 회원 포인트 가져오기 -->
+	<select id="selectPointByIdx" parameterType="String" resultType="Integer">
+		select point
+		from member
+		where idx = #{idx}
+	</select>
+	
+	<resultMap type="HashMap" id="rmap_like_reservationVO">
+		<result property="reservation_UID" column="RESERVATION_UID" javaType="String"/>
+		<result property="fk_idx" column="FK_IDX" javaType="String"/>
+		<result property="fk_idx_biz" column="FK_IDX_BIZ" javaType="String"/>
+		<result property="fk_schedule_UID" column="FK_SCHEDULE_UID" javaType="String"/>
+		<result property="fk_pet_UID" column="BIZ_NAME" javaType="String"/>
+		<result property="fk_pet_UID" column="FK_PET_UID" javaType="String"/>
+		<result property="reservation_DATE" column="RESERVATION_DATE" javaType="String"/>
+		<result property="reservation_type" column="RESERVATION_TYPE" javaType="String"/>
+		<result property="biz_name" column="BIZ_NAME" javaType="String"/>
+		<result property="phone" column="PHONE" javaType="String"/>
+		<result property="postcode" column="POSTCODE" javaType="String"/>
+		<result property="addr1" column="ADDR1" javaType="String"/>
+		<result property="addr2" column="ADDR2" javaType="String"/>
+		<result property="pet_name" column="PET_NAME" javaType="String"/>
+		<result property="pet_type" column="PET_TYPE" javaType="String"/>
+	</resultMap>
+	
+	<!-- #예약번호로 회원 예약내역 가져오기 -->
+	<select id="selectUserReservationOneByFkRUID" parameterType="String" resultMap="rmap_like_reservationVO">
+		select reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, to_char(bookingdate, 'yyyy-mm-dd hh24:mi') as bookingdate
+		    , to_char(reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, decode(reservation_type, 3, '수술', 'error') as reservation_type
+		    , biz_name, phone, postcode, addr1, addr2, pet_name, decode(pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
+		from reservation join 
+		(
+		select pet_name, pet_type, biz_name, phone, postcode, addr1, addr2
+		from pet_info join
+		    (
+		    select name as biz_name, phone, postcode, addr1, addr2
+		    from member join biz_info
+		    on idx = idx_biz
+		    where idx_biz=(select fk_idx_biz from reservation where reservation_UID = #{fk_reservation_UID})
+		    ) V
+		on 1=1
+		where pet_UID = (select fk_pet_UID from reservation where reservation_UID = #{fk_reservation_UID})
+		) R
+		on 1=1
+		where reservation_UID = #{fk_reservation_UID}
+	</select>
+	
+	<!-- #수술예약 시 예치금결제 후 결제테이블에 insert -->
+	<insert id="insertPaymentByPvo" parameterType="com.final2.petopia.model.PaymentVO">
+		insert into payment(payment_UID, fk_reservation_UID, payment_total, payment_point, payment_pay, payment_date, payment_status)
+		values(seq_payment_UID.nextval, #{fk_reservation_UID}, #{payment_total} , #{payment_point}, #{payment_pay}, #{payment_date}, 1)
+	</insert>
+	<!-- #예치금 잔액에서 결제금액만큼 감한 내용을 예치금 테이블에 insert -->
+	<update id="insertDepositMinus" parameterType="HashMap">
+		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date)
+		values(seq_deposit_UID.nextval, #{fk_idx}, #{depositcoin}, 3, 'used', sysdate)
+	</update>
+	<!-- #결제완료후 예약테이블의 예약상태 변경하기 -->
+	<update id="updateReservationStatusByFkRUID" parameterType="String">
+		update reservation set reservation_status = 2 where reservation_UID=#{fk_reservation_UID}
+	</update>
 	
 </mapper>
