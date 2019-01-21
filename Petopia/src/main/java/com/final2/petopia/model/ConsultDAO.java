@@ -105,6 +105,20 @@ public class ConsultDAO implements InterConsultDAO {
 		List<ConsultCommentVO> commentList = sqlsession.selectList("consult.selectCommentList", paraMap);
 		return commentList;
 	}
+
+	// 댓글 총 갯수 select
+	@Override
+	public int selectCommentTotalCount(HashMap<String, String> paraMap) {
+		int totalCount = sqlsession.selectOne("consult.selectCommentTotalCount", paraMap);
+		return totalCount;
+	}
+
+	// 댓글그룹순서 최대값
+	@Override
+	public int getGroupOdrMax() {
+		int n = sqlsession.selectOne("consult.getGroupOdrMax");
+		return n;
+	}
 	
 	
 

@@ -1,7 +1,16 @@
 *.properties
 
 .settings/
-.classpath
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/hyewon
+=======
+>>>>>>> refs/remotes/origin/minju
+=======
+>>>>>>> refs/remotes/origin/hyunjae
 
 # Compiled class file
 *.class
