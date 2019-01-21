@@ -6,19 +6,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ReservationVO {
 
-<<<<<<< HEAD
 	String reservation_UID;       // 예약코드
 	String fk_idx;                //회원고유번호
 	String fk_idx_biz;				// 기업회원 고유번호 [190120] 기업회원 고유번호 추가
 	String fk_schedule_UID;       // 스케쥴코드
 	String fk_pet_UID;            // 반려동물코드
-=======
-	int reservation_UID;       // 예약코드
-	int fk_idx;                //회원고유번호
-	int fk_idx_biz;				// 기업회원 고유번호 [190120] 기업회원 고유번호 추가
-	int fk_schedule_UID;       // 스케쥴코드
-	int fk_pet_UID;            // 반려동물코드
->>>>>>> refs/remotes/origin/hyewon
 	String bookingdate ;          // 예약완료일시
 	String reservation_DATE;     // 방문예정일
 	String reservation_status;   // 예약진행상태 1 예약완료/ 2 결제완료 / 3 진료완료 / 4 취소 / 5 no show
@@ -51,7 +43,6 @@ public class ReservationVO {
 	public void setFk_idx(String fk_idx) {
 		this.fk_idx = fk_idx;
 	}
-<<<<<<< HEAD
 	public String getFk_idx_biz() {
 		return fk_idx_biz;
 	}
@@ -59,17 +50,6 @@ public class ReservationVO {
 		this.fk_idx_biz = fk_idx_biz;
 	}
 	public String getFk_schedule_UID() {
-=======
-	// [190120] 기업회원 고유번호 getter setter 추가
-	public int getFk_idx_biz() {
-		return fk_idx_biz;
-	}
-	public void setFk_idx_biz(int fk_idx_biz) {
-		this.fk_idx_biz = fk_idx_biz;
-	}
-	// ----------------------------------
-	public int getFk_schedule_UID() {
->>>>>>> refs/remotes/origin/hyewon
 		return fk_schedule_UID;
 	}
 	public void setFk_schedule_UID(String fk_schedule_UID) {
@@ -102,33 +82,7 @@ public class ReservationVO {
 	public String getReservation_type() {
 		return reservation_type;
 	}
-<<<<<<< HEAD
 	public void setReservation_type(String reservation_type) {
-=======
-	public void setReservation_type(int reservation_type) {
 		this.reservation_type = reservation_type;
 	}
-	public ReservationVO() {}
-	// 기업회원 고유번호 추가된 생성자
-	public ReservationVO(int reservation_UID, int fk_idx, int fk_idx_biz, int fk_schedule_UID, int fk_pet_UID, String bookingdate,
-			String reservation_DATE, int reservation_status, int reservation_type) {
-		super();
-		this.reservation_UID = reservation_UID;
-		this.fk_idx = fk_idx;
-		this.fk_idx_biz = fk_idx_biz;
-		this.fk_schedule_UID = fk_schedule_UID;
-		this.fk_pet_UID = fk_pet_UID;
-		this.bookingdate = bookingdate;
-		this.reservation_DATE = reservation_DATE;
-		this.reservation_status = reservation_status;
->>>>>>> refs/remotes/origin/hyewon
-		this.reservation_type = reservation_type;
-	}
-	
-	
-<<<<<<< HEAD
-	
-	
-=======
->>>>>>> refs/remotes/origin/hyewon
 }

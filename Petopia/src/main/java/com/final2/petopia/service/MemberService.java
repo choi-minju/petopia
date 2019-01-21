@@ -129,11 +129,11 @@ public class MemberService implements InterMemberService {
 		
 	} // public MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap)
 
-	// *** 아이디로 회원정보 조회 *** //
+	// *** 회원번호로 회원정보 조회 *** //
 	// 회원정보 조회
 	@Override
-	public MemberVO selectMemberByUserid(String userid) {
-		MemberVO mvo = dao.selectMemberByUserid(userid);
+	public MemberVO selectMemberByIdx(int idx) {
+		MemberVO mvo = dao.selectMemberByIdx(idx);
 		
 		return mvo;
 	} // end of public MemberVO selectMemberByUserid(String userid)
@@ -176,11 +176,11 @@ public class MemberService implements InterMemberService {
 		
 		int n4 = dao.insertHave_tagByTagList(selectTagList);
 		
-		if(n1*n2*n3*n4 == 0) {
+		if(n1*n2*n4 == 0) {
 			result = 0;
 		} else {
 			result = 1; 
-		}
+		} // end of if~else
 		
 		return result;
 	} // end of public int updateMemberByMvoTagList(MemberVO mvo, String[] tagNoArr, String[] tagNameArr)
@@ -199,13 +199,151 @@ public class MemberService implements InterMemberService {
 		// 해당 사용자의 태그 모두 지우기
 		int n3 = dao.deleteHave_tagByIdx(mvo.getIdx()); 
 		
-		if(n1*n2*n3 == 0) {
+		if(n1*n2 == 0) {
 			result = 0;
 		} else {
 			result = 1;
-		}
+		} // end of if~else
 		
 		return result;
 	} // end of public int updateMemberByMvo(MemberVO mvo)
+
+	// 프로필 사진이 없는 경우
+	// 태그가 있는 회원수정
+	@Override
+	public int updateMemberByMvoTagListNoProfile(MemberVO mvo, String[] tagNoArr, String[] tagNameArr) {
+		int result = 0;
+		
+		// member 테이블의 정보수정(프로필 사진 변경 X)
+		int n1 = dao.updateMemberByMvoNoProfile(mvo);
+		
+		// login_log 테이블의 정보수정
+		int n2 = dao.updateLogin_logByMvo(mvo);
+		
+		// 해당 사용자의 태그 모두 지우기
+		int n3 = dao.deleteHave_tagByIdx(mvo.getIdx());
+		
+		// 선택된 태그 새로 넣기
+		List<HashMap<String, String>> selectTagList = new ArrayList<HashMap<String, String>>();
+		
+		for(int i=0; i<tagNoArr.length; i++) {
+			HashMap<String, String> selectTagMap = new HashMap<String, String>();
+			selectTagMap.put("FK_TAG_UID", tagNoArr[i]);
+			selectTagMap.put("FK_TAG_NAME", tagNameArr[i]);
+			selectTagMap.put("FK_IDX", String.valueOf(mvo.getIdx()));
+			
+			selectTagList.add(selectTagMap);
+		} // end of for
+		
+		int n4 = dao.insertHave_tagByTagList(selectTagList);
+		
+		if(n1*n2*n4 == 0) {
+			result = 0;
+		} else {
+			result = 1; 
+		} // end of if~else
+		
+		return result;
+	} // end of public int updateMemberByMvoTagListNoProfile(MemberVO mvo)
+
+	// 태그가 없는 회원수정
+	@Override
+	public int updateMemberByMvoNoProfile(MemberVO mvo) {
+		int result = 0;
+		
+		// member 테이블의 정보수정
+		int n1 = dao.updateMemberByMvoNoProfile(mvo);
+		
+		// login_log 테이블의 정보수정
+		int n2 = dao.updateLogin_logByMvo(mvo);
+		
+		// 해당 사용자의 태그 모두 지우기
+		int n3 = dao.deleteHave_tagByIdx(mvo.getIdx()); 
+		
+		if(n1*n2 == 0) {
+			result = 0;
+		} else {
+			result = 1;
+		} // end of if~else
+		
+		return result;
+	} // end of public int updateMemberByMvoNoProfile(MemberVO mvo)
+
+	// *** 회원 탈퇴 *** //
+	@Override
+	public int updateMemberStatusOutByIdx(int idx) {
+		int result = dao.updateMemberStatusOutByIdx(idx);
+		
+		return result;
+	} // end of public int deleteMemberByIdx(int idx)
+
+	// *** 관리자 *** //
+	// *** 회원목록 ***//
+	// 해당하는 총회원 수
+	// 검색 X
+	@Override
+	public int selectTotalCount() {
+		int totalCount = dao.selectTotalCount();
+		
+		return totalCount;
+	} // end of public int selectTotalCount()
+
+	// 검색 O
+	@Override
+	public int selectTotalCountBySearch(HashMap<String, Object> paraMap) {
+		int totalCount = dao.selectTotalCountBySearch(paraMap);
+		
+		return totalCount;
+	} // end of public int selectTotalCountBySearch(HashMap<String, Object> paraMap)
+
+	// memberList 조회
+	// 검색 X 정렬 X
+	@Override
+	public List<MemberVO> selectMemberList(HashMap<String, Object> paraMap) {
+		List<MemberVO> memberList = dao.selectMemberList(paraMap);
+		
+		return memberList;
+	} // end of public List<MemberVO> selectMemberList(HashMap<String, Object> paraMap)
+
+	// 검색 X 정렬 O
+	@Override
+	public List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap) {
+		List<MemberVO> memberList = dao.selectMemberListByOrderBy(paraMap);
+		
+		return memberList;
+	} // end of public List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap)
+
+	// 검색 O 정렬 X
+	@Override
+	public List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap) {
+		List<MemberVO> memberList = dao.selectMemberListBySearch(paraMap);
+		
+		return memberList;
+	} // end of public List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap)
+
+	// 검색 O 정렬 O
+	@Override
+	public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap) {
+		List<MemberVO> memberList = dao.selectMemberListBySearchOrderBy(paraMap);
+		
+		return memberList;
+	} // end of public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap)
+
 	
+	// *** 회원 휴면 해제 *** //
+	@Override
+	public int updateAdminMemberDateByIdx(int idx) {
+		int result = dao.updateAdminMemberDateByIdx(idx);
+		
+		return result;
+	} // end of public int updateAdminMemberDateByIdx(int idx)
+
+	// *** 회원 복원 *** //
+	@Override
+	public int updateMemberStatusInByIdx(int idx) {
+		int result = dao.updateMemberStatusInByIdx(idx);
+		
+		return result;
+	} // end of public int updateMemberStatusInByIdx(int idx)
+
 }
