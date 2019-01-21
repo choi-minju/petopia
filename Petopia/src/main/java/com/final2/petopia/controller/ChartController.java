@@ -37,7 +37,7 @@ public class ChartController {
 			
 			
 			String date = rvo.getReservation_DATE();//방문 일자 
-			int idx= rvo.getFk_idx(); // 회원번호 
+			String idx= rvo.getFk_idx(); // 회원번호 // reservationVO 변수 String 타입으로 변경
 			String name1= req.getParameter("name1"); //병명
 			String caution = req.getParameter("caution");
 			String note = req.getParameter("note");
