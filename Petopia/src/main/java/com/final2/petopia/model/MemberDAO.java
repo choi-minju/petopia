@@ -89,7 +89,6 @@ public class MemberDAO implements InterMemberDAO {
 	// *** 아이디로 회원정보 조회 *** //
 	// 회원정보 조회
 	@Override
-<<<<<<< HEAD
 	public MemberVO selectMemberByIdx(int idx) {
 		MemberVO mvo = sqlsession.selectOne("member.selectMemberByIdx", idx);
 		
@@ -219,44 +218,4 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return result;
 	} // end of public int updateMemberStatusInByIdx(int idx)
-=======
-	public MemberVO selectMemberByUserid(String userid) {
-		MemberVO mvo = sqlsession.selectOne("member.selectMemberByUserid", userid);
-		
-		return mvo;
-	} // end of public MemberVO selectMemberByUserid(String userid)
-
-	// 저장된 사용자 태그 조회
-	@Override
-	public List<HashMap<String, String>> selectHave_tagByIdx(int idx) {
-		List<HashMap<String, String>> haveTagList = sqlsession.selectList("member.selectHave_tagByIdx", idx);
-		
-		return haveTagList;
-	} // end of public List<HashMap<String, String>> selectHave_tagByIdx(int idx)
-
-	// *** 회원수정 *** //
-	// member 테이블의 정보수정
-	@Override
-	public int updateMemberByMvo(MemberVO mvo) {
-		int result = sqlsession.update("member.updateMemberByMvo", mvo);
-		
-		return result;
-	} // end of public int updateMemberByMvo(MemberVO mvo)
-
-	// login_log 테이블의 정보수정
-	@Override
-	public int updateLogin_logByMvo(MemberVO mvo) {
-		int result = sqlsession.update("member.updateLogin_logByMvo", mvo);
-		
-		return result;
-	} // end of public int updateLogin_logByMvo(MemberVO mvo)
-
-	// 해당 사용자의 태그 모두 지우기
-	@Override
-	public int deleteHave_tagByIdx(int idx) {
-		int result = sqlsession.delete("member.deleteHave_tagByIdx", idx);
-		return result;
-	} // end of public int deleteHave_tagByIdx(int idx)
->>>>>>> refs/remotes/origin/hyunjae
-
 }

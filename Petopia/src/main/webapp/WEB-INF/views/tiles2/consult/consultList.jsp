@@ -117,7 +117,7 @@
 				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
 			</div>
 		
-		<!-- 
+		<%-- 
 		<c:if test="${consultvo.cs_secret==1}"> <!-- ( (공개글 && (비공개글 && (아이디가 로그인한 유저랑 같을 경우||댓글을 단 수의사일 경우)) ) 
 			<div class="row" style="border-bottom: 1px solid #bebebe;">
 				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
@@ -136,7 +136,7 @@
 				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
 			</div>
 		</c:if>
-		-->
+		--%>
 		</c:forEach>
 		
 		

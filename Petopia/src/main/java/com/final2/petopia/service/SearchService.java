@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 package com.final2.petopia.service;
 
 import java.util.HashMap;
@@ -36,23 +34,3 @@ public class SearchService {
 	}
 
 }
-=======
-package com.final2.petopia.service;
-
-import org.springframework.stereotype.Service;
-
-@Service
-public class SearchService {
-
-}
->>>>>>> refs/remotes/origin/hyewon
-=======
-package com.final2.petopia.service;
-
-import org.springframework.stereotype.Service;
-
-@Service
-public class SearchService {
-
-}
->>>>>>> refs/remotes/origin/hyunjae

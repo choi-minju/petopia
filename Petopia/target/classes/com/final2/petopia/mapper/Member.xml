@@ -62,8 +62,6 @@
 		update login_log set lastlogindate = sysdate
 		where member_status = 1 and fk_userid = #{USERID} and fk_pwd = #{PWD}
 	</update>
-	
-<<<<<<< HEAD
 	<!-- *** 회원번호로 회원정보 조회 *** -->
 	<select id="selectMemberByIdx" parameterType="int" resultType="com.final2.petopia.model.MemberVO">
 		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.birthday, a.gender, a.phone
@@ -181,48 +179,4 @@
 	<select id="selectMemberListBySearch" statementType="CALLABLE" parameterMap="selectMemberListBySearch_paraMap">
 		{ call selectMemberListBySearch(?,?,?,?,?) }
 	</select>
-=======
-	<!-- *** 아이디로 회원정보 조회 *** -->
-	<select id="selectMemberByUserid" parameterType="String" resultType="com.final2.petopia.model.MemberVO">
-		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.birthday, a.gender, a.phone
-		    , a.profileimg, a.filename, a.membertype, a.point, a.totaldeposit
-		    , a.noshow, a.registerdate, b.lastlogindate, b.member_status
-		from member a JOIN login_log b
-		ON a.idx = b.idx
-		where b.member_status = 1 and userid = #{userid}
-	</select>
-	
-	<!-- 저장된 사용자 태그 조회 -->
-	<resultMap type="HashMap" id="haveTagListMap">
-		<result property="FK_TAG_UID"	column="fk_tag_UID"		javaType="String"/>
-		<result property="FK_TAG_NAME"	column="fk_tag_name"	javaType="String"/>
-		<result property="FK_IDX"		column="fk_idx"			javaType="String"/>
-	</resultMap>
-	
-	<select id="selectHave_tagByIdx" parameterType="int" resultMap="haveTagListMap">
-		select fk_tag_UID, fk_tag_name, fk_idx
-		from have_tag
-		where fk_idx = #{idx}
-	</select>
-	
-	<!-- *** 회원수정 *** -->
-	<!-- member 테이블의 정보수정 -->
-	<update id="updateMemberByMvo" parameterType="com.final2.petopia.model.MemberVO">
-		update member set pwd = #{pwd}, name = #{name}, nickname = #{nickname}, gender = #{gender}, phone = #{phone}
-			, profileimg = #{profileimg}, fileName = #{fileName}
-		where idx = #{idx}
-	</update>
-	
-	<!-- login_log 테이블의 정보수정 -->
-	<update id="updateLogin_logByMvo" parameterType="com.final2.petopia.model.MemberVO">
-		update login_log set fk_pwd = #{pwd}
-		where idx = #{idx}
-	</update>
-	
-	<!-- 해당 사용자의 태그 모두 지우기 -->
-	<delete id="deleteHave_tagByIdx" parameterType="int">
-		delete from have_tag where fk_idx = #{idx}
-	</delete>
-	
->>>>>>> refs/remotes/origin/hyunjae
 </mapper>
