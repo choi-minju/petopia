@@ -53,13 +53,13 @@
 <!-- [조회수 증가 X] 글 상세보기 -->
 <select id="selectConsultDetailNoCount" parameterType="String" resultType="com.final2.petopia.model.ConsultVO">
 	select previous, previousTitle
-		 , consult_UID, fk_idx, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
+		 , consult_UID, fk_idx, userid, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
 		 , next, nextTitle
 	from 
 	(
 	    select lag(consult_UID,1) over(order by consult_UID desc) as previous
 	         , lag(cs_title,1) over(order by consult_UID desc) as previousTitle
-	         , consult_UID, fk_idx, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
+	         , consult_UID, fk_idx, M.userid, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
 	         , lead(consult_UID,1) over(order by consult_UID desc) as next
 	         , lead(cs_title,1) over(order by consult_UID desc) as nextTitle
 	    from consult C JOIN member M
@@ -88,13 +88,13 @@
 
 
 
-<!-- 원글에 달린 댓글갯수 select 
+<!-- 원글에 달린 댓글갯수 select -->
 <select id="selectCommentWithConsult" parameterType="String" resultType="int">
 	select count(*)
 	from consult_comment
 	where fk_consult_UID = #{CONSULT_UID}
 </select>
--->
+
 <!-- 원글에 달린 댓글삭제 delete 
 <delete id="deleteConsult" parameterType="String">
 	delete from consult_comment
@@ -102,35 +102,69 @@
 </delete>
 -->
 
-<!-- [consult_comment]commentvo 댓글쓰기 insert 
+<!-- [consult_comment]commentvo 댓글쓰기 insert -->
 <insert id="insertComment" parameterType="com.final2.petopia.model.ConsultCommentVO">
+<if test="fk_cmt_id.equals('0')"> <!-- 원댓글 -->
 	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
-	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, #{}, default, default, default, default)
+	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, 0, seq_consult_comment.nextval, default, default, default)
+</if>
+<if test="!fk_cmt_id.equals('0')"> <!-- 원댓글 제외 -->
+	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
+	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, #{fk_cmt_id}, #{cscmt_group}, default, default, default)
+</if>
 </insert>
--->
 
 <!-- [consult]commentCount 원글의 댓글갯수 1 update -->
 <update id="updateConsultCommentCount" parameterType="String" >
 	update consult set commentCount = commentCount + 1
-	where consult_UID = #{CONSULT_UID}
+	where consult_UID = #{fk_consult_UID}
 </update>
 
-<!-- 댓글리스트 select -->
-<select id="selectCommentList">
+<!-- 댓글리스트 select : 1번 
+<select id="selectCommentList" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultCommentVO">
 	select cscmt_nickname, cscmt_contents, cscmt_writeday
 	from
 	(
 	    select rownum AS rno, cscmt_nickname, cscmt_contents, cscmt_writeday
 	    from
 	    (
-	        select cscmt_nickname, cscmt_contents, cscmt_writeday
+	        select fk_consult_UID, cscmt_del, cscmt_nickname, cscmt_contents, to_char(cscmt_writeday, 'yyyy-mm-dd hh24:mi:ss') AS cscmt_writeday
 	        from consult_comment
-	        where fk_consult_UID = #{CONSULT_UID}
-	        order by fk_consult_UID desc
+	        where cscmt_del = 1 and fk_consult_UID = #{CONSULT_UID}
+	        order by fk_consult_UID asc
+	    ) V
+	) T
+	where rno between #{RNO1} and #{RNO2}
+</select>
+-->
+<!-- 댓글리스트 select : 2번 -->
+<select id="selectCommentList" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultCommentVO">
+	select cscmt_nickname, cscmt_contents, cscmt_writeday
+	from
+	(
+	    select rownum AS rno, cscmt_nickname, cscmt_contents, cscmt_writeday
+	    from
+	    (
+	        select fk_consult_UID, cscmt_del, cscmt_nickname, cscmt_contents, to_char(cscmt_writeday, 'yyyy-mm-dd hh24:mi:ss') AS cscmt_writeday
+	        from consult_comment
+	        where cscmt_del = 1 and fk_consult_UID = #{CONSULT_UID}
+	        order by fk_consult_UID asc
 	    ) V
 	) T
 	where rno between #{RNO1} and #{RNO2}
 </select>
 
+<!-- 댓글 총 갯수 select -->
+<select id="selectCommentTotalCount" parameterType="HashMap" resultType="int" >
+	select count(*)
+	from consult_comment
+	where fk_consult_UID = #{CONSULT_UID}
+</select>
+
+<!-- 댓글그룹순서 최대값 -->
+<select id="getGroupOdrMax" resultType="int">
+	select nvl(max(cscmt_g_odr), 0)
+	from consult_comment
+</select>
 
 </mapper>
