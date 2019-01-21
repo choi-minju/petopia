@@ -119,7 +119,7 @@
         </div>
         <div class="column" id="consult">
           <a href="#">1:1 문의상담</a>
-          <a href="<%= ctxPath %>/chat.pet">화상진료</a> <!-- 연습용 -->
+          <a href="<%= ctxPath %>/chat.pet">화상진료</a> <!-- 연습용2 -->
         </div>
         <div class="column" id="petCare">
           <a href="#">반려동물관리</a>
