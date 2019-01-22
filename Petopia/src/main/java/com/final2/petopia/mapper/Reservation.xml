@@ -67,9 +67,10 @@
 		<result property="fk_idx" column="FK_IDX" javaType="String"/>
 		<result property="fk_idx_biz" column="FK_IDX_BIZ" javaType="String"/>
 		<result property="fk_schedule_UID" column="FK_SCHEDULE_UID" javaType="String"/>
-		<result property="fk_pet_UID" column="BIZ_NAME" javaType="String"/>
 		<result property="fk_pet_UID" column="FK_PET_UID" javaType="String"/>
+		<result property="bookingdate" column="BOOKINGDATE" javaType="String"/>
 		<result property="reservation_DATE" column="RESERVATION_DATE" javaType="String"/>
+		<result property="reservation_status" column="RESERVATION_STATUS" javaType="String"/>
 		<result property="reservation_type" column="RESERVATION_TYPE" javaType="String"/>
 		<result property="biz_name" column="BIZ_NAME" javaType="String"/>
 		<result property="phone" column="PHONE" javaType="String"/>
@@ -83,7 +84,7 @@
 	<!-- #예약번호로 회원 예약내역 가져오기 -->
 	<select id="selectUserReservationOneByFkRUID" parameterType="String" resultMap="rmap_like_reservationVO">
 		select reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, to_char(bookingdate, 'yyyy-mm-dd hh24:mi') as bookingdate
-		    , to_char(reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, decode(reservation_type, 3, '수술', 'error') as reservation_type
+		    , to_char(reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, reservation_status, decode(reservation_type, 3, '수술', 'error') as reservation_type
 		    , biz_name, phone, postcode, addr1, addr2, pet_name, decode(pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
 		from reservation join 
 		(
@@ -116,4 +117,23 @@
 	<update id="updateReservationStatusByFkRUID" parameterType="String">
 		update reservation set reservation_status = 2 where reservation_UID=#{fk_reservation_UID}
 	</update>
+	
+	
+	<select id="getTotalCountNoSearch" parameterType="int" resultType="int">
+		select count(*) as cnt
+		from reservation
+		where fk_idx = #{idx}
+	</select>
+	
+	<select id="selectUserReservationList" parameterType="HashMap" resultMap="rmap_like_reservationVO">
+		select A.reservation_UID, A.fk_idx, A.fk_idx_biz, A.fk_schedule_UID, A.fk_pet_UID, to_char(A.bookingdate, 'yyyy-mm-dd hh24:mi') as bookingdate
+			, to_char(A.reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, reservation_status, decode(A.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as reservation_type
+			, B.biz_name, B.phone, B.postcode, B.addr1, B.addr2, C.pet_name, decode(C.pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
+		from reservation A join view_biz_memberinfo B
+		on A.fk_idx_biz = B.idx_biz
+		join pet_info C
+		on A.fk_pet_UID = C.pet_UID
+		where A.fk_idx = #{idx}
+	</select>
+
 </mapper>

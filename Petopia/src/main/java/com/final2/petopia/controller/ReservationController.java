@@ -238,28 +238,18 @@ public class ReservationController {
 //	#예약목록
 	@RequestMapping(value="/reservationList.pet", method={RequestMethod.GET})
 	public String requireLogin_reservationList(HttpServletRequest req, HttpServletResponse res) {
-		List<ReservationVO> reservationList = null;
+		List<HashMap<String, String>> reservationList = null;
 		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
-		String colname = req.getParameter("colname");
-		String search = req.getParameter("search");
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		int idx = loginuser.getIdx();
 		
-		if(colname==null) {
-			colname="biz_name";
-		}
-		if(search==null) {
-			search="";
-		}
 		HashMap<String, String> paraMap = new HashMap<String ,String>();
-		paraMap.put("colname", colname);
-		paraMap.put("search",search);
 		paraMap.put("idx", String.valueOf(idx));
 		
 //		2) 페이지 구분을 위한 변수 선언하기
 		int totalCount = 0;			// 조건에 맞는 총게시물의 개수
-		int sizePerPage = 5;		// 한 페이지당 보여줄 게시물 개수
+		int sizePerPage = 10;		// 한 페이지당 보여줄 게시물 개수
 		int currentShowPageNo = 0;	// 현재 보여줄 페이지번호(초기치 1)
 		int totalPage = 0;			// 총 페이지 수(웹브라우저 상에서 보여줄 총 페이지의 개수)
 		
@@ -268,15 +258,8 @@ public class ReservationController {
 		
 		int blockSize = 3;			// 페이지바의 블럭(토막) 개수
 		
-//		3) 총 페이지수 구하기
-		if(search != null && !search.trim().equals("") && !search.trim().equals("null")) {
-//			a. 검색어가 있을 때(search!=null || search!="") 총 게시물 개수 구하기
-			totalCount = service.getTotalCountWithSearch(paraMap);
-		}
-		else {
-//			b. 검색어가 없을 때(search==null || search=="") 총 게시물 개수 구하기
-			totalCount = service.getTotalCountNoSearch();
-		}
+		totalCount = service.getTotalCountNoSearch(idx);
+
 		totalPage=(int)Math.ceil((double)totalCount/sizePerPage);
 		
 //		4) 현재 페이지 번호 셋팅하기
@@ -307,21 +290,14 @@ public class ReservationController {
 //		7) 게시글 목록 가져오기
 		reservationList = service.selectUserReservationList(paraMap);
 
-		
 //		#120. 페이지바 만들기(MyUtil에 있는 static메소드 사용)
 		String pageBar = "<ul>";
-		pageBar += MyUtil.getPageBarWithSearch(sizePerPage, blockSize, totalPage, currentShowPageNo, colname, search, null, "list.action");
+		pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "reservationList.pet");
 		pageBar += "</ul>";
 		
-/* ===== #69. 글조회수(readCount)증가 (DML문 update)는	반드시 해당 글제목을 클릭했을 경우에만 글조회수가 증가되고 
-		 이전보기, 다음보기를 했을 경우나 웹브라우저에서 새로고침(F5)을 했을 경우에는 증가가 안되도록 한다.(session을 이용하여 처리) ===== */
 		session.setAttribute("readCountPermission", "yes");
 
 		req.setAttribute("reservationList", reservationList);
-		
-//		#검색타입, 검색어 keep을 위해 다시 어트리뷰트에 셋팅
-		req.setAttribute("colname", colname);	 
-		req.setAttribute("search",search);
 		
 //		#페이지바 넘겨주기
 		req.setAttribute("pageBar", pageBar);
@@ -331,7 +307,6 @@ public class ReservationController {
 		System.out.println(currentURL);
 		if(currentURL.substring(currentURL.length()-5).equals("?null")) {
 			currentURL = currentURL.substring(0 , currentURL.length()-5);
-			System.out.println("잘라낸 링크: "+currentURL);
 		}
 		req.setAttribute("currentURL", currentURL);
 		return "reservation/reservationList.tiles2";
