@@ -37,7 +37,7 @@
 <div class="container">
 	<div class="text-center">
 	    <h2>Payment Deposits</h2>
-	    <h4>예치금 결제</h4>
+	    <h4>예치금 결제2</h4>
 	</div>
 	<form name="payDepositFrm">
 	<button type="button" class="collapsible btn-default">Reservation Info</button>
