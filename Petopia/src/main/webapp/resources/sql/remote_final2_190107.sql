@@ -1,27 +1,28 @@
 show user;
 
--- #������Ʈ ����
--- [190106] �������� ������, �������ȯ�� ���� ���̺� �� ������
--- [190107] 1; ���� ���� ����
--- [190107] 2; ���ȸ���� ���̺��� Ư�̻����� ���� ã�ƿ��±� �÷� �߰�
--- [190111] member , biz_info �÷� �߰� (�̹��� ���ϸ�), �������Ǹ� ����; ����
--- [190114] ȸ�� ��� ����(fk�÷�, ���̺�); ȸ�� ���
--- [190118] consult ���̺�, consult_comment ���̺� �÷��߰� �� ����; ����
--- [190120] reservation ���̺��� fk_idx_biz �÷� �� fk �������� �߰�; ����
+-- #업데이트 내역
+-- [190106] 계정관련 쿼리문, 예약결제환불 관련 테이블 및 시퀀스
+-- [190107] 1; 팀별 쿼리 병합
+-- [190107] 2; 기업회원상세 테이블의 특이사항을 빼고 찾아오는길 컬럼 추가
+<<<<<<< HEAD
+-- [190111] member , biz_info 컬럼 추가 (이미지 파일명), 제약조건명 수정; 민주
+-- [190114] 회원 등급 삭제(fk컬럼, 테이블); 회의 결과
+-- [190118] consult 테이블, consult_comment 테이블 컬럼추가 및 변경; 지예
+-- [190120] reservation 테이블에 fk_idx_biz 컬럼 및 fk 제약조건 추가; 수미
 ------------------------------------------------------------------------------
--- ���� ��ȸ
+-- 계정 조회
 show user;
 
--- ��� ���̺� ��ȸ
+-- 모든 테이블 조회
 select * from user_tables;
 
--- ��� ������ ��ȸ
+-- 모든 시퀀스 조회
 select * from user_sequences;
 
--- ��� �������� ��ȸ
+-- 모든 제약조건 조회
 select * from user_constraints;
 
--- ���̺� ���� ���ɹ�
+-- 테이블 삭제 명령문
 drop table schedule purge;
 drop table reservation purge;
 drop table payment purge;
@@ -30,7 +31,7 @@ drop table refund purge;
 drop table withdraw purge;
 drop table dep_use purge;
 
--- ������ ���� ���ɹ�
+-- 시퀀스 삭제 명령문
 drop sequence seq_schedule_schedule_UID;
 drop sequence SEQ_RESERVATION_RESERV_UID;
 drop sequence seq_payment_schedule_UID;
@@ -41,62 +42,62 @@ drop sequence seq_dep_use_dep_use_UID;
 
 -------------------------------------------------------------------------------
 CREATE TABLE member_level (
-   level_UID      NUMBER   NOT NULL, -- ��޹�ȣ
-   level_name     VARCHAR2(20) NOT NULL, -- ��޸�
-   level_limit    NUMBER   NOT NULL, -- �������
-   level_contents VARCHAR2(100) NOT NULL  -- ��޼���
+   level_UID      NUMBER   NOT NULL, -- 등급번호
+   level_name     VARCHAR2(20) NOT NULL, -- 등급명
+   level_limit    NUMBER   NOT NULL, -- 등급조건
+   level_contents VARCHAR2(100) NOT NULL  -- 등급설명
     
     ,CONSTRAINT PK_level PRIMARY KEY (level_UID)
 );
 
 drop table member_level purge;
 
--- ȸ��
+-- 회원
 CREATE TABLE member (
-   idx          NUMBER    NOT NULL, -- ȸ��������ȣ
-   userid       VARCHAR2(255)  NOT NULL, -- �̸��Ͼ��̵�
-   pwd          VARCHAR2(100)  NOT NULL, -- ��й�ȣ
-   name         VARCHAR2(100)  NOT NULL, -- �̸�
-   nickname     VARCHAR2(100)  NOT NULL, -- �г���
-   birthday     VARCHAR2(50)  NOT NULL, -- �������
-   gender       NUMBER(1) default 1 NOT NULL, -- ����
-   phone        VARCHAR2(100)  NOT NULL, -- ����ó
-   profileimg   VARCHAR2(100)  NOT NULL, -- �����ʻ���
-   membertype   NUMBER(1) NOT NULL, -- ȸ��Ÿ��
-   point        NUMBER    default 0 NOT NULL, -- ����Ʈ
-   totaldeposit NUMBER    default 0 NOT NULL, -- ������ġ��
-   noshow       NUMBER    default 0 NOT NULL, -- �������
-   registerdate DATE      default sysdate NOT NULL  -- ��������
+   idx          NUMBER    NOT NULL, -- 회원고유번호
+   userid       VARCHAR2(255)  NOT NULL, -- 이메일아이디
+   pwd          VARCHAR2(100)  NOT NULL, -- 비밀번호
+   name         VARCHAR2(100)  NOT NULL, -- 이름
+   nickname     VARCHAR2(100)  NOT NULL, -- 닉네임
+   birthday     VARCHAR2(50)  NOT NULL, -- 생년월일
+   gender       NUMBER(1) default 1 NOT NULL, -- 성별
+   phone        VARCHAR2(100)  NOT NULL, -- 연락처
+   profileimg   VARCHAR2(100)  NOT NULL, -- 프로필사진
+   membertype   NUMBER(1) NOT NULL, -- 회원타입
+   point        NUMBER    default 0 NOT NULL, -- 포인트
+   totaldeposit NUMBER    default 0 NOT NULL, -- 누적예치금
+   noshow       NUMBER    default 0 NOT NULL, -- 노쇼지수
+   registerdate DATE      default sysdate NOT NULL  -- 가입일자
     
-    , CONSTRAINT PK_member PRIMARY KEY (idx) -- ȸ�� �⺻Ű
-    , CONSTRAINT uq_member_userid UNIQUE (userid) -- ȸ�����̵�UQ   
-    , CONSTRAINT ck_member_gender check(gender in(1,2)) -- ȸ������ üũ����   
-    , CONSTRAINT ck_member_memtype check(membertype in(1, 2, 3)) -- ȸ��Ÿ�� üũ����
+    , CONSTRAINT PK_member PRIMARY KEY (idx) -- 회원 기본키
+    , CONSTRAINT uq_member_userid UNIQUE (userid) -- 회원아이디UQ   
+    , CONSTRAINT ck_member_gender check(gender in(1,2)) -- 회원성별 체크제약   
+    , CONSTRAINT ck_member_memtype check(membertype in(1, 2, 3)) -- 회원타입 체크제약
 );
 
 alter table member
 add fileName   VARCHAR2(100)  NOT NULL;
 
--- ��޹�ȣ ����
+-- 등급번호 삭제
 ALTER TABLE member DROP COLUMN fk_level_UID;
 
 
 
 CREATE TABLE login_log (
-   idx           NUMBER   NOT NULL, -- ȸ��������ȣ
-   fk_userid     VARCHAR2(255) NOT NULL, -- �̸��Ͼ��̵�
-   fk_pwd        VARCHAR2(100) NOT NULL, -- ��й�ȣ
-   lastlogindate DATE     NOT NULL, -- �α����Ͻ�
-   member_status NUMBER(1)   default 1 NOT NULL  -- ȸ������ Ȱ��1 �޸�0
+   idx           NUMBER   NOT NULL, -- 회원고유번호
+   fk_userid     VARCHAR2(255) NOT NULL, -- 이메일아이디
+   fk_pwd        VARCHAR2(100) NOT NULL, -- 비밀번호
+   lastlogindate DATE     NOT NULL, -- 로그인일시
+   member_status NUMBER(1)   default 1 NOT NULL  -- 회원상태 활동1 휴면0
     
-    , CONSTRAINT PK_login_log PRIMARY KEY (idx) -- �α��� �⺻Ű
-    , CONSTRAINT CK_login_log_status check(member_status in(0,1)) -- ȸ������ üũ����
+    , CONSTRAINT PK_login_log PRIMARY KEY (idx) -- 로그인 기본키
+    , CONSTRAINT CK_login_log_status check(member_status in(0,1)) -- 회원상태 체크제약
     , CONSTRAINT FK_member_TO_login_log FOREIGN KEY (idx) REFERENCES member (idx)
 );
 
 
 
--- ȸ�� ������
+-- 회원 시퀀스
 -- drop sequence seq_member;
 create sequence seq_member
 start with 1
@@ -107,80 +108,80 @@ nocycle
 nocache;
 
         
--- ���ȸ����
+-- 기업회원상세
 CREATE TABLE biz_info (
-   idx_biz    NUMBER    NOT NULL, -- ����/�౹������ȣ
-   biztype    NUMBER(1) NOT NULL, -- �������
-   repname    VARCHAR2(50)  NOT NULL, -- ��ǥ�ڸ�
-   biznumber  VARCHAR2(100)  NOT NULL, -- ����ڹ�ȣ
-   postcode   VARCHAR2(10)  NOT NULL, -- ������ȣ
-   addr1      VARCHAR2(100)  NOT NULL, -- �ּ�
-   addr2      VARCHAR2(100)  NOT NULL, -- �ּ�2
-   latitude   VARCHAR2(100)  NOT NULL, -- ����
-   longitude  VARCHAR2(100)  NOT NULL, -- �浵
-   prontimg   VARCHAR2(100)  NOT NULL, -- ��ǥ�̹���
-   weekday    VARCHAR2(100)  NOT NULL, -- ����; ��~��(�� 5), ȭ~��(�� 4), ��, ��, ��(�� 3)
-   wdstart    DATE      NOT NULL, -- ���Ͻ��۽ð�
-   wdend      DATE      NOT NULL, -- ��������ð�
-   lunchstart DATE      NOT NULL, -- ���ɽ��۽ð�
-   lunchend   DATE      NOT NULL, -- ��������ð�
-   satstart  DATE      NOT NULL, -- ����Ͻ���
-   satend     DATE      NOT NULL, -- ���������
-   dayoff     VARCHAR2(100)  NOT NULL, -- �Ͽ���/������
-   dog        NUMBER(1) NOT NULL, -- ������
-   cat        NUMBER(1) NOT NULL, -- ������
-   smallani   NUMBER(1) NOT NULL, -- �ҵ���
-   etc        NUMBER(1) NOT NULL, -- ��Ÿ
-   easyway  VARCHAR2(255)  NULL,     -- ã�ƿ��±�
-   intro      CLOB      NOT NULL  -- �Ұ���
-    ,CONSTRAINT PK_biz_info -- ���ȸ���� �⺻Ű
+   idx_biz    NUMBER    NOT NULL, -- 병원/약국고유번호
+   biztype    NUMBER(1) NOT NULL, -- 기업구분
+   repname    VARCHAR2(50)  NOT NULL, -- 대표자명
+   biznumber  VARCHAR2(100)  NOT NULL, -- 사업자번호
+   postcode   VARCHAR2(10)  NOT NULL, -- 우편번호
+   addr1      VARCHAR2(100)  NOT NULL, -- 주소
+   addr2      VARCHAR2(100)  NOT NULL, -- 주소2
+   latitude   VARCHAR2(100)  NOT NULL, -- 위도
+   longitude  VARCHAR2(100)  NOT NULL, -- 경도
+   prontimg   VARCHAR2(100)  NOT NULL, -- 대표이미지
+   weekday    VARCHAR2(100)  NOT NULL, -- 평일; 월~금(주 5), 화~금(주 4), 월, 수, 금(주 3)
+   wdstart    DATE      NOT NULL, -- 평일시작시간
+   wdend      DATE      NOT NULL, -- 평일종료시간
+   lunchstart DATE      NOT NULL, -- 점심시작시간
+   lunchend   DATE      NOT NULL, -- 점심종료시간
+   satstart  DATE      NOT NULL, -- 토요일시작
+   satend     DATE      NOT NULL, -- 토요일종료
+   dayoff     VARCHAR2(100)  NOT NULL, -- 일요일/공휴일
+   dog        NUMBER(1) NOT NULL, -- 강아지
+   cat        NUMBER(1) NOT NULL, -- 고양이
+   smallani   NUMBER(1) NOT NULL, -- 소동물
+   etc        NUMBER(1) NOT NULL, -- 기타
+   easyway  VARCHAR2(255)  NULL,     -- 찾아오는길
+   intro      CLOB      NOT NULL  -- 소개글
+    ,CONSTRAINT PK_biz_info -- 기업회원상세 기본키
       PRIMARY KEY (
-         idx_biz -- ����/�౹������ȣ
+         idx_biz -- 병원/약국고유번호
       )
-    ,CONSTRAINT UK_biz_info -- ���ȸ���� ����ũ ����
+    ,CONSTRAINT UK_biz_info -- 기업회원상세 유니크 제약
       UNIQUE (
-         biznumber -- ����ڹ�ȣ
+         biznumber -- 사업자번호
       )
-    ,CONSTRAINT ck_biz_info_dog -- ������ üũ����
+    ,CONSTRAINT ck_biz_info_dog -- 강아지 체크제약
       check(dog in(1,0))
-    ,CONSTRAINT ck_biz_info_cat -- ������ üũ����
+    ,CONSTRAINT ck_biz_info_cat -- 고양이 체크제약
       check(cat in(1,0))
-    ,CONSTRAINT ck_biz_info_smallani -- �ҵ��� üũ����
+    ,CONSTRAINT ck_biz_info_smallani -- 소동물 체크제약
       check(smallani in(1,0))
-    ,CONSTRAINT ck_biz_info_etc -- ��Ÿ üũ����
+    ,CONSTRAINT ck_biz_info_etc -- 기타 체크제약
       check(etc in(1,0))
-    ,CONSTRAINT FK_member_TO_biz_info -- ȸ�� -> ���ȸ����
+    ,CONSTRAINT FK_member_TO_biz_info -- 회원 -> 기업회원상세
       FOREIGN KEY (
-         idx_biz -- ����/�౹������ȣ
+         idx_biz -- 병원/약국고유번호
       )
-      REFERENCES member ( -- ȸ��
-         idx -- ȸ��������ȣ
+      REFERENCES member ( -- 회원
+         idx -- 회원고유번호
       )
 );
 
 
--- ���ȸ���߰��̹���
+-- 기업회원추가이미지
 CREATE TABLE biz_info_img (
-   img_UID     NUMBER   NOT NULL, -- �̹���������ȣ
-   fk_idx_biz  NUMBER   NOT NULL, -- ����/�౹������ȣ
-   imgfilename VARCHAR2(100) NOT NULL  -- �̹������ϸ�
-    ,CONSTRAINT PK_biz_info_img -- ���ȸ���߰��̹��� �⺻Ű
+   img_UID     NUMBER   NOT NULL, -- 이미지고유번호
+   fk_idx_biz  NUMBER   NOT NULL, -- 병원/약국고유번호
+   imgfilename VARCHAR2(100) NOT NULL  -- 이미지파일명
+    ,CONSTRAINT PK_biz_info_img -- 기업회원추가이미지 기본키
       PRIMARY KEY (
-         img_UID -- �̹���������ȣ
+         img_UID -- 이미지고유번호
       )
 );
 ALTER TABLE biz_info_img
    ADD
-      CONSTRAINT FK_biz_info_TO_biz_info_img -- ���ȸ���� -> ���ȸ���߰��̹���
+      CONSTRAINT FK_biz_info_TO_biz_info_img -- 기업회원상세 -> 기업회원추가이미지
       FOREIGN KEY (
-         fk_idx_biz -- ����/�౹������ȣ
+         fk_idx_biz -- 병원/약국고유번호
       )
-      REFERENCES biz_info ( -- ���ȸ����
-         idx_biz -- ����/�౹������ȣ
+      REFERENCES biz_info ( -- 기업회원상세
+         idx_biz -- 병원/약국고유번호
       );
 
 
-create sequence biz_info_img_seq --������� �̹��� 
+create sequence biz_info_img_seq --기업정보 이미지 
 start with 1
 increment by 1
 nomaxvalue
@@ -188,30 +189,30 @@ nominvalue
 nocycle
 nocache;
 
--- �Ƿ���
+-- 의료진
 CREATE TABLE doctors (
-	doc_UID    NUMBER    NOT NULL, -- �Ƿ���������ȣ
-	fk_idx_biz NUMBER    NOT NULL, -- ����/�౹������ȣ
-	docname    VARCHAR2(100)  NOT NULL, -- �Ƿ�����
-	dog        NUMBER(1) NOT NULL, -- ������
-	cat        NUMBER(1) NOT NULL, -- ������
-	smallani   NUMBER(1) NOT NULL, -- �ҵ���
-	etc        NUMBER(1) NOT NULL  -- ��Ÿ
-    ,CONSTRAINT PK_doctors -- �Ƿ��� �⺻Ű
+	doc_UID    NUMBER    NOT NULL, -- 의료진고유번호
+	fk_idx_biz NUMBER    NOT NULL, -- 병원/약국고유번호
+	docname    VARCHAR2(100)  NOT NULL, -- 의료진명
+	dog        NUMBER(1) NOT NULL, -- 강아지
+	cat        NUMBER(1) NOT NULL, -- 고양이
+	smallani   NUMBER(1) NOT NULL, -- 소동물
+	etc        NUMBER(1) NOT NULL  -- 기타
+    ,CONSTRAINT PK_doctors -- 의료진 기본키
 		PRIMARY KEY (
-			doc_UID -- �Ƿ���������ȣ
+			doc_UID -- 의료진고유번호
 		)
-     ,CONSTRAINT ck_doctors_dog -- ������ üũ����
+     ,CONSTRAINT ck_doctors_dog -- 강아지 체크제약
 		check(dog in(1,0))
-    ,CONSTRAINT ck_doctors_cat -- ������ üũ����
+    ,CONSTRAINT ck_doctors_cat -- 고양이 체크제약
 		check(cat in(1,0))
-    ,CONSTRAINT ck_doctors_smallani -- �ҵ��� üũ����
+    ,CONSTRAINT ck_doctors_smallani -- 소동물 체크제약
 		check(smallani in(1,0))
-    ,CONSTRAINT ck_doctors_etc -- ��Ÿ üũ����
+    ,CONSTRAINT ck_doctors_etc -- 기타 체크제약
 		check(etc in(1,0))
 );
 
-create sequence seq_doctors_UID --�Ƿ��� 
+create sequence seq_doctors_UID --의료진 
 start with 1
 increment by 1
 nomaxvalue
@@ -219,19 +220,19 @@ nominvalue
 nocycle
 nocache;
 
--- �±� ���̺�
+-- 태그 테이블
 --drop table recommend_tag purge;
 CREATE TABLE recommend_tag (
-   tag_UID  NUMBER   NOT NULL, -- �±׹�ȣ
-   tag_type VARCHAR2(100) NOT NULL, -- �о�
-   tag_name VARCHAR2(100) NOT NULL  -- �±��̸�
+   tag_UID  NUMBER   NOT NULL, -- 태그번호
+   tag_type VARCHAR2(100) NOT NULL, -- 분야
+   tag_name VARCHAR2(100) NOT NULL  -- 태그이름
     ,CONSTRAINT PK_recommend_tag PRIMARY KEY(tag_UID)
 );
 
 ALTER TABLE recommend_tag 
 ADD CONSTRAINT UQ_recommend_tag_name UNIQUE(tag_name);
 
--- �±� ������
+-- 태그 시퀀스
 create sequence seq_recommend_tag_UID
 start with 1
 increment by 1
@@ -241,9 +242,9 @@ nocycle
 nocache;
 
 CREATE TABLE have_tag (
-   fk_tag_UID  NUMBER   NOT NULL, -- �±׹�ȣ
-   fk_tag_name VARCHAR2(100) NOT NULL,  -- �±��̸�
-    fk_idx      NUMBER   NOT NULL -- ȸ��������ȣ
+   fk_tag_UID  NUMBER   NOT NULL, -- 태그번호
+   fk_tag_name VARCHAR2(100) NOT NULL,  -- 태그이름
+    fk_idx      NUMBER   NOT NULL -- 회원고유번호
 );
 
 ALTER TABLE have_tag 
@@ -259,27 +260,27 @@ ADD CONSTRAINT FK_have_tag_ide FOREIGN KEY(fk_idx)
 REFERENCES member(idx);
 
 
--- ����
+-- 리뷰
 CREATE TABLE review (
-	review_UID         NUMBER   NOT NULL, -- �����ڵ�
-	fk_idx_biz         NUMBER   NOT NULL, -- ����/�౹������ȣ
-	fk_idx             NUMBER   NOT NULL, -- ȸ��������ȣ
-	fk_reservation_UID NUMBER   NOT NULL, -- �����ڵ�
-	startpoint         NUMBER   NOT NULL, -- ����
-	fk_userid          VARCHAR2(255) NOT NULL, -- �ۼ��ھ��̵�
-	fk_nickname        VARCHAR2(100) NOT NULL, -- �ۼ��ڴг���
-	rv_contents        CLOB     NOT NULL, -- ���ٸ��䳻��
-	rv_status          NUMBER(1)   NOT NULL, -- �������
-	rv_blind           NUMBER(1)   NOT NULL, -- ��������ε���� 0 ���� 1 �弳 2 ���ȸ����û 3 �Ű����� 4 ��Ÿ
-	rv_writeDate       date     default sysdate NOT NULL  -- ���䳯¥
+	review_UID         NUMBER   NOT NULL, -- 리뷰코드
+	fk_idx_biz         NUMBER   NOT NULL, -- 병원/약국고유번호
+	fk_idx             NUMBER   NOT NULL, -- 회원고유번호
+	fk_reservation_UID NUMBER   NOT NULL, -- 예약코드
+	startpoint         NUMBER   NOT NULL, -- 평점
+	fk_userid          VARCHAR2(255) NOT NULL, -- 작성자아이디
+	fk_nickname        VARCHAR2(100) NOT NULL, -- 작성자닉네임
+	rv_contents        CLOB     NOT NULL, -- 한줄리뷰내용
+	rv_status          NUMBER(1)   NOT NULL, -- 리뷰상태
+	rv_blind           NUMBER(1)   NOT NULL, -- 리뷰블라인드사유 0 없음 1 욕설 2 기업회원요청 3 신고누적 4 기타
+	rv_writeDate       date     default sysdate NOT NULL  -- 리뷰날짜
     ,CONSTRAINT PK_review PRIMARY KEY (review_UID)
-    ,CONSTRAINT ck_review_status -- ������� üũ����
+    ,CONSTRAINT ck_review_status -- 리뷰상태 체크제약
 		check(rv_status in(0,1))
-    ,CONSTRAINT ck_review_blind -- ��������ε���� üũ����
+    ,CONSTRAINT ck_review_blind -- 리뷰블라인드사유 체크제약
 		check(rv_blind in(0,1,2,3,4))
 );
 
--- ���� ������
+-- 리뷰 시퀀스
 create sequence seq_review_UID
 start with 1
 increment by 1
@@ -289,27 +290,27 @@ nocycle
 nocache;
 
 
--- ������(reviewComment)
+-- 리뷰댓글(reviewComment)
 CREATE TABLE review_comment (
-	rc_id         NUMBER    NOT NULL, -- �����۹�ȣ
-	fk_review_UID NUMBER    NOT NULL, -- �����ڵ�
-	fk_idx        NUMBER    NOT NULL, -- ȸ��������ȣ
-	rc_content    CLOB      NOT NULL, -- ��۳���
-	rc_writedate  DATE      NOT NULL, -- ��۳�¥
-	fk_rc_id      NUMBER    NOT NULL, -- ����� ������ȣ
-	rc_group      NUMBER    NOT NULL, -- ��۱׷��ȣ
-	rc_g_odr      NUMBER    NOT NULL, -- ��۱׷����
-	rc_depth      NUMBER    NOT NULL, -- ����
-	rc_blind      NUMBER(1)   NOT NULL, -- �����ε�ó������ 0 ���� 1 �弳 2 ���ȸ����û 3 �Ű����� 4 ��Ÿ
-	rc_status     NUMBER(1) NULL,      -- ����
+	rc_id         NUMBER    NOT NULL, -- 리뷰댓글번호
+	fk_review_UID NUMBER    NOT NULL, -- 리뷰코드
+	fk_idx        NUMBER    NOT NULL, -- 회원고유번호
+	rc_content    CLOB      NOT NULL, -- 댓글내용
+	rc_writedate  DATE      NOT NULL, -- 댓글날짜
+	fk_rc_id      NUMBER    NOT NULL, -- 원댓글 고유번호
+	rc_group      NUMBER    NOT NULL, -- 댓글그룹번호
+	rc_g_odr      NUMBER    NOT NULL, -- 댓글그룹순서
+	rc_depth      NUMBER    NOT NULL, -- 계층
+	rc_blind      NUMBER(1)   NOT NULL, -- 블라인드처리이유 0 없음 1 욕설 2 기업회원요청 3 신고누적 4 기타
+	rc_status     NUMBER(1) NULL,      -- 상태
     CONSTRAINT PK_review_comment PRIMARY KEY(rc_id)
-    ,CONSTRAINT ck_rc_status -- �����ۻ��� üũ����
+    ,CONSTRAINT ck_rc_status -- 리뷰댓글상태 체크제약
 		check(rc_status in(0,1))
-    ,CONSTRAINT ck_rc_blind -- �����ε�ó������ üũ����
+    ,CONSTRAINT ck_rc_blind -- 블라인드처리이유 체크제약
 		check(rc_blind in(0,1,2,3,4)) 
 );
 
--- ���� ��� ������
+-- 리뷰 댓글 시퀀스
 create sequence seq_rc_UID
 start with 1
 increment by 1
@@ -318,21 +319,21 @@ nominvalue
 nocycle
 nocache;
 
--- ������
+-- 스케쥴
 CREATE TABLE schedule (
-	schedule_UID    NUMBER    NOT NULL, -- �������ڵ�
-	fk_idx_biz      NUMBER    NOT NULL, -- ����/�౹������ȣ
-	schedule_DATE   DATE      NOT NULL, -- ��������
-	schedule_status NUMBER(1) default 0 NOT NULL  -- �������� ����: 1/ �񿹾�: 0/default: 0
-    ,CONSTRAINT PK_schedule -- ������ �⺻Ű
+	schedule_UID    NUMBER    NOT NULL, -- 스케쥴코드
+	fk_idx_biz      NUMBER    NOT NULL, -- 병원/약국고유번호
+	schedule_DATE   DATE      NOT NULL, -- 예약일정
+	schedule_status NUMBER(1) default 0 NOT NULL  -- 일정상태 예약: 1/ 비예약: 0/default: 0
+    ,CONSTRAINT PK_schedule -- 스케쥴 기본키
 		PRIMARY KEY (schedule_UID)
-    ,CONSTRAINT ck_sch_status -- �������� üũ����
+    ,CONSTRAINT ck_sch_status -- 일정상태 체크제약
 		check(schedule_status in(1,0))
-    ,CONSTRAINT fk_sch_idx_biz -- ���ȸ���� -> ������
+    ,CONSTRAINT fk_sch_idx_biz -- 기업회원상세 -> 스케쥴
 		FOREIGN KEY (fk_idx_biz)	REFERENCES biz_info(idx_biz)
 );
 
--- ������               
+-- 스케쥴               
 create sequence seq_schedule_UID
 start with 1
 increment by 1
@@ -341,40 +342,40 @@ nominvalue
 nocycle
 nocache;   
 
--- ����
+-- 예약
 CREATE TABLE reservation (
-	reservation_UID    NUMBER    NOT NULL, -- �����ڵ�
-	fk_idx             NUMBER    NOT NULL, -- ȸ��������ȣ
-	fk_schedule_UID    NUMBER    NOT NULL, -- �������ڵ�
-	fk_pet_UID         NUMBER    NOT NULL, -- �ݷ������ڵ�
-	bookingdate        DATE      default sysdate NOT NULL, -- ����Ϸ��Ͻ�
-	reservation_DATE   DATE      NOT NULL, -- �湮������
-	reservation_status NUMBER(1) NOT NULL, -- ����������� 1 ����Ϸ�/ 2 �����Ϸ� / 3 ����Ϸ� / 4 ��� / 5 no show
-	reservation_type   NUMBER    NOT NULL  -- ����Ÿ�� 1 ���� / 2 �������� / 3 ����/ 4 ȣ�ڸ�
+	reservation_UID    NUMBER    NOT NULL, -- 예약코드
+	fk_idx             NUMBER    NOT NULL, -- 회원고유번호
+	fk_schedule_UID    NUMBER    NOT NULL, -- 스케쥴코드
+	fk_pet_UID         NUMBER    NOT NULL, -- 반려동물코드
+	bookingdate        DATE      default sysdate NOT NULL, -- 예약완료일시
+	reservation_DATE   DATE      NOT NULL, -- 방문예정일
+	reservation_status NUMBER(1) NOT NULL, -- 예약진행상태 1 예약완료/ 2 결제완료 / 3 진료완료 / 4 취소 / 5 no show
+	reservation_type   NUMBER    NOT NULL  -- 예약타입 1 진료 / 2 예방접종 / 3 수술/ 4 호텔링
     
-    ,CONSTRAINT PK_reservation -- ���� �⺻Ű
+    ,CONSTRAINT PK_reservation -- 예약 기본키
 		PRIMARY KEY (reservation_UID)
-    ,CONSTRAINT ck_rev_status -- ����������� üũ����
+    ,CONSTRAINT ck_rev_status -- 예약진행상태 체크제약
 		check(reservation_status in(1,2,3,4,5))
-    ,CONSTRAINT ck_rev_type -- ����Ÿ�� üũ����
+    ,CONSTRAINT ck_rev_type -- 예약타입 체크제약
 		check(reservation_type in(1, 2, 3, 4))
-    ,CONSTRAINT FK_member_TO_reservation -- ȸ�� -> ����
+    ,CONSTRAINT FK_member_TO_reservation -- 회원 -> 예약
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		)
-    ,CONSTRAINT FK_schedule_TO_reservation -- ������ -> ����
+    ,CONSTRAINT FK_schedule_TO_reservation -- 스케쥴 -> 예약
 		FOREIGN KEY (
-			fk_schedule_UID -- �������ڵ�
+			fk_schedule_UID -- 스케쥴코드
 		)
-		REFERENCES schedule ( -- ������
-			schedule_UID -- �������ڵ�
+		REFERENCES schedule ( -- 스케쥴
+			schedule_UID -- 스케쥴코드
 		)
 );
 
--- ����   
+-- 예약   
 create sequence seq_reservation_UID
 start with 1
 increment by 1
@@ -386,29 +387,29 @@ nocache;
 alter table reservation add fk_idx_biz NUMBER not null;
 alter table reservation add constraint fk_reservation_idx_biz FOREIGN KEY (fk_idx_biz) REFERENCES biz_info(idx_biz);
                 
--- �ݷ���������
+-- 반려동물정보
 CREATE TABLE pet_info (
-	pet_UID         NUMBER    NOT NULL, -- �ݷ������ڵ�
-	fk_idx          NUMBER    NOT NULL, -- ȸ��������ȣ
-	pet_name        VARCHAR2(100)  NOT NULL, -- �ݷ������̸�
-	pet_type        VARCHAR2(50)  NOT NULL, -- ���� dog/cat/smallani/etc
-	pet_birthday    VARCHAR2(100)  NULL,     -- �ݷ���������
-	pet_size        VARCHAR2(2)  NULL,     -- ������ L/M/S
-	pet_weight      NUMBER    NULL,     -- ������
-	pet_gender      NUMBER(1) NULL,     -- ���� 1 �� 2 ��
-	pet_neutral     NUMBER(1) NULL,     -- �߼�ȭ����  1 �� / 0 ���� / 2 ��
-	medical_history CLOB      NULL,     -- ���ź��±���
-	allergy         CLOB      NULL,     -- �˷�������
-	pet_profileimg  VARCHAR2(255)  NULL      -- �ݷ����������ʻ���
-    ,CONSTRAINT PK_pet_info -- �ݷ��������� �⺻Ű
+	pet_UID         NUMBER    NOT NULL, -- 반려동물코드
+	fk_idx          NUMBER    NOT NULL, -- 회원고유번호
+	pet_name        VARCHAR2(100)  NOT NULL, -- 반려동물이름
+	pet_type        VARCHAR2(50)  NOT NULL, -- 종류 dog/cat/smallani/etc
+	pet_birthday    VARCHAR2(100)  NULL,     -- 반려동물생일
+	pet_size        VARCHAR2(2)  NULL,     -- 사이즈 L/M/S
+	pet_weight      NUMBER    NULL,     -- 몸무게
+	pet_gender      NUMBER(1) NULL,     -- 성별 1 남 2 여
+	pet_neutral     NUMBER(1) NULL,     -- 중성화여부  1 함 / 0 안함 / 2 모름
+	medical_history CLOB      NULL,     -- 과거병력기재
+	allergy         CLOB      NULL,     -- 알러지내역
+	pet_profileimg  VARCHAR2(255)  NULL      -- 반려동물프로필사진
+    ,CONSTRAINT PK_pet_info -- 반려동물정보 기본키
 		PRIMARY KEY (pet_UID)
-    ,CONSTRAINT ck_petinfo_gender -- �ݷ��������� üũ����
+    ,CONSTRAINT ck_petinfo_gender -- 반려동물성별 체크제약
 		check(pet_gender in(1,2))
-    ,CONSTRAINT ck_petinfo_neutral -- �߼�ȭ���� üũ����
+    ,CONSTRAINT ck_petinfo_neutral -- 중성화여부 체크제약
 		check(pet_neutral in(0,1,2))  
 );
 
-create sequence seq_pet_info_UID --�ݷ���������
+create sequence seq_pet_info_UID --반려동물정보
 start with 1
 increment by 1
 nomaxvalue
@@ -416,24 +417,24 @@ nominvalue
 nocycle
 nocache;
 
--- ���
+-- 백신
 CREATE TABLE vaccine (
-	vaccine_UID  NUMBER    NOT NULL, -- ����ڵ�
-	vaccine_name VARCHAR2(100)  NOT NULL, -- ��Ÿ�
-	dog          NUMBER(1) NOT NULL, -- ������
-	cat          NUMBER(1) NOT NULL, -- ������
-	smallani     NUMBER(1) NOT NULL  -- �ҵ���
-    ,CONSTRAINT PK_vaccine -- ��� �⺻Ű
+	vaccine_UID  NUMBER    NOT NULL, -- 백신코드
+	vaccine_name VARCHAR2(100)  NOT NULL, -- 백신명
+	dog          NUMBER(1) NOT NULL, -- 강아지
+	cat          NUMBER(1) NOT NULL, -- 고양이
+	smallani     NUMBER(1) NOT NULL  -- 소동물
+    ,CONSTRAINT PK_vaccine -- 백신 기본키
 		PRIMARY KEY (vaccine_UID)
-    ,CONSTRAINT ck_vaccine_dog -- ������ üũ����
+    ,CONSTRAINT ck_vaccine_dog -- 강아지 체크제약
 		check(dog in(1,0))
-    ,CONSTRAINT ck_vaccine_cat -- ������ üũ����
+    ,CONSTRAINT ck_vaccine_cat -- 고양이 체크제약
 		check(cat in(1,0))
-    ,CONSTRAINT ck_vaccine_smallani -- �ҵ��� üũ����
+    ,CONSTRAINT ck_vaccine_smallani -- 소동물 체크제약
 		check(smallani in(1,0))
 );
 
-create sequence seq_vaccine_UID  --���
+create sequence seq_vaccine_UID  --백신
 start with 1
 increment by 1
 nomaxvalue
@@ -441,17 +442,17 @@ nominvalue
 nocycle
 nocache;
 
--- ��������
+-- 접종내용
 CREATE TABLE shots (
-	shots_UID      NUMBER   NOT NULL, -- �����ڵ�
-	fk_pet_UID     NUMBER   NOT NULL, -- �ݷ������ڵ�
-	fk_vaccine_UID NUMBER   NOT NULL, -- ����ڵ�
-	vaccine_name   VARCHAR2(100) NOT NULL  -- ��Ÿ�
-    ,CONSTRAINT PK_shots -- �������� �⺻Ű
+	shots_UID      NUMBER   NOT NULL, -- 접종코드
+	fk_pet_UID     NUMBER   NOT NULL, -- 반려동물코드
+	fk_vaccine_UID NUMBER   NOT NULL, -- 백신코드
+	vaccine_name   VARCHAR2(100) NOT NULL  -- 백신명
+    ,CONSTRAINT PK_shots -- 접종내용 기본키
 		PRIMARY KEY (shots_UID)
 );
         
-create sequence seq_shots_UID  --����
+create sequence seq_shots_UID  --접종
 start with 1
 increment by 1
 nomaxvalue
@@ -459,33 +460,33 @@ nominvalue
 nocycle
 nocache;
 
--- �ݷ��������
+-- 반려동물목록
 CREATE TABLE pet_list (
-	petlist_UID NUMBER   NOT NULL, -- ��Ϲ�ȣ
-	fk_idx      NUMBER   NOT NULL, -- ȸ��������ȣ
-	fk_pet_UID  NUMBER   NOT NULL, -- �ݷ������ڵ�
-	fk_pet_name VARCHAR2(100) NOT NULL  -- �ݷ�������
-    ,CONSTRAINT PK_pet_list -- �ݷ�������� �⺻Ű
+	petlist_UID NUMBER   NOT NULL, -- 목록번호
+	fk_idx      NUMBER   NOT NULL, -- 회원고유번호
+	fk_pet_UID  NUMBER   NOT NULL, -- 반려동물코드
+	fk_pet_name VARCHAR2(100) NOT NULL  -- 반려동물명
+    ,CONSTRAINT PK_pet_list -- 반려동물목록 기본키
 		PRIMARY KEY (petlist_UID)
 );
 
 
--- �ݷ������ɾ�
+-- 반려동물케어
 CREATE TABLE petcare (
-	care_UID        NUMBER NOT NULL, -- �ɾ��ڵ�
-	fk_pet_UID      NUMBER NOT NULL, -- �ݷ������ڵ�
-	fk_caretype_UID NUMBER NOT NULL, -- �ɾ�Ÿ���ڵ�
-	care_contents   CLOB   NOT NULL, -- ����
-	care_memo       CLOB   NULL,     -- �޸�
-	care_start      DATE   NOT NULL, -- �����Ͻ�
-	care_end        DATE   NOT NULL, -- �����Ͻ�
-	care_alarm      NUMBER(10) NULL,     -- �˸����� ���� 0/5���� 5/10���� 10/�Ϸ��� 1440 (�� ���� ȯ��)
-	care_date       DATE   NOT NULL  -- �ɾ��� ����
-    ,CONSTRAINT PK_petcare -- �ݷ������ɾ� �⺻Ű
+	care_UID        NUMBER NOT NULL, -- 케어코드
+	fk_pet_UID      NUMBER NOT NULL, -- 반려동물코드
+	fk_caretype_UID NUMBER NOT NULL, -- 케어타입코드
+	care_contents   CLOB   NOT NULL, -- 내용
+	care_memo       CLOB   NULL,     -- 메모
+	care_start      DATE   NOT NULL, -- 시작일시
+	care_end        DATE   NOT NULL, -- 종료일시
+	care_alarm      NUMBER(10) NULL,     -- 알림여부 없음 0/5분전 5/10분전 10/하루전 1440 (분 단위 환산)
+	care_date       DATE   NOT NULL  -- 케어등록 일자
+    ,CONSTRAINT PK_petcare -- 반려동물케어 기본키
 		PRIMARY KEY (care_UID)
 );
 
-create sequence seq_petcare_UID  --���ɾ�
+create sequence seq_petcare_UID  --펫케어
 start with 1
 increment by 1
 nomaxvalue
@@ -493,16 +494,16 @@ nominvalue
 nocycle
 nocache;
 
--- �ɾ�Ÿ��
+-- 케어타입
 CREATE TABLE caretype (
-	caretype_UID  NUMBER   NOT NULL, -- �ɾ�Ÿ���ڵ�
-	caretype_name VARCHAR2(100) NOT NULL, -- �ɾ�Ÿ�Ը�
-	caretype_info CLOB     NOT NULL  -- �ɾ�Ÿ�Ժ�����
-    ,CONSTRAINT PK_caretype -- �ɾ�Ÿ�� �⺻Ű
+	caretype_UID  NUMBER   NOT NULL, -- 케어타입코드
+	caretype_name VARCHAR2(100) NOT NULL, -- 케어타입명
+	caretype_info CLOB     NOT NULL  -- 케어타입별설명
+    ,CONSTRAINT PK_caretype -- 케어타입 기본키
 		PRIMARY KEY (caretype_UID)
 );
 
-create sequence seq_caretype_UID --�ɾ� Ÿ��
+create sequence seq_caretype_UID --케어 타입
 start with 1
 increment by 1
 nomaxvalue
@@ -510,29 +511,29 @@ nominvalue
 nocycle
 nocache;
 
--- ������
+-- 진료기록
 CREATE TABLE chart (
-	chart_UID        NUMBER   NOT NULL, -- ��Ʈ�ڵ�
-	fk_pet_UID       NUMBER   NOT NULL, -- �ݷ������ڵ�
-	fk_idx           NUMBER   NOT NULL, -- ȸ��������ȣ
-	chart_type       NUMBER(1) NOT NULL, -- ����Ÿ��  0 �౹/1 ���� / 2 �������� / 3 ���� / 4 ȣ�ڸ�
-	biz_name         VARCHAR2(100) NOT NULL, -- ����/�౹��
-	bookingdate      DATE     NULL,     -- ����Ϸ��Ͻ�
-	reservation_DATE DATE     NULL,     -- �湮������
-	doc_name         VARCHAR2(100) NULL,     -- ���ǻ��
-	cautions         CLOB     NULL,     -- ���ǻ���
-	chart_contents   CLOB     NULL,     -- ����
-	payment_pay      NUMBER   NULL,     -- ��뿹ġ��
-	payment_point    NUMBER   NULL,     -- �������Ʈ
-	addpay           NUMBER   NULL,     -- ���κδ��(�߰������ݾ�)
-	totalpay         NUMBER   NULL      -- ������Ѿ�
-    ,CONSTRAINT PK_chart -- ������ �⺻Ű
+	chart_UID        NUMBER   NOT NULL, -- 차트코드
+	fk_pet_UID       NUMBER   NOT NULL, -- 반려동물코드
+	fk_idx           NUMBER   NOT NULL, -- 회원고유번호
+	chart_type       NUMBER(1) NOT NULL, -- 진료타입  0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
+	biz_name         VARCHAR2(100) NOT NULL, -- 병원/약국명
+	bookingdate      DATE     NULL,     -- 예약완료일시
+	reservation_DATE DATE     NULL,     -- 방문예정일
+	doc_name         VARCHAR2(100) NULL,     -- 수의사명
+	cautions         CLOB     NULL,     -- 주의사항
+	chart_contents   CLOB     NULL,     -- 내용
+	payment_pay      NUMBER   NULL,     -- 사용예치금
+	payment_point    NUMBER   NULL,     -- 사용포인트
+	addpay           NUMBER   NULL,     -- 본인부담금(추가결제금액)
+	totalpay         NUMBER   NULL      -- 진료비총액
+    ,CONSTRAINT PK_chart -- 진료기록 기본키
 		PRIMARY KEY (chart_UID)
-    ,CONSTRAINT ck_chart_type -- ����Ÿ�� üũ����
+    ,CONSTRAINT ck_chart_type -- 진료타입 체크제약
 		check(chart_type in(0,1,2,3,4))
 );
 
-create sequence chart_seq --��Ʈ
+create sequence chart_seq --차트
 start with 1
 increment by 1
 nomaxvalue
@@ -540,21 +541,21 @@ nominvalue
 nocycle
 nocache;
 
--- ��ġ�ݰ���
+-- 예치금결제
 CREATE TABLE payment (
-	payment_UID        NUMBER NOT NULL, -- �����ڵ�
-	fk_reservation_UID NUMBER NOT NULL, -- �����ڵ�
-	payment_total      NUMBER NOT NULL, -- �����Ѿ�
-	payment_point      NUMBER NOT NULL, -- ��������Ʈ
-	payment_pay        NUMBER NOT NULL, -- �ǰ����ݾ�
-	payment_date       DATE   NOT NULL, -- ��������
-	payment_status     NUMBER(1) NOT NULL  -- �������� 1 �����Ϸ� / 0 �̰��� / 2 ��� / 3 ȯ��
+	payment_UID        NUMBER NOT NULL, -- 결제코드
+	fk_reservation_UID NUMBER NOT NULL, -- 예약코드
+	payment_total      NUMBER NOT NULL, -- 결제총액
+	payment_point      NUMBER NOT NULL, -- 결제포인트
+	payment_pay        NUMBER NOT NULL, -- 실결제금액
+	payment_date       DATE   NOT NULL, -- 결제일자
+	payment_status     NUMBER(1) NOT NULL  -- 결제상태 1 결제완료 / 0 미결제 / 2 취소 / 3 환불
     ,CONSTRAINT PK_payment PRIMARY KEY (payment_UID)
-    ,CONSTRAINT CK_payment_status -- �������� üũ����
+    ,CONSTRAINT CK_payment_status -- 결제상태 체크제약
 		check(payment_status in(0,1,2,3))
 );
 
--- ��ġ�ݰ��� 
+-- 예치금결제 
 create sequence seq_payment_UID
 start with 1
 increment by 1
@@ -563,21 +564,21 @@ nominvalue
 nocycle
 nocache; 
 
--- ��ġ��
+-- 예치금
 CREATE TABLE deposit (
-	deposit_UID    NUMBER   NOT NULL, -- ��ġ���ڵ�
-	fk_idx         NUMBER   NOT NULL, -- ȸ��������ȣ
-	depositcoin    NUMBER   NOT NULL, -- ��ġ��
-	deposit_status NUMBER(1)   default 1 NOT NULL, -- ��ġ�ݻ��� 1 ��밡�� / 0 ���Ұ��� / 2 ȯ����ҽ�û / 3 ���
-	deposit_type   VARCHAR2(50) NOT NULL, -- ��������
-	deposit_date   DATE     default sysdate NOT NULL  -- ��������
-    ,CONSTRAINT PK_deposit -- ��ġ�� �⺻Ű
+	deposit_UID    NUMBER   NOT NULL, -- 예치금코드
+	fk_idx         NUMBER   NOT NULL, -- 회원고유번호
+	depositcoin    NUMBER   NOT NULL, -- 예치금
+	deposit_status NUMBER(1)   default 1 NOT NULL, -- 예치금상태 1 사용가능 / 0 사용불가능 / 2 환불취소신청 / 3 출금
+	deposit_type   VARCHAR2(50) NOT NULL, -- 충전수단
+	deposit_date   DATE     default sysdate NOT NULL  -- 충전일자
+    ,CONSTRAINT PK_deposit -- 예치금 기본키
 		PRIMARY KEY (deposit_UID)
-    ,CONSTRAINT CK_deposit_status -- ��ġ�ݻ��� üũ����
+    ,CONSTRAINT CK_deposit_status -- 예치금상태 체크제약
 		check(deposit_status in(0,1,2,3))
 );
 
--- ��ġ�� 
+-- 예치금 
 create sequence seq_deposit_UID
 start with 1
 increment by 1
@@ -586,24 +587,24 @@ nominvalue
 nocycle
 nocache; 
 
--- ȯ��
+-- 환불
 CREATE TABLE refund (
-	refund_UID     NUMBER NOT NULL, -- ȯ���ڵ�
-	fk_payment_UID NUMBER   NOT NULL, -- �����ڵ�
-	fk_idx         NUMBER   NOT NULL, -- ȯ�ҹ���ȸ����ȣ
-	fk_idx_biz     NUMBER   NOT NULL, -- ������ȣ
-	refund_DATE    DATE     default sysdate NOT NULL, -- ȯ�ҽ�û����
-	add_DATE       DATE     NOT NULL, -- �������
-	refund_reason  VARCHAR2(255) NOT NULL, -- ȯ�һ���
-	refund_money   NUMBER   NOT NULL, -- ȯ�ұݾ�
-	refund_status  NUMBER(1)   default 0 NOT NULL  -- ���ο��� 1Ȯ�� 0��Ȯ��
-    ,CONSTRAINT PK_refund -- ȯ�� �⺻Ű
+	refund_UID     NUMBER NOT NULL, -- 환불코드
+	fk_payment_UID NUMBER   NOT NULL, -- 결제코드
+	fk_idx         NUMBER   NOT NULL, -- 환불받을회원번호
+	fk_idx_biz     NUMBER   NOT NULL, -- 병원번호
+	refund_DATE    DATE     default sysdate NOT NULL, -- 환불신청일자
+	add_DATE       DATE     NOT NULL, -- 사용일자
+	refund_reason  VARCHAR2(255) NOT NULL, -- 환불사유
+	refund_money   NUMBER   NOT NULL, -- 환불금액
+	refund_status  NUMBER(1)   default 0 NOT NULL  -- 승인여부 1확인 0미확인
+    ,CONSTRAINT PK_refund -- 환불 기본키
 		PRIMARY KEY (refund_UID)
-    ,CONSTRAINT CK_refund_status -- ���ο��� üũ����
+    ,CONSTRAINT CK_refund_status -- 승인여부 체크제약
 		check(refund_status in(0,1))
 );
 
--- ȯ�� 
+-- 환불 
 create sequence seq_refund_refund_UID
 start with 1
 increment by 1
@@ -614,23 +615,23 @@ nocache;
 
 
 
--- �˸�
+-- 알림
 CREATE TABLE notification (
-	not_UID       NUMBER   NOT NULL, -- �˸��ڵ�
-	fk_idx        NUMBER   NOT NULL, -- ȸ��������ȣ
-	not_type     NUMBER(1) NOT NULL, -- �˸�����  0 ��ü���� / 1 petcare / 2 reservation / 3 payment / 4 board
-	not_message   CLOB     NOT NULL, -- �˸�����
-	not_date      DATE     NOT NULL, -- �˸��߼��Ͻ�
-	not_readcheck NUMBER(1)   default 0 NOT NULL  -- Ȯ�ο��� Ȯ�� 1 / ��Ȯ�� 0
-    ,CONSTRAINT PK_notification -- �˸� �⺻Ű
+	not_UID       NUMBER   NOT NULL, -- 알림코드
+	fk_idx        NUMBER   NOT NULL, -- 회원고유번호
+	not_type     NUMBER(1) NOT NULL, -- 알림유형  0 전체공지 / 1 petcare / 2 reservation / 3 payment / 4 board
+	not_message   CLOB     NOT NULL, -- 알림내용
+	not_date      DATE     NOT NULL, -- 알림발송일시
+	not_readcheck NUMBER(1)   default 0 NOT NULL  -- 확인여부 확인 1 / 미확인 0
+    ,CONSTRAINT PK_notification -- 알림 기본키
 		PRIMARY KEY (not_UID)
-    ,CONSTRAINT CK_not_type -- �˸����� üũ����
+    ,CONSTRAINT CK_not_type -- 알림유형 체크제약
 		check(not_type in(0,1,2,3,4))
-    ,CONSTRAINT CK_not_readcheck -- Ȯ�ο��� üũ����
+    ,CONSTRAINT CK_not_readcheck -- 확인여부 체크제약
 		check(not_readcheck in(0,1))
 );
 
-create sequence seq_notification_UID --�˶�
+create sequence seq_notification_UID --알람
 start with 1
 increment by 1
 nomaxvalue
@@ -638,19 +639,19 @@ nominvalue
 nocycle
 nocache;
 
--- ��ġ�����
+-- 예치금출금
 CREATE TABLE withdraw (
-	withdraw_UID    NUMBER NOT NULL, -- ����ڵ�
-	fk_deposit_UID  NUMBER NOT NULL, -- ��ġ���ڵ�
-	withdraw_money  NUMBER NOT NULL, -- ��ݿ�û�ݾ�
-	withdraw_status NUMBER(1) default 0 NOT NULL  -- ��ݻ��� 1 �Ϸ� / 0 ���
-    ,CONSTRAINT PK_withdraw -- ��ġ����� �⺻Ű
+	withdraw_UID    NUMBER NOT NULL, -- 출금코드
+	fk_deposit_UID  NUMBER NOT NULL, -- 예치금코드
+	withdraw_money  NUMBER NOT NULL, -- 출금요청금액
+	withdraw_status NUMBER(1) default 0 NOT NULL  -- 출금상태 1 완료 / 0 대기
+    ,CONSTRAINT PK_withdraw -- 예치금출금 기본키
 		PRIMARY KEY (withdraw_UID)
-    ,CONSTRAINT CK_withdraw_status -- ��ݻ��� üũ����
+    ,CONSTRAINT CK_withdraw_status -- 출금상태 체크제약
 		check(withdraw_status in(0,1))
 );
 
--- ��ġ����� 
+-- 예치금출금 
 create sequence seq_withdraw_UID
 start with 1
 increment by 1
@@ -660,19 +661,19 @@ nocycle
 nocache; 
 
 
--- ��ġ�� ��볻��
+-- 예치금 사용내역
 CREATE TABLE dep_use (
-	dep_use_UID        NUMBER NOT NULL, -- ��볻���ڵ�
-	fk_deposit_UID     NUMBER NOT NULL,     -- ��ġ���ڵ�
-	fk_payment_UID     NUMBER NOT NULL,     -- �����ڵ�
-	fk_reservation_UID NUMBER NOT NULL,     -- �����ڵ�
-	depu_money         NUMBER NOT NULL,     -- ���ݾ�
-	deposit_usedate    DATE   default sysdate NOT NULL  -- �������
-    ,CONSTRAINT PK_dep_use -- ��ġ�� ��볻�� �⺻Ű
+	dep_use_UID        NUMBER NOT NULL, -- 사용내역코드
+	fk_deposit_UID     NUMBER NOT NULL,     -- 예치금코드
+	fk_payment_UID     NUMBER NOT NULL,     -- 결제코드
+	fk_reservation_UID NUMBER NOT NULL,     -- 예약코드
+	depu_money         NUMBER NOT NULL,     -- 사용금액
+	deposit_usedate    DATE   default sysdate NOT NULL  -- 사용일자
+    ,CONSTRAINT PK_dep_use -- 예치금 사용내역 기본키
 		PRIMARY KEY (dep_use_UID)
 );
 
--- ��볻�� 
+-- 사용내역 
 create sequence seq_dep_use_UID
 start with 1
 increment by 1
@@ -681,21 +682,21 @@ nominvalue
 nocycle
 nocache; 
 
--- ó����
+-- 처방전
 CREATE TABLE prescription (
-	rx_UID      number       NOT NULL, -- ó���ڵ�
-	chart_UID   NUMBER       NOT NULL, -- ��Ʈ�ڵ�
-	rx_name     varchar2(100) NOT NULL, -- ó���
-	dose_number varchar2(100) NULL,     -- ����Ƚ��
-	dosage      varchar2(100) NULL,     -- ����뷮
-	rx_notice   CLOB         NULL,     -- ó��ȳ�
-	rx_cautions varchar2(100) NULL,     -- ���ǻ���
-	rx_regName  varchar2(100) NOT NULL  -- ����ѻ��
-    ,CONSTRAINT PK_prescription -- ó���� �⺻Ű
+	rx_UID      number       NOT NULL, -- 처방코드
+	chart_UID   NUMBER       NOT NULL, -- 차트코드
+	rx_name     varchar2(100) NOT NULL, -- 처방약
+	dose_number varchar2(100) NULL,     -- 복용횟수
+	dosage      varchar2(100) NULL,     -- 복용용량
+	rx_notice   CLOB         NULL,     -- 처방안내
+	rx_cautions varchar2(100) NULL,     -- 주의사항
+	rx_regName  varchar2(100) NOT NULL  -- 등록한사람
+    ,CONSTRAINT PK_prescription -- 처방전 기본키
 		PRIMARY KEY (rx_UID)
 );
 
-create sequence seq_prescription_UID --ó��
+create sequence seq_prescription_UID --처방
 start with 1
 increment by 1
 nomaxvalue
@@ -703,27 +704,27 @@ nominvalue
 nocycle
 nocache;
 
--- ȭ�� ���(video advice)
+-- 화상 상담(video advice)
 CREATE TABLE video_advice (
-	va_UID      NUMBER       NOT NULL, -- ȭ���� ��ȣ
-	fk_idx      NUMBER       NOT NULL, -- ȸ��������ȣ
-	fk_idx_biz  NUMBER       NOT NULL, -- ����/�౹������ȣ
-	chatcode    VARCHAR2(20) NOT NULL, -- ä�ù� �ڵ�
-	fk_userid   VARCHAR2(255)     NOT NULL, -- ȸ�����̵�
-	fk_name_biz VARCHAR2(100)     NOT NULL, -- ������
-	fk_docname  VARCHAR2(100)     NOT NULL, -- ���ǻ��
-	usermessage CLOB         NULL, -- ȸ���� ���� �޼���
-	docmessage  CLOB         NULL, -- ���ǻ簡 ���� �޼���
-	umtime      DATE NULL, -- ȸ���� �޼������� �ð�
-	dmtime      DATE NULL,  -- ���ǻ簡 �޼������� �ð�
-    startTime date default sysdate NOT NULL,  -- ȭ��ä�� ���۽ð�
-    endTime  date  NULL  -- ȭ��ä�� ����ð�
+	va_UID      NUMBER       NOT NULL, -- 화상상담 번호
+	fk_idx      NUMBER       NOT NULL, -- 회원고유번호
+	fk_idx_biz  NUMBER       NOT NULL, -- 병원/약국고유번호
+	chatcode    VARCHAR2(20) NOT NULL, -- 채팅방 코드
+	fk_userid   VARCHAR2(255)     NOT NULL, -- 회원아이디
+	fk_name_biz VARCHAR2(100)     NOT NULL, -- 병원명
+	fk_docname  VARCHAR2(100)     NOT NULL, -- 수의사명
+	usermessage CLOB         NULL, -- 회원이 보낸 메세지
+	docmessage  CLOB         NULL, -- 수의사가 보낸 메세지
+	umtime      DATE NULL, -- 회원이 메세지보낸 시각
+	dmtime      DATE NULL,  -- 수의사가 메세지보낸 시각
+    startTime date default sysdate NOT NULL,  -- 화상채팅 시작시간
+    endTime  date  NULL  -- 화상채팅 종료시간
 
-    ,CONSTRAINT PK_video_advice -- ȭ�� ���(video advice) �⺻Ű
+    ,CONSTRAINT PK_video_advice -- 화상 상담(video advice) 기본키
 		PRIMARY KEY (va_UID)
 );
 
-create sequence seq_video_advice_UID  --ȭ����
+create sequence seq_video_advice_UID  --화상상담
 start with 1
 increment by 1
 nomaxvalue
@@ -732,25 +733,25 @@ nocycle
 nocache;
 
 
--- 1:1���
+-- 1:1상담
 CREATE TABLE consult (
-	consult_UID NUMBER   NOT NULL, -- ����ڵ�
-	fk_idx      NUMBER   NOT NULL, -- ȸ��������ȣ
-	cs_pet_type NUMBER(1) NOT NULL, -- �����з� 1 ������ / 2 ������ / 3 �ҵ��� / 4 ��Ÿ
-	cs_title    VARCHAR2(100) NOT NULL, -- �������
-	cs_contents CLOB     NOT NULL, -- ��㳻��
-	cs_hit      NUMBER   NOT NULL, -- ��ȸ��
-	cs_writeday DATE     NOT NULL, -- �ۼ�����
-	cs_secret   NUMBER(1)   NOT NULL  -- �������� 0 ����� / 1 ����
-    ,CONSTRAINT PK_consult -- 1:1��� �⺻Ű
+	consult_UID NUMBER   NOT NULL, -- 상담코드
+	fk_idx      NUMBER   NOT NULL, -- 회원고유번호
+	cs_pet_type NUMBER(1) NOT NULL, -- 동물분류 1 강아지 / 2 고양이 / 3 소동물 / 4 기타
+	cs_title    VARCHAR2(100) NOT NULL, -- 상담제목
+	cs_contents CLOB     NOT NULL, -- 상담내용
+	cs_hit      NUMBER   NOT NULL, -- 조회수
+	cs_writeday DATE     NOT NULL, -- 작성일자
+	cs_secret   NUMBER(1)   NOT NULL  -- 공개여부 0 비공개 / 1 공개
+    ,CONSTRAINT PK_consult -- 1:1상담 기본키
 		PRIMARY KEY (consult_UID)
-    ,CONSTRAINT ck_consult_type -- �����з� üũ����
+    ,CONSTRAINT ck_consult_type -- 동물분류 체크제약
 		check(cs_pet_type in(1,2,3,4))
-    ,CONSTRAINT ck_cs_secret -- �������� üũ����
+    ,CONSTRAINT ck_cs_secret -- 공개여부 체크제약
 		check(cs_secret in(0,1))
 );
   
-create sequence seq_consult_UID --1:1 ���
+create sequence seq_consult_UID --1:1 상담
 start with 1
 increment by 1
 nomaxvalue
@@ -765,25 +766,25 @@ modify cs_hit default 0;
 alter table consult
 add commentCount VARCHAR2(100) default 0 NOT NULL;
 
--- 1:1��� ���
+-- 1:1상담 댓글
 CREATE TABLE consult_comment (
-	cmt_id         NUMBER   NOT NULL, -- ��۰�����ȣ
-	fk_consult_UID NUMBER   NOT NULL, -- ����ڵ�
-	fk_idx         NUMBER   NOT NULL, -- ���ȸ��������ȣ
-	cscmt_nickname VARCHAR2(100) NOT NULL, -- ����ۼ���
-	cscmt_contents CLOB     NOT NULL, -- ��۳���
-	cscmt_writeday DATE     NOT NULL, -- ����ۼ��Ͻ�
-	fk_cmt_id      NUMBER   NOT NULL, -- ����� ������ȣ
-	cscmt_group    NUMBER default 0  NOT NULL, -- ��۱׷��ȣ
-	cscmt_g_odr    NUMBER   default 0 NOT NULL, -- ��۱׷����
-	cscmt_depth    NUMBER   default 0 NOT NULL, -- ����
-	cscmt_del      NUMBER(1)   default 1 NOT NULL  -- �������� 0���� / 1 ��밡��
+	cmt_id         NUMBER   NOT NULL, -- 댓글고유번호
+	fk_consult_UID NUMBER   NOT NULL, -- 상담코드
+	fk_idx         NUMBER   NOT NULL, -- 댓글회원고유번호
+	cscmt_nickname VARCHAR2(100) NOT NULL, -- 댓글작성자
+	cscmt_contents CLOB     NOT NULL, -- 댓글내용
+	cscmt_writeday DATE     NOT NULL, -- 댓글작성일시
+	fk_cmt_id      NUMBER   NOT NULL, -- 원댓글 고유번호
+	cscmt_group    NUMBER default 0  NOT NULL, -- 댓글그룹번호
+	cscmt_g_odr    NUMBER   default 0 NOT NULL, -- 댓글그룹순서
+	cscmt_depth    NUMBER   default 0 NOT NULL, -- 계층
+	cscmt_del      NUMBER(1)   default 1 NOT NULL  -- 삭제여부 0삭제 / 1 사용가능
     ,CONSTRAINT PK_consult_comment PRIMARY KEY (cmt_id)
-    ,CONSTRAINT ck_cscmt_del -- �������� üũ����
+    ,CONSTRAINT ck_cscmt_del -- 삭제여부 체크제약
 		check(cscmt_del in(1,0))
 );
 
-create sequence seq_consult_comment  --1:1 ��� ���
+create sequence seq_consult_comment  --1:1 상담 댓글
 start with 1
 increment by 1
 nomaxvalue
@@ -794,16 +795,16 @@ nocache;
 alter table consult_comment
 modify cscmt_writeday default sysdate;
 
--- ���ɾ� �̹���
+-- 펫케어 이미지
 CREATE TABLE petcare_img (
-	pc_img_UID  NUMBER   NOT NULL, -- �̹�����ȣ
-	fk_care_UID NUMBER   NOT NULL, -- �ɾ��ڵ�
-	pc_img_name VARCHAR2(255) NOT NULL  -- �̹�����
-    ,CONSTRAINT PK_petcare_img -- ���ɾ� �̹��� �⺻Ű
+	pc_img_UID  NUMBER   NOT NULL, -- 이미지번호
+	fk_care_UID NUMBER   NOT NULL, -- 케어코드
+	pc_img_name VARCHAR2(255) NOT NULL  -- 이미지명
+    ,CONSTRAINT PK_petcare_img -- 펫케어 이미지 기본키
 		PRIMARY KEY (pc_img_UID)
 );
 
-create sequence petcare_img_seq  --���ɾ� �̹���
+create sequence petcare_img_seq  --펫케어 이미지
 start with 1
 increment by 1
 nomaxvalue
@@ -811,18 +812,18 @@ nominvalue
 nocycle
 nocache;
 
--- �Խ��Ǳ׷�
+-- 게시판그룹
 CREATE TABLE board_group (
-	brd_id    NUMBER   NOT NULL, -- �Խ��Ǳ׷��ڵ�
-	brd_name  VARCHAR2(20) NOT NULL, -- �Խ��Ǹ�
-	brd_grant NUMBER(1)   NOT NULL  -- �۾������ (1, 2, 3)
-    ,CONSTRAINT PK_board_group -- �Խ��Ǳ׷� �⺻Ű
+	brd_id    NUMBER   NOT NULL, -- 게시판그룹코드
+	brd_name  VARCHAR2(20) NOT NULL, -- 게시판명
+	brd_grant NUMBER(1)   NOT NULL  -- 글쓰기권한 (1, 2, 3)
+    ,CONSTRAINT PK_board_group -- 게시판그룹 기본키
 		PRIMARY KEY (brd_id)
-    ,CONSTRAINT ck_brd_grant -- �۾������ üũ����
+    ,CONSTRAINT ck_brd_grant -- 글쓰기권한 체크제약
 		check(brd_grant in(1,2,3))
 );
         
-create sequence board_group_seq --�Խ��� �׷�
+create sequence board_group_seq --게시판 그룹
 start with 1
 increment by 1
 nomaxvalue
@@ -830,26 +831,26 @@ nominvalue
 nocycle
 nocache;
 
--- �Խñ�
+-- 게시글
 CREATE TABLE board_post (
-	post_id          NUMBER   NOT NULL, -- �Խñ۰�����ȣ
-	fk_brd_id        NUMBER   NOT NULL, -- �Խ��Ǳ׷��ڵ�
-	post_title       VARCHAR2(100) NOT NULL, -- �Խñ�����
-	post_contents    CLOB     NOT NULL, -- �Խñ۳���
-	fk_idx           NUMBER   NOT NULL, -- �ۼ��ڰ�����ȣ
-	fk_nickname      VARCHAR2(100) NOT NULL, -- �ۼ���
-	post_writeday    DATE     NOT NULL, -- �ۼ���
-	post_hit         NUMBER   NOT NULL, -- ��ȸ��
-	post_del         NUMBER(1)   NOT NULL, -- ��������
-	post_repcnt      NUMBER   NOT NULL, -- ��ۼ�
-	post_imgfilename VARCHAR2(255) NULL      -- ��ǥ�̹���
-    ,CONSTRAINT PK_board_post -- �Խñ� �⺻Ű
+	post_id          NUMBER   NOT NULL, -- 게시글고유번호
+	fk_brd_id        NUMBER   NOT NULL, -- 게시판그룹코드
+	post_title       VARCHAR2(100) NOT NULL, -- 게시글제목
+	post_contents    CLOB     NOT NULL, -- 게시글내용
+	fk_idx           NUMBER   NOT NULL, -- 작성자고유번호
+	fk_nickname      VARCHAR2(100) NOT NULL, -- 작성자
+	post_writeday    DATE     NOT NULL, -- 작성일
+	post_hit         NUMBER   NOT NULL, -- 조회수
+	post_del         NUMBER(1)   NOT NULL, -- 삭제여부
+	post_repcnt      NUMBER   NOT NULL, -- 댓글수
+	post_imgfilename VARCHAR2(255) NULL      -- 대표이미지
+    ,CONSTRAINT PK_board_post -- 게시글 기본키
 		PRIMARY KEY (post_id)
-    ,CONSTRAINT ck_post_del -- �������� üũ����
+    ,CONSTRAINT ck_post_del -- 삭제여부 체크제약
 		check(post_del in(0,1))
 );
         
-create sequence seq_board_post --�Խñ�
+create sequence seq_board_post --게시글
 start with 1
 increment by 1
 nomaxvalue
@@ -857,25 +858,25 @@ nominvalue
 nocycle
 nocache;
 
--- ���
+-- 댓글
 CREATE TABLE board_comment (
-	cmt_id       NUMBER   NOT NULL, -- ��۰�����ȣ
-	fk_brd_id    NUMBER   NOT NULL, -- �Խ��Ǳ׷��ڵ�
-	fk_post_id   NUMBER   NOT NULL, -- �Խñ۰�����ȣ
-	fk_idx       NUMBER   NOT NULL, -- ����ۼ��ڰ�����ȣ
-	fk_nickname  VARCHAR2(100) NOT NULL, -- ����ۼ���
-	cmt_contents CLOB     NOT NULL, -- ��۳���
-	cmt_writeday DATE     NOT NULL, -- ����ۼ��Ͻ�
-	cmt_group    NUMBER   NOT NULL, -- ��۱׷��ȣ
-	cmt_g_odr    NUMBER   NOT NULL, -- ��۱׷����
-	cmt_depth    NUMBER   NOT NULL, -- ����
-	cmt_del      NUMBER(1)   NOT NULL  -- ��������
+	cmt_id       NUMBER   NOT NULL, -- 댓글고유번호
+	fk_brd_id    NUMBER   NOT NULL, -- 게시판그룹코드
+	fk_post_id   NUMBER   NOT NULL, -- 게시글고유번호
+	fk_idx       NUMBER   NOT NULL, -- 댓글작성자고유번호
+	fk_nickname  VARCHAR2(100) NOT NULL, -- 댓글작성자
+	cmt_contents CLOB     NOT NULL, -- 댓글내용
+	cmt_writeday DATE     NOT NULL, -- 댓글작성일시
+	cmt_group    NUMBER   NOT NULL, -- 댓글그룹번호
+	cmt_g_odr    NUMBER   NOT NULL, -- 댓글그룹순서
+	cmt_depth    NUMBER   NOT NULL, -- 계층
+	cmt_del      NUMBER(1)   NOT NULL  -- 삭제여부
     ,CONSTRAINT PK_comment PRIMARY KEY (cmt_id)
-    ,CONSTRAINT ck_cmt_del -- �������� üũ����
+    ,CONSTRAINT ck_cmt_del -- 삭제여부 체크제약
 		check(cmt_del in(0,1))
 );
         
-create sequence board_comment_seq --���
+create sequence board_comment_seq --댓글
 start with 1
 increment by 1
 nomaxvalue
@@ -884,537 +885,1941 @@ nocycle
 nocache;
 
 
----- �̺�Ʈ
+---- 이벤트
 --CREATE TABLE event (
---	ev_id          NUMBER   NOT NULL, -- �̺�Ʈ�ڵ�
---	ev_title       VARCHAR2(255) NOT NULL, -- �̺�Ʈ����
---	ev_contents    CLOB     NOT NULL, -- �̺�Ʈ����
---	ev_imgfilename VARCHAR2(255) NOT NULL, -- �̺�Ʈ���
---	ev_start       DATE     NOT NULL, -- �̺�Ʈ����
---	ev_end         DATE     NOT NULL  -- �̺�Ʈ����
---    ,CONSTRAINT PK_event -- �̺�Ʈ �⺻Ű
+--	ev_id          NUMBER   NOT NULL, -- 이벤트코드
+--	ev_title       VARCHAR2(255) NOT NULL, -- 이벤트제목
+--	ev_contents    CLOB     NOT NULL, -- 이벤트내용
+--	ev_imgfilename VARCHAR2(255) NOT NULL, -- 이벤트배너
+--	ev_start       DATE     NOT NULL, -- 이벤트시작
+--	ev_end         DATE     NOT NULL  -- 이벤트종료
+--    ,CONSTRAINT PK_event -- 이벤트 기본키
 --		PRIMARY KEY (ev_id)
 --);
 --
----- ���⵿���Ŀ�
+---- 유기동물후원
 --CREATE TABLE funding (
---	fd_id          NUMBER   NOT NULL, -- �Ŀ��ڵ�
---	fd_title       VARCHAR2 NOT NULL, -- �Ŀ�����
---	fd_orgname     VARCHAR2 NOT NULL, -- ��ü�׽ü��̸�
---	region         VARCHAR2 NOT NULL, -- ����
---	fd_name        VARCHAR2 NOT NULL, -- ��ǥ��
---	fd_phone       VARCHAR2 NOT NULL, -- ����ó
---	fd_goal        NUMBER   NOT NULL, -- �Ŀ���ݾ�
---	fd_start       DATE     NOT NULL, -- ������
---	fd_end         DATE     NOT NULL, -- ������
---	fd_imgfilename VARCHAR2 NOT NULL, -- ��ǥ�̹���
---	fd_contents    CLOB     NOT NULL  -- �Ŀ�����
+--	fd_id          NUMBER   NOT NULL, -- 후원코드
+--	fd_title       VARCHAR2 NOT NULL, -- 후원제목
+--	fd_orgname     VARCHAR2 NOT NULL, -- 단체및시설이름
+--	region         VARCHAR2 NOT NULL, -- 지역
+--	fd_name        VARCHAR2 NOT NULL, -- 대표자
+--	fd_phone       VARCHAR2 NOT NULL, -- 연락처
+--	fd_goal        NUMBER   NOT NULL, -- 후원모금액
+--	fd_start       DATE     NOT NULL, -- 시작일
+--	fd_end         DATE     NOT NULL, -- 종료일
+--	fd_imgfilename VARCHAR2 NOT NULL, -- 대표이미지
+--	fd_contents    CLOB     NOT NULL  -- 후원내용
 --);
 --
----- ���⵿���Ŀ�
+---- 유기동물후원
 --ALTER TABLE funding
 --	ADD
---		CONSTRAINT PK_funding -- ���⵿���Ŀ� �⺻Ű
+--		CONSTRAINT PK_funding -- 유기동물후원 기본키
 --		PRIMARY KEY (
---			fd_id -- �Ŀ��ڵ�
+--			fd_id -- 후원코드
 --		);
 --
----- ���⵿���Ŀ��̹���
+---- 유기동물후원이미지
 --CREATE TABLE funding_img (
---	fdimg_id   NUMBER   NOT NULL, -- �Ŀ��̹����ڵ�
---	fk_fd_id   NUMBER   NOT NULL, -- �Ŀ��ڵ�
---	fdimg_name VARCHAR2 NOT NULL  -- �̹������ϸ�
+--	fdimg_id   NUMBER   NOT NULL, -- 후원이미지코드
+--	fk_fd_id   NUMBER   NOT NULL, -- 후원코드
+--	fdimg_name VARCHAR2 NOT NULL  -- 이미지파일명
 --);
 --
----- ���⵿���Ŀ��̹���
+---- 유기동물후원이미지
 --ALTER TABLE funding_img
 --	ADD
---		CONSTRAINT PK_funding_img -- ���⵿���Ŀ��̹��� �⺻Ű
+--		CONSTRAINT PK_funding_img -- 유기동물후원이미지 기본키
 --		PRIMARY KEY (
---			fdimg_id -- �Ŀ��̹����ڵ�
+--			fdimg_id -- 후원이미지코드
 --		);
 --
----- �ݵ�����
+---- 펀딩결제
 --CREATE TABLE funding_payment (
---	payment_UID    NUMBER NOT NULL, -- �����ڵ�
---	fk_fd_id       NUMBER NOT NULL, -- �Ŀ��ڵ�
---	payment_total  NUMBER NOT NULL, -- �����Ѿ�
---	payment_point  NUMBER NOT NULL, -- ��������Ʈ
---	payment_pay    NUMBER NOT NULL, -- �ǰ����ݾ�
---	payment_date   DATE   NOT NULL, -- ��������
---	payment_status NUMBER NOT NULL  -- ��������
+--	payment_UID    NUMBER NOT NULL, -- 결제코드
+--	fk_fd_id       NUMBER NOT NULL, -- 후원코드
+--	payment_total  NUMBER NOT NULL, -- 결제총액
+--	payment_point  NUMBER NOT NULL, -- 결제포인트
+--	payment_pay    NUMBER NOT NULL, -- 실결제금액
+--	payment_date   DATE   NOT NULL, -- 결제일자
+--	payment_status NUMBER NOT NULL  -- 결제상태
 --);
 --
----- �ݵ�����
+---- 펀딩결제
 --ALTER TABLE funding_payment
 --	ADD
---		CONSTRAINT PK_funding_payment -- �ݵ����� �⺻Ű
+--		CONSTRAINT PK_funding_payment -- 펀딩결제 기본키
 --		PRIMARY KEY (
---			payment_UID -- �����ڵ�
+--			payment_UID -- 결제코드
 --		);
 --
----- �ݵ�ȯ��
+---- 펀딩환불
 --CREATE TABLE funding_refund (
---	refund_UID     VARCHAR2 NOT NULL, -- ȯ���ڵ�
---	fk_payment_UID NUMBER   NOT NULL, -- �����ڵ�
---	fk_idx         NUMBER   NOT NULL, -- ȯ�ҹ���ȸ����ȣ
---	refund_DATE    DATE     NOT NULL, -- ȯ�ҽ�û����
---	add_DATE       DATE     NOT NULL, -- �������
---	refund_reason  VARCHAR2 NOT NULL, -- ȯ�һ���
---	refund_money   NUMBER   NOT NULL, -- ȯ�ұݾ�
---	refund_status  NUMBER   NOT NULL  -- ���ο���
+--	refund_UID     VARCHAR2 NOT NULL, -- 환불코드
+--	fk_payment_UID NUMBER   NOT NULL, -- 결제코드
+--	fk_idx         NUMBER   NOT NULL, -- 환불받을회원번호
+--	refund_DATE    DATE     NOT NULL, -- 환불신청일자
+--	add_DATE       DATE     NOT NULL, -- 사용일자
+--	refund_reason  VARCHAR2 NOT NULL, -- 환불사유
+--	refund_money   NUMBER   NOT NULL, -- 환불금액
+--	refund_status  NUMBER   NOT NULL  -- 승인여부
 --);
 --
----- �ݵ�ȯ��
+---- 펀딩환불
 --ALTER TABLE funding_refund
 --	ADD
---		CONSTRAINT PK_funding_refund -- �ݵ�ȯ�� �⺻Ű
+--		CONSTRAINT PK_funding_refund -- 펀딩환불 기본키
 --		PRIMARY KEY (
---			refund_UID -- ȯ���ڵ�
+--			refund_UID -- 환불코드
 --		);
 ------------------------------------------------------------------------------
 
 
--- #�������� �߰�
+-- #제약조건 추가
 
 
--- �Ƿ���
+-- 의료진
 ALTER TABLE doctors
 	ADD
-		CONSTRAINT FK_biz_info_TO_doctors -- ���ȸ���� -> �Ƿ���
+		CONSTRAINT FK_biz_info_TO_doctors -- 기업회원상세 -> 의료진
 		FOREIGN KEY (
-			fk_idx_biz -- ����/�౹������ȣ
+			fk_idx_biz -- 병원/약국고유번호
 		)
-		REFERENCES biz_info ( -- ���ȸ����
-			idx_biz -- ����/�౹������ȣ
+		REFERENCES biz_info ( -- 기업회원상세
+			idx_biz -- 병원/약국고유번호
 		);
 
 
--- ����
+-- 리뷰
 ALTER TABLE review
 	ADD
-		CONSTRAINT FK_biz_info_TO_review -- ���ȸ���� -> ����
+		CONSTRAINT FK_biz_info_TO_review -- 기업회원상세 -> 리뷰
 		FOREIGN KEY (
-			fk_idx_biz -- ����/�౹������ȣ
+			fk_idx_biz -- 병원/약국고유번호
 		)
-		REFERENCES biz_info ( -- ���ȸ����
-			idx_biz -- ����/�౹������ȣ
+		REFERENCES biz_info ( -- 기업회원상세
+			idx_biz -- 병원/약국고유번호
 		);
 
--- ����
+-- 리뷰
 ALTER TABLE review
 	ADD
-		CONSTRAINT FK_member_TO_review -- ȸ�� -> ����
+		CONSTRAINT FK_member_TO_review -- 회원 -> 리뷰
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- ����
+-- 리뷰
 ALTER TABLE review
 	ADD
-		CONSTRAINT FK_reservation_TO_review -- ���� -> ����
+		CONSTRAINT FK_reservation_TO_review -- 예약 -> 리뷰
 		FOREIGN KEY (
-			fk_reservation_UID -- �����ڵ�
+			fk_reservation_UID -- 예약코드
 		)
-		REFERENCES reservation ( -- ����
-			reservation_UID -- �����ڵ�
+		REFERENCES reservation ( -- 예약
+			reservation_UID -- 예약코드
 		);
 
--- ����
+-- 예약
 ALTER TABLE reservation
 	ADD
-		CONSTRAINT FK_pet_info_TO_reservation -- �ݷ��������� -> ����
+		CONSTRAINT FK_pet_info_TO_reservation -- 반려동물정보 -> 예약
 		FOREIGN KEY (
-			fk_pet_UID -- �ݷ������ڵ�
+			fk_pet_UID -- 반려동물코드
 		)
-		REFERENCES pet_info ( -- �ݷ���������
-			pet_UID -- �ݷ������ڵ�
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
 		);
 
 
--- �ݷ���������
+-- 반려동물정보
 ALTER TABLE pet_info
 	ADD
-		CONSTRAINT FK_member_TO_pet_info -- ȸ�� -> �ݷ���������
+		CONSTRAINT FK_member_TO_pet_info -- 회원 -> 반려동물정보
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- ��������
+-- 접종내용
 ALTER TABLE shots
 	ADD
-		CONSTRAINT FK_vaccine_TO_shots -- ��� -> ��������
+		CONSTRAINT FK_vaccine_TO_shots -- 백신 -> 접종내용
 		FOREIGN KEY (
-			fk_vaccine_UID -- ����ڵ�
+			fk_vaccine_UID -- 백신코드
 		)
-		REFERENCES vaccine ( -- ���
-			vaccine_UID -- ����ڵ�
+		REFERENCES vaccine ( -- 백신
+			vaccine_UID -- 백신코드
 		);
 
--- ��������
+-- 접종내용
 ALTER TABLE shots
 	ADD
-		CONSTRAINT FK_pet_info_TO_shots -- �ݷ��������� -> ��������
+		CONSTRAINT FK_pet_info_TO_shots -- 반려동물정보 -> 접종내용
 		FOREIGN KEY (
-			fk_pet_UID -- �ݷ������ڵ�
+			fk_pet_UID -- 반려동물코드
 		)
-		REFERENCES pet_info ( -- �ݷ���������
-			pet_UID -- �ݷ������ڵ�
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
 		);
 
--- �ݷ��������
+-- 반려동물목록
 ALTER TABLE pet_list
 	ADD
-		CONSTRAINT FK_member_TO_pet_list -- ȸ�� -> �ݷ��������
+		CONSTRAINT FK_member_TO_pet_list -- 회원 -> 반려동물목록
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- �ݷ��������
+-- 반려동물목록
 ALTER TABLE pet_list
 	ADD
-		CONSTRAINT FK_pet_info_TO_pet_list -- �ݷ��������� -> �ݷ��������
+		CONSTRAINT FK_pet_info_TO_pet_list -- 반려동물정보 -> 반려동물목록
 		FOREIGN KEY (
-			fk_pet_UID -- �ݷ������ڵ�
+			fk_pet_UID -- 반려동물코드
 		)
-		REFERENCES pet_info ( -- �ݷ���������
-			pet_UID -- �ݷ������ڵ�
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
 		);
 
--- �ݷ������ɾ�
+-- 반려동물케어
 ALTER TABLE petcare
 	ADD
-		CONSTRAINT FK_pet_info_TO_petcare -- �ݷ��������� -> �ݷ������ɾ�
+		CONSTRAINT FK_pet_info_TO_petcare -- 반려동물정보 -> 반려동물케어
 		FOREIGN KEY (
-			fk_pet_UID -- �ݷ������ڵ�
+			fk_pet_UID -- 반려동물코드
 		)
-		REFERENCES pet_info ( -- �ݷ���������
-			pet_UID -- �ݷ������ڵ�
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
 		);
 
--- �ݷ������ɾ�
+-- 반려동물케어
 ALTER TABLE petcare
 	ADD
-		CONSTRAINT FK_caretype_TO_petcare -- �ɾ�Ÿ�� -> �ݷ������ɾ�
+		CONSTRAINT FK_caretype_TO_petcare -- 케어타입 -> 반려동물케어
 		FOREIGN KEY (
-			fk_caretype_UID -- �ɾ�Ÿ���ڵ�
+			fk_caretype_UID -- 케어타입코드
 		)
-		REFERENCES caretype ( -- �ɾ�Ÿ��
-			caretype_UID -- �ɾ�Ÿ���ڵ�
+		REFERENCES caretype ( -- 케어타입
+			caretype_UID -- 케어타입코드
 		);
 
--- ������
+-- 진료기록
 ALTER TABLE chart
 	ADD
-		CONSTRAINT FK_pet_info_TO_chart -- �ݷ��������� -> ������
+		CONSTRAINT FK_pet_info_TO_chart -- 반려동물정보 -> 진료기록
 		FOREIGN KEY (
-			fk_pet_UID -- �ݷ������ڵ�
+			fk_pet_UID -- 반려동물코드
 		)
-		REFERENCES pet_info ( -- �ݷ���������
-			pet_UID -- �ݷ������ڵ�
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
 		);
 
--- ������
+-- 진료기록
 ALTER TABLE chart
 	ADD
-		CONSTRAINT FK_member_TO_chart -- ȸ�� -> ������
+		CONSTRAINT FK_member_TO_chart -- 회원 -> 진료기록
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- ��ġ�ݰ���
+-- 예치금결제
 ALTER TABLE payment
 	ADD
-		CONSTRAINT FK_reservation_TO_payment -- ���� -> ��ġ�ݰ���
+		CONSTRAINT FK_reservation_TO_payment -- 예약 -> 예치금결제
 		FOREIGN KEY (
-			fk_reservation_UID -- �����ڵ�
+			fk_reservation_UID -- 예약코드
 		)
-		REFERENCES reservation ( -- ����
-			reservation_UID -- �����ڵ�
+		REFERENCES reservation ( -- 예약
+			reservation_UID -- 예약코드
 		);
 
--- ��ġ��
+-- 예치금
 ALTER TABLE deposit
 	ADD
-		CONSTRAINT FK_member_TO_deposit -- ȸ�� -> ��ġ��
+		CONSTRAINT FK_member_TO_deposit -- 회원 -> 예치금
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- ȯ��
+-- 환불
 ALTER TABLE refund
 	ADD
-		CONSTRAINT FK_payment_TO_refund -- ��ġ�ݰ��� -> ȯ��
+		CONSTRAINT FK_payment_TO_refund -- 예치금결제 -> 환불
 		FOREIGN KEY (
-			fk_payment_UID -- �����ڵ�
+			fk_payment_UID -- 결제코드
 		)
-		REFERENCES payment ( -- ��ġ�ݰ���
-			payment_UID -- �����ڵ�
+		REFERENCES payment ( -- 예치금결제
+			payment_UID -- 결제코드
 		);
 
 
--- 1:1���
+-- 1:1상담
 ALTER TABLE consult
 	ADD
-		CONSTRAINT FK_member_TO_consult -- ȸ�� -> 1:1���
+		CONSTRAINT FK_member_TO_consult -- 회원 -> 1:1상담
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- �˸�
+-- 알림
 ALTER TABLE notification
 	ADD
-		CONSTRAINT FK_member_TO_notification -- ȸ�� -> �˸�
+		CONSTRAINT FK_member_TO_notification -- 회원 -> 알림
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- ��ġ�����
+-- 예치금출금
 ALTER TABLE withdraw
 	ADD
-		CONSTRAINT FK_deposit_TO_withdraw -- ��ġ�� -> ��ġ�����
+		CONSTRAINT FK_deposit_TO_withdraw -- 예치금 -> 예치금출금
 		FOREIGN KEY (
-			fk_deposit_UID -- ��ġ���ڵ�
+			fk_deposit_UID -- 예치금코드
 		)
-		REFERENCES deposit ( -- ��ġ��
-			deposit_UID -- ��ġ���ڵ�
+		REFERENCES deposit ( -- 예치금
+			deposit_UID -- 예치금코드
 		);
 
--- ��ġ�� ��볻��
+-- 예치금 사용내역
 ALTER TABLE dep_use
 	ADD
-		CONSTRAINT FK_deposit_TO_dep_use -- ��ġ�� -> ��ġ�� ��볻��
+		CONSTRAINT FK_deposit_TO_dep_use -- 예치금 -> 예치금 사용내역
 		FOREIGN KEY (
-			fk_deposit_UID -- ��ġ���ڵ�
+			fk_deposit_UID -- 예치금코드
 		)
-		REFERENCES deposit ( -- ��ġ��
-			deposit_UID -- ��ġ���ڵ�
+		REFERENCES deposit ( -- 예치금
+			deposit_UID -- 예치금코드
 		);
 
--- ��ġ�� ��볻��
+-- 예치금 사용내역
 ALTER TABLE dep_use
 	ADD
-		CONSTRAINT FK_payment_TO_dep_use -- ��ġ�ݰ��� -> ��ġ�� ��볻��
+		CONSTRAINT FK_payment_TO_dep_use -- 예치금결제 -> 예치금 사용내역
 		FOREIGN KEY (
-			fk_payment_UID -- �����ڵ�
+			fk_payment_UID -- 결제코드
 		)
-		REFERENCES payment ( -- ��ġ�ݰ���
-			payment_UID -- �����ڵ�
+		REFERENCES payment ( -- 예치금결제
+			payment_UID -- 결제코드
 		);
 
--- ��ġ�� ��볻��
+-- 예치금 사용내역
 ALTER TABLE dep_use
 	ADD
-		CONSTRAINT FK_reservation_TO_dep_use -- ���� -> ��ġ�� ��볻��
+		CONSTRAINT FK_reservation_TO_dep_use -- 예약 -> 예치금 사용내역
 		FOREIGN KEY (
-			fk_reservation_UID -- �����ڵ�
+			fk_reservation_UID -- 예약코드
 		)
-		REFERENCES reservation ( -- ����
-			reservation_UID -- �����ڵ�
+		REFERENCES reservation ( -- 예약
+			reservation_UID -- 예약코드
 		);
 
--- ó����
+-- 처방전
 ALTER TABLE prescription
 	ADD
-		CONSTRAINT FK_chart_TO_prescription -- ������ -> ó����
+		CONSTRAINT FK_chart_TO_prescription -- 진료기록 -> 처방전
 		FOREIGN KEY (
-			chart_UID -- ��Ʈ�ڵ�
+			chart_UID -- 차트코드
 		)
-		REFERENCES chart ( -- ������
-			chart_UID -- ��Ʈ�ڵ�
+		REFERENCES chart ( -- 진료기록
+			chart_UID -- 차트코드
 		);
 
--- ȭ�� ���(video advice)
+-- 화상 상담(video advice)
 ALTER TABLE video_advice
 	ADD
-		CONSTRAINT FK_member_TO_video_advice -- ȸ�� -> ȭ�� ���(video advice)
+		CONSTRAINT FK_member_TO_video_advice -- 회원 -> 화상 상담(video advice)
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- ȭ�� ���(video advice)
+-- 화상 상담(video advice)
 ALTER TABLE video_advice
 	ADD
-		CONSTRAINT FK_biz_info_TO_video_advice -- ���ȸ���� -> ȭ�� ���(video advice)
+		CONSTRAINT FK_biz_info_TO_video_advice -- 기업회원상세 -> 화상 상담(video advice)
 		FOREIGN KEY (
-			fk_idx_biz -- ����/�౹������ȣ
+			fk_idx_biz -- 병원/약국고유번호
 		)
-		REFERENCES biz_info ( -- ���ȸ����
-			idx_biz -- ����/�౹������ȣ
+		REFERENCES biz_info ( -- 기업회원상세
+			idx_biz -- 병원/약국고유번호
 		);
 
 
--- ������(reviewComment)
+-- 리뷰댓글(reviewComment)
 ALTER TABLE review_comment
 	ADD
-		CONSTRAINT FK_review_TO_review_comment -- ���� -> ������(reviewComment)
+		CONSTRAINT FK_review_TO_review_comment -- 리뷰 -> 리뷰댓글(reviewComment)
 		FOREIGN KEY (
-			fk_review_UID -- �����ڵ�
+			fk_review_UID -- 리뷰코드
 		)
-		REFERENCES review ( -- ����
-			review_UID -- �����ڵ�
+		REFERENCES review ( -- 리뷰
+			review_UID -- 리뷰코드
 		);
 
--- ������(reviewComment)
+-- 리뷰댓글(reviewComment)
 ALTER TABLE review_comment
 	ADD
-		CONSTRAINT FK_member_TO_review_comment -- ȸ�� -> ������(reviewComment)
+		CONSTRAINT FK_member_TO_review_comment -- 회원 -> 리뷰댓글(reviewComment)
 		FOREIGN KEY (
-			fk_idx -- ȸ��������ȣ
+			fk_idx -- 회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- 1:1��� ���
+-- 1:1상담 댓글
 ALTER TABLE consult_comment
 	ADD
-		CONSTRAINT FK_consult_TO_consult_comment -- 1:1��� -> 1:1��� ���
+		CONSTRAINT FK_consult_TO_consult_comment -- 1:1상담 -> 1:1상담 댓글
 		FOREIGN KEY (
-			fk_consult_UID -- ����ڵ�
+			fk_consult_UID -- 상담코드
 		)
-		REFERENCES consult ( -- 1:1���
-			consult_UID -- ����ڵ�
+		REFERENCES consult ( -- 1:1상담
+			consult_UID -- 상담코드
 		);
 
--- 1:1��� ���
+-- 1:1상담 댓글
 ALTER TABLE consult_comment
 	ADD
-		CONSTRAINT FK_member_TO_consult_comment -- ȸ�� -> 1:1��� ���
+		CONSTRAINT FK_member_TO_consult_comment -- 회원 -> 1:1상담 댓글
 		FOREIGN KEY (
-			fk_idx -- ���ȸ��������ȣ
+			fk_idx -- 댓글회원고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- ���ɾ� �̹���
+-- 펫케어 이미지
 ALTER TABLE petcare_img
 	ADD
-		CONSTRAINT FK_petcare_TO_petcare_img -- �ݷ������ɾ� -> ���ɾ� �̹���
+		CONSTRAINT FK_petcare_TO_petcare_img -- 반려동물케어 -> 펫케어 이미지
 		FOREIGN KEY (
-			fk_care_UID -- �ɾ��ڵ�
+			fk_care_UID -- 케어코드
 		)
-		REFERENCES petcare ( -- �ݷ������ɾ�
-			care_UID -- �ɾ��ڵ�
+		REFERENCES petcare ( -- 반려동물케어
+			care_UID -- 케어코드
 		);
         
         
--- #������� ���� �������� �߰�
--- �Խñ�
+-- #보조기능 관련 제약조건 추가
+-- 게시글
 ALTER TABLE board_post
 	ADD
-		CONSTRAINT FK_board_group_TO_board_post -- �Խ��Ǳ׷� -> �Խñ�
+		CONSTRAINT FK_board_group_TO_board_post -- 게시판그룹 -> 게시글
 		FOREIGN KEY (
-			fk_brd_id -- �Խ��Ǳ׷��ڵ�
+			fk_brd_id -- 게시판그룹코드
 		)
-		REFERENCES board_group ( -- �Խ��Ǳ׷�
-			brd_id -- �Խ��Ǳ׷��ڵ�
+		REFERENCES board_group ( -- 게시판그룹
+			brd_id -- 게시판그룹코드
 		)
 		
 		;
 
--- �Խñ�
+-- 게시글
 ALTER TABLE board_post
 	ADD
-		CONSTRAINT FK_member_TO_board_post -- ȸ�� -> �Խñ�
+		CONSTRAINT FK_member_TO_board_post -- 회원 -> 게시글
 		FOREIGN KEY (
-			fk_idx -- �ۼ��ڰ�����ȣ
+			fk_idx -- 작성자고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		)
 		
 		;
 
--- ���
+-- 댓글
 ALTER TABLE board_comment
 	ADD
-		CONSTRAINT FK_board_group_TO_comment -- �Խ��Ǳ׷� -> ���
+		CONSTRAINT FK_board_group_TO_comment -- 게시판그룹 -> 댓글
 		FOREIGN KEY (
-			fk_brd_id -- �Խ��Ǳ׷��ڵ�
+			fk_brd_id -- 게시판그룹코드
 		)
-		REFERENCES board_group ( -- �Խ��Ǳ׷�
-			brd_id -- �Խ��Ǳ׷��ڵ�
+		REFERENCES board_group ( -- 게시판그룹
+			brd_id -- 게시판그룹코드
 		);
 
--- ���
+-- 댓글
 ALTER TABLE board_comment
 	ADD
-		CONSTRAINT FK_board_post_TO_comment -- �Խñ� -> ���
+		CONSTRAINT FK_board_post_TO_comment -- 게시글 -> 댓글
 		FOREIGN KEY (
-			fk_post_id -- �Խñ۰�����ȣ
+			fk_post_id -- 게시글고유번호
 		)
-		REFERENCES board_post ( -- �Խñ�
-			post_id -- �Խñ۰�����ȣ
+		REFERENCES board_post ( -- 게시글
+			post_id -- 게시글고유번호
 		)
 		
 		;
 
--- ���
+-- 댓글
 ALTER TABLE board_comment
 	ADD
-		CONSTRAINT FK_member_TO_comment -- ȸ�� -> ���
+		CONSTRAINT FK_member_TO_comment -- 회원 -> 댓글
 		FOREIGN KEY (
-			fk_idx -- ����ۼ��ڰ�����ȣ
+			fk_idx -- 댓글작성자고유번호
 		)
-		REFERENCES member ( -- ȸ��
-			idx -- ȸ��������ȣ
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
 		);
 
--- ���⵿���Ŀ��̹���
+-- 유기동물후원이미지
 ALTER TABLE funding_img
 	ADD
-		CONSTRAINT FK_funding_TO_funding_img -- ���⵿���Ŀ� -> ���⵿���Ŀ��̹���
+		CONSTRAINT FK_funding_TO_funding_img -- 유기동물후원 -> 유기동물후원이미지
 		FOREIGN KEY (
-			fk_fd_id -- �Ŀ��ڵ�
+			fk_fd_id -- 후원코드
 		)
-		REFERENCES funding ( -- ���⵿���Ŀ�
-			fd_id -- �Ŀ��ڵ�
+		REFERENCES funding ( -- 유기동물후원
+			fd_id -- 후원코드
 		);
 
--- �ݵ�����
+-- 펀딩결제
 ALTER TABLE funding_payment
 	ADD
-		CONSTRAINT FK_funding_TO_funding_payment -- ���⵿���Ŀ� -> �ݵ�����
+		CONSTRAINT FK_funding_TO_funding_payment -- 유기동물후원 -> 펀딩결제
 		FOREIGN KEY (
-			fk_fd_id -- �Ŀ��ڵ�
+			fk_fd_id -- 후원코드
 		)
-		REFERENCES funding ( -- ���⵿���Ŀ�
-			fd_id -- �Ŀ��ڵ�
+		REFERENCES funding ( -- 유기동물후원
+			fd_id -- 후원코드
 		);
 
--- �ݵ�ȯ��
+-- 펀딩환불
 ALTER TABLE funding_refund
 	ADD
-		CONSTRAINT FK_funding_payment_TO_funding_refund -- �ݵ����� -> �ݵ�ȯ��
+		CONSTRAINT FK_funding_payment_TO_funding_refund -- 펀딩결제 -> 펀딩환불
 		FOREIGN KEY (
-			fk_payment_UID -- �����ڵ�
+			fk_payment_UID -- 결제코드
 		)
-		REFERENCES funding_payment ( -- �ݵ�����
-			payment_UID -- �����ڵ�
+		REFERENCES funding_payment ( -- 펀딩결제
+			payment_UID -- 결제코드
 		);
+=======
+-- [190111] member , biz_info 컬럼 추가 (이미지 파일명), 제약조건명 수정
+-- [190114] 회원 등급 삭제(fk컬럼, 테이블)
+
+------------------------------------------------------------------------------
+-- 계정 조회
+show user;
+
+-- 모든 테이블 조회
+select * from user_tables;
+
+-- 모든 시퀀스 조회
+select * from user_sequences;
+
+-- 모든 제약조건 조회
+select * from user_constraints;
+
+-- 테이블 삭제 명령문
+drop table schedule purge;
+drop table reservation purge;
+drop table payment purge;
+drop table deposit purge;
+drop table refund purge;
+drop table withdraw purge;
+drop table dep_use purge;
+
+-- 시퀀스 삭제 명령문
+drop sequence seq_schedule_schedule_UID;
+drop sequence SEQ_RESERVATION_RESERV_UID;
+drop sequence seq_payment_schedule_UID;
+drop sequence seq_deposit_deposit_UID;
+drop sequence seq_refund_refund_UID;
+drop sequence seq_withdraw_withdraw_UID;
+drop sequence seq_dep_use_dep_use_UID;
+
+-------------------------------------------------------------------------------
+CREATE TABLE member_level (
+   level_UID      NUMBER   NOT NULL, -- 등급번호
+   level_name     VARCHAR2(20) NOT NULL, -- 등급명
+   level_limit    NUMBER   NOT NULL, -- 등급조건
+   level_contents VARCHAR2(100) NOT NULL  -- 등급설명
+    
+    ,CONSTRAINT PK_level PRIMARY KEY (level_UID)
+);
+
+drop table member_level purge;
+
+-- 회원
+CREATE TABLE member (
+   idx          NUMBER    NOT NULL, -- 회원고유번호
+   userid       VARCHAR2(255)  NOT NULL, -- 이메일아이디
+   pwd          VARCHAR2(100)  NOT NULL, -- 비밀번호
+   name         VARCHAR2(100)  NOT NULL, -- 이름
+   nickname     VARCHAR2(100)  NOT NULL, -- 닉네임
+   birthday     VARCHAR2(50)  NOT NULL, -- 생년월일
+   gender       NUMBER(1) default 1 NOT NULL, -- 성별
+   phone        VARCHAR2(100)  NOT NULL, -- 연락처
+   profileimg   VARCHAR2(100)  NOT NULL, -- 프로필사진
+   membertype   NUMBER(1) NOT NULL, -- 회원타입
+   point        NUMBER    default 0 NOT NULL, -- 포인트
+   totaldeposit NUMBER    default 0 NOT NULL, -- 누적예치금
+   noshow       NUMBER    default 0 NOT NULL, -- 노쇼지수
+   registerdate DATE      default sysdate NOT NULL  -- 가입일자
+    
+    , CONSTRAINT PK_member PRIMARY KEY (idx) -- 회원 기본키
+    , CONSTRAINT uq_member_userid UNIQUE (userid) -- 회원아이디UQ   
+    , CONSTRAINT ck_member_gender check(gender in(1,2)) -- 회원성별 체크제약   
+    , CONSTRAINT ck_member_memtype check(membertype in(1, 2, 3)) -- 회원타입 체크제약
+);
+
+alter table member
+add fileName   VARCHAR2(100)  NOT NULL;
+
+-- 등급번호 삭제
+ALTER TABLE member DROP COLUMN fk_level_UID;
+
+
+
+CREATE TABLE login_log (
+   idx           NUMBER   NOT NULL, -- 회원고유번호
+   fk_userid     VARCHAR2(255) NOT NULL, -- 이메일아이디
+   fk_pwd        VARCHAR2(100) NOT NULL, -- 비밀번호
+   lastlogindate DATE     NOT NULL, -- 로그인일시
+   member_status NUMBER(1)   default 1 NOT NULL  -- 회원상태 활동1 휴면0
+    
+    , CONSTRAINT PK_login_log PRIMARY KEY (idx) -- 로그인 기본키
+    , CONSTRAINT CK_login_log_status check(member_status in(0,1)) -- 회원상태 체크제약
+    , CONSTRAINT FK_member_TO_login_log FOREIGN KEY (idx) REFERENCES member (idx)
+);
+
+
+
+-- 회원 시퀀스
+-- drop sequence seq_member;
+create sequence seq_member
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+        
+-- 기업회원상세
+CREATE TABLE biz_info (
+   idx_biz    NUMBER    NOT NULL, -- 병원/약국고유번호
+   biztype    NUMBER(1) NOT NULL, -- 기업구분
+   repname    VARCHAR2(50)  NOT NULL, -- 대표자명
+   biznumber  VARCHAR2(100)  NOT NULL, -- 사업자번호
+   postcode   VARCHAR2(10)  NOT NULL, -- 우편번호
+   addr1      VARCHAR2(100)  NOT NULL, -- 주소
+   addr2      VARCHAR2(100)  NOT NULL, -- 주소2
+   latitude   VARCHAR2(100)  NOT NULL, -- 위도
+   longitude  VARCHAR2(100)  NOT NULL, -- 경도
+   prontimg   VARCHAR2(100)  NOT NULL, -- 대표이미지
+   weekday    VARCHAR2(100)  NOT NULL, -- 평일; 월~금(주 5), 화~금(주 4), 월, 수, 금(주 3)
+   wdstart    DATE      NOT NULL, -- 평일시작시간
+   wdend      DATE      NOT NULL, -- 평일종료시간
+   lunchstart DATE      NOT NULL, -- 점심시작시간
+   lunchend   DATE      NOT NULL, -- 점심종료시간
+   satstart  DATE      NOT NULL, -- 토요일시작
+   satend     DATE      NOT NULL, -- 토요일종료
+   dayoff     VARCHAR2(100)  NOT NULL, -- 일요일/공휴일
+   dog        NUMBER(1) NOT NULL, -- 강아지
+   cat        NUMBER(1) NOT NULL, -- 고양이
+   smallani   NUMBER(1) NOT NULL, -- 소동물
+   etc        NUMBER(1) NOT NULL, -- 기타
+   easyway  VARCHAR2(255)  NULL,     -- 찾아오는길
+   intro      CLOB      NOT NULL  -- 소개글
+    ,CONSTRAINT PK_biz_info -- 기업회원상세 기본키
+      PRIMARY KEY (
+         idx_biz -- 병원/약국고유번호
+      )
+    ,CONSTRAINT UK_biz_info -- 기업회원상세 유니크 제약
+      UNIQUE (
+         biznumber -- 사업자번호
+      )
+    ,CONSTRAINT ck_biz_info_dog -- 강아지 체크제약
+      check(dog in(1,0))
+    ,CONSTRAINT ck_biz_info_cat -- 고양이 체크제약
+      check(cat in(1,0))
+    ,CONSTRAINT ck_biz_info_smallani -- 소동물 체크제약
+      check(smallani in(1,0))
+    ,CONSTRAINT ck_biz_info_etc -- 기타 체크제약
+      check(etc in(1,0))
+    ,CONSTRAINT FK_member_TO_biz_info -- 회원 -> 기업회원상세
+      FOREIGN KEY (
+         idx_biz -- 병원/약국고유번호
+      )
+      REFERENCES member ( -- 회원
+         idx -- 회원고유번호
+      )
+);
+
+
+-- 기업회원추가이미지
+CREATE TABLE biz_info_img (
+   img_UID     NUMBER   NOT NULL, -- 이미지고유번호
+   fk_idx_biz  NUMBER   NOT NULL, -- 병원/약국고유번호
+   imgfilename VARCHAR2(100) NOT NULL  -- 이미지파일명
+    ,CONSTRAINT PK_biz_info_img -- 기업회원추가이미지 기본키
+      PRIMARY KEY (
+         img_UID -- 이미지고유번호
+      )
+);
+ALTER TABLE biz_info_img
+   ADD
+      CONSTRAINT FK_biz_info_TO_biz_info_img -- 기업회원상세 -> 기업회원추가이미지
+      FOREIGN KEY (
+         fk_idx_biz -- 병원/약국고유번호
+      )
+      REFERENCES biz_info ( -- 기업회원상세
+         idx_biz -- 병원/약국고유번호
+      );
+
+
+create sequence biz_info_img_seq --기업정보 이미지 
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 의료진
+CREATE TABLE doctors (
+	doc_UID    NUMBER    NOT NULL, -- 의료진고유번호
+	fk_idx_biz NUMBER    NOT NULL, -- 병원/약국고유번호
+	docname    VARCHAR2(100)  NOT NULL, -- 의료진명
+	dog        NUMBER(1) NOT NULL, -- 강아지
+	cat        NUMBER(1) NOT NULL, -- 고양이
+	smallani   NUMBER(1) NOT NULL, -- 소동물
+	etc        NUMBER(1) NOT NULL  -- 기타
+    ,CONSTRAINT PK_doctors -- 의료진 기본키
+		PRIMARY KEY (
+			doc_UID -- 의료진고유번호
+		)
+     ,CONSTRAINT ck_doctors_dog -- 강아지 체크제약
+		check(dog in(1,0))
+    ,CONSTRAINT ck_doctors_cat -- 고양이 체크제약
+		check(cat in(1,0))
+    ,CONSTRAINT ck_doctors_smallani -- 소동물 체크제약
+		check(smallani in(1,0))
+    ,CONSTRAINT ck_doctors_etc -- 기타 체크제약
+		check(etc in(1,0))
+);
+
+create sequence seq_doctors_UID --의료진 
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 태그 테이블
+--drop table recommend_tag purge;
+CREATE TABLE recommend_tag (
+   tag_UID  NUMBER   NOT NULL, -- 태그번호
+   tag_type VARCHAR2(100) NOT NULL, -- 분야
+   tag_name VARCHAR2(100) NOT NULL  -- 태그이름
+    ,CONSTRAINT PK_recommend_tag PRIMARY KEY(tag_UID)
+);
+
+ALTER TABLE recommend_tag 
+ADD CONSTRAINT UQ_recommend_tag_name UNIQUE(tag_name);
+
+-- 태그 시퀀스
+create sequence seq_recommend_tag_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+CREATE TABLE have_tag (
+   fk_tag_UID  NUMBER   NOT NULL, -- 태그번호
+   fk_tag_name VARCHAR2(100) NOT NULL,  -- 태그이름
+    fk_idx      NUMBER   NOT NULL -- 회원고유번호
+);
+
+ALTER TABLE have_tag 
+ADD CONSTRAINT FK_have_tag_UID FOREIGN KEY(fk_tag_UID) 
+REFERENCES recommend_tag(tag_UID);
+
+ALTER TABLE have_tag 
+ADD CONSTRAINT FK_have_tag_name FOREIGN KEY(fk_tag_name) 
+REFERENCES recommend_tag(tag_name);
+
+ALTER TABLE have_tag 
+ADD CONSTRAINT FK_have_tag_ide FOREIGN KEY(fk_idx) 
+REFERENCES member(idx);
+
+
+-- 리뷰
+CREATE TABLE review (
+	review_UID         NUMBER   NOT NULL, -- 리뷰코드
+	fk_idx_biz         NUMBER   NOT NULL, -- 병원/약국고유번호
+	fk_idx             NUMBER   NOT NULL, -- 회원고유번호
+	fk_reservation_UID NUMBER   NOT NULL, -- 예약코드
+	startpoint         NUMBER   NOT NULL, -- 평점
+	fk_userid          VARCHAR2(255) NOT NULL, -- 작성자아이디
+	fk_nickname        VARCHAR2(100) NOT NULL, -- 작성자닉네임
+	rv_contents        CLOB     NOT NULL, -- 한줄리뷰내용
+	rv_status          NUMBER(1)   NOT NULL, -- 리뷰상태
+	rv_blind           NUMBER(1)   NOT NULL, -- 리뷰블라인드사유 0 없음 1 욕설 2 기업회원요청 3 신고누적 4 기타
+	rv_writeDate       date     default sysdate NOT NULL  -- 리뷰날짜
+    ,CONSTRAINT PK_review PRIMARY KEY (review_UID)
+    ,CONSTRAINT ck_review_status -- 리뷰상태 체크제약
+		check(rv_status in(0,1))
+    ,CONSTRAINT ck_review_blind -- 리뷰블라인드사유 체크제약
+		check(rv_blind in(0,1,2,3,4))
+);
+
+-- 리뷰 시퀀스
+create sequence seq_review_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+
+-- 리뷰댓글(reviewComment)
+CREATE TABLE review_comment (
+	rc_id         NUMBER    NOT NULL, -- 리뷰댓글번호
+	fk_review_UID NUMBER    NOT NULL, -- 리뷰코드
+	fk_idx        NUMBER    NOT NULL, -- 회원고유번호
+	rc_content    CLOB      NOT NULL, -- 댓글내용
+	rc_writedate  DATE      NOT NULL, -- 댓글날짜
+	fk_rc_id      NUMBER    NOT NULL, -- 원댓글 고유번호
+	rc_group      NUMBER    NOT NULL, -- 댓글그룹번호
+	rc_g_odr      NUMBER    NOT NULL, -- 댓글그룹순서
+	rc_depth      NUMBER    NOT NULL, -- 계층
+	rc_blind      NUMBER(1)   NOT NULL, -- 블라인드처리이유 0 없음 1 욕설 2 기업회원요청 3 신고누적 4 기타
+	rc_status     NUMBER(1) NULL,      -- 상태
+    CONSTRAINT PK_review_comment PRIMARY KEY(rc_id)
+    ,CONSTRAINT ck_rc_status -- 리뷰댓글상태 체크제약
+		check(rc_status in(0,1))
+    ,CONSTRAINT ck_rc_blind -- 블라인드처리이유 체크제약
+		check(rc_blind in(0,1,2,3,4)) 
+);
+
+-- 리뷰 댓글 시퀀스
+create sequence seq_rc_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 스케쥴
+CREATE TABLE schedule (
+	schedule_UID    NUMBER    NOT NULL, -- 스케쥴코드
+	fk_idx_biz      NUMBER    NOT NULL, -- 병원/약국고유번호
+	schedule_DATE   DATE      NOT NULL, -- 예약일정
+	schedule_status NUMBER(1) default 0 NOT NULL  -- 일정상태 예약: 1/ 비예약: 0/default: 0
+    ,CONSTRAINT PK_schedule -- 스케쥴 기본키
+		PRIMARY KEY (schedule_UID)
+    ,CONSTRAINT ck_sch_status -- 일정상태 체크제약
+		check(schedule_status in(1,0))
+    ,CONSTRAINT fk_sch_idx_biz -- 기업회원상세 -> 스케쥴
+		FOREIGN KEY (fk_idx_biz)	REFERENCES biz_info(idx_biz)
+);
+
+-- 스케쥴               
+create sequence seq_schedule_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;   
+
+-- 예약
+CREATE TABLE reservation (
+	reservation_UID    NUMBER    NOT NULL, -- 예약코드
+	fk_idx             NUMBER    NOT NULL, -- 회원고유번호
+	fk_schedule_UID    NUMBER    NOT NULL, -- 스케쥴코드
+	fk_pet_UID         NUMBER    NOT NULL, -- 반려동물코드
+	bookingdate        DATE      default sysdate NOT NULL, -- 예약완료일시
+	reservation_DATE   DATE      NOT NULL, -- 방문예정일
+	reservation_status NUMBER(1) NOT NULL, -- 예약진행상태 1 예약완료/ 2 결제완료 / 3 진료완료 / 4 취소 / 5 no show
+	reservation_type   NUMBER    NOT NULL  -- 예약타입 1 진료 / 2 예방접종 / 3 수술/ 4 호텔링
+    
+    ,CONSTRAINT PK_reservation -- 예약 기본키
+		PRIMARY KEY (reservation_UID)
+    ,CONSTRAINT ck_rev_status -- 예약진행상태 체크제약
+		check(reservation_status in(1,2,3,4,5))
+    ,CONSTRAINT ck_rev_type -- 예약타입 체크제약
+		check(reservation_type in(1, 2, 3, 4))
+    ,CONSTRAINT FK_member_TO_reservation -- 회원 -> 예약
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		)
+    ,CONSTRAINT FK_schedule_TO_reservation -- 스케쥴 -> 예약
+		FOREIGN KEY (
+			fk_schedule_UID -- 스케쥴코드
+		)
+		REFERENCES schedule ( -- 스케쥴
+			schedule_UID -- 스케쥴코드
+		)
+);
+
+-- 예약   
+create sequence seq_reservation_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache; 	
+
+-- 반려동물정보
+CREATE TABLE pet_info (
+	pet_UID         NUMBER    NOT NULL, -- 반려동물코드
+	fk_idx          NUMBER    NOT NULL, -- 회원고유번호
+	pet_name        VARCHAR2(100)  NOT NULL, -- 반려동물이름
+	pet_type        VARCHAR2(50)  NOT NULL, -- 종류 dog/cat/smallani/etc
+	pet_birthday    VARCHAR2(100)  NULL,     -- 반려동물생일
+	pet_size        VARCHAR2(2)  NULL,     -- 사이즈 L/M/S
+	pet_weight      NUMBER    NULL,     -- 몸무게
+	pet_gender      NUMBER(1) NULL,     -- 성별 1 남 2 여
+	pet_neutral     NUMBER(1) NULL,     -- 중성화여부  1 함 / 0 안함 / 2 모름
+	medical_history CLOB      NULL,     -- 과거병력기재
+	allergy         CLOB      NULL,     -- 알러지내역
+	pet_profileimg  VARCHAR2(255)  NULL      -- 반려동물프로필사진
+    ,CONSTRAINT PK_pet_info -- 반려동물정보 기본키
+		PRIMARY KEY (pet_UID)
+    ,CONSTRAINT ck_petinfo_gender -- 반려동물성별 체크제약
+		check(pet_gender in(1,2))
+    ,CONSTRAINT ck_petinfo_neutral -- 중성화여부 체크제약
+		check(pet_neutral in(0,1,2))  
+);
+
+create sequence seq_pet_info_UID --반려동물정보
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 백신
+CREATE TABLE vaccine (
+	vaccine_UID  NUMBER    NOT NULL, -- 백신코드
+	vaccine_name VARCHAR2(100)  NOT NULL, -- 백신명
+	dog          NUMBER(1) NOT NULL, -- 강아지
+	cat          NUMBER(1) NOT NULL, -- 고양이
+	smallani     NUMBER(1) NOT NULL  -- 소동물
+    ,CONSTRAINT PK_vaccine -- 백신 기본키
+		PRIMARY KEY (vaccine_UID)
+    ,CONSTRAINT ck_vaccine_dog -- 강아지 체크제약
+		check(dog in(1,0))
+    ,CONSTRAINT ck_vaccine_cat -- 고양이 체크제약
+		check(cat in(1,0))
+    ,CONSTRAINT ck_vaccine_smallani -- 소동물 체크제약
+		check(smallani in(1,0))
+);
+
+create sequence seq_vaccine_UID  --백신
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 접종내용
+CREATE TABLE shots (
+	shots_UID      NUMBER   NOT NULL, -- 접종코드
+	fk_pet_UID     NUMBER   NOT NULL, -- 반려동물코드
+	fk_vaccine_UID NUMBER   NOT NULL, -- 백신코드
+	vaccine_name   VARCHAR2(100) NOT NULL  -- 백신명
+    ,CONSTRAINT PK_shots -- 접종내용 기본키
+		PRIMARY KEY (shots_UID)
+);
+        
+create sequence seq_shots_UID  --접종
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 반려동물목록
+CREATE TABLE pet_list (
+	petlist_UID NUMBER   NOT NULL, -- 목록번호
+	fk_idx      NUMBER   NOT NULL, -- 회원고유번호
+	fk_pet_UID  NUMBER   NOT NULL, -- 반려동물코드
+	fk_pet_name VARCHAR2(100) NOT NULL  -- 반려동물명
+    ,CONSTRAINT PK_pet_list -- 반려동물목록 기본키
+		PRIMARY KEY (petlist_UID)
+);
+
+
+-- 반려동물케어
+CREATE TABLE petcare (
+	care_UID        NUMBER NOT NULL, -- 케어코드
+	fk_pet_UID      NUMBER NOT NULL, -- 반려동물코드
+	fk_caretype_UID NUMBER NOT NULL, -- 케어타입코드
+	care_contents   CLOB   NOT NULL, -- 내용
+	care_memo       CLOB   NULL,     -- 메모
+	care_start      DATE   NOT NULL, -- 시작일시
+	care_end        DATE   NOT NULL, -- 종료일시
+	care_alarm      NUMBER(10) NULL,     -- 알림여부 없음 0/5분전 5/10분전 10/하루전 1440 (분 단위 환산)
+	care_date       DATE   NOT NULL  -- 케어등록 일자
+    ,CONSTRAINT PK_petcare -- 반려동물케어 기본키
+		PRIMARY KEY (care_UID)
+);
+
+create sequence seq_petcare_UID  --펫케어
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 케어타입
+CREATE TABLE caretype (
+	caretype_UID  NUMBER   NOT NULL, -- 케어타입코드
+	caretype_name VARCHAR2(100) NOT NULL, -- 케어타입명
+	caretype_info CLOB     NOT NULL  -- 케어타입별설명
+    ,CONSTRAINT PK_caretype -- 케어타입 기본키
+		PRIMARY KEY (caretype_UID)
+);
+
+create sequence seq_caretype_UID --케어 타입
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 진료기록
+CREATE TABLE chart (
+	chart_UID        NUMBER   NOT NULL, -- 차트코드
+	fk_pet_UID       NUMBER   NOT NULL, -- 반려동물코드
+	fk_idx           NUMBER   NOT NULL, -- 회원고유번호
+	chart_type       NUMBER(1) NOT NULL, -- 진료타입  0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
+	biz_name         VARCHAR2(100) NOT NULL, -- 병원/약국명
+	bookingdate      DATE     NULL,     -- 예약완료일시
+	reservation_DATE DATE     NULL,     -- 방문예정일
+	doc_name         VARCHAR2(100) NULL,     -- 수의사명
+	cautions         CLOB     NULL,     -- 주의사항
+	chart_contents   CLOB     NULL,     -- 내용
+	payment_pay      NUMBER   NULL,     -- 사용예치금
+	payment_point    NUMBER   NULL,     -- 사용포인트
+	addpay           NUMBER   NULL,     -- 본인부담금(추가결제금액)
+	totalpay         NUMBER   NULL      -- 진료비총액
+    ,CONSTRAINT PK_chart -- 진료기록 기본키
+		PRIMARY KEY (chart_UID)
+    ,CONSTRAINT ck_chart_type -- 진료타입 체크제약
+		check(chart_type in(0,1,2,3,4))
+);
+
+create sequence chart_seq --차트
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 예치금결제
+CREATE TABLE payment (
+	payment_UID        NUMBER NOT NULL, -- 결제코드
+	fk_reservation_UID NUMBER NOT NULL, -- 예약코드
+	payment_total      NUMBER NOT NULL, -- 결제총액
+	payment_point      NUMBER NOT NULL, -- 결제포인트
+	payment_pay        NUMBER NOT NULL, -- 실결제금액
+	payment_date       DATE   NOT NULL, -- 결제일자
+	payment_status     NUMBER(1) NOT NULL  -- 결제상태 1 결제완료 / 0 미결제 / 2 취소 / 3 환불
+    ,CONSTRAINT PK_payment PRIMARY KEY (payment_UID)
+    ,CONSTRAINT CK_payment_status -- 결제상태 체크제약
+		check(payment_status in(0,1,2,3))
+);
+
+-- 예치금결제 
+create sequence seq_payment_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache; 
+
+-- 예치금
+CREATE TABLE deposit (
+	deposit_UID    NUMBER   NOT NULL, -- 예치금코드
+	fk_idx         NUMBER   NOT NULL, -- 회원고유번호
+	depositcoin    NUMBER   NOT NULL, -- 예치금
+	deposit_status NUMBER(1)   default 1 NOT NULL, -- 예치금상태 1 사용가능 / 0 사용불가능 / 2 환불취소신청 / 3 출금
+	deposit_type   VARCHAR2(50) NOT NULL, -- 충전수단
+	deposit_date   DATE     default sysdate NOT NULL  -- 충전일자
+    ,CONSTRAINT PK_deposit -- 예치금 기본키
+		PRIMARY KEY (deposit_UID)
+    ,CONSTRAINT CK_deposit_status -- 예치금상태 체크제약
+		check(deposit_status in(0,1,2,3))
+);
+
+-- 예치금 
+create sequence seq_deposit_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache; 
+
+-- 환불
+CREATE TABLE refund (
+	refund_UID     NUMBER NOT NULL, -- 환불코드
+	fk_payment_UID NUMBER   NOT NULL, -- 결제코드
+	fk_idx         NUMBER   NOT NULL, -- 환불받을회원번호
+	fk_idx_biz     NUMBER   NOT NULL, -- 병원번호
+	refund_DATE    DATE     default sysdate NOT NULL, -- 환불신청일자
+	add_DATE       DATE     NOT NULL, -- 사용일자
+	refund_reason  VARCHAR2(255) NOT NULL, -- 환불사유
+	refund_money   NUMBER   NOT NULL, -- 환불금액
+	refund_status  NUMBER(1)   default 0 NOT NULL  -- 승인여부 1확인 0미확인
+    ,CONSTRAINT PK_refund -- 환불 기본키
+		PRIMARY KEY (refund_UID)
+    ,CONSTRAINT CK_refund_status -- 승인여부 체크제약
+		check(refund_status in(0,1))
+);
+
+-- 환불 
+create sequence seq_refund_refund_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache; 
+
+
+
+-- 알림
+CREATE TABLE notification (
+	not_UID       NUMBER   NOT NULL, -- 알림코드
+	fk_idx        NUMBER   NOT NULL, -- 회원고유번호
+	not_type     NUMBER(1) NOT NULL, -- 알림유형  0 전체공지 / 1 petcare / 2 reservation / 3 payment / 4 board
+	not_message   CLOB     NOT NULL, -- 알림내용
+	not_date      DATE     NOT NULL, -- 알림발송일시
+	not_readcheck NUMBER(1)   default 0 NOT NULL  -- 확인여부 확인 1 / 미확인 0
+    ,CONSTRAINT PK_notification -- 알림 기본키
+		PRIMARY KEY (not_UID)
+    ,CONSTRAINT CK_not_type -- 알림유형 체크제약
+		check(not_type in(0,1,2,3,4))
+    ,CONSTRAINT CK_not_readcheck -- 확인여부 체크제약
+		check(not_readcheck in(0,1))
+);
+
+create sequence seq_notification_UID --알람
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 예치금출금
+CREATE TABLE withdraw (
+	withdraw_UID    NUMBER NOT NULL, -- 출금코드
+	fk_deposit_UID  NUMBER NOT NULL, -- 예치금코드
+	withdraw_money  NUMBER NOT NULL, -- 출금요청금액
+	withdraw_status NUMBER(1) default 0 NOT NULL  -- 출금상태 1 완료 / 0 대기
+    ,CONSTRAINT PK_withdraw -- 예치금출금 기본키
+		PRIMARY KEY (withdraw_UID)
+    ,CONSTRAINT CK_withdraw_status -- 출금상태 체크제약
+		check(withdraw_status in(0,1))
+);
+
+-- 예치금출금 
+create sequence seq_withdraw_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache; 
+
+
+-- 예치금 사용내역
+CREATE TABLE dep_use (
+	dep_use_UID        NUMBER NOT NULL, -- 사용내역코드
+	fk_deposit_UID     NUMBER NOT NULL,     -- 예치금코드
+	fk_payment_UID     NUMBER NOT NULL,     -- 결제코드
+	fk_reservation_UID NUMBER NOT NULL,     -- 예약코드
+	depu_money         NUMBER NOT NULL,     -- 사용금액
+	deposit_usedate    DATE   default sysdate NOT NULL  -- 사용일자
+    ,CONSTRAINT PK_dep_use -- 예치금 사용내역 기본키
+		PRIMARY KEY (dep_use_UID)
+);
+
+-- 사용내역 
+create sequence seq_dep_use_UID
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache; 
+
+-- 처방전
+CREATE TABLE prescription (
+	rx_UID      number       NOT NULL, -- 처방코드
+	chart_UID   NUMBER       NOT NULL, -- 차트코드
+	rx_name     varchar2(100) NOT NULL, -- 처방약
+	dose_number varchar2(100) NULL,     -- 복용횟수
+	dosage      varchar2(100) NULL,     -- 복용용량
+	rx_notice   CLOB         NULL,     -- 처방안내
+	rx_cautions varchar2(100) NULL,     -- 주의사항
+	rx_regName  varchar2(100) NOT NULL  -- 등록한사람
+    ,CONSTRAINT PK_prescription -- 처방전 기본키
+		PRIMARY KEY (rx_UID)
+);
+
+create sequence seq_prescription_UID --처방
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 화상 상담(video advice)
+CREATE TABLE video_advice (
+	va_UID      NUMBER       NOT NULL, -- 화상상담 번호
+	fk_idx      NUMBER       NOT NULL, -- 회원고유번호
+	fk_idx_biz  NUMBER       NOT NULL, -- 병원/약국고유번호
+	chatcode    VARCHAR2(20) NOT NULL, -- 채팅방 코드
+	fk_userid   VARCHAR2(255)     NOT NULL, -- 회원아이디
+	fk_name_biz VARCHAR2(100)     NOT NULL, -- 병원명
+	fk_docname  VARCHAR2(100)     NOT NULL, -- 수의사명
+	usermessage CLOB         NULL, -- 회원이 보낸 메세지
+	docmessage  CLOB         NULL, -- 수의사가 보낸 메세지
+	umtime      DATE NULL, -- 회원이 메세지보낸 시각
+	dmtime      DATE NULL,  -- 수의사가 메세지보낸 시각
+    startTime date default sysdate NOT NULL,  -- 화상채팅 시작시간
+    endTime  date  NULL  -- 화상채팅 종료시간
+
+    ,CONSTRAINT PK_video_advice -- 화상 상담(video advice) 기본키
+		PRIMARY KEY (va_UID)
+);
+
+create sequence seq_video_advice_UID  --화상상담
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+
+-- 1:1상담
+CREATE TABLE consult (
+	consult_UID NUMBER   NOT NULL, -- 상담코드
+	fk_idx      NUMBER   NOT NULL, -- 회원고유번호
+	cs_pet_type NUMBER(1) NOT NULL, -- 동물분류 1 강아지 / 2 고양이 / 3 소동물 / 4 기타
+	cs_title    VARCHAR2(100) NOT NULL, -- 상담제목
+	cs_contents CLOB     NOT NULL, -- 상담내용
+	cs_hit      NUMBER   NOT NULL, -- 조회수
+	cs_writeday DATE     NOT NULL, -- 작성일자
+	cs_secret   NUMBER(1)   NOT NULL  -- 공개여부 0 비공개 / 1 공개
+    ,CONSTRAINT PK_consult -- 1:1상담 기본키
+		PRIMARY KEY (consult_UID)
+    ,CONSTRAINT ck_consult_type -- 동물분류 체크제약
+		check(cs_pet_type in(1,2,3,4))
+    ,CONSTRAINT ck_cs_secret -- 공개여부 체크제약
+		check(cs_secret in(0,1))
+);
+  
+create sequence seq_consult_UID --1:1 상담
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+
+-- 1:1상담 댓글
+CREATE TABLE consult_comment (
+	cmt_id         NUMBER   NOT NULL, -- 댓글고유번호
+	fk_consult_UID NUMBER   NOT NULL, -- 상담코드
+	fk_idx         NUMBER   NOT NULL, -- 댓글회원고유번호
+	cscmt_nickname VARCHAR2(100) NOT NULL, -- 댓글작성자
+	cscmt_contents CLOB     NOT NULL, -- 댓글내용
+	cscmt_writeday DATE     NOT NULL, -- 댓글작성일시
+	fk_cmt_id      NUMBER   NOT NULL, -- 원댓글 고유번호
+	cscmt_group    NUMBER default 0  NOT NULL, -- 댓글그룹번호
+	cscmt_g_odr    NUMBER   default 0 NOT NULL, -- 댓글그룹순서
+	cscmt_depth    NUMBER   default 0 NOT NULL, -- 계층
+	cscmt_del      NUMBER(1)   default 1 NOT NULL  -- 삭제여부 0삭제 / 1 사용가능
+    ,CONSTRAINT PK_consult_comment PRIMARY KEY (cmt_id)
+    ,CONSTRAINT ck_cscmt_del -- 삭제여부 체크제약
+		check(cscmt_del in(1,0))
+);
+
+create sequence seq_consult_comment  --1:1 상담 댓글
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 펫케어 이미지
+CREATE TABLE petcare_img (
+	pc_img_UID  NUMBER   NOT NULL, -- 이미지번호
+	fk_care_UID NUMBER   NOT NULL, -- 케어코드
+	pc_img_name VARCHAR2(255) NOT NULL  -- 이미지명
+    ,CONSTRAINT PK_petcare_img -- 펫케어 이미지 기본키
+		PRIMARY KEY (pc_img_UID)
+);
+
+create sequence petcare_img_seq  --펫케어 이미지
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 게시판그룹
+CREATE TABLE board_group (
+	brd_id    NUMBER   NOT NULL, -- 게시판그룹코드
+	brd_name  VARCHAR2(20) NOT NULL, -- 게시판명
+	brd_grant NUMBER(1)   NOT NULL  -- 글쓰기권한 (1, 2, 3)
+    ,CONSTRAINT PK_board_group -- 게시판그룹 기본키
+		PRIMARY KEY (brd_id)
+    ,CONSTRAINT ck_brd_grant -- 글쓰기권한 체크제약
+		check(brd_grant in(1,2,3))
+);
+        
+create sequence board_group_seq --게시판 그룹
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 게시글
+CREATE TABLE board_post (
+	post_id          NUMBER   NOT NULL, -- 게시글고유번호
+	fk_brd_id        NUMBER   NOT NULL, -- 게시판그룹코드
+	post_title       VARCHAR2(100) NOT NULL, -- 게시글제목
+	post_contents    CLOB     NOT NULL, -- 게시글내용
+	fk_idx           NUMBER   NOT NULL, -- 작성자고유번호
+	fk_nickname      VARCHAR2(100) NOT NULL, -- 작성자
+	post_writeday    DATE     NOT NULL, -- 작성일
+	post_hit         NUMBER   NOT NULL, -- 조회수
+	post_del         NUMBER(1)   NOT NULL, -- 삭제여부
+	post_repcnt      NUMBER   NOT NULL, -- 댓글수
+	post_imgfilename VARCHAR2(255) NULL      -- 대표이미지
+    ,CONSTRAINT PK_board_post -- 게시글 기본키
+		PRIMARY KEY (post_id)
+    ,CONSTRAINT ck_post_del -- 삭제여부 체크제약
+		check(post_del in(0,1))
+);
+        
+create sequence seq_board_post --게시글
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- 댓글
+CREATE TABLE board_comment (
+	cmt_id       NUMBER   NOT NULL, -- 댓글고유번호
+	fk_brd_id    NUMBER   NOT NULL, -- 게시판그룹코드
+	fk_post_id   NUMBER   NOT NULL, -- 게시글고유번호
+	fk_idx       NUMBER   NOT NULL, -- 댓글작성자고유번호
+	fk_nickname  VARCHAR2(100) NOT NULL, -- 댓글작성자
+	cmt_contents CLOB     NOT NULL, -- 댓글내용
+	cmt_writeday DATE     NOT NULL, -- 댓글작성일시
+	cmt_group    NUMBER   NOT NULL, -- 댓글그룹번호
+	cmt_g_odr    NUMBER   NOT NULL, -- 댓글그룹순서
+	cmt_depth    NUMBER   NOT NULL, -- 계층
+	cmt_del      NUMBER(1)   NOT NULL  -- 삭제여부
+    ,CONSTRAINT PK_comment PRIMARY KEY (cmt_id)
+    ,CONSTRAINT ck_cmt_del -- 삭제여부 체크제약
+		check(cmt_del in(0,1))
+);
+        
+create sequence board_comment_seq --댓글
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+
+---- 이벤트
+--CREATE TABLE event (
+--	ev_id          NUMBER   NOT NULL, -- 이벤트코드
+--	ev_title       VARCHAR2(255) NOT NULL, -- 이벤트제목
+--	ev_contents    CLOB     NOT NULL, -- 이벤트내용
+--	ev_imgfilename VARCHAR2(255) NOT NULL, -- 이벤트배너
+--	ev_start       DATE     NOT NULL, -- 이벤트시작
+--	ev_end         DATE     NOT NULL  -- 이벤트종료
+--    ,CONSTRAINT PK_event -- 이벤트 기본키
+--		PRIMARY KEY (ev_id)
+--);
+--
+---- 유기동물후원
+--CREATE TABLE funding (
+--	fd_id          NUMBER   NOT NULL, -- 후원코드
+--	fd_title       VARCHAR2 NOT NULL, -- 후원제목
+--	fd_orgname     VARCHAR2 NOT NULL, -- 단체및시설이름
+--	region         VARCHAR2 NOT NULL, -- 지역
+--	fd_name        VARCHAR2 NOT NULL, -- 대표자
+--	fd_phone       VARCHAR2 NOT NULL, -- 연락처
+--	fd_goal        NUMBER   NOT NULL, -- 후원모금액
+--	fd_start       DATE     NOT NULL, -- 시작일
+--	fd_end         DATE     NOT NULL, -- 종료일
+--	fd_imgfilename VARCHAR2 NOT NULL, -- 대표이미지
+--	fd_contents    CLOB     NOT NULL  -- 후원내용
+--);
+--
+---- 유기동물후원
+--ALTER TABLE funding
+--	ADD
+--		CONSTRAINT PK_funding -- 유기동물후원 기본키
+--		PRIMARY KEY (
+--			fd_id -- 후원코드
+--		);
+--
+---- 유기동물후원이미지
+--CREATE TABLE funding_img (
+--	fdimg_id   NUMBER   NOT NULL, -- 후원이미지코드
+--	fk_fd_id   NUMBER   NOT NULL, -- 후원코드
+--	fdimg_name VARCHAR2 NOT NULL  -- 이미지파일명
+--);
+--
+---- 유기동물후원이미지
+--ALTER TABLE funding_img
+--	ADD
+--		CONSTRAINT PK_funding_img -- 유기동물후원이미지 기본키
+--		PRIMARY KEY (
+--			fdimg_id -- 후원이미지코드
+--		);
+--
+---- 펀딩결제
+--CREATE TABLE funding_payment (
+--	payment_UID    NUMBER NOT NULL, -- 결제코드
+--	fk_fd_id       NUMBER NOT NULL, -- 후원코드
+--	payment_total  NUMBER NOT NULL, -- 결제총액
+--	payment_point  NUMBER NOT NULL, -- 결제포인트
+--	payment_pay    NUMBER NOT NULL, -- 실결제금액
+--	payment_date   DATE   NOT NULL, -- 결제일자
+--	payment_status NUMBER NOT NULL  -- 결제상태
+--);
+--
+---- 펀딩결제
+--ALTER TABLE funding_payment
+--	ADD
+--		CONSTRAINT PK_funding_payment -- 펀딩결제 기본키
+--		PRIMARY KEY (
+--			payment_UID -- 결제코드
+--		);
+--
+---- 펀딩환불
+--CREATE TABLE funding_refund (
+--	refund_UID     VARCHAR2 NOT NULL, -- 환불코드
+--	fk_payment_UID NUMBER   NOT NULL, -- 결제코드
+--	fk_idx         NUMBER   NOT NULL, -- 환불받을회원번호
+--	refund_DATE    DATE     NOT NULL, -- 환불신청일자
+--	add_DATE       DATE     NOT NULL, -- 사용일자
+--	refund_reason  VARCHAR2 NOT NULL, -- 환불사유
+--	refund_money   NUMBER   NOT NULL, -- 환불금액
+--	refund_status  NUMBER   NOT NULL  -- 승인여부
+--);
+--
+---- 펀딩환불
+--ALTER TABLE funding_refund
+--	ADD
+--		CONSTRAINT PK_funding_refund -- 펀딩환불 기본키
+--		PRIMARY KEY (
+--			refund_UID -- 환불코드
+--		);
+------------------------------------------------------------------------------
+
+
+-- #제약조건 추가
+
+
+-- 의료진
+ALTER TABLE doctors
+	ADD
+		CONSTRAINT FK_biz_info_TO_doctors -- 기업회원상세 -> 의료진
+		FOREIGN KEY (
+			fk_idx_biz -- 병원/약국고유번호
+		)
+		REFERENCES biz_info ( -- 기업회원상세
+			idx_biz -- 병원/약국고유번호
+		);
+
+
+-- 리뷰
+ALTER TABLE review
+	ADD
+		CONSTRAINT FK_biz_info_TO_review -- 기업회원상세 -> 리뷰
+		FOREIGN KEY (
+			fk_idx_biz -- 병원/약국고유번호
+		)
+		REFERENCES biz_info ( -- 기업회원상세
+			idx_biz -- 병원/약국고유번호
+		);
+
+-- 리뷰
+ALTER TABLE review
+	ADD
+		CONSTRAINT FK_member_TO_review -- 회원 -> 리뷰
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 리뷰
+ALTER TABLE review
+	ADD
+		CONSTRAINT FK_reservation_TO_review -- 예약 -> 리뷰
+		FOREIGN KEY (
+			fk_reservation_UID -- 예약코드
+		)
+		REFERENCES reservation ( -- 예약
+			reservation_UID -- 예약코드
+		);
+
+-- 예약
+ALTER TABLE reservation
+	ADD
+		CONSTRAINT FK_pet_info_TO_reservation -- 반려동물정보 -> 예약
+		FOREIGN KEY (
+			fk_pet_UID -- 반려동물코드
+		)
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
+		);
+
+
+-- 반려동물정보
+ALTER TABLE pet_info
+	ADD
+		CONSTRAINT FK_member_TO_pet_info -- 회원 -> 반려동물정보
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 접종내용
+ALTER TABLE shots
+	ADD
+		CONSTRAINT FK_vaccine_TO_shots -- 백신 -> 접종내용
+		FOREIGN KEY (
+			fk_vaccine_UID -- 백신코드
+		)
+		REFERENCES vaccine ( -- 백신
+			vaccine_UID -- 백신코드
+		);
+
+-- 접종내용
+ALTER TABLE shots
+	ADD
+		CONSTRAINT FK_pet_info_TO_shots -- 반려동물정보 -> 접종내용
+		FOREIGN KEY (
+			fk_pet_UID -- 반려동물코드
+		)
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
+		);
+
+-- 반려동물목록
+ALTER TABLE pet_list
+	ADD
+		CONSTRAINT FK_member_TO_pet_list -- 회원 -> 반려동물목록
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 반려동물목록
+ALTER TABLE pet_list
+	ADD
+		CONSTRAINT FK_pet_info_TO_pet_list -- 반려동물정보 -> 반려동물목록
+		FOREIGN KEY (
+			fk_pet_UID -- 반려동물코드
+		)
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
+		);
+
+-- 반려동물케어
+ALTER TABLE petcare
+	ADD
+		CONSTRAINT FK_pet_info_TO_petcare -- 반려동물정보 -> 반려동물케어
+		FOREIGN KEY (
+			fk_pet_UID -- 반려동물코드
+		)
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
+		);
+
+-- 반려동물케어
+ALTER TABLE petcare
+	ADD
+		CONSTRAINT FK_caretype_TO_petcare -- 케어타입 -> 반려동물케어
+		FOREIGN KEY (
+			fk_caretype_UID -- 케어타입코드
+		)
+		REFERENCES caretype ( -- 케어타입
+			caretype_UID -- 케어타입코드
+		);
+
+-- 진료기록
+ALTER TABLE chart
+	ADD
+		CONSTRAINT FK_pet_info_TO_chart -- 반려동물정보 -> 진료기록
+		FOREIGN KEY (
+			fk_pet_UID -- 반려동물코드
+		)
+		REFERENCES pet_info ( -- 반려동물정보
+			pet_UID -- 반려동물코드
+		);
+
+-- 진료기록
+ALTER TABLE chart
+	ADD
+		CONSTRAINT FK_member_TO_chart -- 회원 -> 진료기록
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 예치금결제
+ALTER TABLE payment
+	ADD
+		CONSTRAINT FK_reservation_TO_payment -- 예약 -> 예치금결제
+		FOREIGN KEY (
+			fk_reservation_UID -- 예약코드
+		)
+		REFERENCES reservation ( -- 예약
+			reservation_UID -- 예약코드
+		);
+
+-- 예치금
+ALTER TABLE deposit
+	ADD
+		CONSTRAINT FK_member_TO_deposit -- 회원 -> 예치금
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 환불
+ALTER TABLE refund
+	ADD
+		CONSTRAINT FK_payment_TO_refund -- 예치금결제 -> 환불
+		FOREIGN KEY (
+			fk_payment_UID -- 결제코드
+		)
+		REFERENCES payment ( -- 예치금결제
+			payment_UID -- 결제코드
+		);
+
+
+-- 1:1상담
+ALTER TABLE consult
+	ADD
+		CONSTRAINT FK_member_TO_consult -- 회원 -> 1:1상담
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 알림
+ALTER TABLE notification
+	ADD
+		CONSTRAINT FK_member_TO_notification -- 회원 -> 알림
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 예치금출금
+ALTER TABLE withdraw
+	ADD
+		CONSTRAINT FK_deposit_TO_withdraw -- 예치금 -> 예치금출금
+		FOREIGN KEY (
+			fk_deposit_UID -- 예치금코드
+		)
+		REFERENCES deposit ( -- 예치금
+			deposit_UID -- 예치금코드
+		);
+
+-- 예치금 사용내역
+ALTER TABLE dep_use
+	ADD
+		CONSTRAINT FK_deposit_TO_dep_use -- 예치금 -> 예치금 사용내역
+		FOREIGN KEY (
+			fk_deposit_UID -- 예치금코드
+		)
+		REFERENCES deposit ( -- 예치금
+			deposit_UID -- 예치금코드
+		);
+
+-- 예치금 사용내역
+ALTER TABLE dep_use
+	ADD
+		CONSTRAINT FK_payment_TO_dep_use -- 예치금결제 -> 예치금 사용내역
+		FOREIGN KEY (
+			fk_payment_UID -- 결제코드
+		)
+		REFERENCES payment ( -- 예치금결제
+			payment_UID -- 결제코드
+		);
+
+-- 예치금 사용내역
+ALTER TABLE dep_use
+	ADD
+		CONSTRAINT FK_reservation_TO_dep_use -- 예약 -> 예치금 사용내역
+		FOREIGN KEY (
+			fk_reservation_UID -- 예약코드
+		)
+		REFERENCES reservation ( -- 예약
+			reservation_UID -- 예약코드
+		);
+
+-- 처방전
+ALTER TABLE prescription
+	ADD
+		CONSTRAINT FK_chart_TO_prescription -- 진료기록 -> 처방전
+		FOREIGN KEY (
+			chart_UID -- 차트코드
+		)
+		REFERENCES chart ( -- 진료기록
+			chart_UID -- 차트코드
+		);
+
+-- 화상 상담(video advice)
+ALTER TABLE video_advice
+	ADD
+		CONSTRAINT FK_member_TO_video_advice -- 회원 -> 화상 상담(video advice)
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 화상 상담(video advice)
+ALTER TABLE video_advice
+	ADD
+		CONSTRAINT FK_biz_info_TO_video_advice -- 기업회원상세 -> 화상 상담(video advice)
+		FOREIGN KEY (
+			fk_idx_biz -- 병원/약국고유번호
+		)
+		REFERENCES biz_info ( -- 기업회원상세
+			idx_biz -- 병원/약국고유번호
+		);
+
+
+-- 리뷰댓글(reviewComment)
+ALTER TABLE review_comment
+	ADD
+		CONSTRAINT FK_review_TO_review_comment -- 리뷰 -> 리뷰댓글(reviewComment)
+		FOREIGN KEY (
+			fk_review_UID -- 리뷰코드
+		)
+		REFERENCES review ( -- 리뷰
+			review_UID -- 리뷰코드
+		);
+
+-- 리뷰댓글(reviewComment)
+ALTER TABLE review_comment
+	ADD
+		CONSTRAINT FK_member_TO_review_comment -- 회원 -> 리뷰댓글(reviewComment)
+		FOREIGN KEY (
+			fk_idx -- 회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 1:1상담 댓글
+ALTER TABLE consult_comment
+	ADD
+		CONSTRAINT FK_consult_TO_consult_comment -- 1:1상담 -> 1:1상담 댓글
+		FOREIGN KEY (
+			fk_consult_UID -- 상담코드
+		)
+		REFERENCES consult ( -- 1:1상담
+			consult_UID -- 상담코드
+		);
+
+-- 1:1상담 댓글
+ALTER TABLE consult_comment
+	ADD
+		CONSTRAINT FK_member_TO_consult_comment -- 회원 -> 1:1상담 댓글
+		FOREIGN KEY (
+			fk_idx -- 댓글회원고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 펫케어 이미지
+ALTER TABLE petcare_img
+	ADD
+		CONSTRAINT FK_petcare_TO_petcare_img -- 반려동물케어 -> 펫케어 이미지
+		FOREIGN KEY (
+			fk_care_UID -- 케어코드
+		)
+		REFERENCES petcare ( -- 반려동물케어
+			care_UID -- 케어코드
+		);
+        
+        
+-- #보조기능 관련 제약조건 추가
+-- 게시글
+ALTER TABLE board_post
+	ADD
+		CONSTRAINT FK_board_group_TO_board_post -- 게시판그룹 -> 게시글
+		FOREIGN KEY (
+			fk_brd_id -- 게시판그룹코드
+		)
+		REFERENCES board_group ( -- 게시판그룹
+			brd_id -- 게시판그룹코드
+		)
+		
+		;
+
+-- 게시글
+ALTER TABLE board_post
+	ADD
+		CONSTRAINT FK_member_TO_board_post -- 회원 -> 게시글
+		FOREIGN KEY (
+			fk_idx -- 작성자고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		)
+		
+		;
+
+-- 댓글
+ALTER TABLE board_comment
+	ADD
+		CONSTRAINT FK_board_group_TO_comment -- 게시판그룹 -> 댓글
+		FOREIGN KEY (
+			fk_brd_id -- 게시판그룹코드
+		)
+		REFERENCES board_group ( -- 게시판그룹
+			brd_id -- 게시판그룹코드
+		);
+
+-- 댓글
+ALTER TABLE board_comment
+	ADD
+		CONSTRAINT FK_board_post_TO_comment -- 게시글 -> 댓글
+		FOREIGN KEY (
+			fk_post_id -- 게시글고유번호
+		)
+		REFERENCES board_post ( -- 게시글
+			post_id -- 게시글고유번호
+		)
+		
+		;
+
+-- 댓글
+ALTER TABLE board_comment
+	ADD
+		CONSTRAINT FK_member_TO_comment -- 회원 -> 댓글
+		FOREIGN KEY (
+			fk_idx -- 댓글작성자고유번호
+		)
+		REFERENCES member ( -- 회원
+			idx -- 회원고유번호
+		);
+
+-- 유기동물후원이미지
+ALTER TABLE funding_img
+	ADD
+		CONSTRAINT FK_funding_TO_funding_img -- 유기동물후원 -> 유기동물후원이미지
+		FOREIGN KEY (
+			fk_fd_id -- 후원코드
+		)
+		REFERENCES funding ( -- 유기동물후원
+			fd_id -- 후원코드
+		);
+
+-- 펀딩결제
+ALTER TABLE funding_payment
+	ADD
+		CONSTRAINT FK_funding_TO_funding_payment -- 유기동물후원 -> 펀딩결제
+		FOREIGN KEY (
+			fk_fd_id -- 후원코드
+		)
+		REFERENCES funding ( -- 유기동물후원
+			fd_id -- 후원코드
+		);
+
+-- 펀딩환불
+ALTER TABLE funding_refund
+	ADD
+		CONSTRAINT FK_funding_payment_TO_funding_refund -- 펀딩결제 -> 펀딩환불
+		FOREIGN KEY (
+			fk_payment_UID -- 결제코드
+		)
+		REFERENCES funding_payment ( -- 펀딩결제
+			payment_UID -- 결제코드
+		);
+
+>>>>>>> refs/remotes/origin/hyunjae

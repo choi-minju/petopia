@@ -10,9 +10,9 @@
 	<!-- ==== #15. myBatis(JDBC)설정 연결문자열 설정하기  ==== -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
-		<property name="url" value="jdbc:oracle:thin:@26.36.201.50:1521:xe" />
-		<property name="username" value="final2" />
-		<property name="password" value="eclass" />
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:xe" />
+		<property name="username" value="hyewon" />
+		<property name="password" value="1234" />
 	</bean>
 	
 	<!-- ==== #15. myBatis(JDBC)설정 mapper 파일 위치 지정하기  ==== -->
@@ -36,6 +36,6 @@
 	
 	
 	<!-- ==== #17. jackson 과 관련된 기능을 사용하기 위해 빈을 등록한다. ==== -->
-	<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+	<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>  
 		
 </beans>

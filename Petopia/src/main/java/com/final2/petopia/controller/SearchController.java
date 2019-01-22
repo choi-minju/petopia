@@ -70,7 +70,4 @@ public class SearchController {
 		return bizvo;
 		
 	}
-	
-	
-	
 }

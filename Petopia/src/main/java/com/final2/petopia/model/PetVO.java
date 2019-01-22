@@ -1,3 +1,4 @@
+
 package com.final2.petopia.model;
 
 import org.springframework.stereotype.Repository;
@@ -92,11 +93,9 @@ public class PetVO {
 	public void setPet_weight(int pet_weight) {
 		this.pet_weight = pet_weight;
 	}
-	
 	public String getPet_gender() {
 		return pet_gender;
 	}
-	
 	public void setPet_gender(String pet_gender) {
 		this.pet_gender = pet_gender;
 	}
