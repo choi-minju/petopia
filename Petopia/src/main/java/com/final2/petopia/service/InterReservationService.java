@@ -46,11 +46,4 @@ public interface InterReservationService {
 	int getTotalCountWithSearch(HashMap<String, String> paraMap);
 	int getTotalCountNoSearch();
 	List<ReservationVO> selectUserReservationList(HashMap<String, String> paraMap);
-
-
-
-
-	
-
-	
-}	
+}

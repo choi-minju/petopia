@@ -50,9 +50,4 @@ public interface InterReservationDAO {
 	int getTotalCountNoSearch();
 	List<ReservationVO> selectUserReservationList(HashMap<String, String> paraMap);
 
-
-
-
-
-	
 }

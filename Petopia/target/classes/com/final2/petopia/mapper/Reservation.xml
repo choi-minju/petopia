@@ -116,5 +116,4 @@
 	<update id="updateReservationStatusByFkRUID" parameterType="String">
 		update reservation set reservation_status = 2 where reservation_UID=#{fk_reservation_UID}
 	</update>
-	
 </mapper>

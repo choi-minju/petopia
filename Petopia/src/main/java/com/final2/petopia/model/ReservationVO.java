@@ -85,8 +85,4 @@ public class ReservationVO {
 	public void setReservation_type(String reservation_type) {
 		this.reservation_type = reservation_type;
 	}
-	
-	
-	
-	
 }

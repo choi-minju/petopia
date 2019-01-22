@@ -8,6 +8,10 @@
 	}
 </style>
 
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width"/>
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+
 <script type="text/javascript">
 
 	$(document).ready(function(){
@@ -46,6 +50,44 @@
 	} // end of function goLogin()
 	
 </script>
+<!-- 카카오 로그인  -->
+<script type='text/javascript'>
+	Kakao.init('b5a80832c3cb255d6b0092b12fa51f95');
+	function loginWithKakao() {
+		// 로그인 창을 띄웁니다.
+		Kakao.Auth.login({
+			success: function(authObj) {
+				//alert(JSON.stringify(authObj));
+				Kakao.API.request({
+				
+					url: '/v1/user/me',
+					success: function(res) {
+						//alert(JSON.stringify(res)); //<---- kakao.api.request 에서 불러온 결과값 json형태로 출력
+						//alert(JSON.stringify(authObj)); //<----Kakao.Auth.createLoginButton에서 불러온 결과값 json형태로 출력
+						
+						var frm = document.kakaoLogin;
+						frm.userid.value = res.kaccount_email;
+						frm.nickname.value = res.properties['nickname'];
+						frm.method = "POST";
+						frm.action = "<%=request.getContextPath()%>/kakaoLogin.pet";
+						frm.submit();
+						
+						console.log(res.id);//<---- 콘솔 로그에 id 정보 출력(id는 res안에 있기 때문에  res.id 로 불러온다)
+						console.log(res.kaccount_email);//<---- 콘솔 로그에 email 정보 출력 (어딨는지 알겠죠?)
+						console.log(res.properties['nickname']);//<---- 콘솔 로그에 닉네임 출력(properties에 있는 nickname 접근 
+						// res.properties.nickname으로도 접근 가능 )
+						//console.log(authObj.access_token);//<---- 콘솔 로그에 토큰값 출력
+					}
+				})
+			},
+			fail: function(err) {
+				alert(JSON.stringify(err));
+			}
+		});
+	};
+</script>
+<!-- {"error":"unauthorized","error_description":"unauthorized - unregistered website domain"} -->
+
 <%
 	MemberVO loginuser = (MemberVO)request.getAttribute("loginuser");
 	if(loginuser == null) {
@@ -110,13 +152,23 @@
 				</form>
 				<h4>OR</h4>
 				<span>sns 로그인은 일반회원만 가능합니다.</span>
-				<button type="button" class="form-control btns" style="background-color: #fef01b; color: white; border: none;">Login with Kakaotalk</button>
+				<a id="custom-login-btn" href="javascript:loginWithKakao()">
+					<img src="//mud-kage.kakao.com/14/dn/btqbjxsO6vP/KPiGpdnsubSq3a0PHEGUK1/o.jpg" width="300px"/>
+				</a>
+				
 				<button type="button" class="form-control btns" style="background-color: #2DB400; color: white; border: none;">Login with Naver</button>
 				<button type="button" class="form-control btns" style="background-color: #80e5ff; color: white; border: none;">Login with Google</button>
 				<button type="button" class="form-control btns" style="background-color: #3b5998; color: white; border: none;">Login with Facebook</button>
+				
+				
 			</div>
 		</div>
 	</div>
+
+	<form name="kakaoLogin">
+		<input name="userid" />
+		<input name="nickname" />
+	</form>
 
 	<div class="modal fade" id="idFindModal" role="dialog">
 		<div class="modal-dialog modal-sm">
@@ -157,7 +209,7 @@
 					<div class="row" style="margin-top: 20px;">
 						<div class=" col-sm-offset-1 col-sm-10">
 							<span style="color: #999;">인증번호</span>
-							<input type="text" class="form-control" id="code" name="code" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							<input type="text" class="form-control" id="useridCode" name="useridCode" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
 						</div>
 					</div>
 					
@@ -222,7 +274,7 @@
 					<div class="row" style="margin-top: 20px;">
 						<div class=" col-sm-offset-1 col-sm-10">
 							<span style="color: #999;">인증번호</span>
-							<input type="text" class="form-control" id="code" name="code" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							<input type="text" class="form-control" id="passwdCode" name="passwdCode" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
 						</div>
 					</div>
 					
@@ -250,6 +302,7 @@
 			</div>
 		</div>
 	</div>
+
 </div>
 <% } else { %>
 	<script type="text/javascript">

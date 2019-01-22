@@ -4,6 +4,7 @@ public class ConsultCommentVO {
 
 	private int cmt_id;					// 댓글고유번호
 	private String name;				// 이름
+	private String userid;				// 이름
 	private String nickname;			// 닉네임
 	private String fk_consult_UID;		// 상담코드
 	private String fk_idx;				// 댓글회원고유번호
@@ -19,10 +20,11 @@ public class ConsultCommentVO {
 	
 	public ConsultCommentVO() { }
 	
-	public ConsultCommentVO(int cmt_id, String name, String nickname, String fk_consult_UID, String fk_idx, String cscmt_nickname, String cscmt_contents,
+	public ConsultCommentVO(int cmt_id, String name, String userid, String nickname, String fk_consult_UID, String fk_idx, String cscmt_nickname, String cscmt_contents,
 			String cscmt_writeday, int fk_cmt_id, int cscmt_group, int cscmt_g_odr, int cscmt_depth, int cscmt_del) {
 		this.cmt_id = cmt_id;
 		this.name = name;
+		this.userid = userid;
 		this.nickname = nickname;
 		this.fk_consult_UID = fk_consult_UID;
 		this.fk_idx = fk_idx;
@@ -48,6 +50,13 @@ public class ConsultCommentVO {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getUserid() {
+		return userid;
+	}
+	public void setUserid(String userid) {
+		this.userid = userid;
 	}
 
 	public String getNickname() {

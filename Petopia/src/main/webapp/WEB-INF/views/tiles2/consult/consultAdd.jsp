@@ -27,6 +27,7 @@
 	}
 </style>
 
+
 <!-- include summernote css/js-->
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.8/summernote.css" rel="stylesheet">
 <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.8/summernote.js"></script>
@@ -39,9 +40,9 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/formatting.js"></script>
 
-<!-- include summernote css/js-->
+<!-- include summernote css/js
 <link href="summernote.css">
-<script src="summernote.js"></script>
+<script src="summernote.js"></script>-->
 
 
 <script type="text/javascript">
@@ -80,6 +81,17 @@
 	    //쓰기버튼
 	    $("#btnAdd").click(function(){
 	       
+	        var cs_title = $("#cs_title").val().trim();
+	        if(cs_title=="") {
+	        	alert("글제목을 입력하세요!!");
+	        	return;
+	        }
+	        
+	        var cs_contents = $("#cs_contents").val().trim();  
+	        if(cs_contents=="") {
+	        	alert("글을 입력하세요!!");
+	        	return;
+	        }
 	        
 	        //폼 submit
 	        var addFrm = document.addFrm;
@@ -125,13 +137,13 @@
 			
 			<div class="col-xs-12 col-md-12">
 				<div class="col-xs-3 col-md-2">작성자</div>
-				<input type="hidden" name="fk_idx" value="4" readonly/>
-				<input type="text" name="name" style="border: 1px solid #999; border-radius:3px;" class="col-xs-9 col-md-10" value="이순신" readonly/>
+				<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}" readonly/>
+				<input type="text" name="nickname" style="border: 1px solid #999; border-radius:3px;" class="col-xs-9 col-md-10" value="${sessionScope.loginuser.nickname}" readonly/>
 			</div>
 			
 			<div class="col-xs-12 col-md-12">
 				<div class="col-xs-3 col-md-2">글제목</div>
-				<input type="text" name="cs_title" style="border: 1px solid #999; border-radius:3px;" class="col-xs-9 col-md-10"/>
+				<input type="text" name="cs_title" id="cs_title" style="border: 1px solid #999; border-radius:3px;" class="col-xs-9 col-md-10"/>
 			</div>
 			
 			<div class="col-xs-12 col-md-12">

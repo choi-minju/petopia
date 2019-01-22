@@ -135,6 +135,4 @@ public class ReservationDAO implements InterReservationDAO {
 		List<ReservationVO> reservationList = sqlsession.selectList(ns+"selectUserReservationList",paraMap);
 		return reservationList;
 	}
-
-	
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
 <mapper namespace="member">
 
@@ -62,15 +62,14 @@
 		update login_log set lastlogindate = sysdate
 		where member_status = 1 and fk_userid = #{USERID} and fk_pwd = #{PWD}
 	</update>
-	
-	<!-- *** 아이디로 회원정보 조회 *** -->
-	<select id="selectMemberByUserid" parameterType="String" resultType="com.final2.petopia.model.MemberVO">
+	<!-- *** 회원번호로 회원정보 조회 *** -->
+	<select id="selectMemberByIdx" parameterType="int" resultType="com.final2.petopia.model.MemberVO">
 		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.birthday, a.gender, a.phone
 		    , a.profileimg, a.filename, a.membertype, a.point, a.totaldeposit
 		    , a.noshow, a.registerdate, b.lastlogindate, b.member_status
 		from member a JOIN login_log b
 		ON a.idx = b.idx
-		where b.member_status = 1 and userid = #{userid}
+		where b.member_status = 1 and a.idx = #{idx}
 	</select>
 	
 	<!-- 저장된 사용자 태그 조회 -->
@@ -105,4 +104,79 @@
 		delete from have_tag where fk_idx = #{idx}
 	</delete>
 	
+	<!-- 파일 수정이 없는 회원 정보 수정  -->
+	<update id="updateMemberByMvoNoProfile" parameterType="com.final2.petopia.model.MemberVO">
+		update member set pwd = #{pwd}, name = #{name}, nickname = #{nickname}, gender = #{gender}, phone = #{phone}
+		where idx = #{idx}
+	</update>
+	
+	<!-- *** 회원 탈퇴 *** -->
+	<update id="deleteMemberByIdx" parameterType="int">
+		update login_log set member_status = 0
+		where idx = #{idx}
+	</update>
+	
+	<!-- *** 관리자 *** --> 
+	<!-- *** 회원목록 *** -->
+	<!-- 해당하는 총회원 수 -->
+	<!-- 검색 X -->
+	<select id="selectTotalCount" resultType="int">
+		select count(*)
+		from member
+	</select>
+	
+	<!-- 검색 O -->
+	<select id="selectTotalCountBySearch" parameterType="HashMap" resultType="int">
+		select count(*)
+		from member
+		where ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+	</select>
+	
+	<!-- 해당 회원 리스트 조회 -->
+	<resultMap type="com.final2.petopia.model.MemberVO" id="selectMemberList_resultMap">
+		<result property="idx"				column="IDX"				javaType="int"/>
+		<result property="userid"			column="USERID"				javaType="String"/>
+		<result property="name"				column="NAME"				javaType="String"/>
+		<result property="nickname"			column="NICKNAME"			javaType="String"/>
+		<result property="phone"			column="PHONE"				javaType="String"/>
+		<result property="noshow"			column="NOSHOW"				javaType="int"/>
+		<result property="member_status"	column="MEMBER_STATUS"		javaType="int"/>
+		<result property="lastlogindategap"	column="LASTLOGINDATEGAP"	javaType="int"/>
+	</resultMap>
+	
+	<!-- 검색X 정렬X -->
+	<parameterMap type="HashMap" id="selectMemberList_paraMap">
+		<parameter property="STARTRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="ENDRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="MEMBERLIST"	mode="OUT"	jdbcType="CURSOR"	resultMap="selectMemberList_resultMap"/>
+	</parameterMap>
+	
+	<select id="selectMemberList" statementType="CALLABLE" parameterMap="selectMemberList_paraMap">
+		{ call pcd_selectMemberList(?,?,?) }
+	</select>
+	
+	<!-- 검색 X 정렬 O -->
+	<parameterMap type="HashMap" id="selectMemberListByOrderBy_paraMap">
+		<parameter property="STARTRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="ENDRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="ORDERBY"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="MEMBERLIST"	mode="OUT"	jdbcType="CURSOR"	resultMap="selectMemberList_resultMap"/>
+	</parameterMap>
+	
+	<select id="selectMemberListByOrderBy" statementType="CALLABLE" parameterMap="selectMemberListByOrderBy_paraMap">
+		{ call selectMemberListByOrderBy(?,?,?,?) }
+	</select>
+	
+	<!-- 검색 O 정렬 X -->
+	<parameterMap type="HashMap" id="selectMemberListBySearch_paraMap">
+		<parameter property="STARTRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="ENDRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="SEARCHWHAT"	mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="SEARCH"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
+		<parameter property="MEMBERLIST"	mode="OUT"	jdbcType="CURSOR"	resultMap="selectMemberList_resultMap"/>
+	</parameterMap>
+	
+	<select id="selectMemberListBySearch" statementType="CALLABLE" parameterMap="selectMemberListBySearch_paraMap">
+		{ call selectMemberListBySearch(?,?,?,?,?) }
+	</select>
 </mapper>
