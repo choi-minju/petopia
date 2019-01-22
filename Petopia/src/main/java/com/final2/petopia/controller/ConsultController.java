@@ -42,32 +42,45 @@ public class ConsultController {
 	
 	// 1:1상담 글쓰기 페이지 요청 -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultAdd.pet", method= {RequestMethod.GET})
-	public String consultAdd(HttpServletRequest req) {
+	public String requireLogin_consultAdd(HttpServletRequest req, HttpServletResponse res) {
 		return "consult/consultAdd.tiles2";
 	}
 	
 	// 1:1상담 글쓰기 완료 -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultAddEnd.pet", method= {RequestMethod.POST})
-	public String consultAddEnd(ConsultVO consultvo, HttpServletRequest req) {
+	public String requireLogin_consultAddEnd(HttpServletRequest req, HttpServletResponse res, ConsultVO consultvo) {
 		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
-		// - 1:1상담 글쓰기 consult:insert
-		int n = service.insertConsultByCvo(consultvo);
-		
-		String loc = "";
-		if(n==1) {
-			// 글쓰기 성공시 글목록 보이기
-			loc = req.getContextPath()+"/consultList.pet";
+		if(!loginuser.getNickname().equals(consultvo.getNickname())) {
+			String msg = "로그인부터 하셔야죠~";
+			String loc = req.getContextPath()+"/login.pet";
+			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", loc);
+			
+			return "msg";
 		}
 		else {
-			// 글쓰기 실패시 홈
-			loc = req.getContextPath()+"/index.pet";
+			// - 1:1상담 글쓰기 consult:insert
+			int n = service.insertConsultByCvo(consultvo);
+			
+			String loc = "";
+			if(n==1) {
+				// 글쓰기 성공시 글목록 보이기
+				loc = req.getContextPath()+"/consultList.pet";
+			}
+			else {
+				// 글쓰기 실패시 글쓰기로
+				loc = req.getContextPath()+"/consultAdd.pet";
+			}
+			
+			req.setAttribute("n", n);
+			req.setAttribute("loc", loc);
+			
+			return "consult/consultAddEnd.tiles2";
 		}
-		
-		req.setAttribute("n", n);
-		req.setAttribute("loc", loc);
-		
-		return "consult/consultAddEnd.tiles2";
 	}
 	
 	
@@ -80,7 +93,7 @@ public class ConsultController {
 		
 		String colname = req.getParameter("colname");
 		String search = req.getParameter("search");
-		String str_currentShowPageNo = req.getParameter("currentShowPageNo"); // 내가 보고싶은 페이지번호
+		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
 		
 		HashMap<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("COLNAME", colname);
@@ -175,9 +188,6 @@ public class ConsultController {
 
 		String userid = null;
 		
-		consultvo = service.selectConsultDetailNoCount(consult_UID);
-		/*
-		// 글상세를 보기위해 http://localhost:9090/board/list.action[글목록]을 거친후 들어온 경우
 		if(readCountPermission!=null && "yes".equals(readCountPermission)) {
 			
 			if(loginuser!=null) {
@@ -186,12 +196,7 @@ public class ConsultController {
 			
 			// - [조회수 증가 O] 글 상세보기
 			consultvo = service.selectConsultDetailWithCount(consult_UID, userid);
-			// userid가 null이면 비로그인 익명 (조회수 증가NO)
-			// userid가 null이 아니지만 내가쓴글(조회수 증가NO), 다른사람이 쓴글(조회수 증가YES)
 			
-			// !!중요!! 글상세를 보기위해 글목록을 거친후 들어온경우
-			// 확인후 session에서 readCountPermission 값을 제거한다.
-			// 새로고침하거나 이전글,다음글 볼때 remove해서 null로 들어감
 			session.removeAttribute("readCountPermission");
 			
 		}
@@ -200,7 +205,7 @@ public class ConsultController {
 			// - [조회수 증가 X] 글 상세보기
 			consultvo = service.selectConsultDetailNoCount(consult_UID);
 		}
-		*/
+		
 		req.setAttribute("consultvo", consultvo);
 		req.setAttribute("gobackURL", gobackURL);
 		
@@ -218,7 +223,6 @@ public class ConsultController {
 		// [조회수증가 없이] 수정할 글 정보 전체 가져오기 
 		ConsultVO consultvo = service.selectConsultEditNoCount(consult_UID); //  selectConsultDetailNoCount 이 함수로 사용
 		
-		/*
 		// 로그인된 사용자정보 받아오기
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -239,11 +243,6 @@ public class ConsultController {
 			
 			return "consult/consultEdit.tiles2";
 		}
-		*/
-		
-		req.setAttribute("consultvo", consultvo);
-		
-		return "consult/consultEdit.tiles2";
 
 	} //
 	
@@ -284,7 +283,7 @@ public class ConsultController {
 	
 	// 1:1상담 삭제 요청 ------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultDelete.pet", method={RequestMethod.POST})
-	public String requireLogin_consultDelete(ConsultVO consultvo, HttpServletRequest req, HttpServletResponse res) throws Throwable {
+	public String requireLogin_consultDelete(HttpServletRequest req, HttpServletResponse res, ConsultVO consultvo) throws Throwable {
 		
 		// 삭제해야할 글번호 가져오기
 		String consult_UID = req.getParameter("consult_UID");
@@ -310,11 +309,10 @@ public class ConsultController {
 			if(result==0) {
 				msg = "글삭제 실패!";
 				loc = "javascript:history.back();";
-				
 			}
 			else {
 				msg = "글삭제 성공!";
-				loc = req.getContextPath()+"/list.action";
+				loc = req.getContextPath()+"/consultlist.pet";
 			}
 		}
 		req.setAttribute("msg", msg);
@@ -328,7 +326,7 @@ public class ConsultController {
 	// 1:1상담 댓글쓰기 -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultCommentAdd.pet", method= {RequestMethod.POST})
 	@ResponseBody
-	public HashMap<String, String> requireLogin_consultCommentAdd(ConsultCommentVO commentvo) throws Throwable {
+	public HashMap<String, String> requireLogin_consultCommentAdd(HttpServletRequest req, HttpServletResponse res, ConsultCommentVO commentvo) throws Throwable {
 	
 		HashMap<String, String> returnMap = new HashMap<String, String>();
 		
@@ -345,7 +343,7 @@ public class ConsultController {
 	}
 	
 	
-	// 댓글보여주기 [Ajax로 페이징처리] -------------------------------------------------------------------------------------------
+	// 1:1상담 댓글보여주기 [Ajax로 페이징처리] -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultCommentList.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> consultCommentList(HttpServletRequest req) {
@@ -365,15 +363,7 @@ public class ConsultController {
 		
 		int rno1 = Integer.parseInt(currentShowPageNo) * sizePerPage - (sizePerPage-1);
 		int rno2 = Integer.parseInt(currentShowPageNo) * sizePerPage;
-		/*
-		 	페이지번호		rno1	rno2
-		 	--------------------------
-		 	1페이지 		1		5
-		 	2페이지		6		10
-		 	3페이지		11		15
-			...			..		..
-		 */
-		
+	
 		// service로 보낼값들
 		HashMap<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("CONSULT_UID", consult_UID);
@@ -383,18 +373,41 @@ public class ConsultController {
 		// 원글의 글번호에 대한 댓글들의 각 페이지 번호에 해당하는 댓글리스트
 		List<ConsultCommentVO> commentList = service.selectCommentList(paraMap);
 		
+		//System.out.println(commentList);
 		for(ConsultCommentVO commentvo :commentList) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("CSCMT_NICKNAME", commentvo.getCscmt_nickname());
 			map.put("CSCMT_CONTENTS", commentvo.getCscmt_contents());
 			map.put("CSCMT_WRITEDAY", commentvo.getCscmt_writeday());
-			
+		
 			mapList.add(map);
 		}
 		return mapList;
 	} // 
 	
+	// 댓글 totalPage가져오기 ----------------------------------------------------------------------------
+	@RequestMapping(value="/commentTotalPage.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public HashMap<String, Integer> commentTotalPage(HttpServletRequest req) {
+		
+		HashMap<String, Integer> retrunMap = new HashMap<String, Integer>();
+		
+		String consult_UID = req.getParameter("consult_UID");
+		String sizePerPage = req.getParameter("sizePerPage");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("CONSULT_UID", consult_UID);
+		paraMap.put("SIZEPERPAGE", sizePerPage);
+		
+		// 댓글 총 갯수
+		int totalCount = service.selectCommentTotalCount(paraMap);
 	
+		int totalPage = (int)Math.ceil((double)totalCount/Integer.parseInt(sizePerPage));
+		
+		retrunMap.put("TOTALPAGE", totalPage);
+		
+		return retrunMap;
+	} // 
 	
 	
 }

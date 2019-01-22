@@ -5,7 +5,7 @@
 
 <style>
  .span{
-	 padding-left:5%;
+	padding-left:5%;
 	padding-top: 2%;
   } 
   .btn1{

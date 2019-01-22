@@ -3,37 +3,63 @@
 
 <style>
 
-  #wrap {
-    width: 1100px;
-    margin: 0 auto;
-    padding-top: 10%;
-  }
+	div #title {
+		text-align: center; 
+		margin-top: 5%;
+	}
+	
+	li {
+		list-style-type: none;
+	}
+	
+	ul .petname {
+		display:table; 
+		margin-left:auto; 
+		margin-right:auto;
+	}
+	
+	ul .img {
+		text-align: center;
+		border-radius: 50%;
+	}
+	
+  	#wrap {
+    	width: 1100px;
+	    margin: 0px auto;
+	    margin-bottom: 10%;
+	    padding-top: 10%;
+	}
+	
+	.info {
+		margin: 0px auto;
+	}
 
-  #external-events {
-    float: right;
-    width: 250px;
-    /* margin-left: 20px; */
-    /* border: 1px solid #ccc; */
-    /* background: #eee; */
-    text-align: center;
-  }
+	#external-events {
+		float: right;
+		 margin: 0px auto;
+		/* width: 250px; */
+		/* margin-left: 20px; */
+		/* border: 1px solid #ccc; */
+		/* background: #eee; */
+		text-align: center;
+	}
 
-  #external-events h4 {
-    font-size: 16px;
-    margin-top: 0;
-    padding-top: 1em;
-  }
+	#external-events h4 {
+		font-size: 16px;
+		margin-top: 0;
+		padding-top: 1em;
+	}
 
-  #external-events .fc-event {
-  	display: inline-block;
-    margin: 0px auto;
-    padding: 10px;
-    width: 60px;
-    border: 1px solid black;
-    background-color: transparent;
-    color: black;
-    cursor: pointer;
-  }
+	#external-events .fc-event {
+		display: inline-block;
+		margin: 0px auto;
+		padding: 10px;
+		width: 60px;
+		border: 1px solid black;
+		background-color: transparent;
+		color: black;
+		cursor: pointer;
+	}
 
   #external-events p {
     margin: 1.5em 0;
@@ -48,13 +74,16 @@
 
   #calendar {
     float: left;
-    width: 900px;
+    width: 70%;
   }
-  
-  .profile {
+ /* 
+  .profileimg {
+  	margin-left: auto;
+	margin-right: auto;
+	display: block;
   	border-radius: 50%;
   }
-
+*/
   fieldset {
     display: block;
     margin-inline-start: 2px;
@@ -132,53 +161,43 @@
 
 </script>
 
-
+<!-- container 시작 -->
 <div class="container">
-	<h2 style="text-align: center;">케어관리</h2>
+	<div id="title"><h2>케어관리</h2></div>
 	
-	<div class="row" style="margin-top: 5%;">
-		<div class="col-md-3">
-			<li style="list-style-type: none;">
-				<ul><span>동물명</span></ul>
-				<ul><img src="resources/img/care/dog.png" class="profile" /></ul>
+	<!-- profile 시작 -->
+	<div class="row profilebody">
+		<div class="col-sm-6 col-lg-3">
+			<li> 
+				<ul><div class="petname">동물명</div></ul>
+				<ul><div class="img"><img src="resources/img/care/dog.png" /></div></ul>
 			</li>
 		</div>
 
-		<div class="col-md-3">
-			<li style="list-style-type: none;">
-				<ul><span>동물명</span></ul>
-				<ul><img src="resources/img/care/dog.png" class="profile" /></ul>
-			</li>
-		</div>
-
-		<div class="col-md-3">
-			<li style="list-style-type: none;">
-				<ul><span>동물명</span></ul>
-				<ul><img src="resources/img/care/dog.png" class="profile" /></ul>
-			</li>
-		</div>
-
+	<!-- profile 끝 -->	
 	</div>
 	
-	<div id='wrap' style="margin-bottom: 10%;">
+	<!-- 메인 content 시작 -->
+	<div id='wrap'>
 	   
-		<!-- 캘린더 content -->	
-	    <div id='calendar' style="border: 0px solid green;"></div>
-	 
-		<div class="row">
-			 
+		<!-- calendar 시작 -->	
+	    <div id='calendar' class="col-lg-8">
+	    <!-- calendar 끝-->
+	    </div>
+	   
+		<!-- info 사이드 시작 -->
+		<div class="row" class="col-lg-4" style="border: 1px solid green;">			 
+			<div style="border: 1px solid blue; margin: 0px auto;">
+				<li>
+					<ul><div class="petname info">동물명</div></ul>
+					<ul><div class="img info"><img src="resources/img/care/dog.png" /></div></ul>
+					<ul><div class="petname info">ㅇㅇㅇ일째 목욕을 안해주었어요</div></ul>
+				</li>
+	  		</div>
+		
+		
+			<div id='external-events' style="border: 1px solid red;">
 			<li style="list-style-type: none;">
-				<ul><div align="center">동물명</div></ul>
-				<ul><div align="center"><img src="resources/img/care/dog.png" class="profile" /></div></ul>
-				<ul><div align="center" style="border: 1px solid gray;">ㅇㅇㅇ일째 목욕을 안해주었어요</div></ul>
-			</li>
-			
-		</div>
-	
-		<div class="row">
-	
-			<div id='external-events' style="border: 0px solid red;">
-		      <li style="list-style-type: none;">
 		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;식사</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;간식</div></ul>
 		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;용변</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;미용</div></ul>
 		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;목욕</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;양치</div></ul>
@@ -192,8 +211,8 @@
 		        <label for='drop-remove'>remove after drop</label>
 		      </p>
 		    </div>
-	    
-	    </div>
+	    	</div> 
+	 
 	
 	    <div style='clear:both'></div>
 	  
@@ -262,7 +281,7 @@
 		</div>
 
 	</fieldset>  
-	  
+<!-- container 끝 -->	  
 </div>
 
 

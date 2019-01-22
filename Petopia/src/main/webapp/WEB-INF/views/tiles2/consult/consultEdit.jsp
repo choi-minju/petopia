@@ -3,18 +3,8 @@
 <% String ctxPath = request.getContextPath(); %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <style type="text/css">
-	input, textarea {border: solid gray 1px;}
 	
-	#table {border-collapse: collapse;
-	 		width: 1000px;
-	 		}
-	#table th, #table td{padding: 5px;}
-	#table th{width: 120px; background-color: #DDDDDD;}
-	#table td{width: 860px;}
-	.long {width: 470px;}
-	.short {width: 120px;} 	
-		
-	[class*="col-"] {
+	.content {
 	   padding-top: 15px;
 	   padding-bottom: 15px;
 	   background-color: #fffff;
@@ -91,9 +81,9 @@
 			
 		<div class="col-xs-12 col-md-12">
 		
-			<div class="col-xs-12 col-md-12">
-				<div class="col-xs-3 col-md-2">동물 분류</div>
-				<div class="col-xs-9 col-md-10" style="padding:0px;">
+			<div class="col-xs-12 col-md-12 content">
+				<div class="col-xs-3 col-md-2 content">동물 분류</div>
+				<div class="col-xs-9 col-md-10 content" style="padding:0px;">
 					<select name="cs_pet_type" id="cs_pet_type" style="height:5%; width:100%;" >
 						<option value="1" <c:if test="${consultvo.cs_pet_type == 1}">selected</c:if>>강아지</option>
 						<option value="2" <c:if test="${consultvo.cs_pet_type == 2}">selected</c:if>>고양이</option>
@@ -105,43 +95,43 @@
 			
 			<input type="hidden" name="consult_UID" value="${consultvo.consult_UID}"/>
 			
-			<div class="col-xs-12 col-md-12">
-				<div class="col-xs-3 col-md-2">작성자</div>
-				<input type="hidden" name="fk_idx" value="4" readonly/>
-				<input type="text" name="name" id="name" style="border: 1px solid #999; border-radius:3px;" class="col-xs-9 col-md-10" value="${consultvo.name}" readonly/>
+			<div class="col-xs-12 col-md-12 content">
+				<div class="col-xs-3 col-md-2 content">작성자</div>
+				<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}" readonly/>
+				<input type="text" name="name" id="name" style="border: 1px solid #999; border-radius:3px;" class="col-xs-9 col-md-10 content" value="${consultvo.name}" readonly/>
 			</div>
 			
-			<div class="col-xs-12 col-md-12">
-				<div class="col-xs-3 col-md-2">글제목</div>
-				<input type="text" name="cs_title" id="cs_title" style="border: 1px solid #999; border-radius:3px;" class="col-xs-9 col-md-10" value="${consultvo.cs_title}"/>
+			<div class="col-xs-12 col-md-12 content">
+				<div class="col-xs-3 col-md-2 content">글제목</div>
+				<input type="text" name="cs_title" id="cs_title" style="border: 1px solid #999; border-radius:3px;" class="col-xs-9 col-md-10 content" value="${consultvo.cs_title}"/>
 			</div>
 			
-			<div class="col-xs-12 col-md-12">
-				<div class="col-xs-3 col-md-2">공개여부</div>
-				<div class="col-xs-9 col-md-10" style="padding-bottom:2%;" >
+			<div class="col-xs-12 col-md-12 content">
+				<div class="col-xs-3 col-md-2 content">공개여부</div>
+				<div class="col-xs-9 col-md-10 content" style="padding-bottom:2%;" >
 				<c:if test="${consultvo.cs_secret==1}"> 
-					<input type="radio" name="cs_secret" id="open" value="1" checked/><label for="open">공개</label>
+					<input type="radio" name="cs_secret" class="content" id="open" value="1" checked/><label for="open">공개</label>
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<input type="radio" name="cs_secret" id="secret" value="0"/><label for="secret">비공개</label>
+					<input type="radio" name="cs_secret" class="content" id="secret" value="0"/><label for="secret">비공개</label>
 				</c:if>
 				
 				<c:if test="${consultvo.cs_secret==0}"> 
-					<input type="radio" name="cs_secret" id="open" value="1" /><label for="open">공개</label>
+					<input type="radio" name="cs_secret" class="content" id="open" value="1" /><label for="open">공개</label>
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<input type="radio" name="cs_secret" id="secret" value="0" checked/><label for="secret">비공개</label>
+					<input type="radio" name="cs_secret" class="content" id="secret" value="0" checked/><label for="secret">비공개</label>
 				</c:if>
 				</div>
 			</div>
 			
-			<div class="col-xs-12 col-md-12">
+			<div class="col-xs-12 col-md-12 content">
 				<textarea name="cs_contents" id="cs_contents" rows="10" cols="100" style="width:100%; height:412px; border-radius:3px;" class="summernote"></textarea>
            		<%-- ** textarea 태그에서 required="required" 속성을 사용하면 스마트 에디터는 오류가 발생하므로 사용하지 않는다. ** --%>
 			</div>
 		</div>	
 		
-		<div class="col-xs-12 col-md-12">
-			<div class="col-xs-10 col-md-9"></div>
-			<div class="col-xs-2 col-md-3">
+		<div class="col-xs-12 col-md-12 content">
+			<div class="col-xs-10 col-md-9 content"></div>
+			<div class="col-xs-2 col-md-3 content">
 				<button type="button" style="border: 1px solid #fc766b; border-radius:50px; width:40%; height:5%; color:#fc766b; margin-right:5%;" id="btnEdit">수정</button>
 				<button type="button" style="border: 1px solid #fc766b; border-radius:50px; width:40%; height:5%; color:#fc766b;" onClick="javascript:history.back();">취소</button>
 			</div>

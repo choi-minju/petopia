@@ -49,8 +49,4 @@ public ReservationVO selectreservedate(String idx) {
 	return reservedate;
 }
 
-
-	
-   
-
 }
