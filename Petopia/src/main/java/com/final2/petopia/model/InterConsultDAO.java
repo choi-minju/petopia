@@ -40,7 +40,9 @@ public interface InterConsultDAO {
 
 	// [consult_comment]commentvo 댓글쓰기 insert
 	int insertComment(ConsultCommentVO commentvo);
-
+	// 대댓글쓰기
+	int insertCommentByComment(ConsultCommentVO commentvo);
+	
 	// [consult]commentCount 원글의 댓글갯수 1 update
 	int updateConsultCommentCount(String fk_consult_UID);
 
@@ -50,7 +52,14 @@ public interface InterConsultDAO {
 	// 댓글 총 갯수 select
 	int selectCommentTotalCount(HashMap<String, String> paraMap);
 
-	// 댓글그룹순서 최대값
-	int getGroupOdrMax();
+	// 댓글그룹순서
+	int getGroupOdrMax(ConsultCommentVO commentvo);
+
+	// cscmt_g_odr그룹순서 update
+	int updateCommentCscmtgOdr(int cscmt_g_odr);
+
+	
+
+	
 
 }

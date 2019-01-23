@@ -131,7 +131,7 @@
                 websocket.send(JSON.stringify(messageObj));
                 
                 
-                $("#chatMessage").append("<span style='color:red; font-weight:bold;'>[나] ▷ " + message + "</span><br/>");
+                $("#chatMessage").append("<span style='color:red; background:white;margin-top:3px;width:100%;border-radius:5px;padding:5px;display:flex; font-weight:bold;'>[나] ▷ " + message + "</span><br/>");
                 $("#chatMessage").scrollTop(99999999);
                  
                 $("#message").val("");
@@ -153,9 +153,16 @@
 	
 	<div id="chatStatus" style="margin-right: 10%; float: right; display: inline-block;">
 	<h2>ChatMessage</h2>	
-		<div id="chatMessage" style="background: #e5e5e5; border: 1px solid black; overFlow: auto; height: 400px;"> </div>
-		<input type="text" id="message" size="30" placeholder="메세지 내용" />
-		<input type="button" id="sendMessage" value="보내기" />
+		<div style="background: #e5e5e5; border: 1px solid black; height: 400px;"> 
+			<div id="chatMessage" style="position: absolute; overflow: auto; max-width: 280px; max-height: 350px; word-break: break-all;">
+			<!-- <table>태그속에는 style="table-layout: fixed" -->
+			<!-- word-break는 단어와 상관없이 부분에서 자르고, word-wrap: break-word는 단어에따라 잘라준다. -->
+			</div>
+			 <div style="margin-top:350px;">
+				<input type="text" id="message" size="30" placeholder="메세지 내용" style="border:0; background:whitesmoke;"/>
+				<i class="fa fa-commenting-o" id="sendMessage" style="font-size: 40px;"></i>
+			 </div>
+		</div>
 	</div>
 	
     <div class="box" style="padding-left: 16%;">
