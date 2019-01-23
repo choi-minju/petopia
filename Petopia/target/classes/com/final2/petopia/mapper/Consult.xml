@@ -54,7 +54,7 @@
 <select id="selectConsultDetailNoCount" parameterType="String" resultType="com.final2.petopia.model.ConsultVO">
 	select previous, previousTitle
 		 , consult_UID, fk_idx, userid, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
-		 , next, nextTitle
+		 , next, nextTitle, commentCount
 	from 
 	(
 	    select lag(consult_UID,1) over(order by consult_UID desc) as previous
@@ -62,6 +62,7 @@
 	         , consult_UID, fk_idx, M.userid, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
 	         , lead(consult_UID,1) over(order by consult_UID desc) as next
 	         , lead(cs_title,1) over(order by consult_UID desc) as nextTitle
+	         , commentCount
 	    from consult C JOIN member M
 	    on C.fk_idx = M.idx
 	) V
@@ -104,14 +105,26 @@
 
 <!-- [consult_comment]commentvo 댓글쓰기 insert -->
 <insert id="insertComment" parameterType="com.final2.petopia.model.ConsultCommentVO">
-<if test="fk_cmt_id.equals('0')"> <!-- 원댓글 -->
 	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
-	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, 0, seq_consult_comment.nextval, default, default, default)
-</if>
-<if test="!fk_cmt_id.equals('0')"> <!-- 원댓글 제외 -->
+	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, seq_consult_comment.nextval, seq_consult_comment.nextval, default, default, default)
+<!--
+<if test="!cscmt_group.equals('')">  원댓글 제외 
 	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
-	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, #{fk_cmt_id}, #{cscmt_group}, default, default, default)
+	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, #{fk_cmt_id}, #{cscmt_group}, #{cscmt_g_odr}, #{cscmt_depth}+1, default)
 </if>
+-->
+</insert>
+
+<!-- [consult_comment]commentvo 대댓글쓰기 insert -->
+<insert id="insertCommentByComment" parameterType="com.final2.petopia.model.ConsultCommentVO">
+<!--
+<if test="cscmt_group.equals('')">  원댓글 
+	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
+	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, seq_consult_comment.nextval, seq_consult_comment.nextval, default, default, default)
+</if>
+-->
+	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
+	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, #{fk_cmt_id}, #{cscmt_group}, #{cscmt_g_odr}, #{cscmt_depth}+1, default)
 </insert>
 
 <!-- [consult]commentCount 원글의 댓글갯수 1 update -->
@@ -139,16 +152,18 @@
 -->
 <!-- 댓글리스트 select : 2번 -->
 <select id="selectCommentList" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultCommentVO">
-	select cscmt_nickname, cscmt_contents, cscmt_writeday
+	select cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del
 	from
 	(
-	    select rownum AS rno, cscmt_nickname, cscmt_contents, cscmt_writeday
+	    select rownum AS rno, cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del
 	    from
 	    (
-	        select fk_consult_UID, cscmt_del, cscmt_nickname, cscmt_contents, to_char(cscmt_writeday, 'yyyy-mm-dd hh24:mi:ss') AS cscmt_writeday
+	        select cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, to_char(cscmt_writeday, 'yyyy-mm-dd hh24:mi:ss') AS cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del
 	        from consult_comment
 	        where cscmt_del = 1 and fk_consult_UID = #{CONSULT_UID}
-	        order by fk_consult_UID asc
+	        start with fk_cmt_id = 0
+	        connect by prior cmt_id = fk_cmt_id
+	        order siblings by cscmt_g_odr asc, cmt_id asc
 	    ) V
 	) T
 	where rno between #{RNO1} and #{RNO2}
@@ -162,9 +177,17 @@
 </select>
 
 <!-- 댓글그룹순서 최대값 -->
-<select id="getGroupOdrMax" resultType="int">
+<select id="getGroupOdrMax" parameterType="com.final2.petopia.model.ConsultCommentVO" resultType="int" >
 	select nvl(max(cscmt_g_odr), 0)
 	from consult_comment
+	where cscmt_group = #{cscmt_group} and fk_cmt_id = #{cmt_id}
 </select>
+
+<!-- cscmt_g_odr그룹순서 update -->
+<update id="updateCommentCscmtgOdr" parameterType="int">
+	update consult_comment set cscmt_g_odr = cscmt_g_odr + 1
+	where cscmt_group = #{cscmt_group} and cscmt_g_odr >= #{cscmt_g_odr}
+</update>
+
 
 </mapper>

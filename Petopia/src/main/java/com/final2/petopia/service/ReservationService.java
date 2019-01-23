@@ -145,23 +145,45 @@ public class ReservationService implements InterReservationService{
 		return result;
 	}
 	
-//	#검색타입/검색어에 만족하는 예약 목록 개수 가져오기
+//	#예약 목록 개수 가져오기
 	@Override
-	public int getTotalCountWithSearch(HashMap<String, String> paraMap) {
-		int totalCount = dao.getTotalCountWithSearch(paraMap);
-		return totalCount;
-	}
-//	#검색타입/검색어가 없는 예약 목록 개수 가져오기
-	@Override
-	public int getTotalCountNoSearch() {
-		int totalCount = dao.getTotalCountNoSearch();
+	public int getTotalCountNoSearch(int idx) {
+		int totalCount = dao.getTotalCountNoSearch(idx);
 		return totalCount;
 	}
 
-//	#검색타입/검색어가 있는 예약목록 가져오기
+//	#예약목록 가져오기
 	@Override
-	public List<ReservationVO> selectUserReservationList(HashMap<String, String> paraMap) {
-		List<ReservationVO> reservationList = dao.selectUserReservationList(paraMap);
+	public List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reservationList = dao.selectUserReservationList(paraMap);
+		// 1 결제대기/ 2 예약완료 / 3 진료완료 / 4 취소 / 5 no show
+		for(HashMap<String, String> map :reservationList) {
+			try {
+				map.put("phone", aes.decrypt(map.get("phone")));			
+			
+				if(map.get("reservation_status").equals("1")) {
+					map.put("rv_status", "결제대기");
+				}
+				else if(map.get("reservation_status").equals("2")) {
+					map.put("rv_status", "예약완료");
+				}
+				else if(map.get("reservation_status").equals("3")) {
+					map.put("rv_status", "진료완료");
+				}
+				else if(map.get("reservation_status").equals("4")) {
+					map.put("rv_status", "취소");
+				}
+				else if(map.get("reservation_status").equals("5")) {
+					map.put("rv_status", "no-show");
+				}
+				else {
+					map.put("rv_status", "error");
+				}
+			} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		return reservationList;
 	}
 

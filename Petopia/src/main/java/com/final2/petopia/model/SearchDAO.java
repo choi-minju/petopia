@@ -44,10 +44,18 @@ public class SearchDAO implements InterSearchDAO {
 	}
 
 
+	// 검색창으로 넘어갈때 검색된 병원/약국 수 보내기 
 	@Override
 	public int searchCount(String searchWord) {
 		int cnt = sqlsession.selectOne("search.addrCount", searchWord);
 		return cnt;
+	}
+
+	// 검색어를 기준으로 biz_member 정보 리스트 불러오기
+	@Override
+	public List<Biz_MemberVO> getBizmemListBySearchWord(String searchWord) {
+		List<Biz_MemberVO> bizMemList = sqlsession.selectList("search.getBizmemListByword", searchWord);
+		return bizMemList;
 	}
 
 }

@@ -121,10 +121,6 @@ public class ConsultService implements InterConsultService {
 		int result1 = 0;
 		int result2 = 0;
 		
-		if( commentvo.getFk_cmt_id() > 0 ) {
-			int group_odr = dao.getGroupOdrMax()+1; // 댓글그룹순서 최대값 받아옴 + 1
-			commentvo.setCscmt_g_odr(group_odr);
-		}
 		result1 = dao.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert
 		
 		if(result1==1) {
@@ -134,6 +130,31 @@ public class ConsultService implements InterConsultService {
 		return result2;
 	}
 
+	// 대댓글 쓰기
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public int insertCommentByComment(ConsultCommentVO commentvo) throws Throwable {
+		
+		int result1 = 0;
+		int result2 = 0;
+		int result3 = 0;
+		
+		if( commentvo.getFk_cmt_id()==null || commentvo.getFk_cmt_id().trim().isEmpty() ) {
+			int group_odr = dao.getGroupOdrMax(commentvo)+1; // 댓글그룹순서 최대값 받아옴 + 1
+			commentvo.setCscmt_g_odr(group_odr);
+		}
+		result1 = dao.insertCommentByComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert
+		
+		if(result1==1) {
+			result2 = dao.updateCommentCscmtgOdr(commentvo.getCscmt_g_odr()); // - cscmt_g_odr update
+			if(result2>=1) {
+				result3 = dao.updateConsultCommentCount(commentvo.getFk_consult_UID()); // - [consult]commentCount 원글의 댓글갯수 1 update
+			}
+		}
+		
+		return result3;
+	}
+	
 	// 댓글리스트 select
 	@Override
 	public List<ConsultCommentVO> selectCommentList(HashMap<String, String> paraMap) {
@@ -147,6 +168,8 @@ public class ConsultService implements InterConsultService {
 		int totalCount = dao.selectCommentTotalCount(paraMap);
 		return totalCount;
 	}
+
+	
 
 	
 	

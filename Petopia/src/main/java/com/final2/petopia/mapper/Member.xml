@@ -48,6 +48,7 @@
 		where userid = #{userid}
 	</select>
 
+	<!-- *** 로그인 *** -->
 	<!-- 로그인 -->
 	<select id="loginSelectByUseridPwd" parameterType="HashMap" resultType="com.final2.petopia.model.MemberVO">
 		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.membertype, b.lastlogindate, b.member_status
@@ -58,18 +59,38 @@
 	</select>
 	
 	<!-- 마지막 로그인 날짜 기록하기 -->
-	<update id="updateLoginDateByUserid" parameterType="HashMap">
+	<update id="updateLoginDateByUserid" parameterType="String">
 		update login_log set lastlogindate = sysdate
-		where member_status = 1 and fk_userid = #{USERID} and fk_pwd = #{PWD}
+		where member_status = 1 and fk_userid = #{USERID}
 	</update>
+	
+	<!-- *** SNS 로그인 *** -->
+	<!-- sns 로그인 아이디와 비번이 있는 경우 사용 가능한지 알아보기 -->
+	<select id="selectSNSMemberStatus" parameterType="String" resultType="int">
+		select b.member_status
+		from member a JOIN login_log b
+		ON a.idx = b.idx
+		where b.member_status = 1 and userid = #{USERID}
+	</select>
+	
+	<!-- sns 로그인해서 정보 가져오기 -->
+	<select id="loginSelectByUserid" parameterType="String" resultType="com.final2.petopia.model.MemberVO">
+		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.membertype, b.lastlogindate, b.member_status
+				, trunc(months_between(sysdate, lastlogindate)) AS lastlogindategap
+		from member a JOIN login_log b
+		ON a.idx = b.idx
+		where b.member_status = 1 and userid = #{userid}
+	</select>
+	
 	<!-- *** 회원번호로 회원정보 조회 *** -->
 	<select id="selectMemberByIdx" parameterType="int" resultType="com.final2.petopia.model.MemberVO">
 		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.birthday, a.gender, a.phone
 		    , a.profileimg, a.filename, a.membertype, a.point, a.totaldeposit
 		    , a.noshow, a.registerdate, b.lastlogindate, b.member_status
+		    , trunc(months_between(sysdate, lastlogindate)) AS lastlogindategap
 		from member a JOIN login_log b
 		ON a.idx = b.idx
-		where b.member_status = 1 and a.idx = #{idx}
+		where a.idx = #{idx}
 	</select>
 	
 	<!-- 저장된 사용자 태그 조회 -->
@@ -111,7 +132,7 @@
 	</update>
 	
 	<!-- *** 회원 탈퇴 *** -->
-	<update id="deleteMemberByIdx" parameterType="int">
+	<update id="updateMemberStatusOutByIdx" parameterType="int">
 		update login_log set member_status = 0
 		where idx = #{idx}
 	</update>
@@ -179,4 +200,20 @@
 	<select id="selectMemberListBySearch" statementType="CALLABLE" parameterMap="selectMemberListBySearch_paraMap">
 		{ call selectMemberListBySearch(?,?,?,?,?) }
 	</select>
+	
+	
+	
+	
+	
+	<!-- *** 회원 휴면 해제 *** -->
+	<update id="updateAdminMemberDateByIdx" parameterType="int">
+		update login_log set lastlogindate = sysdate
+		where idx = #{idx}
+	</update>
+	
+	<!-- *** 회원 복원 *** -->
+	<update id="updateMemberStatusInByIdx" parameterType="int">
+		update login_log set member_status = 1
+		where idx = #{idx}
+	</update>
 </mapper>

@@ -1,4 +1,3 @@
-
 package com.final2.petopia.model;
 
 import org.springframework.stereotype.Repository;
@@ -12,17 +11,18 @@ public class PetVO {
 	private String pet_type;		// 종류
 	private String pet_birthday;	// 반려동물생일
 	private String pet_size;		// 사이즈
-	private int pet_weight;			// 몸무게
-	private String pet_gender;			// 성별
+	private String pet_weight;		// 몸무게
+	private String pet_gender;		// 성별
 	private int pet_neutral;		// 중성화여부
 	private String medical_history;	// 과거병력기재
 	private String allergy;			// 알러지내역
 	private String pet_profileimg;	// 반려동물사진
+	private String pet_status;		// 반려동물상태
 	
 	public PetVO() {}
 	
 	public PetVO(int pet_UID, int fk_idx, String pet_name, String pet_type, String pet_birthday, String pet_size,
-			int pet_weight, String pet_gender, int pet_neutral, String medical_history, String allergy,
+			String pet_weight, String pet_gender, int pet_neutral, String medical_history, String allergy,
 			String pet_profileimg) {
 		this.pet_UID = pet_UID;
 		this.fk_idx = fk_idx;
@@ -86,11 +86,11 @@ public class PetVO {
 		this.pet_size = pet_size;
 	}
 	
-	public int getPet_weight() {
+	public String getPet_weight() {
 		return pet_weight;
 	}
 	
-	public void setPet_weight(int pet_weight) {
+	public void setPet_weight(String pet_weight) {
 		this.pet_weight = pet_weight;
 	}
 	public String getPet_gender() {
@@ -131,6 +131,14 @@ public class PetVO {
 	public void setPet_profileimg(String pet_profileimg) {
 		this.pet_profileimg = pet_profileimg;
 	}
+	public String getPet_status() {
+		return pet_status;
+	}
+
+	public void setPet_status(String pet_status) {
+		this.pet_status = pet_status;
+	}
+	
 	public String getShowPet_type(String pet_type){
 		if(pet_type.equals("cat")) {
 		pet_type="고양이";
@@ -146,4 +154,5 @@ public class PetVO {
 		}
 		return pet_type;
 	}
+	
 } // end of class PetVO

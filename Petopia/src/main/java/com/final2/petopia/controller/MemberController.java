@@ -1,6 +1,7 @@
 package com.final2.petopia.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +23,11 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.final2.petopia.common.AES256;
 import com.final2.petopia.common.FileManager;
+import com.final2.petopia.common.NaverLoginBO;
 import com.final2.petopia.common.SHA256;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.service.InterMemberService;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 
 @Controller
 public class MemberController {
@@ -37,6 +41,15 @@ public class MemberController {
 	@Autowired
 	private FileManager fileManager;
 
+	// 네이버 로그인을 위한 naverLoginBO
+	@Autowired
+	private NaverLoginBO naverLoginBO;
+
+	@Autowired
+	private void setNaverLoginBO(NaverLoginBO naverLoginBO){
+		this.naverLoginBO = naverLoginBO;
+	}
+	
 	// *** 회원가입 *** //
 	@RequestMapping(value="/join.pet", method={RequestMethod.GET})
 	public String join() {
@@ -142,7 +155,7 @@ public class MemberController {
 		HashMap<String, String> idDuplicateMap = new HashMap<String, String>();
 		
 		String userid = req.getParameter("userid");
-		System.out.println("userid: "+userid);
+		//System.out.println("userid: "+userid);
 		
 		int cnt = service.selectMemberIdIsUsed(userid);
 		
@@ -155,18 +168,25 @@ public class MemberController {
 		
 		idDuplicateMap.put("CNT", String.valueOf(cnt));
 		idDuplicateMap.put("MSG", msg);
-		System.out.println("msg: "+idDuplicateMap.get("MSG"));
+		//System.out.println("msg: "+idDuplicateMap.get("MSG"));
 		
 		return idDuplicateMap;
 	} // end of public HashMap<String, String> idDuplicateCheck(HttpServletRequest req)
 	
-	// *** 로그인 *** //
+	// *** 로그인 화면 띄우기 *** //
 	@RequestMapping(value="/login.pet", method={RequestMethod.GET})
-	public String login() {
+	public String login(HttpServletRequest req, HttpSession session) {
+		
+		/* 네아로 인증 URL을 생성하기 위하여 getAuthorizationUrl을 호출 */
+        String naverAuthUrl = naverLoginBO.getAuthorizationUrl(session);
+        
+        /* 생성한 인증 URL을 View로 전달 */
+        req.setAttribute("url", naverAuthUrl);
 		
 		return "join/login.tiles1";
-	} // end of login
+	} // end of public String login(HttpServletRequest req, HttpSession session)
 	
+	// *** 일반 로그인 하기 *** //
 	@RequestMapping(value="/loginSelect.pet", method={RequestMethod.POST})
 	public String loginSelect(HttpServletRequest req, HttpServletResponse res) {
 		
@@ -223,37 +243,225 @@ public class MemberController {
 		return "msg";
 	} // end of public String loginSelect()
 	
+	// *** sns 로그인시 아이디 있는지 확인 *** //
+	@RequestMapping(value="/snsIdDuplicateCheck.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int snsIdDuplicateCheck(HttpServletRequest req) {
+		int result = 0;
+		
+		String userid = req.getParameter("userid");
+		
+		//System.out.println("userid : "+userid);
+		
+		int cnt = service.selectMemberIdIsUsed(userid);
+		
+		int status = 0;
+		if(cnt != 0) {
+			// 있는 경우, 아이디가 사용 가능한지 알아보기
+			status = service.selectSNSMemberStatus(userid);
+			
+			if(status == 0) {
+				// 사용 불가능한 경우
+				result = 2;
+			} else {
+				// 사용가능한 경우
+				result = 1;
+			} // end of if~else
+		} else {
+			// 없는 경우
+			result = 0;
+		}
+		
+		// result 0: 아이디가 없는 경우, result 1: 아이디가 있는데 사용가능한 경우, result 2: 아이디가 있는데 사용이 불가능한 경우
+	
+		//System.out.println("result : "+result);
+		
+		return result;
+	} // end of public int snsIdDuplicateCheck(HttpServletRequest req)
+	
 	// *** 카카오 로그인 *** //
 	@RequestMapping(value="/kakaoLogin.pet", method={RequestMethod.POST})
 	public String kakaoLogin(HttpServletRequest req) {
 		
 		String userid = req.getParameter("userid");
-		String nickname = req.getParameter("nickname");
-		System.out.println("userid: "+userid+", nickname: "+nickname);
+		
+		// System.out.println("userid: "+userid);
+		
 		String msg = "";
 		String loc = "";
+		
 		if(userid != null && !"".equals(userid)) {
-			MemberVO loginuser = new MemberVO();
-			loginuser.setUserid(userid);
-			loginuser.setNickname(nickname);
 			
-			HttpSession session = req.getSession();
-			session.setAttribute("loginuser", loginuser);
+			MemberVO loginuser = service.loginSelectByUserid(userid);
 			
-			msg = "로그인 성공";
-			loc = req.getContextPath()+"/index.pet";
-			System.out.println("로그인성공!");
+			if(loginuser == null) {
+				// 아이디나 비번이 틀린 경우
+				msg = "아이디 또는 비밀번호가 틀립니다.";
+				loc = req.getContextPath()+"/login.pet";
+			} else if(loginuser != null && loginuser.isIdleStatus() == true) {
+				msg = "로그인 한 지 1년이 지나서 휴면계정이 되었습니다. 관리자에게 문의 바랍니다.";
+				loc = "javascript:history.back();";
+			} else {
+				HttpSession session = req.getSession();
+				session.setAttribute("loginuser", loginuser);
+				
+				msg = "로그인되었습니다.";
+				if(session.getAttribute("goBackURL") != null) {
+					loc = (String)session.getAttribute("goBackURL");
+					
+					session.removeAttribute("goBackURL");
+				} else {
+					loc = req.getContextPath()+"/index.pet";
+				}// end of if~else
+			} // end of if~else
 		} else {
 			msg = "로그인 실패";
 			loc = req.getContextPath()+"/login.pet";
-			System.out.println("로그인실패!");
-		}
+			//System.out.println("로그인실패!");
+		} // end of if~else
 		
 		req.setAttribute("msg", msg);
 		req.setAttribute("loc", loc);
 		
 		return "msg";
-	} // 
+	} // end of public String kakaoLogin(HttpServletRequest req)
+	
+	// *** 카카오로 회원가입 *** //
+	@RequestMapping(value="/kakaoJoin.pet", method={RequestMethod.POST})
+	public String kakaoJoin(HttpServletRequest req) {
+		
+		String userid = req.getParameter("userid");
+		String nickname = req.getParameter("nickname");
+		
+		MemberVO mvo = new MemberVO();
+		mvo.setUserid(userid);
+		mvo.setNickname(nickname);
+		
+		List<HashMap<String, String>> tagList = service.selectRecommendTagList();
+		
+		req.setAttribute("mvo", mvo);
+		req.setAttribute("tagList", tagList);
+		
+		return "join/joinSNSMember.tiles1";
+	} // end of public String kakaoJoin(HttpServletRequest req)
+	
+	// *** 네이버 로그인 *** //
+	// 네이버 로그인  callback 처리(로그인 or 회원가입으로)
+	@RequestMapping(value="/loginNaverCallback.pet", method={RequestMethod.GET})
+	public String loginNaverCallback(HttpServletRequest req, HttpSession session) {
+		// http://localhost:9090/petopia/loginNaverCallback.pet?code=RMF1bsSOMSzf9yO4&state=fadab7f5-41c1-40b4-b505-b7a45f7d36fa
+		String code = req.getParameter("code");
+		String state = req.getParameter("state");
+		
+		/* 네아로 인증이 성공적으로 완료되면 code 파라미터가 전달되며 이를 통해 access token을 발급 */
+		OAuth2AccessToken oauthToken = null;
+		try {
+			oauthToken = naverLoginBO.getAccessToken(session, code, state);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} // end of try~catch
+    	
+		//로그인 사용자 정보를 읽어온다.
+		String apiResult = "";
+		try {
+			apiResult = naverLoginBO.getUserProfile(oauthToken);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        System.out.println("result"+apiResult);
+		
+        int index = apiResult.indexOf("response");
+        
+        String json = apiResult.substring(index, apiResult.length());
+        
+        int index2 = json.indexOf("{");
+        
+        String jsonObject = json.substring(index2, json.length());
+       
+        JSONObject jsonObj = new JSONObject(jsonObject);
+       
+        String id = (String) jsonObj.get("id");
+        String userid = (String) jsonObj.get("email");
+        String name = (String) jsonObj.get("name");
+        String nickname = (String) jsonObj.get("nickname");
+        String gender = (String) jsonObj.get("gender");
+        
+        if("F".equals(gender)) {
+        	// 여자
+        	gender = "2";
+        } else {
+        	// 남자
+        	gender = "1";
+        }
+  
+		System.out.println(id+" "+userid+" "+name);
+       
+		MemberVO mvo = new MemberVO();
+		mvo.setUserid(userid);
+		mvo.setName(name);
+		mvo.setNickname(nickname);
+		mvo.setGender(gender);
+		
+		// 네이버 아이디 중복검사
+		int cnt = service.selectMemberIdIsUsed(userid);	
+		
+		int status = 0; // 회원 상태
+		if(cnt != 0) {
+			// 있는 경우, 아이디가 사용 가능한지 알아보기
+			status = service.selectSNSMemberStatus(userid);
+			
+			if(status == 0) {
+				// 사용 불가능한 경우 ==> 로그인 불가 alert 띄우고 login 창으로
+				String msg = "이미 탈퇴한 회원이거나 잘 못된 회원입니다. 관리자에게 문의하세요!";
+				String loc = req.getContextPath()+"/login.pet";
+				
+				req.setAttribute("msg", msg);
+				req.setAttribute("loc", loc);
+				
+				return "msg";
+			} else {
+				// 사용가능한 경우 == > 로그인처리
+				MemberVO loginuser = service.loginSelectByUserid(userid); // 로그인
+				
+				String msg = "";
+				String loc = "";
+				if(loginuser == null) {
+					// 아이디나 비번이 틀린 경우
+					msg = "아이디 또는 비밀번호가 틀립니다.";
+					loc = req.getContextPath()+"/login.pet";
+				} else if(loginuser != null && loginuser.isIdleStatus() == true) {
+					msg = "로그인 한 지 1년이 지나서 휴면계정이 되었습니다. 관리자에게 문의 바랍니다.";
+					loc = "javascript:history.back();";
+				} else {
+					session.setAttribute("loginuser", loginuser);
+					
+					msg = "로그인되었습니다.";
+					if(session.getAttribute("goBackURL") != null) {
+						loc = (String)session.getAttribute("goBackURL");
+						
+						session.removeAttribute("goBackURL");
+					} else {
+						loc = "window.close(); opener.document.location.href='"+req.getContextPath()+"/index.pet';";
+					}// end of if~else
+				} // end of if~else
+				
+				req.setAttribute("msg", msg);
+				req.setAttribute("script", loc);
+				
+				return "msg";
+			} // end of if~else
+		} else {
+			// 없는 경우 ==> sns회원가입으로
+			List<HashMap<String, String>> tagList = service.selectRecommendTagList();
+			
+			req.setAttribute("mvo", mvo);
+			req.setAttribute("tagList", tagList);
+			
+			return "join/joinSNSMember.tiles1";
+		} // end of if~else
+		
+		// result 0: 아이디가 없는 경우, result 1: 아이디가 있는데 사용가능한 경우, result 2: 아이디가 있는데 사용이 불가능한 경우
+	} // end of public String loginNaverCallback(HttpServletRequest req, HttpSession session)
 	
 	// *** 로그아웃 *** //
 	@RequestMapping(value="/logout.pet", method={RequestMethod.GET})
@@ -264,7 +472,7 @@ public class MemberController {
 		req.setAttribute("loc", req.getContextPath()+"/index.pet");
 		
 		return "msg";
-	} // end of 
+	} // end of public String logout(HttpServletRequest req, HttpSession session)
 	
 	@RequestMapping(value="/infoMember.pet", method={RequestMethod.GET})
 	public String requireLogin_infoMember(HttpServletRequest req, HttpServletResponse res) {
