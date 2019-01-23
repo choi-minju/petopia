@@ -4,5 +4,11 @@
 	if("${msg != ''}") {
 		alert("${msg}");
 	}
-	location.href = "${loc}";
+	if("${loc != ''}") {
+		location.href = "${loc}";
+	}
+	
+	if("${script != ''}") {
+		${script}
+	}
 </script>

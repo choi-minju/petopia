@@ -1,7 +1,14 @@
 package com.final2.petopia.model;
 
-public interface InterCareDAO {
+import java.util.HashMap;
+import java.util.List;
 
-	int insertPet_info(PetVO petvo);
+public interface InterCareDAO {
+	
+	//===== 반려동물 리스트 =====
+	List<PetVO> getPet_infoList(HashMap<String, String> map);
+
+	//===== 반려동물 등록 =====
+	int insertPet_info(PetVO pvo);
 
 }

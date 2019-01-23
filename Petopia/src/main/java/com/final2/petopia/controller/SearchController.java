@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.final2.petopia.model.Biz_MemberVO;
-import com.final2.petopia.service.SearchService;
+import com.final2.petopia.service.InterSearchService;
+import com.google.gson.Gson;
 
 @Controller
 public class SearchController {
 	
 	@Autowired
-	private SearchService service;
+	private InterSearchService service;
 	
 	// 검색어를 입력 후 엔터했을때 지도화면으로 보내기
 	@RequestMapping(value="/search.pet", method= {RequestMethod.GET})
@@ -27,11 +28,24 @@ public class SearchController {
 		
 		String searchWord = req.getParameter("searchWord");
 		
+		if(searchWord == null || searchWord.trim().isEmpty()) {
+			searchWord = "";
+		}
 		int cnt = service.searchCount(searchWord);
 		// 지도화면으로 넘어갈때 몇건 검색되었는지도 보내기
 		
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(searchWord);
+		// 검색어를 기준으로 biz_member 정보 리스트 불러오기
+		
+		Gson gson = new Gson();
+		String gson_bizmemList = gson.toJson(bizmemList);
+		
 		req.setAttribute("searchWord", searchWord);
 		req.setAttribute("cnt", cnt);
+		req.setAttribute("gson_bizmemList", gson_bizmemList);
+		req.setAttribute("bizmemList", bizmemList);
+		
+		
 		
 		return "search/index.tiles2";
 		
