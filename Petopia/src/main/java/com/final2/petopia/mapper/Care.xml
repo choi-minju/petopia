@@ -2,4 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
 <mapper namespace="care">
+
+	<select id="getPet_infoList" parameterType="HashMap" resultType="com.final2.petopia.model.PetVO">	
+		select pet_UID, fk_idx,pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		from pet_info
+		where fk_idx = #{IDX} and
+		      pet_status in('1','2')
+		order by pet_birthday asc
+	</select>
+
+	<insert id="insertPet_info" parameterType="com.final2.petopia.model.PetVO">
+		insert into pet_info(pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg)
+		values(seq_pet_info_UID.nextval, #{fk_idx}, #{pet_name}, #{pet_type}, #{pet_birthday, jdbcType=VARCHAR}, #{pet_size, jdbcType=VARCHAR}, #{pet_weight, jdbcType=INTEGER}, #{pet_gender, jdbcType=INTEGER}, #{pet_neutral, jdbcType=INTEGER}, #{medical_history, jdbcType=VARCHAR}, #{allergy, jdbcType=VARCHAR}, #{pet_profileimg, jdbcType=VARCHAR})
+	</insert>
+
 </mapper>

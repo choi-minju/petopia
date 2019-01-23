@@ -1,21 +1,26 @@
 package com.final2.petopia.service;
 
 import java.util.HashMap;
+import java.util.List;
 
+import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.PetVO;
 import com.final2.petopia.model.ReservationVO;
 
 public interface InterChartService {
 
-	int insertmychart(HashMap<String, String> mychartmap); //차트 입력하기 
+	List<PetVO> selectpetlist(int idx); // 펫정보 가져오기 
+	
+	int insertmychart(HashMap<String, String> mychartmap);
 
-	int selectpetuid(String idx); //회원번호로 펫번호  가져오기 
+	ChartVO selectchartinfo(int idx); //차트 인포 불러오기 
 
-	PetVO selectpetinfo(String pet_uid);
+	 List<HashMap<String,String>> selectreserveinfo(int idx); //예약 정보 가져오기 
 
-	String selectnickname(String idx); //회원번호로 병원 이름 가져오기 
+	int selecttabuid( HashMap<String,Object> paramap); //탭에 넣을 예약번호 알아오기 
 
-	ReservationVO selectreservedate(String idx); //회원번호로 방문일자, 예약일자 알아오기 
+
+	
 
 
 

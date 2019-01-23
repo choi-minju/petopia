@@ -113,7 +113,7 @@
 		
 </script>
 
-<div style="padding: 3% 10% 0% 10%;  margin-bottom: 0.2%;" class="container"> 
+<div style=" padding-top:8%;  margin-bottom: 0.2%;" class="container"> 
 	<h3 style="border:0.5px solid #fc766b; border-radius:3px; padding:1%;">&nbsp;&nbsp;&nbsp;1:1상담</h3>
 	
 	

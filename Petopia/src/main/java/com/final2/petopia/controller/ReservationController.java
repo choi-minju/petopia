@@ -193,8 +193,9 @@ public class ReservationController {
 	public String goPayDeposit(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		String fk_reservation_UID = req.getParameter("fk_reservation_UID");
 		String idx = req.getParameter("fk_idx");
-		
+
 		int depositAmount = service.selectSumDepositByIdx(idx);
+
 		int point = service.selectPointByIdx(idx);
 		HashMap<String, String> returnMap = service.selectUserReservationOneByFkRUID(fk_reservation_UID);
 

@@ -51,7 +51,7 @@
 	
 	<!-- #회원번호로 예치금 잔액 가져오기 -->
 	<select id="selectSumDepositByIdx" parameterType="String" resultType="Integer">
-		select sum(depositcoin)
+		select nvl(sum(depositcoin), 0) as n
 		from deposit
 		where fk_idx = #{idx}
 	</select>

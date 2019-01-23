@@ -6,11 +6,15 @@
 	.btns {
 		margin-top: 5px;
 	}
+	
+	a {
+		text-decoration: none;
+	}
+	
+	a:hover {
+		text-decoration: none;
+	}
 </style>
-
-<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width"/>
-<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
 
 <script type="text/javascript">
 
@@ -50,43 +54,6 @@
 	} // end of function goLogin()
 	
 </script>
-<!-- 카카오 로그인  -->
-<script type='text/javascript'>
-	Kakao.init('b5a80832c3cb255d6b0092b12fa51f95');
-	function loginWithKakao() {
-		// 로그인 창을 띄웁니다.
-		Kakao.Auth.login({
-			success: function(authObj) {
-				//alert(JSON.stringify(authObj));
-				Kakao.API.request({
-				
-					url: '/v1/user/me',
-					success: function(res) {
-						//alert(JSON.stringify(res)); //<---- kakao.api.request 에서 불러온 결과값 json형태로 출력
-						//alert(JSON.stringify(authObj)); //<----Kakao.Auth.createLoginButton에서 불러온 결과값 json형태로 출력
-						
-						var frm = document.kakaoLogin;
-						frm.userid.value = res.kaccount_email;
-						frm.nickname.value = res.properties['nickname'];
-						frm.method = "POST";
-						frm.action = "<%=request.getContextPath()%>/kakaoLogin.pet";
-						frm.submit();
-						
-						console.log(res.id);//<---- 콘솔 로그에 id 정보 출력(id는 res안에 있기 때문에  res.id 로 불러온다)
-						console.log(res.kaccount_email);//<---- 콘솔 로그에 email 정보 출력 (어딨는지 알겠죠?)
-						console.log(res.properties['nickname']);//<---- 콘솔 로그에 닉네임 출력(properties에 있는 nickname 접근 
-						// res.properties.nickname으로도 접근 가능 )
-						//console.log(authObj.access_token);//<---- 콘솔 로그에 토큰값 출력
-					}
-				})
-			},
-			fail: function(err) {
-				alert(JSON.stringify(err));
-			}
-		});
-	};
-</script>
-<!-- {"error":"unauthorized","error_description":"unauthorized - unregistered website domain"} -->
 
 <%
 	MemberVO loginuser = (MemberVO)request.getAttribute("loginuser");
@@ -151,25 +118,98 @@
 					</div>
 				</form>
 				<h4>OR</h4>
-				<span>sns 로그인은 일반회원만 가능합니다.</span>
-				<a id="custom-login-btn" href="javascript:loginWithKakao()">
-					<img src="//mud-kage.kakao.com/14/dn/btqbjxsO6vP/KPiGpdnsubSq3a0PHEGUK1/o.jpg" width="300px"/>
-				</a>
+				<div class="row">
+					<span>sns 로그인은 일반회원만 가능합니다.</span>
+				</div>
 				
-				<button type="button" class="form-control btns" style="background-color: #2DB400; color: white; border: none;">Login with Naver</button>
+				<div id="kakao-login-btn" style="text-align:center; margin-top:5px;"></div>
+	   			<!-- *** 카카오 로그인 시작 *** -->
+	   			<script type="text/javascript">
+	   				Kakao.init('b5a80832c3cb255d6b0092b12fa51f95');
+	   				Kakao.Auth.createLoginButton({
+						container: '#kakao-login-btn',
+						success: function(authObj) {
+							Kakao.API.request({
+								url: "/v1/user/me",
+					        	success:function(res){
+					        		var id = res.id;
+					        		var email = res.kaccount_email;
+					        		var nickname = res.properties.nickname;
+					        		var profile = res.properties.thumbnail_image
+									
+					        		console.log("id: "+id+", email: "+email+", nickname: "+nickname+", profile: "+profile);
+					        		var data ={"userid":email};
+					        		
+					        		$.ajax({
+					        			url: "<%=request.getContextPath()%>/snsIdDuplicateCheck.pet",
+					        			type: "POST",
+					        			data: data,
+					        			dataType: "JSON",
+					        			success:function(json){
+					        				if(json == 0) {
+					        					// 회원의 아이디가 없는 경우 ==> 회원가입
+					        					var frm = document.kakaoRegister;
+					        					frm.userid.value=email;
+					        					frm.nickname.value=nickname;
+					        					
+					        					frm.method="POST";
+					      		        		frm.action="<%=request.getContextPath()%>/kakaoJoin.pet";
+					      		        		frm.submit();
+					        				} else if(json == 1) {
+					        					// 회원의 아이디가 있는 경우 ==> 로그인
+					        					// 이미 카카오 회원가입 과정을 거쳤으므로 아이디로만 검색 ==> 아이디는 고유하므로 1개만 뜸!
+					        					var frm = document.kakaoLogin;
+					      		        		frm.userid.value=email;  		        	
+					      		        		
+					      		        		frm.method="POST";
+					      		        		frm.action="<%=request.getContextPath()%>/kakaoLogin.pet";
+					      		        		frm.submit();
+				      		        		  
+					        				} else if(json == 2) {
+					        					// 회원의 아이디는 있지만 사용이 불가능한 경우 ==> alert 관리자에게 문의 & 로그아웃!
+					        					alert("이미 탈퇴한 회원이거나 잘 못된 회원입니다. 관리자에게 문의하세요!");
+					        					// 카카오 로그아웃
+					        					Kakao.Auth.getAccessToken(); // 일단 임시용... 되는지 확인은 로그아웃에서
+					        				} // end of if else
+					        			},
+					        			error: function(request, status, error){
+					    					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					        			}
+					        		}); // end of ajax
+					        	},fail:function(error){
+					        		alert(JSON.stringify(error));
+					        	} // end
+							}); // end of Kakao.API.request()
+						},
+						fail: function(err) {
+							alert(JSON.stringify(err));
+						}
+	   				}); // end of Kakao.Auth.createLoginButton()
+	   			</script>
+	   			<!-- *** 카카오 로그인 끝 *** -->
+	   			
+	   			<div id="naver_id_login" style="text-align:center">
+	   				<a href="${url}" onClick="window.open(this.href,'_blank','width=400,height=600'); return false">
+						<img width="223" src="https://developers.naver.com/doc/review_201802/CK_bEFnWMeEBjXpQ5o8N_20180202_7aot50.png"/>
+					</a>
+				</div>
+	   				  
+				<!-- <button type="button" class="form-control btns" style="background-color: #2DB400; color: white; border: none;">Login with Naver</button> -->
 				<button type="button" class="form-control btns" style="background-color: #80e5ff; color: white; border: none;">Login with Google</button>
 				<button type="button" class="form-control btns" style="background-color: #3b5998; color: white; border: none;">Login with Facebook</button>
-				
-				
 			</div>
 		</div>
 	</div>
 
 	<form name="kakaoLogin">
-		<input name="userid" />
-		<input name="nickname" />
+		<input type="hidden" name="userid" />
 	</form>
-
+	
+	<form name="kakaoRegister">
+		<input type="hidden" name="userid" />
+		<input type="hidden" name="nickname" />
+	</form>
+	
 	<div class="modal fade" id="idFindModal" role="dialog">
 		<div class="modal-dialog modal-sm">
 			<div class="modal-content">
@@ -223,7 +263,7 @@
 					<div class="row" style="margin-top: 20px;">
 						<div class=" col-sm-offset-1 col-sm-10">
 							<span style="color: #999;">홍길동님의 아이디</span>
-							<input type="text" class="form-control" id="userid" name="userid" value="hongkd" readonly="readonly" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							<input type="text" class="form-control" id="findUserid" name="userid" value="hongkd" readonly="readonly" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
 						</div>
 					</div>
 				</div>
@@ -247,7 +287,7 @@
 					<div class="row">
 						<div class="col-sm-offset-1 col-sm-10">
 							<span style="color: #999;">ID</span>
-							<input type="text" class="form-control" id="userid" name="userid" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							<input type="text" class="form-control" id="findPwUserid" name="userid" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
 						</div>
 					</div>
 					

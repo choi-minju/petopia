@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>	
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<% String ctxPath = request.getContextPath(); %>	
 <style>
 .container-fluid {
 	padding-top: 70px;
@@ -248,7 +249,7 @@
 	          	 <c:if test="${petList == null || petList.size() == 0 }">
 			      등록된 반려동물이 없습니다. <br/>
 			      나의 반려동물에서 정보를 추가한 후 진행해주세요.
-			      <button type="button" class="btn btn-default">반려동물 등록하기</button>
+			      <button type="button" class="btn btn-default" onClick="javascript: location.href='<%=ctxPath%>/petRegister.pet'">반려동물 등록하기</button>
 			     </c:if>
 			     <c:if test="${petList != null && petList.size() > 0 }">
 			      <select class="form-control " id="selectPet">
