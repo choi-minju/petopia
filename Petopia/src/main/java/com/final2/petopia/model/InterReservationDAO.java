@@ -46,8 +46,7 @@ public interface InterReservationDAO {
 	int updateReservationStatusByFkRUID(String fk_reservation_UID);
 
 //	#예약목록(페이징처리)
-	int getTotalCountWithSearch(HashMap<String, String> paraMap);
-	int getTotalCountNoSearch();
-	List<ReservationVO> selectUserReservationList(HashMap<String, String> paraMap);
+	int getTotalCountNoSearch(int idx);
+	List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap);
 
 }

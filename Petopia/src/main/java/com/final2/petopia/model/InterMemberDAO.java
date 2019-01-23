@@ -18,8 +18,12 @@ public interface InterMemberDAO {
 
 	// *** 로그인 *** //
 	MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap); // 로그인
-	void updateLoginDateByUserid(HashMap<String, String> loginMap); // 마지막 로그인 날짜 기록하기
+	void updateLoginDateByUserid(String userid); // 마지막 로그인 날짜 기록하기
 
+	/// *** SNS 로그인 *** //
+	int selectSNSMemberStatus(String userid); // sns 로그인 아이디와 비번이 있는 경우 사용 가능한지 알아보기
+	MemberVO loginSelectByUserid(String userid); // sns 로그인해서 정보 가져오기
+	
 	// *** 회원번호로 회원정보 조회 *** //
 	MemberVO selectMemberByIdx(int idx); // 회원정보 조회
 	List<HashMap<String, String>> selectHave_tagByIdx(int idx); // 저장된 사용자 태그 조회
@@ -51,4 +55,5 @@ public interface InterMemberDAO {
 
 	// *** 회원 복원 *** //
 	int updateMemberStatusInByIdx(int idx);
+
 }

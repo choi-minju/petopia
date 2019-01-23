@@ -73,7 +73,7 @@
 </script>
 
 
-<div style="padding: 5% 10% 0% 10%;  margin-bottom: 0.2%; border: solid 0px red;" class="container">
+<div style="padding-top:8%; margin-bottom: 0.2%; border: solid 0px red;" class="container">
 	<h3  style="border:0.5px solid #fc766b; border-radius:3px; padding:1%;">&nbsp;&nbsp;&nbsp;1:1상담내역</h3>
 	<div align="center">
 		
@@ -90,7 +90,7 @@
 				</select>
 				
 				<input type="text" name="search" id="search" size="30" style="border: 1px solid #999; border-radius: 25px;" />
-				<button type="button" style="background-color:#fc766b; border: 1px solid #fc766b; border-radius:50px; width:10%; height:4%; color:#ffffff; padding-right:10px; font-size:12px;" onClick="goSearch();">
+				<button type="button" class="btn btnmenu btn-rounder"  style="border: 1px solid #fc766b; border-radius:50px; width:10%; height:4%; padding-right:10px; font-size:12px;" onClick="goSearch();">
 					<img src="<%=request.getContextPath() %>/resources/img/consultIcon/search-01-01.png" style="width:38%; padding-right:1px;">검색
 				</button> 
 				</form>
@@ -147,9 +147,9 @@
 		
 		
 		<div class="col-xs-12 col-md-12" style="background-color: #ffffff;">
-			<div class="col-xs-10 col-md-9" style="background-color: #ffffff;"></div>
-			<div class="col-xs-2 col-md-3" style="background-color: #ffffff;">
-				<button type="button" id="btnWrite" style="margin-left:35%; background-color: #ffffff; border: 1px solid #fc766b; border-radius:50px; width:80%; height:5%; color:#fc766b;"
+			<div class="col-xs-11 col-md-11" style="background-color: #ffffff;"></div>
+			<div class="col-xs-1 col-md-1" style="background-color: #ffffff;">
+				<button type="button" id="btnWrite" class="btn btnmenu btn-rounder" style="background-color: #ffffff; border: 1px solid #fc766b; border-radius:50px;  color:#fc766b;"
 				onClick="javascript:location.href='consultAdd.pet'">글쓰기</button>
 			</div>
 		</div>

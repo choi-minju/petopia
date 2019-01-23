@@ -122,13 +122,42 @@ public class MemberService implements InterMemberService {
 			return loginuser;
 		} else {
 			// 마지막 로그인 날짜 기록하기
-			dao.updateLoginDateByUserid(loginMap);
+			dao.updateLoginDateByUserid(loginMap.get("USERID"));
 			
 			return loginuser;
 		} // end of if~else
 		
 	} // public MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap)
 
+	// *** SNS 로그인 *** //
+	// sns 로그인 아이디와 비번이 있는 경우 사용 가능한지 알아보기
+	@Override
+	public int selectSNSMemberStatus(String userid) {
+		int status = dao.selectSNSMemberStatus(userid);
+		
+		return status;
+	} // end of public int selectSNSMemberStatus(String userid)
+	
+	// sns 로그인해서 정보 가져오기
+	@Override
+	public MemberVO loginSelectByUserid(String userid) {
+		MemberVO loginuser = dao.loginSelectByUserid(userid);
+		
+		if(loginuser == null) {
+			return null;
+		} else if(loginuser.getLastlogindategap() >= 12) {
+			// 마지막 로그인 날짜 확인 후 12개월 이상이면 휴면으로
+			loginuser.setIdleStatus(true);
+			
+			return loginuser;
+		} else {
+			// 마지막 로그인 날짜 기록하기
+			dao.updateLoginDateByUserid(userid);
+			
+			return loginuser;
+		} // end of if~else
+	} // end of public MemberVO loginSelectByUserid(String userid)
+	
 	// *** 회원번호로 회원정보 조회 *** //
 	// 회원정보 조회
 	@Override
@@ -345,4 +374,7 @@ public class MemberService implements InterMemberService {
 		
 		return result;
 	} // end of public int updateMemberStatusInByIdx(int idx)
+
+	
+
 }

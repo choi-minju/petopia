@@ -2,7 +2,7 @@ package com.final2.petopia.model;
 
 public class ConsultCommentVO {
 
-	private int cmt_id;					// 댓글고유번호
+	private String cmt_id;					// 댓글고유번호
 	private String name;				// 이름
 	private String userid;				// 이름
 	private String nickname;			// 닉네임
@@ -11,7 +11,7 @@ public class ConsultCommentVO {
 	private String cscmt_nickname;		// 댓글작성자
 	private String cscmt_contents;		// 댓글내용
 	private String cscmt_writeday;		// 댓글작성일시
-	private int fk_cmt_id;				// 원댓글 고유번호
+	private String fk_cmt_id;				// 원댓글 고유번호
 	private int cscmt_group;			// 댓글그룹번호
 	private int cscmt_g_odr;			// 댓글그룹순서
 	private int cscmt_depth;			// 계층
@@ -20,8 +20,8 @@ public class ConsultCommentVO {
 	
 	public ConsultCommentVO() { }
 	
-	public ConsultCommentVO(int cmt_id, String name, String userid, String nickname, String fk_consult_UID, String fk_idx, String cscmt_nickname, String cscmt_contents,
-			String cscmt_writeday, int fk_cmt_id, int cscmt_group, int cscmt_g_odr, int cscmt_depth, int cscmt_del) {
+	public ConsultCommentVO(String cmt_id, String name, String userid, String nickname, String fk_consult_UID, String fk_idx, String cscmt_nickname, String cscmt_contents,
+			String cscmt_writeday, String fk_cmt_id, int cscmt_group, int cscmt_g_odr, int cscmt_depth, int cscmt_del) {
 		this.cmt_id = cmt_id;
 		this.name = name;
 		this.userid = userid;
@@ -38,10 +38,10 @@ public class ConsultCommentVO {
 		this.cscmt_del = cscmt_del;
 	}
 
-	public int getCmt_id() {
+	public String getCmt_id() {
 		return cmt_id;
 	}
-	public void setCmt_id(int cmt_id) {
+	public void setCmt_id(String cmt_id) {
 		this.cmt_id = cmt_id;
 	}	
 	
@@ -101,10 +101,10 @@ public class ConsultCommentVO {
 		this.cscmt_writeday = cscmt_writeday;
 	}
 
-	public int getFk_cmt_id() {
+	public String getFk_cmt_id() {
 		return fk_cmt_id;
 	}
-	public void setFk_cmt_id(int fk_cmt_id) {
+	public void setFk_cmt_id(String fk_cmt_id) {
 		this.fk_cmt_id = fk_cmt_id;
 	}
 
