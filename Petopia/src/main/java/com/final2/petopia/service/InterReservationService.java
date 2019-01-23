@@ -43,7 +43,6 @@ public interface InterReservationService {
 	
 	
 //	#예약목록
-	int getTotalCountWithSearch(HashMap<String, String> paraMap);
-	int getTotalCountNoSearch();
-	List<ReservationVO> selectUserReservationList(HashMap<String, String> paraMap);
+	int getTotalCountNoSearch(int idx);
+	List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap);
 }

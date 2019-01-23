@@ -115,24 +115,17 @@ public class ReservationDAO implements InterReservationDAO {
 
 	
 	
-	
-//	#검색타입/검색어에 만족하는 예약 목록 개수 가져오기
-	@Override
-	public int getTotalCountWithSearch(HashMap<String, String> paraMap) {
-		int totalCount = sqlsession.selectOne(ns+"getTotalCountWithSearch", paraMap);
-		return totalCount;
-	}
 //	#검색타입/검색어가 없는 예약 목록 개수 가져오기
 	@Override
-	public int getTotalCountNoSearch() {
-		int totalCount = sqlsession.selectOne(ns+"getTotalCountNoSearch");
+	public int getTotalCountNoSearch(int idx) {
+		int totalCount = sqlsession.selectOne(ns+"getTotalCountNoSearch", idx);
 		return totalCount;
 	}
 
 //	#검색타입/검색어가 있는 예약목록 가져오기
 	@Override
-	public List<ReservationVO> selectUserReservationList(HashMap<String, String> paraMap) {
-		List<ReservationVO> reservationList = sqlsession.selectList(ns+"selectUserReservationList",paraMap);
+	public List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reservationList = sqlsession.selectList(ns+"selectUserReservationList",paraMap);
 		return reservationList;
 	}
 }

@@ -1,45 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
-<mapper namespace="chart">
-<!-- 회원번호로 펫 uid 가져오기  -->
-<select id="selectpetuid" parameterType="String" resultType="int" >
- select pet_UID
+ <mapper namespace="chart">
+
+
+<!--  pet uid로 펫정보 가져오기  -->
+ <select id="selectpetlist"  parameterType="int" resultType="com.final2.petopia.model.PetVO"> 
+select pet_UID, fk_idx,pet_name,pet_type,pet_birthday,pet_size,pet_weight,
+   decode(pet_gender, '1', '수컷', '2', '암컷') as pet_gender,pet_neutral,medical_history,allergy,pet_profileimg
 from pet_info A join Member B
 on A.fk_idx= B.idx
 where A.fk_idx=#{idx}
 </select> 
-
-<!--  pet uid로 펫정보 가져오기  -->
- <select id="selectpetinfo"  parameterType="String" resultType="com.final2.petopia.model.PetVO"> 
-select  pet_profileimg,pet_weight,pet_birthday,pet_name,
-    decode(pet_gender, '1', '수컷', '2', '암컷') as pet_gender
-from pet_info
-where pet_uid=#{pet_uid}
+<!--탭에 넣을 예약번호 가져오기  -->
+<select id="selecttabuid" resultType="int" parameterType="HashMap">
+select reservation_uid
+from reservation
+where fk_idx = #{idx} and reservation_date = #{rdate}
 </select> 
 
+<!--  처방전테이블에  인서트 하기  -->
+<!--  <insert id="insertmychart" parameterType="HashMap" >
+ insert into prescription (rx_UID,chart_UID,rx_name,dose_number,dosage,rx_notice
+                          ,rx_cautions,rx_regName)
+ values (seq_prescription_UID.nextval,#{CHART_UID},#{MNAME},#{MTIMES},#{MS},#{MEMO}
+                      ,#{CAUTION},#NAME} )
 
-<!-- 회원번호로 병원이름 가져오기 -->
+</insert>  -->
+<!-- 마이 페이지에서 처방전 셀렉트 하기  -->
+<select id="selectchartinfo" parameterType="int" resultType="com.final2.petopia.model.ChartVO">
+select rx_UID,chart_UID,rx_name,dose_number,dosage,rx_notice ,rx_cautions,rx_regName
+from prescription A join member B
+on A.rx_regName=#{NAME}
 
-<select id="selectnickname" parameterType="String" resultType="String">
- select  A.nickname as nickname
-    from member A join reservation B
-    on  B.fk_idx_biz =A.idx
-where A.membertype=2 and A.idx=#{idx}
 </select>
-<select id="selectreservedate" parameterType="String" resultType="com.final2.petopia.model.ReservationVO">
-select A.bookingdate, A.reservation_date
-from reservation A join member B
-on A.fk_idx=B.idx
-where B.idx=#{idx}
-</select>
-<!--  처방전 인서트 하기  -->
-<!-- <insert id="insertmychart" parameterType="HashMap">
-  insert into  chart(chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
-                   ,reservation_DATE,doc_name,cautions,chart_contents,
-                   payment_pay,payment_point,addpay,totalpay) 
-  values(chart_UID.nextval,#{PET_UID},#{IDX},#{CHART_TYPE},#{BIZ_NAME},#{DOCNAME},#{CAUTION},#{MEMO},default,default,default,default,)
 
-</insert> -->
+<!-- 병원예약 정보  -->
+<resultMap type="HashMap" id="rmap_like_reservationVO">
+      <result property="reservation_UID" column="RESERVATION_UID" javaType="String"/>
+      <result property="fk_idx" column="FK_IDX" javaType="String"/>
+      <result property="fk_idx_biz" column="FK_IDX_BIZ" javaType="String"/>
+      <result property="fk_schedule_UID" column="FK_SCHEDULE_UID" javaType="String"/>
+      <result property="fk_pet_UID" column="FK_PET_UID" javaType="String"/>
+      <result property="reservation_DATE" column="RESERVATION_DATE" javaType="String"/>
+      <result property="reservation_type" column="RESERVATION_TYPE" javaType="String"/>
+      <result property="pet_name" column="PET_NAME" javaType="String"/>
+      <result property="pet_type" column="PET_TYPE" javaType="String"/>
+   </resultMap>
+<select id="selectreserveinfo" parameterType="String" resultMap="rmap_like_reservationVO">
+     select A.reservation_UID, A.fk_idx, A.fk_idx_biz, A.fk_schedule_UID, A.fk_pet_UID
+    , to_char(A.reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, 
+    decode(A.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as reservation_type
+   , C.pet_name, decode(C.pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
+from reservation A join pet_info C
+on A.fk_pet_UID = C.pet_UID
+where A.fk_idx_biz = #{idx}
+ </select>
 
 </mapper>

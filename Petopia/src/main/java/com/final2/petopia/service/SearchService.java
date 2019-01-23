@@ -10,7 +10,7 @@ import com.final2.petopia.model.Biz_MemberVO;
 import com.final2.petopia.model.InterSearchDAO;
 
 @Service
-public class SearchService {
+public class SearchService implements InterSearchService {
 
 	@Autowired
 	private InterSearchDAO dao; 
@@ -31,6 +31,13 @@ public class SearchService {
 	public int searchCount(String searchWord) {
 		int cnt = dao.searchCount(searchWord);
 		return cnt;
+	}
+	
+	// 검색어를 기준으로 biz_member 정보 리스트 불러오기
+	@Override
+	public List<Biz_MemberVO> getBizmemListBySearchWord(String searchWord) {
+		List<Biz_MemberVO> bizMemList = dao.getBizmemListBySearchWord(searchWord);
+		return bizMemList;
 	}
 
 }

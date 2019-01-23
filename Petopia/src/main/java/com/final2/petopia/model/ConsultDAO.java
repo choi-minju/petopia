@@ -91,7 +91,13 @@ public class ConsultDAO implements InterConsultDAO {
 		int n = sqlsession.insert("consult.insertComment", commentvo);
 		return n;
 	}
-
+	// 대댓글쓰기 
+	@Override
+	public int insertCommentByComment(ConsultCommentVO commentvo) {
+		int n = sqlsession.insert("consult.insertCommentByComment", commentvo);
+		return n;
+	}
+	
 	// [consult]commentCount 원글의 댓글갯수 1 update
 	@Override
 	public int updateConsultCommentCount(String fk_consult_UID) {
@@ -115,10 +121,21 @@ public class ConsultDAO implements InterConsultDAO {
 
 	// 댓글그룹순서 최대값
 	@Override
-	public int getGroupOdrMax() {
-		int n = sqlsession.selectOne("consult.getGroupOdrMax");
+	public int getGroupOdrMax(ConsultCommentVO commentvo) {
+		int n = sqlsession.selectOne("consult.getGroupOdrMax", commentvo);
 		return n;
 	}
+
+	// cscmt_g_odr그룹순서 update
+	@Override
+	public int updateCommentCscmtgOdr(int cscmt_g_odr) {
+		int n = sqlsession.update("consult.updateCommentCscmtgOdr", cscmt_g_odr);
+		return n;
+	}
+
+	
+
+	
 	
 	
 

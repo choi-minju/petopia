@@ -14,8 +14,8 @@ public class Biz_MemberVO {
 	private String postcode;    // 우편번호
 	private String addr1;       // 주소
 	private String addr2;      // 주소2
-	private int latitude;    // 위도
-	private int longitude;   // 경도
+	private String latitude;    // 위도
+	private String longitude;   // 경도
 	private String prontimg;   // 대표이미지
 	private String weekday;   // 평일
 	private String wdstart;    // 평일시작시간
@@ -35,7 +35,7 @@ public class Biz_MemberVO {
 	public Biz_MemberVO() { }
 	
 	public Biz_MemberVO(int idx_biz, String name, int biztype, String repname, String biznumber, String phone,
-			String postcode, String addr1, String addr2, int latitude, int longitude, String prontimg, String weekday,
+			String postcode, String addr1, String addr2, String latitude, String longitude, String prontimg, String weekday,
 			String wdstart, String wdend, String lunchstart, String lunchend, String satstrart, String satend,
 			String dayoff, int dog, int cat, int smallani, int etc, String note, String intro) {
 
@@ -139,19 +139,19 @@ public class Biz_MemberVO {
 		this.addr2 = addr2;
 	}
 
-	public int getLatitude() {
+	public String getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(int latitude) {
+	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
 
-	public int getLongitude() {
+	public String getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(int longitude) {
+	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
 
