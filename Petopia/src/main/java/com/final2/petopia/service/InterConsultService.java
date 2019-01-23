@@ -42,11 +42,16 @@ public interface InterConsultService {
 	// [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1update
 	int insertComment(ConsultCommentVO commentvo) throws Throwable;
 
+	// 대댓글 쓰기
+	int insertCommentByComment(ConsultCommentVO commentvo) throws Throwable;
+		
 	// 댓글리스트 select
 	List<ConsultCommentVO> selectCommentList(HashMap<String, String> paraMap);
 
 	// 댓글 총 갯수
 	int selectCommentTotalCount(HashMap<String, String> paraMap);
+
+	
 
 
 	

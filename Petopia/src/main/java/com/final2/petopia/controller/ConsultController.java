@@ -282,7 +282,7 @@ public class ConsultController {
 	
 	
 	// 1:1상담 삭제 요청 ------------------------------------------------------------------------------------
-	@RequestMapping(value="/consultDelete.pet", method={RequestMethod.POST})
+	@RequestMapping(value="/consultDelete.pet", method={RequestMethod.GET})
 	public String requireLogin_consultDelete(HttpServletRequest req, HttpServletResponse res, ConsultVO consultvo) throws Throwable {
 		
 		// 삭제해야할 글번호 가져오기
@@ -346,9 +346,12 @@ public class ConsultController {
 	// 1:1상담 댓글보여주기 [Ajax로 페이징처리] -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultCommentList.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public List<HashMap<String, Object>> consultCommentList(HttpServletRequest req) {
+	public List<HashMap<String, Object>> requireLogin_consultCommentList(HttpServletRequest req, HttpServletResponse res) {
 		
 		List<HashMap<String, Object>> mapList = new ArrayList<HashMap<String, Object>>();
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
 		// 원글의 글번호 가져오기 (원글의 댓글들을 보여주기 위해서)
 		String consult_UID = req.getParameter("consult_UID");
@@ -373,13 +376,19 @@ public class ConsultController {
 		// 원글의 글번호에 대한 댓글들의 각 페이지 번호에 해당하는 댓글리스트
 		List<ConsultCommentVO> commentList = service.selectCommentList(paraMap);
 		
-		//System.out.println(commentList);
 		for(ConsultCommentVO commentvo :commentList) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("CMT_ID", commentvo.getCmt_id());
+			map.put("FK_CONSULT_UID", commentvo.getFk_consult_UID());
+			map.put("FK_IDX", commentvo.getFk_idx());
 			map.put("CSCMT_NICKNAME", commentvo.getCscmt_nickname());
 			map.put("CSCMT_CONTENTS", commentvo.getCscmt_contents());
 			map.put("CSCMT_WRITEDAY", commentvo.getCscmt_writeday());
-		
+			map.put("FK_CMT_ID", commentvo.getFk_cmt_id());
+			map.put("CSCMT_GROUP", commentvo.getCscmt_group());
+			map.put("CSCMT_G_ODR", commentvo.getCscmt_g_odr());
+			map.put("CSCMT_DEPTH", commentvo.getCscmt_depth());
+			map.put("CSCMT_DEL", commentvo.getCscmt_del());
 			mapList.add(map);
 		}
 		return mapList;
@@ -403,11 +412,59 @@ public class ConsultController {
 		int totalCount = service.selectCommentTotalCount(paraMap);
 	
 		int totalPage = (int)Math.ceil((double)totalCount/Integer.parseInt(sizePerPage));
+
+		
+		//req.setAttribute("totalPage", totalPage);
 		
 		retrunMap.put("TOTALPAGE", totalPage);
 		
 		return retrunMap;
 	} // 
 	
+	// 대댓글 쓰기 -------------------------------------------------------------------------------------------
+	@RequestMapping(value="/consultCommentByCommentAdd.pet", method= {RequestMethod.POST})
+	@ResponseBody
+	public HashMap<String, String> requireLogin_consultCommentByCommentAdd(HttpServletRequest req, HttpServletResponse res, ConsultCommentVO commentvo) throws Throwable {
 	
+		HashMap<String, String> returnMap = new HashMap<String, String>();
+		
+		String fk_cmt_id = req.getParameter("fk_cmt_id");
+		String fk_idx = req.getParameter("fk_idx");
+		String str_cscmt_group = req.getParameter("cscmt_group");
+		String str_cscmt_g_odr = req.getParameter("cscmt_g_odr");
+		String str_cscmt_depth = req.getParameter("cscmt_depth");
+		String cscmt_nickname = req.getParameter("cscmt_nickname");
+		String cscmt_contents = req.getParameter("cscmt_contents");
+		String fk_consult_UID = req.getParameter("fk_consult_UID");
+	
+		System.out.println("fk_cmt_id : "+fk_cmt_id);
+		System.out.println("fk_idx : "+fk_idx);
+		System.out.println("str_cscmt_group : "+str_cscmt_group);
+		System.out.println("str_cscmt_g_odr : "+str_cscmt_g_odr);
+		System.out.println("str_cscmt_depth : "+str_cscmt_depth);
+		System.out.println("cscmt_nickname : "+cscmt_nickname);
+		System.out.println("cscmt_contents : "+cscmt_contents);
+		System.out.println("fk_consult_UID : "+fk_consult_UID);
+		
+		commentvo.setFk_cmt_id(fk_cmt_id);
+		commentvo.setFk_idx(fk_idx);
+		commentvo.setCscmt_group(Integer.parseInt(str_cscmt_group));
+		commentvo.setCscmt_g_odr(Integer.parseInt(str_cscmt_g_odr));
+		commentvo.setCscmt_depth(Integer.parseInt(str_cscmt_depth));
+		commentvo.setCscmt_nickname(cscmt_nickname);
+		commentvo.setCscmt_contents(cscmt_contents);
+		commentvo.setFk_consult_UID(fk_consult_UID);
+		
+		// 대댓글 쓰기
+		int n = service.insertCommentByComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1증가 update
+		
+		if(n==1) {
+			// 대댓글쓰기insert 및 원글의댓글갯수update 성공시
+			returnMap.put("CSCMT_NICKNAME", commentvo.getCscmt_nickname());
+			returnMap.put("CSCMT_CONTENTS", commentvo.getCscmt_contents());
+			returnMap.put("CSCMT_WRITEDAY", commentvo.getCscmt_writeday());
+		}
+		
+		return returnMap;
+	}
 }

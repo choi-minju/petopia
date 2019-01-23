@@ -28,7 +28,28 @@
 		frm.method = "GET";
 		frm.action = "<%=request.getContextPath() %>/videochat.pet";
 		frm.submit();
+	} // end of goChat();
+	
+	function createcode(idx) {
+		
+		var yn = confirm("코드를 생성하시겠습니까?");
+		if(!yn) return;
+		var form_data = {"idx":"${loginuser.idx}"};
+		$.ajax({
+			url:"createcode.pet",
+			type:"GET",
+			data:form_data,
+			dataType:"JSON",
+			success:function(json) {
+					alert("코드가 생성 되었습니다. \n"+json.code);
+					return;
+			},
+			error:function() {
+				alert("코드생성에 실패했습니다.");
+			}
+		});
 	}
+	
 </script>
 
 <form name="chatFrm">
@@ -53,6 +74,7 @@
 		<span style="font-weight: bold;">ㆍ이용문의 :</span> 010-1234-5678
 		</span>
 		<button type="button" data-toggle="modal" data-target="#videochat" data-dismiss="modal" style="cursor: pointer; margin-top:60%; float:right;">상담하기</button>
+	  	<button type="button" onClick="createcode(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담코드 생성</button>
 	  	
 	  </div>  
 	</div>

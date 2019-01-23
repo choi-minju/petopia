@@ -24,6 +24,7 @@
    	font-size: 30px;
   	font-weight: bold;
   	margin-left: 2.5%;
+  	padding: 15px 15px;
    }
    .navbar-nav li a:hover, .navbar-nav li.active a {
      font-weight: bold;
@@ -49,22 +50,21 @@
      
 </style>
 
-<script src='https://developers.kakao.com/sdk/js/kakao.min.js'></script>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width"/>
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+
+<script type="text/javascript" src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js" charset="utf-8"></script>
 
 <script type="text/javascript">
 	$(document).ready(function(){
 		
 	});
 	
-	function logOut() {
-		alert("dddddd");
-		Kakao.init('b5a80832c3cb255d6b0092b12fa51f95'); //카카오에서 제공 myceo.co.kr 수정
-		Kakao.Auth.logout(
-			function(obj) {
-				if(obj==true){}else{}
-				 location.href='<%=request.getContextPath()%>/home.pet';
-			 }
-		);
+	function logOut(){
+		// 카카오 로그아웃
+		Kakao.init('b5a80832c3cb255d6b0092b12fa51f95');
+		Kakao.Auth.getAccessToken();
 	} // end of logOut
 	
 </script>
@@ -86,7 +86,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span> 
 					</button>
-					<a class="navbar-brand logo" href="<%= ctxPath %>/home.pet">PETOPIA</a>
+					<a class="navbar-brand logo" href="<%= ctxPath %>/home.pet" style="font-size: 18px; font-weight: bold;padding: 15px 15px;">PETOPIA</a>
 				</div>
 				<div class="collapse navbar-collapse" id="myNavbar">
 					<ul class="nav navbar-nav navbar-right">
@@ -96,15 +96,14 @@
 						</c:if>
 						<c:if test="${sessionScope.loginuser != null }">
 							<li><a onclick="logOut();" href="<%= ctxPath %>/logout.pet">[${sessionScope.loginuser.nickname }] 로그아웃</a></li>
-							<c:if test="${sessionScope.loginuser != null && sessionScope.loginuser.membertype != 3 }"><%-- 관리자일 경우 없애기 --%>
+							<c:if test="${sessionScope.loginuser != null && sessionScope.loginuser.membertype == 1 }"><%-- 관리자일 경우 없애기 --%>
 								<li class="dropdown">
-									<a class="dropdown-toggle" data-toggle="dropdown" href="#">마이페이지
-									<span class="caret"></span></a>
+									<a class="dropdown-toggle" data-toggle="dropdown">마이페이지<span class="caret"></span></a>
 									<ul class="dropdown-menu">
-										<li><a href="#">반려동물수첩</a></li>
+										<li><a href="<%= ctxPath %>/careIndex.pet">반려동물수첩</a></li>
 										<li><a href="<%= ctxPath %>/infoMember.pet">나의정보보기</a></li>
-										<li><a href="#">나의병원리뷰</a></li>
-										<li><a href="#">나의병원관리</a></li>
+										<li><a href="<%= ctxPath %>/myReviewList.pet">나의병원리뷰</a></li>
+										<li><a href="<%= ctxPath %>/InsertMyPrescription.pet">나의진료관리</a></li>
 									</ul>
 								</li>
 							</c:if>
@@ -115,12 +114,12 @@
 		</nav>
 	</div>
 	
-	<c:if test="${sessionScope.loginuser == null || sessionScope.loginuser.membertype == 1 }"><%-- 일반회원인 경우 --%>
+	<c:if test="${sessionScope.loginuser == null || (sessionScope.loginuser.membertype != 2 && sessionScope.loginuser.membertype != 3) }"><%-- 일반회원인 경우 --%>
 		<div class="navbar1">
 			<div class="dropdown1">
 				<div class="row">
 					<div class="col-md-2"></div>
-					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원/약국찾기</button>
+					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;" onclick="javascript:location.href='<%= ctxPath %>/search.pet?searchWord='">병원/약국찾기</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">병원예약관리</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">반려동물수첩</button>
@@ -137,18 +136,58 @@
 							<a href="<%= ctxPath %>/deposit.pet">예치금관리</a>
 						</div>
 						<div class="column" id="consult">
-							<a href="#">1:1 문의상담</a>
+							<a href="<%= ctxPath %>/consultList.pet">1:1 문의상담</a>
 							<a href="<%= ctxPath %>/chat.pet">화상진료</a>
 						</div>
 						<div class="column" id="petCare">
-							<a href="#">반려동물관리</a>
-							<a href="#">반려동물케어</a>
-							<a href="<%= ctxPath %>/InsertMyChart.pet">진료기록관리</a>
-							<a href="#">나의 병원리뷰</a>
+							<a href="<%= ctxPath %>/careIndex.pet">반려동물관리</a>
+							<a href="<%= ctxPath %>/careCalendar.pet">반려동물케어</a>
+							<a href="<%= ctxPath %>/InsertMyPrescription.pet">진료기록관리</a>
+							<a href="<%= ctxPath %>/myReviewList.pet">나의 병원리뷰</a>
 						</div>
 						<div class="column" id="board">
 							<a href="#">공지사항</a>
 							<a href="#">이벤트</a>
+							<a href="<%= ctxPath %>/allReviewList.pet">전체리뷰</a>
+							<a href="#">자유게시판</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</c:if>
+	
+	<c:if test="${sessionScope.loginuser != null && sessionScope.loginuser.membertype == 2 }"><%-- 병원관리자인 경우 --%>
+		<div class="navbar1">
+		   	<div class="dropdown1">
+		   		<div class="row">
+					<div class="col-md-3"></div>
+					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">마이페이지</button>
+					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">진료관리</button>
+					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담</button>
+					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티관리</button>
+				</div>
+				
+				<div class="dropdown-content"> 
+					<div class="row">
+						<div class="col-md-3"></div>
+						<div class="column" id="bizMember">
+							<a href="<%= ctxPath %>/bizMemberInfo.pet'">병원정보관리</a>
+							<a href="<%= ctxPath %>/bizDepositAccount.pet'">예치금관리</a>
+							<a href="<%= ctxPath %>/bizReviewList.pet'">우리병원리뷰</a>
+						</div>
+						<div class="column" id="bizReservation">
+							<a href="<%= ctxPath %>/bizReservationList.pet">병원예약관리</a>
+							<a href="<%= ctxPath %>/SelectChartSearch.pet">예약스케쥴</a>
+						</div>
+						<div class="column" id="bizConsult">
+							<a href="<%= ctxPath %>/bizConsultList.pet">1:1 문의상담</a>
+							<a href="<%= ctxPath %>/bizchat.pet">화상진료</a>
+						</div>
+						<div class="column" id="bizBoard">
+							<a href="#">공지사항</a>
+							<a href="#">이벤트</a>
+							<a href="<%= ctxPath %>/allReviewList.pet">전체리뷰</a>
 							<a href="#">자유게시판</a>
 						</div>
 					</div>
@@ -178,12 +217,13 @@
 						<div class="column" id="adminReview">
 						</div>
 						<div class="column" id="adminConsult">
-							<a href="#">1:1 문의상담</a>
+							<a href="<%= ctxPath %>/adminConsultList.pet">1:1 문의상담</a>
 							 <a href="">화상진료</a>
 						</div>
 						<div class="column" id="adminBoard">
 							<a href="#">공지사항</a>
 							<a href="#">이벤트</a>
+							<a href="<%= ctxPath %>/allReviewList.pet">전체리뷰</a>
 							<a href="#">자유게시판</a>
 						</div>
 					</div>

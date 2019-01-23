@@ -101,7 +101,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	            if (messageVO.getType().equals("all")) { // 채팅할 대상이 "전체" 일 경우 
 	                if (!wsession.getId().equals(webSocketSession.getId())) {  // 메시지를 자기자신을 뺀 나머지 모든 사용자들에게 메시지를 보냄.
 	                    webSocketSession.sendMessage(
-	                            new TextMessage(wsession.getRemoteAddress().getAddress().getHostAddress() +" [" +loginuser.getName()+ "]" + " ▶ " + messageVO.getMessage()));  
+	                            new TextMessage("<span style='float:right; padding-left:10px; margin-top:3px; background:whitesmoke'>" +" [" +loginuser.getName()+ "]" + " ▶ " + messageVO.getMessage()));  
 	                }
 	            } 
 	        }
@@ -129,7 +129,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	   	 
 	        for (WebSocketSession webSocketSession : connectedUsers) {
 	            if (!wsession.getId().equals(webSocketSession.getId())) { // 메시지를 자기자신을 뺀 나머지 모든 사용자들에게 메시지를 보냄.
-	                webSocketSession.sendMessage(new TextMessage(wsession.getRemoteAddress().getAddress().getHostAddress() +" [" +loginuser.getName()+ "]" + "님이 <span style='color: red;'>퇴장</span>했습니다.")); 
+	                webSocketSession.sendMessage(new TextMessage(" [" +loginuser.getName()+ "]" + "님이 <span style='color: red;'>퇴장</span>했습니다.")); 
 	            }
 	        }
 	       

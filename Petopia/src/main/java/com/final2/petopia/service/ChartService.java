@@ -1,52 +1,60 @@
 package com.final2.petopia.service;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.InterChartDAO;
 import com.final2.petopia.model.PetVO;
-import com.final2.petopia.model.ReservationVO;
+
 
 @Service
 public class ChartService implements InterChartService {
-   @Autowired
-   private InterChartDAO dao;
+   
+	@Autowired
+    private InterChartDAO dao;
 
-@Override
-public int insertmychart(HashMap<String, String> mychartmap) {
-	int n = dao.insertmychart(mychartmap);
-	return n;
-}
-
-@Override
-public int selectpetuid(String idx) {
-	int n = dao.selectpetuid(idx);
+	//펫uid로 펫정보 가져오기 
+	@Override
+	public List<PetVO> selectpetlist(int pet_uid) {
+		List<PetVO> petlist =dao.selectpetlist(pet_uid);
+		return petlist;
+	}
 	
-	return n;
-} //회원 번호로 펫uid가져오기 
+	//마이페이지에서 처방전 입력하기 
+	@Override
+	public int insertmychart(HashMap<String, String> mychartmap) {
+	  int n= dao.insertmychart(mychartmap);
+	  return n;
+	}
+	//차트 정보 불러오기 
+	@Override
+	public ChartVO selectchartinfo(int idx) {
+		ChartVO chartinfo = dao.selectchartinfo(idx);
+		return chartinfo;
+	}
+	//예약 정보 가져오기 
+	@Override
+	public   List<HashMap<String,String>> selectreserveinfo(int idx) {
+		 List<HashMap<String,String>> maplist= dao.selectreserveinfo(idx);
+		return maplist;
+	}
+    //탭에 넣을 예약번호 알아오기
+	@Override
+	public int selecttabuid( HashMap<String,Object> paramap) {
+		int ruid = dao.selecttabuid(paramap);
+		return ruid;
+	}
 
-//펫uid로 펫정보 가져오기 
-@Override
-public PetVO selectpetinfo(String pet_uid) {
-	PetVO petinfo =dao.selectpetinfo(pet_uid);
-	return petinfo;
-}
+	
 
 
-//회원번호로 병원 이름 가져오기 
-@Override
-public String selectnickname(String idx) {
-	String nickname = dao.selectnickname(idx);
-	System.out.println("nickname S: " +nickname);
-	return nickname;
-}
-//회원번호로 예약 날짜 알아오기 
-@Override
-public ReservationVO selectreservedate(String idx) {
-	ReservationVO reservedate =dao.selectreservedate(idx);
-	return reservedate;
-}
+
+
+
+
 
 }

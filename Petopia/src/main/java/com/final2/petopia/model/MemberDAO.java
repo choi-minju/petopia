@@ -82,10 +82,27 @@ public class MemberDAO implements InterMemberDAO {
 
 	// 마지막 로그인 날짜 기록하기
 	@Override
-	public void updateLoginDateByUserid(HashMap<String, String> loginMap) {
-		sqlsession.update("member.updateLoginDateByUserid", loginMap);
+	public void updateLoginDateByUserid(String userid) {
+		sqlsession.update("member.updateLoginDateByUserid", userid);
 	} // end of public void updateLoginDateByUserid(HashMap<String, String> loginMap)
 
+	// *** SNS 로그인 *** //
+	// sns 로그인 아이디와 비번이 있는 경우 사용 가능한지 알아보기
+	@Override
+	public int selectSNSMemberStatus(String userid) {
+		int status = sqlsession.selectOne("member.selectSNSMemberStatus", userid);
+		
+		return status;
+	} // end of public int selectSNSMemberStatus(HashMap<String, String> paramap)
+	
+	// sns 로그인해서 정보 가져오기
+	@Override
+	public MemberVO loginSelectByUserid(String userid) {
+		MemberVO loginuser = sqlsession.selectOne("member.loginSelectByUserid", userid);
+		
+		return loginuser;
+	} // end of public MemberVO loginSelectByUserid(String userid)
+	
 	// *** 아이디로 회원정보 조회 *** //
 	// 회원정보 조회
 	@Override
@@ -218,4 +235,6 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return result;
 	} // end of public int updateMemberStatusInByIdx(int idx)
+
+
 }

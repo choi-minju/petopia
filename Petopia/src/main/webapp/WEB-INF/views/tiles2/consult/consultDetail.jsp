@@ -49,7 +49,9 @@
 			 $target.removeClass("moveStyle");
 		});
 	
-		goViewComment("1");
+		if(${consultvo.commentCount > 0}) {
+			goViewComment("1");
+		}
 
 	}); // end of ready()-------------------------------------------
 	
@@ -64,8 +66,8 @@
 		var cscmt_contentsval = frm.cscmt_contents.value.trim();
 		if(cscmt_contentsval=="") {
 			alert("내용을 입력하세요.");
-			frm.content.value = "";
-			frm.content.focus();
+			frm.cscmt_contents.value = "";
+			frm.cscmt_contents.focus();
 			return;
 		}
 		
@@ -73,7 +75,7 @@
 		
 		console.log(queryString); // form의 name이 addWriteFrm인것의 name값들
 		// fk_idx=7&cscmt_nickname=test&cscmt_contents=sodyd&fk_consult_UID=10
-				
+		
 		$.ajax({
     		url:"<%=request.getContextPath()%>/consultCommentAdd.pet",
     		type:"POST",
@@ -83,25 +85,28 @@
     			
     			var html = "<div class='col-xs-12 col-md-12' style='background-color:#F8F8F8;'>"
 		    			  +"	<div class='col-xs-12 col-md-12' style='margin-top:2%;'>"
-		    			  +"		<span id='kkk' style='font-weight:bold;'>"+json.CSCMT_NICKNAME+"</span> 수의사"
+		    			  +"		<span  style='font-weight:bold;'>"+json.CSCMT_NICKNAME+"</span> 수의사"
 		    			  +"		<span  style='color:#b2b3b2; margin-left:20px; font-size:90%;'>"+json.CSCMT_WRITEDAY+"</span>"
 		    			  +"	</div>"
 		    			  +"	<div class='col-xs-12 col-md-12' style='margin-bottom:2%;'>"+json.CSCMT_CONTENTS+"</div>"
 		    			  +"	<div class='col-xs-11 col-md-11' ></div>"
+		    			  
+		    			  <%--
 		    			  +"	<button type='button' class='col-xs-1 col-md-1' id='commentAddBtn"+entryIndex+"' style='margin-bottom:0.5%; border: 1px solid #999; width:7%;' onClick='commentClick();'>답글</button>"
 		    			 
-		    			  +"<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#F3F3F3;'>"
+		    			  +"<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
 		    			  +"<input type='hidden' name='fk_idx' value='${sessionScope.loginuser.idx}' readonly />"
 		    			  +"<span class='col-xs-12 col-md-12' >"
-		    			  +"	<span style='font-weight:bold;'>작성자</span>"
+		    			  +"	<span style='font-weight:bold; padding-left:20px;'>┗&nbsp;작성자</span>"
 		    			  +"	<input type='text' name='cscmt_nickname' value='${sessionScope.loginuser.nickname}' style='margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F3F3F3;' readonly/>"
 		    			  +"</span>"
-		    			  +"<span class='col-xs-12 col-md-12' style='margin-right:2%; margin-bottom:3%; '>상담하기"
+		    			  +"<span class='col-xs-12 col-md-12' style='margin-right:2%; margin-bottom:3%; '>"
 		    			  +"	<input type='text' name='cscmt_contents' class='long' style='text-align:left; margin:2% 0% 2% 2%; width:80%; border-radius:5px; border:1px solid #999; height:100px;'/>"
 		    			  +"    <input type='hidden' name='fk_consult_UID' value='${consultvo.consult_UID}' />"
-		    			  +"    <button type='button' style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentAdd();' >작성</button> "
+		    			  +"    <button type='button' style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentByCommentAdd();' >작성</button> "
 		    			  +" </span>"
 		    			  +"</div>"
+		    			  --%>
 		    			  
 		    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 		    			  +"</div>";
@@ -134,8 +139,9 @@
     			
     		    $.each(json, function(entryIndex, entry){
     		    	
-    		    
-    		    	resultHTML += "<div class='col-xs-12 col-md-12' style='background-color:#F8F8F8;'>"
+    		    	// 대댓글이 없을때 보여주기
+			    	if(entry.CSCMT_DEPTH==0) {
+			    		resultHTML += "<div class='col-xs-12 col-md-12' style='background-color:#F8F8F8;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' style='margin-top:2%;'>"
 			    			  +"		<span  style='font-weight:bold;'>"+entry.CSCMT_NICKNAME+"</span> 수의사"
 			    			  +"		<span  style='color:#b2b3b2; margin-left:20px; font-size:90%;'>"+entry.CSCMT_WRITEDAY+"</span>"
@@ -146,27 +152,64 @@
 			    			  
 			    			  +"<form name='commentByCommentAddFrm' style='margin:0px;'>"
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
-			    			  +"<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#F3F3F3;'>"
-			    			  +"	<input type='hidden' name='fk_idx' value='${sessionScope.loginuser.idx}' readonly />"
-			    			  +"	<span class='col-xs-12 col-md-12' style='margin-top:2%;'>"
-			    			  +"		<span style='font-weight:bold;' >작성자</span>"
-			    			  +"		<input type='text' name='cscmt_nickname' value='${sessionScope.loginuser.nickname}' style='margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F3F3F3;' readonly/>"
-			    			  +"	</span>"
-			    			  +"	<span class='col-xs-12 col-md-12' style='margin-right:2%; margin-bottom:3%; '>상담하기"
-			    			  +"		<input type='text' name='cscmt_contents' class='long' style='text-align:left; margin:2% 0% 2% 2%; width:80%; border-radius:5px; border:1px solid #999; height:100px;'/>"
-			    			  +"    	<input type='hidden' name='fk_consult_UID' value='${consultvo.consult_UID}' />"
-			    			  +"    	<button type='button' style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentByCommentAdd();' >작성</button> "
-			    			  +" 	</span>"
-			    			  +"</div>"
+			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
+			    			  +"		<input type='text' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
+			    			  +"		<input type='text' name='cmt_id' value='"+entry.CMT_ID+"' />"
+			    			  +"		<input type='text' name='cscmt_group' value='"+entry.CSCMT_GROUP+"' />"
+			    			  +"		<input type='text' name='cscmt_g_odr' value='"+entry.CSCMT_G_ODR+"' />"
+			    			  +"		<input type='text' name='cscmt_depth' value='"+entry.CSCMT_DEPTH+"' />"
+			    			  +"		<span class='col-xs-12 col-md-12' style='margin-top:2%;'>"
+			    			  +"			<span style='font-weight:bold; padding-left:20px;' >┗&nbsp;작성자</span>"
+			    			  +"			<input type='text' name='cscmt_nickname' value='${sessionScope.loginuser.nickname}' style='margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#EAEAEA;' readonly/>"
+			    			  +"		</span>"
+			    			  +"		<span class='col-xs-12 col-md-12' style='margin-right:2%; margin-bottom:3%; '>"
+			    			  +"			<input type='text' name='cscmt_contents' class='long' style='text-align:left; margin:2% 0% 2% 2%; width:80%; border-radius:5px; border:1px solid #999; height:100px;'/>"
+			    			  +"    		<input type='hidden' name='fk_consult_UID' value='"+entry.FK_CONSULT_UID+"' />"
+			    			  +"    		<button type='button'  style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentByCommentAdd(\"hide"+entryIndex+"\");' >작성</button> "
+			    			  +" 		</span>"
+			    			  +"	</div>"
 			    			  +"</form>"
 			    			  
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;' >"
 			    			  +"</div>";
+			    	}
     		    	
+    		    	// 대댓글이 있을때 보여주기
+			    	if(entry.CSCMT_DEPTH!=0) {
+    		    		resultHTML += "<div class='col-xs-12 col-md-12' style='background-color:#F8F8F8;'>"
+			    			  +"	<div class='col-xs-12 col-md-12' style='margin-top:2%; background-color:#EAEAEA;'>"
+			    			  +"		<span  style='font-weight:bold; background-color:#EAEAEA; padding-left:"+entry.CSCMT_DEPTH*20+"px;'>┗&nbsp;"+entry.CSCMT_NICKNAME+"</span> 수의사"
+			    			  +"		<span  style='color:#b2b3b2; margin-left:20px; font-size:90%; background-color:#EAEAEA;'>"+entry.CSCMT_WRITEDAY+"</span>"
+			    			  +"	</div>"
+			    			  +"	<div class='col-xs-12 col-md-12' style='margin-left:"+entry.CSCMT_DEPTH*20+"px;'>"+entry.CSCMT_CONTENTS+"</div>"
+			    			  +"	<div class='col-xs-11 col-md-11' ></div>"
+			    			  +"	<button type='button' class='col-xs-1 col-md-1' id='commentAddBtn"+entryIndex+"' style='margin-bottom:0.5%; border: 1px solid #999; width:7%; ' onClick='commentClick();'>답글</button>"
+			    			  
+			    			  +"<form name='commentByCommentAddFrm' style='margin:0px; background-color:#EAEAEA;'>"
+			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
+			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
+			    			  +"		<input type='text' name='fk_idx' value='${sessionScope.loginuser.idx}' readonly />"
+			    			  +"		<input type='text' name='cmt_id' value='"+entry.CMT_ID+"' />"
+			    			  +"		<input type='text' name='cscmt_group' value='"+entry.CSCMT_GROUP+"' />"
+			    			  +"		<input type='text' name='cscmt_g_odr' value='"+entry.CSCMT_G_ODR+"' />"
+			    			  +"		<input type='text' name='cscmt_depth' value='"+entry.CSCMT_DEPTH+"' />"
+			    			  +"		<span class='col-xs-12 col-md-12' style='margin-top:2%;'>"
+			    			  +"			<span style='font-weight:bold; padding-left:"+entry.CSCMT_DEPTH*30+"px;' >┗&nbsp;작성자</span>"
+			    			  +"			<input type='text' name='cscmt_nickname' value='${sessionScope.loginuser.nickname}' style='margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#EAEAEA;' readonly/>"
+			    			  +"		</span>"
+			    			  +"		<span class='col-xs-12 col-md-12' style='margin-right:2%; margin-bottom:3%; padding-left:"+entry.CSCMT_DEPTH*30+"px; '>"
+			    			  +"			<input type='text' name='cscmt_contents' class='long' style='text-align:left; margin:2% 0% 2% 2%; width:80%; border-radius:5px; border:1px solid #999; height:100px;'/>"
+			    			  +"    		<input type='hidden' name='fk_consult_UID' value='"+entry.FK_CONSULT_UID+"' />"
+			    			  +"    		<button type='button' style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentByCommentAdd(\"hide"+entryIndex+"\");' >작성</button> "
+			    			  +" 		</span>"
+			    			  +"	</div>"
+			    			  +"</form>"
+			    			  
+			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;' >"
+			    			  +"</div>";
+			    	}
     		    	$("#commentView").html(resultHTML);
     		    });
-    		    
-    		    
     		    
     		    // >>>>>>>>>>>>>>>> 페이지바 함수 호출 (현재페이지 넘겨주기)
     		    makeCommentPageBar(currentShowPageNo); 
@@ -178,7 +221,7 @@
     	});
 	}
 	
-	
+	// 답글 폼
 	function commentClick() {
 		
 		switch(event.target.id) {
@@ -198,9 +241,71 @@
 			$("#hide4").slideToggle();
 			break;
 		}
+	}
+	
+	
+	// 대댓글쓰기
+	function goCommentByCommentAdd(id) {
+	
+		//var queryString = $("#"+id).next().find(document.commentByCommentAddFrm).serialize(); // form의 name이 addWriteFrm인것
+		//console.log(queryString);
+
+		
+		
+		var cmt_idval = $("#"+id).find("input[name=cmt_id]").val();
+		var fk_idxval = $("#"+id).find("input[name=fk_idx]").val();
+		var cscmt_groupval = $("#"+id).find("input[name=cscmt_group]").val();
+		var cscmt_g_odrval = $("#"+id).find("input[name=cscmt_g_odr]").val();
+		var cscmt_depthval = $("#"+id).find("input[name=cscmt_depth]").val();
+		var cscmt_nicknameval = $("#"+id).find("input[name=cscmt_nickname]").val();
+		var cscmt_contentsval = $("#"+id).find("input[name=cscmt_contents]").val();
+		var fk_consult_UIDval = $("#"+id).find("input[name=fk_consult_UID]").val();
+		
+		console.log("cmt_idval"+cmt_idval);
+		console.log("fk_idxval"+fk_idxval);
+		console.log("cscmt_groupval"+cscmt_groupval);
+		console.log("cscmt_g_odrval"+cscmt_g_odrval);
+		console.log("cscmt_depthval"+cscmt_depthval);
+		console.log("cscmt_nicknameval"+cscmt_nicknameval);
+		console.log("cscmt_contentsval"+fk_idxval);
+		console.log("fk_consult_UIDval"+fk_consult_UIDval);
+		
+		<%--
+		var frm = document.commentByCommentAddFrm;
+		frm.cmt_id.value = cmt_idval;
+		frm.fk_idx.value = fk_idxval;
+		frm.method = "POST";
+		frm.action = "consultCommentByCommentAdd.pet";
+		frm.submit();
+		--%>
+		
+		var form_data = { "fk_cmt_id":cmt_idval
+						, "fk_idx":fk_idxval
+						, "cscmt_group":cscmt_groupval
+						, "cscmt_g_odr":cscmt_g_odrval
+						, "cscmt_depth":cscmt_depthval
+						, "cscmt_nickname":cscmt_nicknameval
+						, "cscmt_contents":cscmt_contentsval
+						, "fk_consult_UID":fk_consult_UIDval
+						};
+		
+		$.ajax({
+    		url:"<%=request.getContextPath()%>/consultCommentByCommentAdd.pet",
+    		type:"POST",
+    		data:form_data,
+    		dataType:"json",
+    		success:function(json){
+    			
+    			goViewComment("1");
+    		},
+    		error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+    	});
 		
 	}
-	 
+	
+	
 	// ===== 댓글 페이지바 [Ajax로 페이징처리] ======
 	function makeCommentPageBar(currentShowPageNo) {
 		
@@ -233,7 +338,7 @@
 					
     		    	// 현재페이지
     		    	while(!(loop>blockSize || pageNo>totalPage)) { 
-    		  
+    		  	
     		    		if(pageNo==currentShowPageNo) {
     		    			pageBarHTML += "&nbsp;<span style='color:#fc766b; font-size:10pt; text-decoration:underline;'>"+pageNo+"</span>&nbsp;";
     		    		}
@@ -270,14 +375,11 @@
 
 	} 
 	
-	// 대댓글쓰기
-	function goCommentByCommentAdd () {
-		
-	}
+	
 	
 </script>
 
-<div style="padding: 5% 10% 0% 10%;  margin-bottom: 0.2%;" class="container"> 
+<div style="padding-top:8%; margin-bottom: 0.2%;" class="container"> 
 	<h3 style="border:0.5px solid #fc766b; border-radius:3px; padding:1%;">&nbsp;&nbsp;&nbsp;1:1상담 상세보기</h3>
 	
 	<%--<hr align="left" width="100%" style="border:1px solid #999;"> --%>
@@ -326,7 +428,7 @@
 			</div>
 			 --%>
 			<div class="col-xs-12 col-md-12 content">
-				<div class="col-xs-12 col-md-12 content" style="background-color: #F1F1F1; border: 0px solid #999; height:auto; padding:20px; border-radius:5px; " >${consultvo.cs_contents}</div>
+				<div class="col-xs-12 col-md-12 content" style="background-color: #F1F1F1; word-break:break-all; border: 0px solid #999; overflow-x:auto; height:auto; padding:20px; border-radius:5px; " >${consultvo.cs_contents}</div>
 			</div>
 			
 			
@@ -381,14 +483,14 @@
 		<!-- ===== 원댓글쓰기 폼 추가 ===== -->
 		<form name="commentAddFrm" >
 			<div class="col-xs-12 col-md-12 " style="background-color:#F8F8F8;">
-			<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}"  readonly />
+			<input type="text" name="fk_idx" value="${sessionScope.loginuser.idx}"  readonly />
 			<span class="col-xs-12 col-md-12 " >
 				<span style="font-weight:bold;">작성자</span>
 				<!-- 작성자가 기업회원이라면 뒤에 수의사 붙이기 -->
 				<input type="text" name="cscmt_nickname" value="${sessionScope.loginuser.nickname}" style="margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F8F8F8;" readonly/>
 			</span>
 			<span class="col-xs-12 col-md-12 " style="margin-right:2%; margin-bottom:3%; ">상담하기
-				<input type="text" name="cscmt_contents" class="long" style="text-align:left; margin:2% 0% 2% 2%; width:80%; border-radius:5px; border:1px solid #999; height:100px;"/>
+				<input type="text" name="cscmt_contents" class="long" style="text-align:left; margin:2% 0% 2% 2%; width:70%; border-radius:5px; border:1px solid #999; height:100px;"/>
 			    <!-- 댓글에 달리는 원게시물 글번호(즉, 댓글의 부모글 글번호) -->
 			    <input type="hidden" name="fk_consult_UID" value="${consultvo.consult_UID}" />
 			    <button type="button" style="margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;" onClick="goCommentAdd();" >작성</button> 

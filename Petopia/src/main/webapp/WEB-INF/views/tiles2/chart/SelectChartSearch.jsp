@@ -6,63 +6,47 @@
 <script type="text/javascript">
     
 	$(document).ready(function(){
-	    	
 		
-		$('#calendar').fullCalendar({
-			  defaultView: 'month'
-			});
 		
-		$('#calendar').fullCalendar({
-			  schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source'
-			});
-		
-		initThemeChooser({
-
-		      init: function(themeSystem) {
-		        $('#calendar').fullCalendar({
-		          themeSystem: themeSystem,
-		          header: {
-		            left: 'prev,next today',
-		            center: 'title',
-		            right: 'month,agendaWeek,agendaDay,listMonth'
-		          },
-		          defaultDate: '2019-01-12',
-		          weekNumbers: true,
-		          navLinks: true, // can click day/week names to navigate views
-		          editable: true,
-		          eventLimit: true, // allow "more" link when too many events
-		          events: [
-		           
-		            {
-		              id: 999,
-		              title: 'Repeating Event',
-		              start: '2019-01-16T16:00:00'
-		            },
-		            {
-		              title: '택배',
-		              start: '2019-01-16',
-		              end: '2019-01-16'
-		            },
-		            {
-		              title: '여행',
-		              start: '2019-01-16T14:30:00',
-		              end: '2019-01-18T12:30:00'
-		            },
-		            {
-		              title: 'Happy Hour',
-		              start: '2019-01-12T17:30:00'
-		            }
-		          ]
-		        });
+/* 달력 시작  */
+		  <%-- $('#calendar').fullCalendar({
+			  
+			 
+		      header: {
+		        left: 'prev,next today',
+		        center: 'title',
+		        right: 'month,agendaWeek,agendaDay,listWeek'
 		      },
-
-		      change: function(themeSystem) {
-		        $('#calendar').fullCalendar('option', 'themeSystem', themeSystem);
+		      defaultDate: '2019-01-12',
+		      navLinks: true, 
+		      editable: true,
+		      eventLimit: true, 
+		      events:function(start,end,title) {//json 타입의 배열을 ajax로 가져오기 
+		    	  
+		    	  var data ={ "bidx":"2"}; //기업회원 채번해오기!!
+					$.ajax({
+			            url : "<%=ctxPath%>/selectReserveinfo.pet" ,
+			            type:"GET",
+			            data: data,
+			            dataType :"json", 
+			            success : function(json) {
+			            	var events=[];
+			            	$.each(json,function(entryIndex,entry){
+			            		event.push({
+			            			title:entry.title,
+			            			start:entry.start,
+			            		    end:entry.end
+			            		  });	
+			            	}); //end of each
+			            }, //end of success
+			            error : function(request,status,error) {
+			                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: " +error);
+			            }
+			        }); //end f ajax
 		      }
+		    }); // end of  $('#calendar').fullCalendar --%>
 
-		    });
-
-		 
+	/* 달력  끝  */
 	
 	});// end of $(document).ready()----------------------
 </script>
@@ -124,7 +108,7 @@
   }
 
   #top select {
-    font: inherit; /* mock what Boostrap does, don't compete  */
+    font: inherit; 
   }
 
   .left { float: left }
@@ -132,11 +116,8 @@
   .clear { clear: both }
 
   #calendar {
-<<<<<<< HEAD
     max-width: 80%;
-=======
     max-width: 900px;
->>>>>>> refs/remotes/origin/hyunjae
     margin: 40px auto;
     padding: 0 10px;
   }
