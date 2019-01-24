@@ -28,29 +28,29 @@ public class ChatController {
 	
 	//화상진료인트로
 	@RequestMapping(value="/chat.pet", method= {RequestMethod.GET})
-	public String chatview(HttpServletRequest req) {
+	public String requireLogin_chatview(HttpServletRequest req, HttpServletResponse res) {
 		
-		return "chat/chatview.tiles2";
+			return "chat/chatview.tiles2";
 	}
 	
 	//화상진료페이지
 	@RequestMapping(value="/videochat.pet", method= {RequestMethod.GET})
 	public String videochat(HttpServletRequest req, HttpServletResponse res) {
 		
-		return "chat/videochat.tiles2";
-	}
-	
-	//코드 입력
-	@RequestMapping(value="/videocode.pet", method= {RequestMethod.GET})
-	public String videocode(HttpServletRequest req) {
+		ChatVO chatvo = new ChatVO();
 		
-		return "chat/videocode.notiles";
+		String chatcode = chatvo.getChatcode();
+		
+		req.setAttribute("chatcode", chatcode);
+		
+		System.out.println(chatcode);
+		return "chat/videochat.tiles2";
 	}
 	
 	//랜덤코드 생성
 	@RequestMapping(value="/createcode.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, String> requireLogin_createcode(HttpServletRequest req, HttpServletResponse res) throws Throwable {
+	public HashMap<String, String> createcode(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
 		HashMap<String, String> map = new HashMap<String, String>();
 		
@@ -63,6 +63,7 @@ public class ChatController {
 		Random rnd = new Random();
 		String randomStr = String.valueOf(rnd.nextInt(100000));
 		
+		session.setAttribute("chatcode", randomStr);
 		chatvo.setChatcode(randomStr);
 		
 		map.put("idx", String.valueOf(idx));
@@ -75,5 +76,19 @@ public class ChatController {
 		}
 		return map;
 	}
+	
+	//코드 입력
+	@RequestMapping(value="/videocode.pet", method= {RequestMethod.GET})
+	public String videocode(HttpServletRequest req, HttpServletResponse res) {
+		
+		HttpSession session = req.getSession();
+		String chatcode = (String)session.getAttribute("chatcode");
+		
+		req.setAttribute("chatcode", chatcode);
+		
+		return "chat/videocode.notiles";
+	}
+	
+	
 	
 }

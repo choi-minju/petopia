@@ -53,6 +53,42 @@
 		frm.submit();
 	} // end of function goLogin()
 	
+	// === 2019.01.24 ==== 비번 찾기 하는 중 //
+	function checkUser() {
+		
+		var userid = $("#findPwUserid").val().trim();
+		var name = $("#findPwName").val().trim();
+		
+		if(userid == null || userid == "") {
+			alert("아이디를 입력하세요.");
+			
+			return;
+		}
+		
+		if(name == null || name == "") {
+			alert("이름을 입력하세요.");
+			
+			return;
+		}
+		
+		var data = {"userid":userid,
+					"name":name};
+		
+		$.ajax({
+			url: "<%=request.getContextPath()%>/selectCheckUser.pet",
+			type: "POST",
+			data: data,
+			dataType: "JSON",
+			success: function(json){
+				
+			},
+			error: function(request, status, error){ 
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});// end of ajax
+		
+	} // end of function checkUser()
+	
 </script>
 
 <%
@@ -210,7 +246,9 @@
 		<input type="hidden" name="nickname" />
 	</form>
 	
-	<div class="modal fade" id="idFindModal" role="dialog">
+	<%-- 아이디 찾기는 cool sms 사용할 예정으로 나중에... --%>
+	<%-- === 2019.01.24 === 아이디 찾기 위치 수정 및 나누기 --%>
+	<div class="modal fade" id="idFindModal" role="dialog" style="margin-top: 10%;">
 		<div class="modal-dialog modal-sm">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -219,53 +257,59 @@
 				</div>
 				
 				<div class="modal-body">
-					<div class="row">
-						<div class="col-sm-offset-1 col-sm-10">
-							<span style="color: #999;">이름</span>
-							<input type="text" class="form-control" id="name" name="name" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+					<c:if test="${status == 0}">
+						<div class="row">
+							<div class="col-sm-offset-1 col-sm-10">
+								<span style="color: #999;">이름</span>
+								<input type="text" class="form-control" id="name" name="name" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							</div>
 						</div>
-					</div>
-					
-					<div class="row" style="margin-top: 20px;">
-						<div class=" col-sm-offset-1 col-sm-10">
-							<span style="color: #999;">휴대폰번호</span>
-							<input type="text" class="form-control" id="phone" name="phone" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+						
+						<div class="row" style="margin-top: 20px;">
+							<div class=" col-sm-offset-1 col-sm-10">
+								<span style="color: #999;">휴대폰번호</span>
+								<input type="text" class="form-control" id="phone" name="phone" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							</div>
 						</div>
-					</div>
-					
-					<div class="row" style="margin-top: 20px;">
-						<div class="col-sm-offset-1 col-sm-10">
-							<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">휴대폰 본인 인증하기</button>
+						
+						<div class="row" style="margin-top: 20px;">
+							<div class="col-sm-offset-1 col-sm-10">
+								<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">휴대폰 본인 인증하기</button>
+							</div>
 						</div>
-					</div>
+					</c:if>
 					
 					<!-- 인증화면 -->
-					<div class="row" style="margin-top: 20px;">
-						<div class="col-sm-offset-1 col-sm-10">
-							<span>010-1234-5678로 보낸<br> 인증번호를 입력해주세요.</span>
+					<c:if test="${status == 2}">
+						<div class="row" style="margin-top: 20px;">
+							<div class="col-sm-offset-1 col-sm-10">
+								<span>010-1234-5678로 보낸<br> 인증번호를 입력해주세요.</span>
+							</div>
 						</div>
-					</div>
-					
-					<div class="row" style="margin-top: 20px;">
-						<div class=" col-sm-offset-1 col-sm-10">
-							<span style="color: #999;">인증번호</span>
-							<input type="text" class="form-control" id="useridCode" name="useridCode" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+						
+						<div class="row" style="margin-top: 20px;">
+							<div class=" col-sm-offset-1 col-sm-10">
+								<span style="color: #999;">인증번호</span>
+								<input type="text" class="form-control" id="useridCode" name="useridCode" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							</div>
 						</div>
-					</div>
-					
-					<div class="row" style="margin-top: 20px;">
-						<div class="col-sm-offset-1 col-sm-10">
-							<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">확인</button>
+						
+						<div class="row" style="margin-top: 20px;">
+							<div class="col-sm-offset-1 col-sm-10">
+								<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">확인</button>
+							</div>
 						</div>
-					</div>
+					</c:if>
 					
 					<!-- 아이디 결과 -->
-					<div class="row" style="margin-top: 20px;">
-						<div class=" col-sm-offset-1 col-sm-10">
-							<span style="color: #999;">홍길동님의 아이디</span>
-							<input type="text" class="form-control" id="findUserid" name="userid" value="hongkd" readonly="readonly" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+					<c:if test="${status == 4}">
+						<div class="row" style="margin-top: 20px;">
+							<div class=" col-sm-offset-1 col-sm-10">
+								<span style="color: #999;">홍길동님의 아이디</span>
+								<input type="text" class="form-control" id="findUserid" name="userid" value="hongkd" readonly="readonly" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							</div>
 						</div>
-					</div>
+					</c:if>
 				</div>
 				
 				<div class="modal-footer">
@@ -274,8 +318,11 @@
 			</div>
 		</div>
 	</div>
+	<%-- === 2019.01.24 === 아이디 찾기 위치 수정 및 나누기 --%>
 	
-	<div class="modal fade" id="pwFindModal" role="dialog">
+	<%-- === 2019.01.24 === 비번 찾기 위치 수정 및 코딩 --%>
+	<%-- status = 0; 초기값 / status = 1; 회원없음 / status = 2; 회원있음 / status = 3; 코드 불일치 / status = 4; 코드 일치 --%>
+	<div class="modal fade" id="pwFindModal" role="dialog" style="margin-top: 10%;">
 		<div class="modal-dialog modal-sm">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -284,64 +331,72 @@
 				</div>
 				
 				<div class="modal-body">
-					<div class="row">
-						<div class="col-sm-offset-1 col-sm-10">
-							<span style="color: #999;">ID</span>
-							<input type="text" class="form-control" id="findPwUserid" name="userid" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
-						</div>
-					</div>
-					
-					<div class="row" style="margin-top: 20px;">
-						<div class=" col-sm-offset-1 col-sm-10">
-							<span style="color: #999;">email</span>
-							<input type="text" class="form-control" id="email" name="email" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
-						</div>
-					</div>
-					
-					<div class="row" style="margin-top: 20px;">
-						<div class="col-sm-offset-1 col-sm-10">
-							<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">이메일 본인 인증하기</button>
-						</div>
-					</div>
-					
-					<!-- 인증화면 -->
-					<div class="row" style="margin-top: 20px;">
-						<div class="col-sm-offset-1 col-sm-10">
-							<span>hongkd@gmail.com로 보낸<br> 인증번호를 입력해주세요.</span>
-						</div>
-					</div>
-					
-					<div class="row" style="margin-top: 20px;">
-						<div class=" col-sm-offset-1 col-sm-10">
-							<span style="color: #999;">인증번호</span>
-							<input type="text" class="form-control" id="passwdCode" name="passwdCode" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
-						</div>
-					</div>
-					
-					<div class="row" style="margin-top: 20px;">
-						<div class="col-sm-offset-1 col-sm-10">
-							<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">확인</button>
-						</div>
-					</div>
-					
-					<!-- 비밀번호 결과 -->
-					<div class="row" style="margin-top: 20px;">
-						<div class=" col-sm-offset-1 col-sm-10">
-							<span style="color: #999;">새비밀번호</span>
-							<input type="password" class="form-control" id="pwd" name="pwd" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+					<c:if test="${status == 0}">
+						<form name="checkUserFrm">
+							<div class="row">
+								<div class="col-sm-offset-1 col-sm-10">
+									<span style="color: #999;">ID</span>
+									<input type="text" class="form-control" id="findPwUserid" name="userid" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+								</div>
+							</div>
 							
-							<span style="color: #999; margin-top: 20px;">새비밀번호 재입력</span>
-							<input type="password" class="form-control" id="pwdCheck" name="pwdCheck" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							<div class="row" style="margin-top: 20px;">
+								<div class=" col-sm-offset-1 col-sm-10">
+									<span style="color: #999;">name</span>
+									<input type="text" class="form-control" id="findPwName" name="name" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+								</div>
+							</div>
+							
+							<div class="row" style="margin-top: 20px;">
+								<div class="col-sm-offset-1 col-sm-10">
+									<button type="button" class="form-control" onclick="checkUser();" style="background-color: rgb(252, 118, 106); color: white;">이메일 본인 인증하기</button>
+								</div>
+							</div>
+						</form>
+					</c:if>
+					<!-- 인증화면 -->
+					<c:if test="${status == 2}">
+						<div class="row" style="margin-top: 20px;">
+							<div class="col-sm-offset-1 col-sm-10">
+								<span>hongkd@gmail.com로 보낸<br> 인증번호를 입력해주세요.</span>
+							</div>
 						</div>
-					</div>
+						
+						<div class="row" style="margin-top: 20px;">
+							<div class=" col-sm-offset-1 col-sm-10">
+								<span style="color: #999;">인증번호</span>
+								<input type="text" class="form-control" id="passwdCode" name="passwdCode" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							</div>
+						</div>
+						
+						<div class="row" style="margin-top: 20px;">
+							<div class="col-sm-offset-1 col-sm-10">
+								<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">확인</button>
+							</div>
+						</div>
+						</c:if>
+					
+					<c:if test="${status == 4}">
+						비밀번호 결과
+						<div class="row" style="margin-top: 20px;">
+							<div class=" col-sm-offset-1 col-sm-10">
+								<span style="color: #999;">새비밀번호</span>
+								<input type="password" class="form-control" id="ChangePwd" name="pwd" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+								
+								<span style="color: #999; margin-top: 20px;">새비밀번호 재입력</span>
+								<input type="password" class="form-control" id="ChangePwdCheck" name="pwdCheck" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
+							</div>
+						</div>
+					</c:if>
 				</div>
-				
+
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
 	</div>
+	<%-- === 2019.01.24 === 비번 찾기 위치 수정 및 코딩 --%>
 
 </div>
 <% } else { %>

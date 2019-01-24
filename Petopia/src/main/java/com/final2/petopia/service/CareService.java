@@ -18,9 +18,9 @@ public class CareService implements InterCareService {
 	
 	//===== 반려동물 리스트 =====
 	@Override
-	public List<PetVO> getPet_infoList(HashMap<String, String> map) {
-		List<PetVO> pvoList = dao.getPet_infoList(map);
-		return pvoList;
+	public List<HashMap<String,String>> getPet_infoList(int fk_idx) {
+		List<HashMap<String,String>> list = dao.getPet_infoList(fk_idx);
+		return list;
 	}
 	
 	

@@ -11,9 +11,9 @@
    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
       <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
       <!-- <property name="url" value="jdbc:oracle:thin:@26.36.201.50:1521:xe" /> -->
-      <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
-      <property name="username" value="hyewon" />
-      <property name="password" value="1234" />
+      <property name="url" value="jdbc:oracle:thin:@26.36.201.50:1521:xe" />
+      <property name="username" value="final2"/>
+      <property name="password" value="eclass" />
    </bean>
    
    <!-- ==== #15. myBatis(JDBC)설정 mapper 파일 위치 지정하기  ==== -->

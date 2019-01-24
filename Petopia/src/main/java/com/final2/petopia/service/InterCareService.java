@@ -8,7 +8,7 @@ import com.final2.petopia.model.PetVO;
 public interface InterCareService {
 
 	//===== 반려동물 리스트 =====
-	List<PetVO> getPet_infoList(HashMap<String, String> map);
+	List<HashMap<String,String>> getPet_infoList(int fk_idx);
 	
 	//===== 반려동물 등록 =====
 	int insertPet_info(PetVO pvo);

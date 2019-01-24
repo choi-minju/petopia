@@ -1480,3 +1480,5 @@ begin
     ) T
     where rno between p_startno and p_endno;
 end pcd_selectMemberList;
+
+commit;
