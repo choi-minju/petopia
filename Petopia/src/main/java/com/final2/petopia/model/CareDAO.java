@@ -16,9 +16,9 @@ public class CareDAO implements InterCareDAO {
 	
 	//===== 반려동물 리스트 =====
 	@Override
-	public List<PetVO> getPet_infoList(HashMap<String, String> map) {
-		List<PetVO> pvoList = sqlsession.selectList("care.getPet_infoList", map); 
-		return pvoList;
+	public List<HashMap<String,String>> getPet_infoList(int fk_idx) {
+		List<HashMap<String,String>> list = sqlsession.selectList("care.getPet_infoList", fk_idx); 
+		return list;
 	}
 	
 	
