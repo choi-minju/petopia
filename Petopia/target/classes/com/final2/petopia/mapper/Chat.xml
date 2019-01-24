@@ -5,8 +5,8 @@
 
 <!-- idx에 따라 알람테이블에 code 삽입 -->
  <insert id="addcode" parameterType="HashMap">
-	insert into notification (not_UID, fk_idx, not_type, not_message, not_date, not_readcheck)
-	values(seq_notification_UID.nextval, #{idx}, 5, #{code}, sysdate, default)
+	insert into notification (not_UID, fk_idx, not_type, not_message, not_date, not_readcheck, not_remindstatus, not_time, not_URL)
+	values(seq_notification_UID.nextval, #{idx}, 5, #{code}, sysdate, default, default, default, 'http://localhost:9090/petopia/chat.pet')
 </insert>
 
 </mapper>

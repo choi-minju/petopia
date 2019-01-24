@@ -6,7 +6,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +16,8 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,11 +48,16 @@ public class MemberController {
 	// 네이버 로그인을 위한 naverLoginBO
 	@Autowired
 	private NaverLoginBO naverLoginBO;
-
+	
 	@Autowired
 	private void setNaverLoginBO(NaverLoginBO naverLoginBO){
 		this.naverLoginBO = naverLoginBO;
 	}
+	
+	// === 2019.01.24 === gmail을 위해 //
+	@Autowired
+	private JavaMailSender mailSender;
+	// === 2019.01.24 === gmail을 위해 //
 	
 	// *** 회원가입 *** //
 	@RequestMapping(value="/join.pet", method={RequestMethod.GET})
@@ -182,7 +191,11 @@ public class MemberController {
         
         /* 생성한 인증 URL을 View로 전달 */
         req.setAttribute("url", naverAuthUrl);
-		
+        
+        /* ==== 2019.01.24 ==== 아이디 비번찾기를 위한 상태 표시 */
+        req.setAttribute("status", 0);
+        /* ==== 2019.01.24 ==== 아이디 비번찾기를 위한 상태 표시 */
+        
 		return "join/login.tiles1";
 	} // end of public String login(HttpServletRequest req, HttpSession session)
 	
@@ -473,7 +486,8 @@ public class MemberController {
 		
 		return "msg";
 	} // end of public String logout(HttpServletRequest req, HttpSession session)
-	
+
+	// *** 회원 정보 *** //
 	@RequestMapping(value="/infoMember.pet", method={RequestMethod.GET})
 	public String requireLogin_infoMember(HttpServletRequest req, HttpServletResponse res) {
 		
@@ -511,6 +525,7 @@ public class MemberController {
 		return "member/infoMember.tiles2";
 	} // end of requireLogin_infoMember
 	
+	// *** 회원 수정 *** //
 	@RequestMapping(value="/updateMember.pet", method={RequestMethod.POST})
 	public String requireLogin_updateMember(MultipartHttpServletRequest req, HttpServletResponse res, MemberVO mvo) {
 		MultipartFile attach = mvo.getAttach();
@@ -648,7 +663,7 @@ public class MemberController {
 	// *** 회원 목록 *** //
 	@RequestMapping(value="/adminMember.pet", method={RequestMethod.GET})
 	public String requireLoginAdmin_adminListMember(HttpServletRequest req, HttpServletResponse res) {
-		// 하는 중....
+		
 		return "admin/member/listMember.tiles2";
 	} // end of requireLoginAdmin_infoMember
 	
@@ -678,7 +693,7 @@ public class MemberController {
 		paraMap.put("SEARCH", search);
 		paraMap.put("ORDERBY", orderBy);
 		
-		System.out.println("searchWhat: "+searchWhat+", search: "+search+", orderBy: "+orderBy);
+		// System.out.println("searchWhat: "+searchWhat+", search: "+search+", orderBy: "+orderBy);
 		
 		// 해당하는 총회원 수
 		if(search == null || "".equals(search)) {
@@ -712,15 +727,21 @@ public class MemberController {
 		paraMap.put("ENDRNO", String.valueOf(endRno));
 		
 		// member List조회
+		/* === 2019.01.24 ==== 관리자 회원 리스트 코딩 */
 		if((search == null || "".equals(search)) && (orderBy == null || "".equals(orderBy))) {
+			// 검색X정렬X
 			memberList = service.selectMemberList(paraMap);
 		} else if((search == null || "".equals(search)) && (orderBy != null && !"".equals(orderBy))) {
-			memberList = service.selectMemberListByOrderBy(paraMap); // 정렬 안 됨 ㅜㅜㅜ
+			// 검색X정렬O
+			memberList = service.selectMemberListByOrderBy(paraMap);
 		} else if((search != null && !"".equals(search)) && (orderBy == null || "".equals(orderBy))) {
+			// 검색O정렬X
 			memberList = service.selectMemberListBySearch(paraMap);
 		} else if((search != null && !"".equals(search)) && (orderBy != null && !"".equals(orderBy))) {
+			// 검색X정렬O
 			memberList = service.selectMemberListBySearchOrderBy(paraMap);
 		} // end of if~else if
+		/* === 2019.01.24 ==== 관리자 회원 리스트 코딩 */
 		
 		for(MemberVO mvo : memberList) {
 			try {
@@ -881,4 +902,75 @@ public class MemberController {
 		
 		return result;
 	} // end of public int requireLoginAdmin_updateAdminMemberStatusInByIdx(HttpServletRequest req, HttpServletResponse res)
+
+	// *** 비밀번호 찾기 *** //
+	// === 2019.01.24 === 비밀번호 찾기 시작 //
+	// 아이디와 이메일로 회원이 있는지 찾고 있을 경우 이메일로 보내기
+	@RequestMapping(value="/selectCheckUser.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int selectCheckUser(HttpServletRequest req) {
+		
+		String userid = req.getParameter("userid");
+		String name = req.getParameter("name");
+		
+		HashMap<String, String> paramap = new HashMap<String, String>();
+		paramap.put("USERID", userid);
+		paramap.put("NAME", name);
+		
+		// 아이디와 이메일로 회원이 있는지 찾기
+		int cnt = service.selectMemberIsByUseridEmail(paramap);
+		
+		int status = 0;
+		if(cnt == 0) {
+			// 회원이 없는 경우
+			status = 1; // 회원이 없음
+		} else {
+			// 코드 생성
+			// 인증키를 랜덤하게 생성하도록 한다.
+			Random rnd = new Random();
+			
+			String certificationCode = "";
+			
+			char randchar = ' ';
+			for(int i=0; i<3; i++) {
+				randchar = (char)(rnd.nextInt('z'-'a'+1) + 'a');
+				
+				certificationCode += randchar;
+			} // 문자
+			
+			int randnum = 0;
+			for(int i=0; i<9; i++) {
+				randnum = rnd.nextInt(9-0+1)+0;
+				certificationCode += randnum;
+			} // 숫자
+			
+			// 메일 보내기
+			String setfrom = "certification.test.0222@gmail.com";
+			String toMail = userid;
+			String title = "[PETOPIA]비밀번호 찾기를 위한 코드입니다.";
+			String content = "코드 : "+certificationCode;
+			
+			try {
+			      MimeMessage message = mailSender.createMimeMessage();
+			      MimeMessageHelper messageHelper 
+			                        = new MimeMessageHelper(message, true, "UTF-8");
+			 
+			      messageHelper.setFrom(setfrom);  // 보내는사람 생략하거나 하면 정상작동을 안함
+			      messageHelper.setTo(toMail);     // 받는사람 이메일
+			      messageHelper.setSubject(title); // 메일제목은 생략이 가능하다
+			      messageHelper.setText(content);  // 메일 내용
+			     
+			      mailSender.send(message);
+		    } catch(Exception e){
+		      System.out.println(e);
+		    } // end of try-catch
+			
+			status = 2;
+		} // enf of if~else
+		
+		// System.out.println("cnt: "+cnt);
+		
+		return status;
+	} // end of public int selectCheckUser(HttpServletRequest req)
+	// === 2019.01.24 === 비밀번호 찾기 //
 }
