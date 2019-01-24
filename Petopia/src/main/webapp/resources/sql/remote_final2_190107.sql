@@ -9,6 +9,8 @@ show user;
 -- [190120] reservation 테이블에 fk_idx_biz 컬럼 및 fk 제약조건 추가; 수미
 -- [190122] pet_info 테이블에 pet_size, pet_weight 컬럼 not null 변경; 현재
 -- [190122] notification 테이블에 not_type 컬럼 check제약 조건 변경; 호환
+-- [190124] 1; deposit 테이블에 fk_payment_UID 컬럼 추가; 수미
+-- [190124] 2; notification 테이블에 컬럼 및 제약조건 추가 : 지민
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -581,12 +583,17 @@ CREATE TABLE deposit (
 	depositcoin    NUMBER   NOT NULL, -- 예치금
 	deposit_status NUMBER(1)   default 1 NOT NULL, -- 예치금상태 1 사용가능 / 0 사용불가능 / 2 환불취소신청 / 3 출금
 	deposit_type   VARCHAR2(50) NOT NULL, -- 충전수단
-	deposit_date   DATE     default sysdate NOT NULL  -- 충전일자
+	deposit_date   DATE     default sysdate NOT NULL,  -- 충전일자
+    FK_PAYMENT_UID number default 0 not null -- 결제번호
     ,CONSTRAINT PK_deposit -- 예치금 기본키
 		PRIMARY KEY (deposit_UID)
     ,CONSTRAINT CK_deposit_status -- 예치금상태 체크제약
 		check(deposit_status in(0,1,2,3))
 );
+
+-- 190124
+alter table deposit
+add FK_PAYMENT_UID NUMBER DEFAULT 0 NOT NULL;
 
 -- 예치금 
 create sequence seq_deposit_UID
@@ -645,6 +652,19 @@ alter table notification drop constraint CK_not_type;
 
 alter table notification
 add constraint CK_not_type check (not_type in(0,1,2,3,4,5));
+
+alter table notification
+add not_remindstatus NUMBER(1) default 0 NOT NULL; -- 재알림 여부
+
+alter table notification
+add CONSTRAINT CK_not_remindstatus  check(not_remindstatus in (0,1)); -- 재알람 여부 제약조건추가
+
+alter table notification
+add not_time DATE default sysdate NOT NULL; -- 예약알림 예정시간
+
+alter table notification
+add not_URL VARCHAR2(200) default 'http://localhost:9090/petopia/alarm.pet' NOT NULL; -- 이동url
+
 
 create sequence seq_notification_UID --알람
 start with 1
