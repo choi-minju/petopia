@@ -122,10 +122,12 @@ color:rgb(252, 118, 106);
     
 	$(document).ready(function(){
 		//ajaxData();
-		
+		 $("#petimg").click(function(){
+			 
+		 });
 		/* 달력 시작  */
 		  $('#calendar').fullCalendar({
-			<%--   
+			
 			 
 		      header: {
 		        left: 'prev,next today',
@@ -159,7 +161,7 @@ color:rgb(252, 118, 106);
 			            }
 			        }); //end f ajax
 		      }
-		    }); // end of  $('#calendar').fullCalendar  --%>
+		    }); // end of  $('#calendar').fullCalendar 
 
 	/* 달력  끝  */
 		
@@ -178,21 +180,25 @@ color:rgb(252, 118, 106);
 </script>
 <div class="container divbox1">
    <h3 class="h3_1">진료기록 관리하기</h3>
-   <div class="divbox2" >
-   <c:forEach items="${petlist}" var="pvo" varStatus="status">
-	    <div style="display:inlineblock;float:left;width: 20%;">
-	    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}"  width="50%"style="border-radius: 50%;display:block;">
-	    <span style="font-weight: bold;padding-left: 10%;">[${pvo.pet_name}] 님</span>
-	    </div>
-    </c:forEach>
+   <div class="row" >
+   
+	   <c:forEach items="${petlist}" var="pvo" varStatus="status">
+		    <div class="col-md-3" style="display:inlineblock;float:left;">
+		    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" id="petimg"  width="50%"style="border-radius: 50%;display:block;"> 
+		    <span style="font-weight: bold;padding-left: 10%;">[${pvo.pet_name}] 님</span>
+		    </div>
+	    </c:forEach>
+  
    </div>
   
   <div class="divbox3">
-  <c:forEach items="${petlist}" var="pvo" >
-	  <p style="padding-top:1%;">생년월일: ${pvo.pet_birthday}</p>
-	  <p>성별:   ${pvo.pet_gender}</p>
-	  <p>몸무게: ${pvo.pet_weight} kg</p>
-  </c:forEach>	  
+	   <div class="container" Style="width:100%;">
+		  <c:forEach items="${petlist}" var="pvo" >
+			  <p style="padding-top:1%;">생년월일: ${pvo.pet_birthday}</p>
+			  <p>성별:   ${pvo.pet_gender}</p>
+			  <p>몸무게: ${pvo.pet_weight} kg</p>
+		  </c:forEach>
+	   </div>
   </div>
   
   <div id="calendar"  class="calendar divbox4">

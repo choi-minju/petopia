@@ -25,15 +25,38 @@
 	
 	<select id="getFullnameAndIdx" parameterType="String" resultType="com.final2.petopia.model.Biz_MemberVO">
 		select idx as idx_biz, name
-		from member
-		where name like '%' || #{searchWord} || '%'
-	</select>
-	
-	<select id="getBizmemListByword" parameterType="String" resultType="com.final2.petopia.model.Biz_MemberVO">
-		select idx_biz, name, latitude, longitude, prontimg
 		from biz_info B JOIN member M
 		on B.idx_biz = M.idx
-		where B.addr1 like '%' || #{searchWord} || '%'
+		where M.name like '%' || #{searchWord} || '%'
+	</select>
+	
+	<select id="getBizmemListByword" parameterType="map" resultType="com.final2.petopia.model.Biz_MemberVO">		
+		select distinct name, idx_biz, latitude, longitude, prontimg, startpoint as avg_startpoint
+		from
+		(
+		select name, idx_biz, latitude, longitude, prontimg
+		from biz_info B JOIN member M
+		on B.idx_biz = M.idx
+		FULL JOIN review R
+		on M.idx = R.fk_idx_biz
+		) V RIGHT JOIN 
+		(
+		select idx_biz as idx_biz2, nvl(round(avg(startpoint)), 0) as startpoint
+		from biz_info B JOIN member M
+		on B.idx_biz = M.idx
+		FULL JOIN review R
+		on M.idx = R.fk_idx_biz
+		where B.addr1 like '%' || #{SEARCHWORD} || '%'
+		group by idx_biz
+		) P
+		on V.idx_biz = P.idx_biz2
+		<if test="ORDERBYNO == 1"> <!-- 평점순 -->
+			order by startpoint desc
+		</if>
+		<if test="ORDERBYNO == 2"> <!-- 거리순 -->
+			
+		</if>
+
 	</select>
 
 </mapper>
