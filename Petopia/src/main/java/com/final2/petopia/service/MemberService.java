@@ -375,6 +375,14 @@ public class MemberService implements InterMemberService {
 		return result;
 	} // end of public int updateMemberStatusInByIdx(int idx)
 
-	
-
+	// *** 비밀번호 찾기 *** //
+	// === 2019.01.24 === 비밀번호 찾기 시작 //
+	// 아이디와 이메일로 회원이 있는지 찾기
+	@Override
+	public int selectMemberIsByUseridEmail(HashMap<String, String> paramap) {
+		int cnt = dao.selectMemberIsByUseridEmail(paramap);
+		
+		return cnt;
+	} // end of public int selectMemberIsByUseridEmail(HashMap<String, String> paramap)
+	// === 2019.01.24 === 비밀번호 찾기 //
 }

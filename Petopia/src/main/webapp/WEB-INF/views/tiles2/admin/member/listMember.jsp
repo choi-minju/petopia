@@ -177,14 +177,24 @@
 		
 		showMemberList("1");
 		
+		/* ==== 2019.01.24 ==== 검색 정렬 등 기능 걸기 */
+		// 정렬
 		$("#orderBy").bind("change", function(){
 			showMemberList("1");
 		});
 		
+		// 검색 버튼
 		$("#searchBtn").click(function(){
 			showMemberList("1");
 		}); // end of 
 		
+		// 검색 enter
+		$("#search").keydown(function(event){
+			if(event.keyCode == 13) {
+				showMemberList("1");
+			}
+		}); 
+		/* ==== 2019.01.24 ==== 검색 정렬 등 기능 걸기 */
 		
 	}); // $(document).ready();
 	
@@ -222,16 +232,12 @@
 										html += "탈퇴"
 							} // end of if~else if
 						} // end of if~else
+							/* ==== 2019.01.24 === 회원 관리 버튼 수정 */
 							 html += "</td>"
 									+"<td>"
 										+"<a href=\"<%=request.getContextPath() %>/adminInfoMember.pet?idx="+entry.idx+"\">"
 											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/pencil-edit-square.png\">"
 										+"</a>&nbsp;";
-						if(entry.lastlogindategap >= 12) {
-									html += "<a onclick='memberUpdate("+entry.idx+")'>"
-											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/equalizer-music-controller.png\">"
-										+"</a>&nbsp;";
-						} else {
 							if(entry.member_status == 1) {
 									html += "<a onclick='memberOut("+entry.idx+")'>"
 											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/delete-button.png\">"
@@ -241,7 +247,14 @@
 											+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/verified.png\">"
 										+"</a>&nbsp;";
 							} // end of if~else if
-						} // end of if~else
+							
+							if(entry.lastlogindategap >= 12) {
+								html += "<a onclick='memberUpdate("+entry.idx+")'>"
+										+"<img src=\"<%=request.getContextPath() %>/resources/img/memberIcon/equalizer-music-controller.png\">"
+									+"</a>&nbsp;";
+							}
+							/* ==== 2019.01.24 === 회원 관리 버튼 수정 */
+							
 							html += "</td>"
 								+"</tr>";
 					}); // end of each
@@ -404,15 +417,19 @@
 
 <div class="container" style="margin-top: 15px; margin-bottom: 15px;">
 	<div class="col-sm-12" style="margin-top: 20px;background-color: white;">
-		<form name="searchFrm">
+		<%-- ==== 2019.01.24 ==== form에 onsubmit="return false" 추가 --%>
+		<form name="searchFrm" onsubmit="return false">
+		<%-- ==== 2019.01.24 ==== form에 onsubmit="return false" 추가 --%>
 			<div class="row" style="margin-top: 10px; margin-bottom: 10px; padding-left: 4%; padding-right: 4%;">
 				<div class="col-sm-2">
+					<%-- ==== 2019.01.24 ==== 정렬 수정 --%>
 					<select class="form-control" id="orderBy" name="orderBy" style="height: 45px;">
 						<option value="">정렬</option>
 						<option value="name">이름순</option>
-						<option value="noshow">no-show많은순</option>
-						<option value="regdate">신규가입순</option>
+						<option value="userid">아이디순</option>
+						<option value="noshow desc">no-show많은순</option>
 					</select>
+					<%-- ==== 2019.01.24 ==== 정렬 수정 --%>
 				</div>
 				
 				<div class="col-sm-offset-4 col-sm-6"><%-- 이름, 닉네임, 아이디로 검색 --%>
@@ -455,19 +472,7 @@
 		
 		<div class="row" align="center">
 			<div class="col-sm-12">
-				<ul class="pagination pagination-sm" id="pageBar">
-				  	<li><a href="#">이전</a></li>
-				    <li><a href="#">1</a></li>
-				    <li><a href="#">2</a></li>
-				    <li><a href="#">3</a></li>
-				    <li><a href="#">4</a></li>
-				    <li><a href="#">5</a></li>
-				    <li><a href="#">6</a></li>
-				    <li><a href="#">7</a></li>
-				    <li><a href="#">8</a></li>
-				    <li><a href="#">9</a></li>
-				    <li><a href="#">10</a></li>
-				    <li><a href="#">다음</a></li>
+				<ul class="pagination pagination-sm" id="pageBar"><%-- ==== 2019.01.24 === 페이지바 임의로 넣은 것 지우기 --%>
 			  	</ul>
 		  	</div>
 		</div>
