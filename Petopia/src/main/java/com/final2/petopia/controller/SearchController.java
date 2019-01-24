@@ -34,7 +34,7 @@ public class SearchController {
 		int cnt = service.searchCount(searchWord);
 		// 지도화면으로 넘어갈때 몇건 검색되었는지도 보내기
 		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(searchWord);
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(searchWord,"1");
 		// 검색어를 기준으로 biz_member 정보 리스트 불러오기
 		
 		Gson gson = new Gson();
@@ -44,8 +44,6 @@ public class SearchController {
 		req.setAttribute("cnt", cnt);
 		req.setAttribute("gson_bizmemList", gson_bizmemList);
 		req.setAttribute("bizmemList", bizmemList);
-		
-		
 		
 		return "search/index.tiles2";
 		
@@ -60,11 +58,9 @@ public class SearchController {
 
 		HashMap<String, Integer> CountMap = new HashMap<String, Integer>();
 		
-		if(searchWord != null && !searchWord.trim().isEmpty()) {
-			
+		if(searchWord != null && !searchWord.trim().isEmpty()) {		
 			CountMap = service.searchCountMap(searchWord);
 			// 단어를 기준으로 지역명 - 몇건, 병원이름 - 몇건, 약국이름 - 몇건 이런식으로 보여주기
-	
 		}
 		
 		return CountMap;
@@ -84,4 +80,23 @@ public class SearchController {
 		return bizvo;
 		
 	}
+	
+	// 검색결과 창에서 평점순/거리순으로 정렬을 요청했을때 order by 해서 넘겨주는 AJAX
+	@RequestMapping(value="selectOrderbyNo.pet", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	@ResponseBody
+	public String selectOrderbyNo(HttpServletRequest req) {
+	
+		String orderbyNo = req.getParameter("orderbyNo");
+		String searchWord = req.getParameter("searchWord");
+		
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(searchWord,orderbyNo);
+
+		Gson gson = new Gson();
+		String gson_bizmemList = gson.toJson(bizmemList);
+		
+		return gson_bizmemList;
+		
+	}
+	
+	
 }
