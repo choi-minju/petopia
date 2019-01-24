@@ -53,8 +53,8 @@ public class SearchDAO implements InterSearchDAO {
 
 	// 검색어를 기준으로 biz_member 정보 리스트 불러오기
 	@Override
-	public List<Biz_MemberVO> getBizmemListBySearchWord(String searchWord) {
-		List<Biz_MemberVO> bizMemList = sqlsession.selectList("search.getBizmemListByword", searchWord);
+	public List<Biz_MemberVO> getBizmemListBySearchWord(HashMap<String, String> map) {
+		List<Biz_MemberVO> bizMemList = sqlsession.selectList("search.getBizmemListByword", map);
 		return bizMemList;
 	}
 
