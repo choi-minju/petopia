@@ -88,7 +88,12 @@
 		padding: 0px;
 	}
 	
+	.pointer{
+		cursor: pointer;
+	}
+	
 </style>
+
 <%-- [19-01-24. 수정 시작_hyunjae] --%>
 <script type="text/javascript">
 
@@ -138,11 +143,11 @@
 								  + "	<div>"
 								  + "		<span>" + entry.PET_SIZE + "</span> | <span>" + entry.PET_GENDER + "</span> | <span>" + entry.PET_WEIGHT + "</span>"
 								  + "	</div>"
-								  + "	<a href=\"#\" class=\"pet-hover\"><br/>"
-								  + "		<div>정보수정</div><br/>"
-								  + "		<div onclick=window.open(\"petView.pet?pet_UID=" + entry.PET_UID + "\",\"_self\")>관리</div><br/>"
-								  + "		<div>지우기</div>"
-								  + "	</a>"
+								  + "	<div class=\"pet-hover\"><br/>"
+								  + "		<div class=\"pointer\" onclick=window.open(\"index.pet\",\"_self\")>정보수정</div><br/>"
+								  + "		<div class=\"pointer\" onclick=window.open(\"petView.pet?pet_UID=" + entry.PET_UID + "\",\"_self\")>관리</div><br/>"
+								  + "		<div class=\"pointer\" onclick=window.open(\"index.pet\",\"_self\")>무지개다리</div><br/>"
+								  + "	</div>"
 								  + "</div>";
 							
 						});
@@ -166,30 +171,21 @@
 	}
 	
 </script>
-<%-- [19-01-24. 수정 끝_hyunjae] --%>
-
 
 <div class="container" style="min-height: 800px;">
 	<h2 align="center">반려동물관리</h2>
-	<%-- [19-01-24. 수정 시작_hyunjae] --%>
+	
 	<div class="row">
 		
 		<!-- <div class="col-sm-12"> 시작 -->
 		<!-- n번째 반려동물 -->
 		<div id="displayPetList"  class="col-sm-12">
-			<input type="text" id="fk_idx" />			
-			
-
+			<input type="hidden" id="fk_idx" />			
 			
 		<!-- <div class="col-sm-12"> 끝 -->	
 		</div>
 
-		
-
-			
-
-
-
 	</div>
 	<%-- [19-01-24. 수정 끝_hyunjae] --%>
+	
 </div>

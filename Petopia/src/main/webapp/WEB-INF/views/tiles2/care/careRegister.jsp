@@ -31,8 +31,6 @@
 		background-position: center right;
 	}
 	
-
-
 </style>
 
 <script type="text/javascript">
@@ -49,8 +47,8 @@
 			//폼 submit
 			var registerFrm = document.registerFrm;
 			registerFrm.action = "careRegisterEnd.pet";
-			registerFrm.method = "POST";
-		//	registerFrm.submit();
+			registerFrm.method = "GET";
+			registerFrm.submit();
 		});
 
 	}); // end of ready()-------------------------------------------
@@ -68,7 +66,7 @@
 
 			<div class="col-sm-12">
 				<form name="registerFrm">
-					<input type="hidden" name="fk_pet_UID" value="" />
+					<input type="hidden" name="fk_pet_UID" value="13" /> <%-- 수정_value를 받아와야 한다. --%>
 				
 					<div class="col-sm-offset-2 col-sm-8 preview-image" style="margin-bottom: 20px;">
 					

@@ -27,7 +27,7 @@ public class CareController {
 	
 	
 	// [19-01-24. 수정 시작_hyunjae]
-	//===== 반려동물관리 메인페이지 요청 =====
+	//===== 반려동물관리 리스트 요청 =====
 	@RequestMapping(value="/petList.pet", method={RequestMethod.GET})
 	public String petList(HttpServletRequest req) {
 		
@@ -44,6 +44,7 @@ public class CareController {
 		return "care/petList.tiles2";
 	}
 	
+	//===== 반려동물 리스트 완료 =====
 	@RequestMapping(value="/getPet.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> getPet(HttpServletRequest req) {
@@ -85,6 +86,7 @@ public class CareController {
 		return "care/petRegister.tiles2";
 	}
 	
+	// [19-01-24. 수정 시작_hyunjae]
 	//===== 반려동물 등록페이지 요청완료 =====
 	@RequestMapping(value="/petRegisterEnd.pet", method={RequestMethod.POST})
 	public String registerEnd(PetVO pvo, HttpServletRequest req) {
@@ -101,8 +103,9 @@ public class CareController {
 		
 		req.setAttribute("msg", msg);
 
-		return "care/index.tiles2";
+		return "care/petList.tiles2";
 	}
+	// [19-01-24. 수정 끝_hyunjae]
 	
 	
 	//===== 특정 반려동물관리 상세페이지 요청 =====
@@ -110,28 +113,27 @@ public class CareController {
 	public String view(HttpServletRequest req) {
 		
 		String pet_UID = req.getParameter("pet_UID");
-/*		
+	
 		if(pet_UID != null) {
 			
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put(key, );
+			req.setAttribute("pet_UID", pet_UID);
 			
 		}
-			*/
-		
 		
 		return "care/petView.tiles2";
 	}
 	
 	
+	// [19-01-24. 수정 끝_hyunjae]
 	//===== 케어관리페이지 요청 =====
 	@RequestMapping(value="/careCalendar.pet", method={RequestMethod.GET})
 	public String calendar(HttpServletRequest req) {
 		
-		return "care/calendar.tiles2";
+		return "care/careCalendar.tiles2";
 	}
 	
 	
+	// [19-01-24. 수정 시작_hyunjae]
 	//===== 케어관리 등록페이지 요청 =====
 	@RequestMapping(value="/careRegister.pet", method={RequestMethod.GET})
 	public String careRegister(HttpServletRequest req) {
@@ -144,6 +146,7 @@ public class CareController {
 		
 		return "care/careRegister.tiles2";
 	}
-
+	// [19-01-24. 수정 끝_hyunjae]
+	
 	
 } // end of class CareController
