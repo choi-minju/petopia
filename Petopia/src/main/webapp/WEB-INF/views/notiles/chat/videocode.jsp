@@ -24,19 +24,36 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
-		var method="${method}";
+		var n = "${n}";
 		
-		if(method == "GET"){
-			$("#code").val(123456);
-		}
+		$("#code").keydown(function(event){
+			
+			if(event.keyCode == 13) {
+				join();
+			}
+		});
 		
 		$("#join-button").click(function(){
-			var frm = document.videochatFrm;
-			parent.location.href="<%= serverName %><%= ctxPath %>/videochat.pet";
+			join();
 		});
 		
 	}); // end of document.ready
-	
+		
+	function join() {
+		
+		var chatcode = $('input#code').val();
+		/* var confirmcode = $("#div_code").find("input[id=hide]").val(); */
+		var confirmcode = $('input#hide').val();
+		if(chatcode == confirmcode) {
+			var frm = document.videochatFrm;
+			parent.location.href="<%= serverName %><%= ctxPath %>/videochat.pet";
+			frm.submit();
+		}
+		else{
+			alert("번호가 일치하지 않습니다 다시입력해주세요");
+		}
+	}
+
 </script>
 
 <body style="background-color: rgb(252, 118, 106);">
@@ -44,6 +61,10 @@
 	<div id="div_code" align="center">
 		<span style="color: white; font-size: 12pt;">상담을 위한 코드를 입력해주세요</span><br/>
 		<input type="text" name="code" id="code" size="15" placeholder="123456" required />
+		<input type="hidden" name="hide" id="hide" value="${chatcode}" />
+		<c:if test="${n == 0}">
+			<span style="color: red;">번호가 맞지않습니다 다시 시도해주세요.</span>
+		</c:if>
 	</div>
 	</br>
 	<div id="div_input" align="center">

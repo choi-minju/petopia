@@ -65,6 +65,10 @@
 		margin: 5%;
 	}
 	
+	.card-title {
+		font-weight: bold;
+	}
+	
 	.resultHeader h3 {
 		font-weight: bold; margin-bottom: 10%;
 	}
@@ -78,6 +82,24 @@
 		font-weight: bold;
 		color: #993333;
 	}
+	
+	.modal {
+        text-align: center;
+        padding: 0!important;
+    }
+
+    .modal:before {
+        content: '';
+        display: inline-block;
+        vertical-align: middle;
+        margin: -2px;
+        height: 100%;
+    }
+
+    .modal-dialog {
+        display: inline-block;
+        vertical-align: middle;
+    }
 
 </style>
 
@@ -91,10 +113,8 @@
 		$("#myInput").val("${searchWord}");		
 		$("#cnt").text("${cnt}");
 		
-		if(${cnt != 0}) {
-
+		if("${cnt != 0}") {
 			setBounds();
-				
 		}
 		
 	});
@@ -123,6 +143,66 @@
 	    	location.href="<%= ctxPath%>/search.pet?searchWord="+searchWord;
 	    }
 	    
+	    
+	    
+	}
+	
+	
+	function selectOrderby(event) {
+		
+		var orderbyNo = $(event.target).val();
+		var searchWord = $("#myInput").val();
+		
+		if(orderbyNo == 1) {
+			// 평점순이라면
+
+			$.getJSON("<%= ctxPath%>/selectOrderbyNo.pet?orderbyNo="+orderbyNo+"&searchWord="+searchWord, 
+					  function(json){
+				
+							var html = "";
+							
+							$.each(json, function(entryIndex, entry){
+							
+								// 데이터넣고
+								html += "<div class='card text-left border-secondary' value="+entry.idx_biz+">";
+								html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
+								html += "  	<div class='card-body'>";
+								html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
+								html += "	    <p class='card-text'>평점&nbsp;";
+								
+								for(var i=0;i<entry.avg_startpoint;i++) {
+									html += "<span class='glyphicon glyphicon-star'></span>&nbsp;"; 
+								}
+								
+								
+								html += "</p><a href='#' class='btn btn-primary'>예약하기</a>";
+								html += "</div></div>";
+								
+							});
+						  	
+							$("#cards").empty().html(html);
+							
+			});
+			
+		}
+		
+		if(orderbyNo == 2) {
+			// 거리순이라면
+			$('#myModal').modal('show');
+			
+			
+		}
+		
+		
+		
+	}
+	
+	function putmyaddr() {
+		
+		var address = $("#address").val();
+		console.log(address);
+		
+		
 	}
 
 
@@ -200,14 +280,14 @@
 					        center: new daum.maps.LatLng(37.54699, 127.09598), // 지도의 중심좌표
 					        level: 4 // 지도의 확대 레벨
 					    };
-	
+
 					var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 					// *** 지도 생성 끝 *** //
 					
 					// *** 지도 컨트롤바 생성 시작 ***//
 					// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
 					var mapTypeControl = new daum.maps.MapTypeControl();
-				
+
 					// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
 					// daum.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
 					map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
@@ -265,6 +345,10 @@
 					    // 이때 지도의 중심좌표와 레벨이 변경될 수 있습니다
 					    map.setBounds(bounds);
 					}
+					
+					// *** 모든 마커를 보여주기 위해 중심좌표와 비율을 다시 설정하기 시작 *** //
+					
+					
 	
 					
 				</script>
@@ -275,12 +359,14 @@
 						<h3 align="right">검색결과 <span id="cnt"></span>건</h3>
 					</div>
 					<div class="col-sm-4">
-						<select class="form-control input-sm" >
-						        <option>평점순</option>
-						        <option>거리순</option>
-						</select>
+		  				<div class="form-group">
+							<select class="form-control input-sm" onchange="selectOrderby(event)" >
+						        <option value="1">평점순</option>
+					    	    <option value="2">거리순</option>
+							</select>
+						</div>
 					</div>
-					<div style="width: 100%; height: 87%; overflow-y: auto;" >
+					<div style="width: 100%; height: 87%; overflow-y: auto;" id="cards" >
 						<%-- 
 					    <div class="card text-left border-secondary">
 						  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/bbb.jpg" alt="Card image cap">
@@ -300,8 +386,11 @@
 							  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/${biz_mem.prontimg}" alt="Card image cap">
 							  	<div class="card-body">
 								    <h5 class="card-title">${biz_mem.name }</h5>
-								    <p class="card-text">평점</p>
-								    <a href="#" class="btn btn-primary">예약하기</a>
+								    <p class="card-text">평점
+								    <c:forEach begin="1" end="${biz_mem.avg_startpoint }">
+								    	<span class="glyphicon glyphicon-star"></span>
+								    </c:forEach>
+								    </p><a href="#" class="btn btn-primary">예약하기</a>
 								</div>
 						  	</div>
 				  		</c:forEach>
@@ -326,4 +415,29 @@
 
 </div>
 
-<div></div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">주소를 입력해주세요</h4>
+      </div>
+      <div class="modal-body">
+	    <form>
+		  <div class="form-group" align="center">
+			<input type="text" class="form-control" id="address" placeholder="예) 서울시 강남구 논현동 55 " style="width: 50%;">
+		  </div>
+		</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="putmyaddr()">입력</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+    
+  </div>
+</div>

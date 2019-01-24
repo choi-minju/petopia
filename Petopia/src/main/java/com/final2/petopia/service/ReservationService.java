@@ -125,18 +125,33 @@ public class ReservationService implements InterReservationService{
 	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
 	public int goPayReservationDeposit(PaymentVO pvo) {
 		int result = 0;
+	// [190124] 결제테이블 시퀀스 채번 메소드 추가
+		int seq = dao.selectPayment_Seq();
+		pvo.setPayment_UID(String.valueOf(seq));
+		
 		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
 		paraMap.put("depositcoin", pvo.getPayment_pay());
 		paraMap.put("fk_idx", pvo.getFk_idx());
+		paraMap.put("payment_UID", seq);	// [190124] 시퀀스 채번 파라미터 매핑 추가
+
+		int paypoint = pvo.getPayment_point();
+		int payDeposit = pvo.getPayment_pay();
 		
+		int point = (int)Math.round(payDeposit*0.1-paypoint); 
+		
+		HashMap<String, Integer> paraMap2 = new HashMap<String, Integer>();
+		paraMap2.put("fk_idx", pvo.getFk_idx());
+		paraMap2.put("point", point);
 		int n1 = dao.insertPaymentByPvo(pvo);
 		int n2 = 0;
 		int n3 = 0;
+		int n4 = 0;
 		if(n1==1) {
 			n2 = dao.insertDepositMinus(paraMap);
 		}
 		if(n1==1 && n2==1) {
 			n3 = dao.updateReservationStatusByFkRUID(pvo.getFk_reservation_UID());
+			n4 = dao.updatePointMember(paraMap2); // [190124] 결제시 사용 포인트를 감하고 실결제금액의 10% point 적립하기
 		}
 		
 		if(n1*n2*n3 == 1) {

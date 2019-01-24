@@ -16,6 +16,6 @@ public interface InterSearchDAO {
    int searchCount(String searchWord);
 
    // 검색어를 기준으로 biz_member 정보 리스트 불러오기
-   List<Biz_MemberVO> getBizmemListBySearchWord(String searchWord);
+   List<Biz_MemberVO> getBizmemListBySearchWord(HashMap<String, String> map);
    
 }

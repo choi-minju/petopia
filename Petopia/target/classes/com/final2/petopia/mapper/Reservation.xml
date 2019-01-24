@@ -103,15 +103,23 @@
 		where reservation_UID = #{fk_reservation_UID}
 	</select>
 	
+	<!-- [190124] 결제테이블 시퀀스 채번하기 -->
+	<select id="selectPayment_Seq" resultType="int">
+		select seq_payment_UID.nextval as seq
+		from dual
+	</select>
 	<!-- #수술예약 시 예치금결제 후 결제테이블에 insert -->
 	<insert id="insertPaymentByPvo" parameterType="com.final2.petopia.model.PaymentVO">
 		insert into payment(payment_UID, fk_reservation_UID, payment_total, payment_point, payment_pay, payment_date, payment_status)
-		values(seq_payment_UID.nextval, #{fk_reservation_UID}, #{payment_total} , #{payment_point}, #{payment_pay}, #{payment_date}, 1)
+		values(#{payment_UID}, #{fk_reservation_UID}, #{payment_total} , #{payment_point}, #{payment_pay}, sysdate, 1)
 	</insert>
 	<!-- #예치금 잔액에서 결제금액만큼 감한 내용을 예치금 테이블에 insert -->
 	<update id="insertDepositMinus" parameterType="HashMap">
-		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date)
-		values(seq_deposit_UID.nextval, #{fk_idx}, #{depositcoin}, 3, 'used', sysdate)
+		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID)
+		values(seq_deposit_UID.nextval, #{fk_idx}, #{depositcoin}, 3, 'used', sysdate, #{payment_UID})
+	</update>
+	<update id="updatePointMember" parameterType="HashMap">
+		update member set point=${point} where idx=#{fk_idx}
 	</update>
 	<!-- #결제완료후 예약테이블의 예약상태 변경하기 -->
 	<update id="updateReservationStatusByFkRUID" parameterType="String">
@@ -126,14 +134,28 @@
 	</select>
 	
 	<select id="selectUserReservationList" parameterType="HashMap" resultMap="rmap_like_reservationVO">
-		select A.reservation_UID, A.fk_idx, A.fk_idx_biz, A.fk_schedule_UID, A.fk_pet_UID, to_char(A.bookingdate, 'yyyy-mm-dd hh24:mi') as bookingdate
-			, to_char(A.reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, reservation_status, decode(A.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as reservation_type
-			, B.biz_name, B.phone, B.postcode, B.addr1, B.addr2, C.pet_name, decode(C.pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
-		from reservation A join view_biz_memberinfo B
-		on A.fk_idx_biz = B.idx_biz
-		join pet_info C
-		on A.fk_pet_UID = C.pet_UID
-		where A.fk_idx = #{idx}
+		select rno, reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, bookingdate
+			, reservation_DATE, reservation_status, reservation_type
+			, biz_name, phone, postcode, addr1, addr2, pet_name, pet_type
+		from
+		(
+		select rownum as rno, reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, bookingdate
+			, reservation_DATE, reservation_status, reservation_type
+			, biz_name, phone, postcode, addr1, addr2, pet_name, pet_type
+		from
+			(
+			select A.reservation_UID, A.fk_idx, A.fk_idx_biz, A.fk_schedule_UID, A.fk_pet_UID, to_char(A.bookingdate, 'yyyy-mm-dd hh24:mi') as bookingdate
+						, to_char(A.reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, reservation_status, decode(A.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as reservation_type
+						, B.biz_name, B.phone, B.postcode, B.addr1, B.addr2, C.pet_name, decode(C.pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
+			from reservation A join view_biz_memberinfo B
+			on A.fk_idx_biz = B.idx_biz
+			join pet_info C
+			on A.fk_pet_UID = C.pet_UID
+			where A.fk_idx = #{idx}
+			order by A.reservation_UID desc
+			)
+		)
+		where rno between #{startRno} and #{endRno}
 	</select>
 
 </mapper>

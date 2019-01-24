@@ -43,11 +43,28 @@ import org.springframework.stereotype.Repository;
 			@Override
 			public List<HashMap<String,String>> selectreserveinfo(int idx) {
 				 List<HashMap<String,String>> maplist =sqlsession.selectList("chart.selectreserveinfo",idx);
-				return maplist;
+				 return maplist;
+			}
+			//0124
+			@Override
+			public List<HashMap<String,String>> selectBizReservationList(HashMap<String, String> paraMap) {
+				 List<HashMap<String,String>> maplist =sqlsession.selectList("chart.selectBizReservationList",paraMap);
+				 return maplist;
 			}
 
-		
-			
+			@Override
+			public int getTotalCountNoSearch(int idx_biz) {
+				int n =sqlsession.selectOne("chart.getTotalCountNoSearch",idx_biz);
+				return n;
+			}
+            //예약번호로 예약자 정보 불러오기 
+			@Override
+			public HashMap<String,String> selectReserverInfo(String ruid) {
+				
+				HashMap<String,String> chartmap = sqlsession.selectOne("chart.selectReserverInfo",ruid);
+				
+				return chartmap;
+			}
 			
 			
 	}
