@@ -17,7 +17,7 @@ public interface InterSearchService {
 	public int searchCount(String searchWord);
 	
 	// 검색어를 기준으로 biz_member 정보 리스트 불러오기
-	public List<Biz_MemberVO> getBizmemListBySearchWord(String searchWord);
+	public List<Biz_MemberVO> getBizmemListBySearchWord(String searchWord,String orderbyNo);
 	
 	
 }
