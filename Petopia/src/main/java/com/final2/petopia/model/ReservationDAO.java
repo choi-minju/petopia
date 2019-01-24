@@ -91,6 +91,21 @@ public class ReservationDAO implements InterReservationDAO {
 		return returnMap;
 	}
 	
+// [190124]	
+//	#결제테이블 시퀀스 채번
+	@Override
+	public int selectPayment_Seq() {
+		int seq = sqlsession.selectOne(ns+"selectPayment_Seq");
+		return seq;
+	}
+	
+//	#결제시 사용 포인트를 감하고 실결제금액의 10% point 적립하기
+	@Override
+	public int updatePointMember(HashMap<String, Integer> paraMap) {
+		int result = sqlsession.update(ns+"updatePointMember", paraMap);
+		return result;
+	}
+// ----------------------------------------------
 	
 //	#수술예약 시 예치금결제 후 결제테이블에 insert
 	@Override
@@ -104,7 +119,6 @@ public class ReservationDAO implements InterReservationDAO {
 		int result = sqlsession.update(ns+"insertDepositMinus", paraMap);
 		return result;
 	}
-	
 //	#예치금결제 완료시 예약테이블의 예약상태 변경 트랜잭션 처리
 	@Override
 	public int updateReservationStatusByFkRUID(String fk_reservation_UID) {
@@ -112,7 +126,7 @@ public class ReservationDAO implements InterReservationDAO {
 		return result;
 	}
 
-
+	
 	
 	
 //	#검색타입/검색어가 없는 예약 목록 개수 가져오기

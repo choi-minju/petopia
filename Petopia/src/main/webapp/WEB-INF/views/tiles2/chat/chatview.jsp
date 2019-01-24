@@ -15,6 +15,21 @@
 	.modal-title {
     color: white;
     font-family: 'Roboto', 'Open Sans', 'Lucida Grande', sans-serif;}
+    .btn2 {
+		  background:#ff9577;
+		  color:white;
+		  border:1px solid white;
+		  cursor:pointer;
+		  transition:800ms ease all;
+		  outline:none;
+		  cursor: pointer; 
+		  margin-top:60%; 
+		  float:right;
+    }
+    .btn2:hover{
+		  background:white;
+		  color:#ff9577;
+	}
 
 </style>
 
@@ -42,6 +57,7 @@
 			dataType:"JSON",
 			success:function(json) {
 					alert("코드가 생성 되었습니다. \n"+json.code);
+					location.reload();
 					return;
 			},
 			error:function() {
@@ -73,8 +89,9 @@
 	  	<span style="font-weight: bold;">ㆍ온라인 상담시간 :</span> 09:00 ~ 18:00 </br>
 		<span style="font-weight: bold;">ㆍ이용문의 :</span> 010-1234-5678
 		</span>
-		<button type="button" data-toggle="modal" data-target="#videochat" data-dismiss="modal" style="cursor: pointer; margin-top:60%; float:right;">상담하기</button>
-	  	<button type="button" onClick="createcode(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담코드 생성</button>
+		
+		<button type="button" class="btn2" data-toggle="modal" data-target="#videochat" data-dismiss="modal" >상담하기</button>
+	  	<button type="button" class="btn2" onClick="createcode(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담코드 생성</button>
 	  	
 	  </div>  
 	</div>

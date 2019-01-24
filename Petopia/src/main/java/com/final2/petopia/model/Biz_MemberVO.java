@@ -31,13 +31,14 @@ public class Biz_MemberVO {
 	private int etc;         // 기타
 	private String note;       // 특이사항
 	private String intro;      // 소개글
+	private int avg_startpoint;	   // 평균 평점
 	
 	public Biz_MemberVO() { }
 	
 	public Biz_MemberVO(int idx_biz, String name, int biztype, String repname, String biznumber, String phone,
 			String postcode, String addr1, String addr2, String latitude, String longitude, String prontimg, String weekday,
 			String wdstart, String wdend, String lunchstart, String lunchend, String satstrart, String satend,
-			String dayoff, int dog, int cat, int smallani, int etc, String note, String intro) {
+			String dayoff, int dog, int cat, int smallani, int etc, String note, String intro, int avg_startpoint) {
 
 		this.idx_biz = idx_biz;
 		this.name = name;
@@ -65,6 +66,7 @@ public class Biz_MemberVO {
 		this.etc = etc;
 		this.note = note;
 		this.intro = intro;
+		this.avg_startpoint = avg_startpoint;
 	}
 
 	public int getIdx_biz() {
@@ -275,4 +277,12 @@ public class Biz_MemberVO {
 		this.intro = intro;
 	}
 	
+	public int getAvg_startpoint() {
+		return avg_startpoint;
+	}
+
+	public void setAvg_startpoint(int avg_startpoint) {
+		this.avg_startpoint = avg_startpoint;
+	}
+
 }

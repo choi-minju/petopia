@@ -199,6 +199,31 @@
 		
 		$("#goJoinBtn").click(function(){
 			
+			/* ===== 2019.01.24 ===== */
+			// 프로필 사진 유효성 검사
+			// 크기
+			var maxSize = 10*1024*1024; // 10MB
+			var fileSize = document.getElementById("attach").files[0].size;
+			//alert(fileSize);
+			
+			// 이미지인지 확인
+			var extension = getFileExtension($("#attach").val());
+			//alert(extension);
+			
+			if(typeof $("#attach").val() == "undefined") {
+				alert("프로필을 입력하지 않으셨습니다.");
+				
+				return;
+			} else if(fileSize > maxSize) {
+				alert("프로필은 "+maxSize+"MB을 초과하였으므로 업로드가 불가합니다!");
+				
+				//attachFileValueDel();
+				return;
+			} else {
+				img_Check($("#attach").val());
+			} // end of if~else
+			/* ===== 2019.01.24 ===== */
+			
 			// 유효성 검사
 			$(".must").each(function() {
 				var data = $(this).val().trim();
@@ -306,6 +331,33 @@
 		
 	}); // end of $(document).ready();
 	
+	/* ===== 2019.01.24 ===== */
+	// 파일 확장자 값 가져오기
+	function getFileExtension(filePath){
+		var lastIndex = -1;
+		lastIndex  = filePath.lastIndexOf('.');
+		var extension = "";
+
+		if(lastIndex != -1){
+			extension = filePath.substring( lastIndex+1, filePath.len );
+		}else{
+			extension = "";
+		}
+		return extension;
+	} // end of function getFileExtension(filePath)
+
+	// 파일 확장자 체크하기
+	function img_Check(value) {
+		var src = getFileExtension(value);
+	 
+		if(!((src.toLowerCase() == "gif") || (src.toLowerCase() == "jpg") || (src.toLowerCase() == "jpeg") || (src.toLowerCase() == "png"))){
+			alert('gif, jpg, png 파일만 지원합니다.');
+			return;
+	    }
+		
+	} // end of function fnImg_Check(value)
+	/* ===== 2019.01.24 ===== */
+	
 </script>
 
 <div class="col-sm-12" style="margin-top: 8%; margin-bottom: 8%">
@@ -320,8 +372,10 @@
 					<div class="row">
 						<div class="col-sm-3">
 							<div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
-								<label for="input-file">프로필</label>
-								<input type="file" class="upload-hidden must" id="input-file" name="attach"/>
+								<%-- ==== 2019.01.24 ==== input-file -> attach로 변경 --%>
+								<label for="attach">프로필</label>
+								<input type="file" class="upload-hidden must" id="attach" name="attach"/>
+								<%-- ==== 2019.01.24 ==== input-file -> attach로 변경 --%>
 							</div>
 						</div>
 						<div class="col-sm-9" style="padding-top: 28px;">
@@ -391,6 +445,7 @@
 						</div>
 					</div><!-- row -->
 					
+					<%-- ==== 2019.01.24 === name="tagName"인 것 class와 id 지우기 --> 오류떠서 --%>
 					<div class="row tagList1" style="margin-top: 3%;">
 						<div class="col-sm-2">
 							<span style="color: #999;">시설상태</span>
@@ -401,7 +456,7 @@
 									<div class="col-sm-4">
 										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -418,7 +473,7 @@
 									<div class="col-sm-4">
 										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -435,7 +490,7 @@
 									<div class="col-sm-4">
 										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -452,7 +507,7 @@
 									<div class="col-sm-4">
 										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -469,7 +524,7 @@
 									<div class="col-sm-4">
 										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -486,12 +541,13 @@
 									<div class="col-sm-4">
 										<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
 										&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
-										<input type="hidden" class="" id="" name="tagName" value="${tag.TAG_NAME}"/>
+										<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
 									</div>
 								</c:if>
 							</c:forEach>
 						</div>
 					</div><!-- row -->
+					<%-- ==== 2019.01.24 === name="tagName"인 것 class와 id 지우기 --> 오류떠서 --%>
 					
 					<div class="row" align="center" style="margin-top: 3%;">
 						<input type="checkbox" class="" id="agree" name="agree"/> <label style="color: #999;" for="agree">서비스 이용 및 약관에 동의합니다.</label>

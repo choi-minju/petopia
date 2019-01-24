@@ -2,10 +2,34 @@
     pageEncoding="UTF-8"%>
 
 <style type="text/css">
-	.in{display: inline-block;}
-	.out{width: 100%; text-align: center;}
-	.profileimg{border-radius: 100%; width: 150px; height: 150px;}
-	.alarm{background-color: #f2f2f2; height: 50px; padding: 7px; margin-top: 3%; text-align:left;}
+	
+	.pointer {
+		cursor: pointer;
+	}
+	
+	.in {
+		display: inline-block;
+	}
+	
+	.out {
+		width: 100%;
+		text-align: center;
+	}
+	
+	.profileimg {
+		border-radius: 100%;
+		width: 150px;
+		height: 150px;
+	}
+	
+	.alarm {
+		background-color: #f2f2f2;
+		height: 50px;
+		padding: 7px;
+		margin-top: 3%;
+		text-align: left;
+	}
+	
 </style>
 
 <div class="container" style="margin-top: 10px;">
@@ -18,9 +42,10 @@
 					<li><i class="fa fa-angle-double-left" style="font-size: 30pt;"></i></li>
 				</ul>
 			</div>
-			<div class="in" style="border: 1px solid red;">
+			<div class="pointer in" onclick=window.open("careCalendar.pet?pet_UID=${pet_UID}","_self")>
 				<img src="resources/img/care/dog.png" class="profileimg">	
 			</div>
+			
 			<div class="in">
 				<ul style="list-style-type: none;">
 					<li>반려동물이름</li>
