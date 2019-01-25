@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.final2.petopia.model.Biz_MemberVO;
+import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.PaymentVO;
 import com.final2.petopia.model.PetVO;
 import com.final2.petopia.model.ReservationVO;
@@ -45,4 +46,8 @@ public interface InterReservationService {
 //	#예약목록
 	int getTotalCountNoSearch(int idx);
 	List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap);
+
+	
+//	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
+	List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap);
 }
