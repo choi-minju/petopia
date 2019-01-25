@@ -4,7 +4,6 @@
 <%String ctxPath = request.getContextPath();%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <style>
-<<<<<<< HEAD
 
 .divbox1{ /*전체 */
    margin-top: 3%;
@@ -279,4 +278,4 @@ border-radius:10px;
     
   </div>
 </div>
->>>>>>> refs/remotes/origin/hyunjae
+

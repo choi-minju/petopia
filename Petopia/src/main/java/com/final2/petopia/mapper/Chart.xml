@@ -4,29 +4,42 @@
  <mapper namespace="chart">
 
 
+
+
 <!--  pet uid로 펫정보 가져오기  -->
+
  <select id="selectpetlist"  parameterType="int" resultType="com.final2.petopia.model.PetVO"> 
+
 select pet_UID, fk_idx,pet_name,pet_type,pet_birthday,pet_size,pet_weight,
    decode(pet_gender, '1', '수컷', '2', '암컷') as pet_gender,pet_neutral,medical_history,allergy,pet_profileimg
 from pet_info A join Member B
 on A.fk_idx= B.idx
 where A.fk_idx=#{idx}
+
 </select> 
 <!--탭에 넣을 예약번호 가져오기  -->
+
 <select id="selecttabuid" resultType="int" parameterType="HashMap">
 select reservation_uid
 from reservation
 where fk_idx = #{idx} and reservation_date = #{rdate}
 </select> 
 
+
+
 <!--  처방전테이블에  인서트 하기  -->
+
 <!--  <insert id="insertmychart" parameterType="HashMap" >
+
  insert into prescription (rx_UID,chart_UID,rx_name,dose_number,dosage,rx_notice
                           ,rx_cautions,rx_regName)
  values (seq_prescription_UID.nextval,#{CHART_UID},#{MNAME},#{MTIMES},#{MS},#{MEMO}
                       ,#{CAUTION},#NAME} )
 
+
+
 </insert>  -->
+
 <!-- 마이 페이지에서 처방전 셀렉트 하기  -->
 <select id="selectchartinfo" parameterType="int" resultType="com.final2.petopia.model.ChartVO">
 select rx_UID,chart_UID,rx_name,dose_number,dosage,rx_notice ,rx_cautions,rx_regName
@@ -101,6 +114,7 @@ where A.fk_idx_biz = #{idx}
     <result property="fk_idx"             column="FK_IDX"             javaType="String"/>
     <result property="fk_idx_biz"         column="FK_IDX_BIZ"         javaType="String"/>
     <result property="fk_pet_UID"         column="FK_PET_UID"         javaType="String"/>
+    <result property="bookingdate"        column="BOOKINGDATE"        javaType="String"/>
     <result property="reservation_DATE"   column="RESERVATION_DATE"   javaType="String"/>
     <result property="reservation_status" column="RESERVATION_STATUS" javaType="String"/>
     <result property="reservation_type"   column="RESERVATION_TYPE"   javaType="String"/>
@@ -114,7 +128,9 @@ where A.fk_idx_biz = #{idx}
    <select id="selectReserverInfo" parameterType="String" resultMap="reserverInfo">
    
 	 select A.reservation_UID, A.fk_idx, A.fk_idx_biz,  A.fk_pet_UID
-					, to_char(A.reservation_DATE, 'yyyy-mm-dd') as reservation_DATE, reservation_status, 
+					, to_char(A.reservation_DATE, 'yyyy-mm-dd') as reservation_DATE
+					, to_char(A.bookingdate, 'yyyy-mm-dd') as bookingdate
+					,reservation_status, 
 	                decode(A.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as reservation_type
 					, B.name, C.pet_name, decode(C.pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
 	                ,p.payment_total,p.payment_point,p.payment_pay
@@ -126,4 +142,21 @@ where A.fk_idx_biz = #{idx}
 	on A.reservation_UID =P.fk_reservation_UID
 	where A.reservation_UID =#{ruid}
    </select>
+   <!--0125  -->
+   <select id="selectDocList" parameterType="String" resultType="HashMap" >
+   select D.docname 
+	from doctors D join  biz_info B
+	on D.fk_idx_biz = B.idx_biz
+	join reservation R 
+	on R.fk_idx_biz = B.idx_biz
+	where reservation_uid=#{ruid}
+   </select>
+   
+   <insert id="insertChart" parameterType="com.final2.petopia.model.ChartVO">
+     insert into  chart(chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
+                   ,reservation_DATE,doc_name,cautions,chart_contents,
+                   payment_pay,payment_point,addpay,totalpay)  
+     values(chart_seq.nextval,#{fk_pet_UID},#{fk_idx},#{chart_type}, #{biz_name}, #{bookingdate},#{reservation_DATE},
+            #{doc_name},#{cautions},#{chart_contents},#{payment_pay},#{payment_point},#{addpay},#{totalpay})
+   </insert>
 </mapper>
