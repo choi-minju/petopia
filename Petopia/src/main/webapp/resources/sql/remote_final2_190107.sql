@@ -498,6 +498,7 @@ CREATE TABLE petcare (
 		PRIMARY KEY (care_UID)
 );
 
+-- drop sequence seq_petcare_UID
 create sequence seq_petcare_UID  --펫케어
 start with 1
 increment by 1
@@ -515,6 +516,7 @@ CREATE TABLE caretype (
 		PRIMARY KEY (caretype_UID)
 );
 
+-- drop sequence seq_caretype_UID
 create sequence seq_caretype_UID --케어 타입
 start with 1
 increment by 1
