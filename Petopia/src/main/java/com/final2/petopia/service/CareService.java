@@ -32,6 +32,22 @@ public class CareService implements InterCareService {
 	}
 
 
+	//===== 케어 등록 caretype 가져오기 =====
+	@Override
+	public List<HashMap<String, String>> getCaretypeList() {
+		List<HashMap<String,String>> caretypeList = dao.getCaretypeList();
+		return caretypeList;
+	}
+
+	
+	//===== 케어 등록 caretype 가져오기 =====
+	@Override
+	public List<HashMap<String, String>> getCaretype_infoList(String caertype) {
+		List<HashMap<String,String>> list = dao.getCaretype_infoList(caertype);
+		return list;
+	}
+
+
 	
 
 }

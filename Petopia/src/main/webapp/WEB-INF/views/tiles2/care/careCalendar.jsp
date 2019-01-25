@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>	
 
 <style>
 
@@ -198,14 +199,14 @@
 		
 			<div id='external-events' style="border: 1px solid red;">
 			<li style="list-style-type: none;">
-		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;식사</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;간식</div></ul>
-		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;용변</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;미용</div></ul>
-		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;목욕</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;양치</div></ul>
-		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;접종</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;진료</div></ul>
-		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;체중</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;투약</div></ul>
-		      	<ul><div class='fc-event'><i class="fa fa-cutlery"></i>&nbsp;메모</div>&nbsp;<div class='fc-event'><i class="fa fa-lemon-o"></i>&nbsp;기념</div></ul>
+		      	<ul><a href="careRegister.pet?fk_pet_UID=16&fk_caretype_UID=1" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-cutlery"></span>&nbsp;식사</a></ul>
+		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-trash"></span>&nbsp;용변</a></ul>
+		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-glass"></span>&nbsp;양치</a></ul>
+		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-tint"></span>&nbsp;목욕</a></ul>
+		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-calendar"></span>&nbsp;달력</a></ul>
+		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-pencil"></span>&nbsp;메모</a></ul>
 		      </li>
-	
+	 
 		      <p>
 		        <input type='checkbox' id='drop-remove' />
 		        <label for='drop-remove'>remove after drop</label>
