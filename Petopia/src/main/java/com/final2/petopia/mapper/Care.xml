@@ -2,7 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
 <mapper namespace="care">
+
 <!-- [19-01-24. 수정 시작_hyunjae] -->
+	<!-- //===== 반려동물 리스트 ===== -->
 	<resultMap type="java.util.HashMap" id="getPet_infoListMap"> 
 		<result property="PET_UID" 	       column="pet_UID" 		javaType="int" />
 		<result property="FK_IDX" 	       column="fk_idx" 			javaType="int" />
@@ -25,9 +27,36 @@
 		order by pet_birthday asc
 	</select>
 <!-- [19-01-24. 수정 끝_hyunjae] -->
+
+	<!-- //===== 반려동물 등록 ===== -->
 	<insert id="insertPet_info" parameterType="com.final2.petopia.model.PetVO">
 		insert into pet_info(pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg)
 		values(seq_pet_info_UID.nextval, #{fk_idx}, #{pet_name}, #{pet_type}, #{pet_birthday, jdbcType=VARCHAR}, #{pet_size, jdbcType=VARCHAR}, #{pet_weight, jdbcType=INTEGER}, #{pet_gender, jdbcType=INTEGER}, #{pet_neutral, jdbcType=INTEGER}, #{medical_history, jdbcType=VARCHAR}, #{allergy, jdbcType=VARCHAR}, #{pet_profileimg, jdbcType=VARCHAR})
 	</insert>
+	
+	<!-- [19-01-25. 수정 시작_hyunjae] -->
+	<!-- //===== 케어 등록 caretype 가져오기 ===== -->
+	<resultMap type="java.util.HashMap" id="getCaretypeListMap">
+		<result property="CARETYPE_UID" 	column="caretype_UID" 	javaType="String" />
+		<result property="CARETYPE_NAME" 	column="caretype_name" 	javaType="String" />
+		<result property="CARETYPE_INFO"    column="caretype_info" 	javaType="String" />
+	</resultMap>
+	<select id="getCaretypeList" resultMap="getCaretypeListMap">
+		select caretype_UID, caretype_name, caretype_info
+		from caretype
+	</select>
+	
+	<!-- //===== 케어 등록 caretype 가져오기 ===== -->
+<!-- 	<resultMap type="java.util.HashMap" id="getCaretypeListMap">
+		<result property="CARETYPE_UID" 	column="caretype_UID" 	javaType="String" />
+		<result property="CARETYPE_NAME" 	column="caretype_name" 	javaType="String" />
+		<result property="CARETYPE_INFO"    column="caretype_info" 	javaType="String" />
+	</resultMap>
+	<select id="getCaretypeList" resultMap="getCaretypeListMap">
+		select caretype_UID, caretype_name, caretype_info
+		from caretype
+	</select>
+	 -->
+	<!-- [19-01-25. 수정 끝_hyunjae] -->
 
 </mapper>

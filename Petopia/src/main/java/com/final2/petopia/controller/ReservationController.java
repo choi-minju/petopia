@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.final2.petopia.common.MyUtil;
 import com.final2.petopia.model.Biz_MemberVO;
+import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.model.PaymentVO;
 import com.final2.petopia.model.PetVO;
@@ -319,5 +320,45 @@ public class ReservationController {
 		
 		return "reservation/depositList.tiles2";
 	}
+	
+//	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
+	@RequestMapping(value="/depositHistoryAll.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, Object>> depositHistoryAll(HttpServletRequest req, HttpServletResponse res) {
+		List<HashMap<String, Object>> mapList = new ArrayList<HashMap<String, Object>>();
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		
+		String currentShowPageNo = req.getParameter("currentShowPageNo");
+		if(currentShowPageNo == null || "".equals(currentShowPageNo)) {
+			currentShowPageNo = "1";
+		}
+		
+		int sizePerPage = 10;	// 한 페이지 당 보여줄 댓글의 갯수
+		int rno1 = Integer.parseInt(currentShowPageNo) * sizePerPage - (sizePerPage-1);
+		int rno2 = Integer.parseInt(currentShowPageNo) * sizePerPage;
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("parentSeq", String.valueOf(idx));
+		paraMap.put("rno1", String.valueOf(rno1));
+		paraMap.put("rno2", String.valueOf(rno2));
+		
+		List<DepositVO> depositList = service.selectDepositListByIdx(paraMap);
+		
+		for(DepositVO dvo : depositList) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("deposit_UID", dvo.getDeposit_UID());
+			map.put("depositcoin", dvo.getDepositcoin());
+			map.put("deposit_date", dvo.getDeposit_date());
+			map.put("showDepositStatus", dvo.getShowDepositStatus());
+			map.put("deposit_status", dvo.getDeposit_status());
+			
+			mapList.add(map);
+		}
+		
+		return mapList;
+	}
+	
 	
 }

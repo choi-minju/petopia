@@ -125,6 +125,7 @@ public class CareController {
 	
 	
 	// [19-01-24. 수정 끝_hyunjae]
+	// [19-01-25. 수정 시작_hyunjae]
 	//===== 케어관리페이지 요청 =====
 	@RequestMapping(value="/careCalendar.pet", method={RequestMethod.GET})
 	public String calendar(HttpServletRequest req) {
@@ -138,15 +139,41 @@ public class CareController {
 	@RequestMapping(value="/careRegister.pet", method={RequestMethod.GET})
 	public String careRegister(HttpServletRequest req) {
 		
+		//String fk_pet_UID = req.getParameter("fk_pet_UID");
+		//String fk_caretype_UID = req.getParameter("fk_caretype_UID");
 		
+		List<HashMap<String,String>> caretypeList = service.getCaretypeList();
 		
-		
-
-		
+		req.setAttribute("caretypeList", caretypeList);
+		//req.setAttribute("fk_caretype_UID", fk_caretype_UID);
 		
 		return "care/careRegister.tiles2";
 	}
-	// [19-01-24. 수정 끝_hyunjae]
 	
+	
+	//===== 케어타입 코드 =====
+	@RequestMapping(value="/getCaretype_info.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, Object>> getCaretype_info(HttpServletRequest req) {
+		
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
+		
+		String caertype = req.getParameter("caertype");
+/*		List<HashMap<String,String>> list = service.getCaretype_infoList(caertype);
+		
+		if(list != null) {
+			for(HashMap<String,String> datamap : list) {
+				HashMap<String, Object> submap = new HashMap<String, Object>(); 
+				submap.put("CARETYPE_INFO", datamap.get("CARETYPE_INFO"));
+				
+				returnmapList.add(submap);
+			}
+		}
+		*/
+		return returnmapList;
+	}
+
+	// [19-01-24. 수정 끝_hyunjae]
+	// [19-01-25. 수정 끝_hyunjae]
 	
 } // end of class CareController

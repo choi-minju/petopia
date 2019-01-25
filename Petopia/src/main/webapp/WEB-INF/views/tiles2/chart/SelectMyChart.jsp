@@ -2,7 +2,6 @@
     pageEncoding="UTF-8"%>
 <%String ctxPath = request.getContextPath();%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
-<<<<<<< HEAD
 <style>
 .divbox1{ /*전체 */
    margin-top: 3%;
@@ -359,4 +358,3 @@ margin-bottom: 2%;
   </div>
 </div>
 </div>
->>>>>>> refs/remotes/origin/hyunjae

@@ -118,8 +118,9 @@
 		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID)
 		values(seq_deposit_UID.nextval, #{fk_idx}, #{depositcoin}, 3, 'used', sysdate, #{payment_UID})
 	</update>
+	<!-- [190125] 포인트 set 변경 -->
 	<update id="updatePointMember" parameterType="HashMap">
-		update member set point=${point} where idx=#{fk_idx}
+		update member set point=point+#{point} where idx=#{fk_idx}
 	</update>
 	<!-- #결제완료후 예약테이블의 예약상태 변경하기 -->
 	<update id="updateReservationStatusByFkRUID" parameterType="String">
@@ -157,5 +158,21 @@
 		)
 		where rno between #{startRno} and #{endRno}
 	</select>
-
+	
+	<!-- [190125] 예치금 히스토리 목록에서 모두보기 -->
+	<select id="selectDepositListByIdx" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
+		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+		(
+		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+			(
+			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
+			from deposit
+			where fk_idx = #{idx}
+			order by deposit_UID desc
+			)
+		)
+		where rno between #{rno1} and #{rno2}
+	</select>
 </mapper>
