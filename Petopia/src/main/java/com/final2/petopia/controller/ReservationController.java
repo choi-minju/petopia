@@ -314,4 +314,10 @@ public class ReservationController {
 	}
 
 	
+	@RequestMapping(value="/deposit.pet", method={RequestMethod.GET})
+	public String requireLogin_depositList(HttpServletRequest req, HttpServletResponse res) {
+		
+		return "reservation/depositList.tiles2";
+	}
+	
 }
