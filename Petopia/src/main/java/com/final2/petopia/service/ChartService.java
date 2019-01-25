@@ -48,10 +48,32 @@ public class ChartService implements InterChartService {
 		int ruid = dao.selecttabuid(paramap);
 		return ruid;
 	}
-
+    //0124
+	@Override
+	public List<HashMap<String,String>> selectBizReservationList(HashMap<String, String> paraMap) {
+		 List<HashMap<String,String>> maplist =dao.selectBizReservationList(paraMap);
+		return maplist;
+	}
 	
+	  @Override
+	   public int getTotalCountNoSearch(int idx_biz) {
+	      int totalCount = dao.getTotalCountNoSearch(idx_biz);
+	      return totalCount;
+	   }
 
-
+	  //예약번호로 예약자 정보 얻어오기 
+		@Override
+		public HashMap<String,String> selectReserverInfo(String ruid) {
+			HashMap<String,String> chartmap = dao.selectReserverInfo(ruid);
+			return chartmap;
+		}
+		/*//예약번호로 의사이름 목록 알아오기
+		@Override
+		public List<HashMap<String, String>> selectDocList(String ruid) {
+			List<HashMap<String, String>> doclist=dao.selectselectDocList(ruid);
+			return doclist;
+		}
+*/
 
 
 

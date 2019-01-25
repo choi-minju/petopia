@@ -24,6 +24,22 @@
     <link rel="stylesheet" href="<%=ctxPath%>/resources/css/videochat.css"/>
 
 </head>
+<style type="text/css">
+	.btn2 {
+		  margin-left:57%;
+		  background:#ff9577;
+		  color:white;
+		  border:1px solid white;
+		  cursor:pointer;
+		  transition:800ms ease all;
+		  outline:none;
+		  cursor: pointer; 
+    }
+    .btn2:hover{
+		  background:white;
+		  color:#ff9577;
+	}
+</style>
 
 <script type="text/javascript" src="<%=ctxPath%>/resources/js/json2.js"></script>
 <!-- JSON.stringify() 는 값을 그 값을 나타내는 JSON 표기법의 문자열로 변환해주는 것인데 이것을 사용하기 위해서는 json2.js 가 필요하다. -->
@@ -50,7 +66,9 @@
     // 	alert("root : " + root);
     //  결과값   root : 192.168.50.53:9090/board/chatting
    	
-    	var wsUrl = "ws://"+root+"/multichatstart.action"; // http가아닌 ws를 사용 //multichatstart.action 은 xml에있음
+    	var chatcode = $('input#hide').val();
+    	alert("chatcode : " + chatcode);
+    	var wsUrl = "ws://"+root+"/multichatstart.action"/+chatcode; // http가아닌 ws를 사용 //multichatstart.action 은 xml에있음
        	var websocket = new WebSocket(wsUrl);  //  /WEB-INF/web.xml 에 가서 appServlet 의 contextConfigLocation 을 수정한다. 
      // var websocket = new WebSocket("ws://192.168.50.53:9090/board/chatting/multichatstart.action");
         
@@ -169,6 +187,8 @@
         <img src="<%=ctxPath%>/resources/img/chat/computer-screen.png" id="startButton" style="height: 10%; width: 5%;">
         <img src="<%=ctxPath%>/resources/img/chat/phone.png" style="margin-left: 40px; height: 10%; width: 5%;" id="callButton">
         <img src="<%=ctxPath%>/resources/img/chat/phone-call.png" id="hangupButton" style="margin-left: 40px; height: 10%; width: 5%;">
+        <button type="button" class="btn2">종료하기</button>
+        <input type="hidden" name="hide" id="hide" value="${chatcode}" />
     </div>
 	
     <div class="box" style="display: none;">
