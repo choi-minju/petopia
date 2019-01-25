@@ -26,8 +26,11 @@ public interface InterChartService {
 
 	HashMap<String,String> selectReserverInfo(String ruid); //예약번호를 이용하여 차트에 예약자 정보 불러오기
 
-	/*List<HashMap<String, String>> selectDocList(String ruid); //예약번호로 의사이름 목록 알아오기
-*/
+	//0125
+	 List<HashMap<String, String>> selectDocList(String ruid); //예약번호로 의사이름 목록 알아오기
+
+	int insertChart(ChartVO cvo); //병원페이지에서 차트 내용 인서트하기 
+
 	
 
 

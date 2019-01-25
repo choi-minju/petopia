@@ -119,44 +119,33 @@ public class ChartController {
 			chartmap = service.selectReserverInfo(ruid); //예약번호를 이용하여 차트에 예약자 정보 불러오기 
 			
 			req.setAttribute("chartmap", chartmap);
+			//0125
+			List<HashMap<String,String>> doclist=new ArrayList<HashMap<String,String>>();
+			doclist=service.selectDocList(ruid);
 			
-			/*List<HashMap<String,String>> doclist=new ArrayList<HashMap<String,String>>();
-			doclist=service.selectDocList(ruid);*/
+		
 			
+			
+			req.setAttribute("doclist", doclist);
 			return "chart/InsertChart.tiles2"; 
 			
 		} //진료 내역 인서트 창띄우기 (기업회원페이지에서)
 		
-		@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.GET })
-		public String InsertChartEnd(ReservationVO rvo, HttpServletRequest req) {
-           
-			String ruid=req.getParameter("reservation_UID");
+		@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.POST })
+		public String InsertChartEnd(ChartVO cvo, HttpServletRequest req) {
+			System.out.println("chart_type"+ cvo.getChart_type() );
+			System.out.println("fk_pet_UID"+cvo.getFk_pet_UID() );
 			
-			HashMap<String,String> chartmap=new HashMap<String,String>();
-			chartmap = service.selectReserverInfo(ruid);
+			System.out.println("bookingdate"+cvo.getBookingdate() );
+			System.out.println("reservation_DATE"+ cvo.getReservation_DATE());
 			
-			/*
-			 * chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
-                   ,reservation_DATE,doc_name,cautions,chart_contents,
-                   payment_pay,payment_point,addpay,totalpay
-			 * */
-			String fk_pet_UID=(String)chartmap.get("fk_pet_UID");
-			String fk_idx=(String)chartmap.get("fk_idx");
-			String chart_type=(String)chartmap.get("chart_type");
-			//String biz_name =chartmap.get("biz_name");
-			String bookingdate=(String)chartmap.get("bookingdate");
-			String reservation_DATE=(String)chartmap.get("reservation_DATE");
-			String docname =(String)chartmap.get("doc_name");
-			String mname= req.getParameter("mname");
-			String caution = req.getParameter("caution");
-			String note = req.getParameter("note");
-			 
-			HashMap<String,String> insertmap = new HashMap<String,String> ();
+			System.out.println("doc_name"+cvo.getDoc_name());
+			System.out.println("name"+cvo.getBiz_name());
 			
-			insertmap.put("mname", mname);
-			insertmap.put("caution", caution);
-			insertmap.put("note", note);
-			
+			System.out.println("payment_pay"+ cvo.getPayment_pay());
+			System.out.println("payment_point"+cvo.getPayment_point());
+			System.out.println("totalpay"+ cvo.getTotalpay());
+			int n =service.insertChart(cvo);
 			
 			return "chart/InsertChart.tiles2"; 
 			
@@ -228,7 +217,7 @@ public class ChartController {
 		      HttpSession session = req.getSession();
 		      MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		      int idx_biz = loginuser.getIdx();
-		      System.out.println("idx_biz : "+idx_biz);
+		     
 		      HashMap<String, String> paraMap = new HashMap<String ,String>();
 		      paraMap.put("idx_biz", String.valueOf(idx_biz));
 		      
