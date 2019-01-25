@@ -176,34 +176,61 @@
 		{ call pcd_selectMemberList(?,?,?) }
 	</select>
 	
+	<!-- === 2019.01.24 ==== 관리자 회원 리스트 코딩 -->
+	<!-- 프로시저 안 됨 ==> 일반 sql 쿼리로 -->
 	<!-- 검색 X 정렬 O -->
-	<parameterMap type="HashMap" id="selectMemberListByOrderBy_paraMap">
-		<parameter property="STARTRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
-		<parameter property="ENDRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
-		<parameter property="ORDERBY"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
-		<parameter property="MEMBERLIST"	mode="OUT"	jdbcType="CURSOR"	resultMap="selectMemberList_resultMap"/>
-	</parameterMap>
-	
-	<select id="selectMemberListByOrderBy" statementType="CALLABLE" parameterMap="selectMemberListByOrderBy_paraMap">
-		{ call selectMemberListByOrderBy(?,?,?,?) }
+	<select id="selectMemberListByOrderBy" parameterType="HashMap" resultType="com.final2.petopia.model.MemberVO">
+		select rno, idx, userid, name, nickname, phone, noshow, member_status
+		from
+		(
+		    select rownum as rno, idx, userid, name, nickname, phone, noshow, member_status
+		    from 
+		    (
+		        select a.idx, userid, name, nickname, noshow, phone, member_status
+		        from member a JOIN login_log b
+		        ON a.idx = b.idx
+		        order by ${ORDERBY}, idx asc
+		    ) V
+		) T
+		where rno between #{STARTRNO} and #{ENDRNO}
 	</select>
 	
 	<!-- 검색 O 정렬 X -->
-	<parameterMap type="HashMap" id="selectMemberListBySearch_paraMap">
-		<parameter property="STARTRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
-		<parameter property="ENDRNO"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
-		<parameter property="SEARCHWHAT"	mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
-		<parameter property="SEARCH"		mode="IN"	jdbcType="VARCHAR"	javaType="String"/>
-		<parameter property="MEMBERLIST"	mode="OUT"	jdbcType="CURSOR"	resultMap="selectMemberList_resultMap"/>
-	</parameterMap>
-	
-	<select id="selectMemberListBySearch" statementType="CALLABLE" parameterMap="selectMemberListBySearch_paraMap">
-		{ call selectMemberListBySearch(?,?,?,?,?) }
+	<select id="selectMemberListBySearch" parameterType="HashMap" resultType="com.final2.petopia.model.MemberVO">
+		select rno, idx, userid, name, nickname, noshow, phone, member_status
+		from
+		(
+		    select rownum as rno, idx, userid, name, nickname, phone, noshow, member_status
+		    from 
+		    (
+		        select a.idx, userid, name, nickname, noshow, phone, member_status
+		        from member a JOIN login_log b
+		        ON a.idx = b.idx
+		        where ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+		        order by idx asc
+		    ) V
+		) T
+		where rno between #{STARTRNO} and #{ENDRNO}
 	</select>
 	
-	
-	
-	
+	<!-- 검색 O 정렬 O -->
+	<select id="selectMemberListBySearchOrderBy" parameterType="HashMap" resultType="com.final2.petopia.model.MemberVO">
+		select rno, idx, userid, name, nickname, noshow, phone, member_status
+		from
+		(
+		    select rownum as rno, idx, userid, name, nickname, phone, noshow, member_status
+		    from 
+		    (
+		        select a.idx, userid, name, nickname, noshow, phone, member_status
+		        from member a JOIN login_log b
+		        ON a.idx = b.idx
+		        where ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+		        order by ${ORDERBY}, idx asc
+		    ) V
+		) T
+		where rno between #{STARTRNO} and #{ENDRNO}
+	</select>
+	<!-- === 2019.01.24 ==== 관리자 회원 리스트 코딩 -->
 	
 	<!-- *** 회원 휴면 해제 *** -->
 	<update id="updateAdminMemberDateByIdx" parameterType="int">
@@ -216,4 +243,15 @@
 		update login_log set member_status = 1
 		where idx = #{idx}
 	</update>
+	
+	<!-- *** 비밀번호 찾기 *** -->
+	<!-- === 2019.01.24 === 비밀번호 찾기 시작 -->
+	<!-- 아이디와 이메일로 회원이 있는지 찾기 -->
+	<select id="selectMemberIsByUseridEmail" parameterType="HashMap" resultType="int">
+		select count(*)
+		from member a join login_log b
+		ON a.idx = b.idx
+		where b.member_status = 1 and userid = #{USERID} and a.name = #{NAME}
+	</select>
+	<!-- === 2019.01.24 === 비밀번호 찾기 -->
 </mapper>

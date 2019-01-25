@@ -192,12 +192,11 @@ public class MemberDAO implements InterMemberDAO {
 		return memberList;
 	} // end of public List<MemberVO> selectMemberList()
 
+	/* === 2019.01.24 ==== 관리자 회원 리스트 코딩 */
 	// 검색 X 정렬 O
 	@Override
 	public List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap) {
-		sqlsession.selectList("member.selectMemberListByOrderBy", paraMap);
-		
-		List<MemberVO> memberList = (List<MemberVO>)paraMap.get("MEMBERLIST");
+		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberListByOrderBy", paraMap);
 		
 		return memberList;
 	} // end of public List<MemberVO> selectMemberListByOrderBy(HashMap<String, Object> paraMap)
@@ -205,9 +204,7 @@ public class MemberDAO implements InterMemberDAO {
 	// 검색 O 정렬 X
 	@Override
 	public List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap) {
-		sqlsession.selectList("member.selectMemberListBySearch", paraMap);
-		
-		List<MemberVO> memberList = (List<MemberVO>)paraMap.get("MEMBERLIST");
+		List<MemberVO> memberList = sqlsession.selectList("member.selectMemberListBySearch", paraMap);
 		
 		return memberList;
 	} // end of public List<MemberVO> selectMemberListBySearch(HashMap<String, Object> paraMap)
@@ -219,7 +216,8 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return memberList;
 	} // end of public List<MemberVO> selectMemberListBySearchOrderBy(HashMap<String, Object> paraMap)
-
+	/* === 2019.01.24 ==== 관리자 회원 리스트 코딩 */
+	
 	// *** 회원 휴면 해제 *** //
 	@Override
 	public int updateAdminMemberDateByIdx(int idx) {
@@ -235,6 +233,17 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return result;
 	} // end of public int updateMemberStatusInByIdx(int idx)
+	
+	// *** 비밀번호 찾기 *** //
+	// === 2019.01.24 === 비밀번호 찾기 시작 //
+	// 아이디와 이메일로 회원이 있는지 찾기
+	@Override
+	public int selectMemberIsByUseridEmail(HashMap<String, String> paramap) {
+		int cnt = sqlsession.selectOne("member.selectMemberIsByUseridEmail", paramap);
+		
+		return cnt;
+	} // end of public int selectMemberIsByUseridEmail(HashMap<String, String> paramap)
+	// === 2019.01.24 === 비밀번호 찾기 //
 
 
 }

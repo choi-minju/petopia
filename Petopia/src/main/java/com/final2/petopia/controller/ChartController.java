@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.final2.petopia.common.MyUtil;
 import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.model.PetVO;
@@ -106,9 +108,20 @@ public class ChartController {
 			return n; 
 			
 		} //진료 내역 인서트 (마이 페이지에서)
-		
+	   
+		//01.24  기업회원 페이지에서 인서트 창띄우고 인서트 하기  
 		@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
-		public String InsertChart(ChartVO chartvo, HttpServletRequest req) {
+		public String InsertChart(HttpServletRequest req) {
+			
+			String ruid=req.getParameter("reservation_UID");
+			
+			HashMap<String,String> chartmap =new HashMap<String,String>();
+			chartmap = service.selectReserverInfo(ruid); //예약번호를 이용하여 차트에 예약자 정보 불러오기 
+			
+			req.setAttribute("chartmap", chartmap);
+			
+			/*List<HashMap<String,String>> doclist=new ArrayList<HashMap<String,String>>();
+			doclist=service.selectDocList(ruid);*/
 			
 			return "chart/InsertChart.tiles2"; 
 			
@@ -116,14 +129,38 @@ public class ChartController {
 		
 		@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.GET })
 		public String InsertChartEnd(ReservationVO rvo, HttpServletRequest req) {
+           
+			String ruid=req.getParameter("reservation_UID");
 			
+			HashMap<String,String> chartmap=new HashMap<String,String>();
+			chartmap = service.selectReserverInfo(ruid);
 			
+			/*
+			 * chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
+                   ,reservation_DATE,doc_name,cautions,chart_contents,
+                   payment_pay,payment_point,addpay,totalpay
+			 * */
+			String fk_pet_UID=(String)chartmap.get("fk_pet_UID");
+			String fk_idx=(String)chartmap.get("fk_idx");
+			String chart_type=(String)chartmap.get("chart_type");
+			//String biz_name =chartmap.get("biz_name");
+			String bookingdate=(String)chartmap.get("bookingdate");
+			String reservation_DATE=(String)chartmap.get("reservation_DATE");
+			String docname =(String)chartmap.get("doc_name");
+			String mname= req.getParameter("mname");
+			String caution = req.getParameter("caution");
+			String note = req.getParameter("note");
+			 
+			HashMap<String,String> insertmap = new HashMap<String,String> ();
 			
+			insertmap.put("mname", mname);
+			insertmap.put("caution", caution);
+			insertmap.put("note", note);
 			
 			
 			return "chart/InsertChart.tiles2"; 
 			
-		} //진료 내역 인서트 완료  (기업회원페이지에서)
+		} //진료 차트  인서트 완료  (기업회원페이지에서)
 		
 		
 		
@@ -183,6 +220,81 @@ public class ChartController {
 			
 		} //예약 진료 관리 (기업회원페이지에서)
 		
-		
+	//   #예약목록
+		   @RequestMapping(value="/bizReservationList.pet", method={RequestMethod.GET})
+		   public String requireLogin_biz_rvchartList(HttpServletRequest req, HttpServletResponse res) {
+		      List<HashMap<String, String>> rvchartList = null;
+		      String str_currentShowPageNo = req.getParameter("currentShowPageNo");
+		      HttpSession session = req.getSession();
+		      MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		      int idx_biz = loginuser.getIdx();
+		      System.out.println("idx_biz : "+idx_biz);
+		      HashMap<String, String> paraMap = new HashMap<String ,String>();
+		      paraMap.put("idx_biz", String.valueOf(idx_biz));
+		      
+//		      2) 페이지 구분을 위한 변수 선언하기
+		      int totalCount = 0;         // 조건에 맞는 총게시물의 개수
+		      int sizePerPage = 10;      // 한 페이지당 보여줄 게시물 개수
+		      int currentShowPageNo = 0;   // 현재 보여줄 페이지번호(초기치 1)
+		      int totalPage = 0;         // 총 페이지 수(웹브라우저 상에서 보여줄 총 페이지의 개수)
+		      
+		      int startRno = 0;         // 시작행 번호
+		      int endRno = 0;            // 마지막행 번호
+		      
+		      int blockSize = 3;         // 페이지바의 블럭(토막) 개수
+		      
+		      totalCount = service.getTotalCountNoSearch(idx_biz);
+
+		      totalPage=(int)Math.ceil((double)totalCount/sizePerPage);
+		      
+//		      4) 현재 페이지 번호 셋팅하기
+		      if(str_currentShowPageNo == null) {
+//		         게시판 초기 화면의 경우
+		         currentShowPageNo=1;
+		      }
+		      else {
+//		         특정 페이지를 조회한 경우
+		         try {
+		         currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+		         if(currentShowPageNo<1 || currentShowPageNo>totalPage) {
+		            currentShowPageNo = 1;
+		         }
+		         } catch(NumberFormatException e) {
+		            currentShowPageNo = 1;
+		         }
+		      }
+		      
+//		      5) 가져올 게시글의 범위 구하기(기존 공식과 다른 버전)
+		      startRno = ((currentShowPageNo-1) * sizePerPage)+1;
+		      endRno = startRno+sizePerPage -1; 
+		      
+//		      6) DB에서 조회할 조건들을 paraMap에 넣기
+		      paraMap.put("startRno", String.valueOf(startRno));
+		      paraMap.put("endRno", String.valueOf(endRno));
+		      
+//		      7) 게시글 목록 가져오기
+		      rvchartList = service.selectBizReservationList(paraMap);
+
+//		      #120. 페이지바 만들기(MyUtil에 있는 static메소드 사용)
+		      String pageBar = "<ul>";
+		      pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "reservationList.pet");
+		      pageBar += "</ul>";
+		      
+		      session.setAttribute("readCountPermission", "yes");
+
+		      req.setAttribute("rvchartList", rvchartList);
+		      
+//		      #페이지바 넘겨주기
+		      req.setAttribute("pageBar", pageBar);
+		      
+//		      #currentURL 뷰로 보내기
+		      String currentURL = MyUtil.getCurrentURL(req);
+		      System.out.println(currentURL);
+		      if(currentURL.substring(currentURL.length()-5).equals("?null")) {
+		         currentURL = currentURL.substring(0 , currentURL.length()-5);
+		      }
+		      req.setAttribute("currentURL", currentURL);
+		      return "chart/biz_rvchartList.tiles2";
+		   }
 		
 }// end of controller
