@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.final2.petopia.common.AES256;
 import com.final2.petopia.model.Biz_MemberVO;
+import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.InterReservationDAO;
 import com.final2.petopia.model.PaymentVO;
 import com.final2.petopia.model.PetVO;
@@ -200,6 +201,13 @@ public class ReservationService implements InterReservationService{
 		}
 		
 		return reservationList;
+	}
+
+//	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
+	@Override
+	public List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap) {
+		List<DepositVO> depositList = dao.selectDepositListByIdx(paraMap);
+		return depositList;
 	}
 
 
