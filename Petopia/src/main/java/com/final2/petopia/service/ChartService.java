@@ -67,13 +67,20 @@ public class ChartService implements InterChartService {
 			HashMap<String,String> chartmap = dao.selectReserverInfo(ruid);
 			return chartmap;
 		}
-		/*//예약번호로 의사이름 목록 알아오기
+		//0125
+		//예약번호로 의사이름 목록 알아오기
 		@Override
 		public List<HashMap<String, String>> selectDocList(String ruid) {
-			List<HashMap<String, String>> doclist=dao.selectselectDocList(ruid);
+			List<HashMap<String, String>> doclist=dao.selectDocList(ruid);
 			return doclist;
 		}
-*/
+        //병원페이지에서 차트내용 인서트하기 
+		@Override
+		public int insertChart(ChartVO cvo) {
+			int n =dao.insertChart(cvo);
+			return n;
+		}
+
 
 
 

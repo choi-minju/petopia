@@ -56,4 +56,7 @@ public interface InterReservationDAO {
 	int getTotalCountNoSearch(int idx);
 	List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap);
 
+//	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
+	List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap);
+
 }

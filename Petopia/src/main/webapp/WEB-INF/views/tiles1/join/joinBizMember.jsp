@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+
 <style type="text/css">
    .profile label { 
       display: inline-block; 
@@ -79,6 +81,9 @@
 		padding-left: 10px; 
 		margin-bottom: 5px;
 	}
+	.changColor {
+		background-color: rgb(252, 118, 106);
+	}
 	
 </style>
 
@@ -87,35 +92,25 @@
 <script type="text/javascript">
    $(document).ready(function(){
 	   
-	   $(".error").hide();
-	   $("#error_passwd").hide();
-	   
-	  /*  $(".requiredInfo").each(function(){			
-			$(this).blur(function(){
-				var data = $(this).val().trim();
-				if(data.length == 0) {
-					// 입력하지 않거f나 공백만 입력했을 경우
-					// swal("입력하지 않거나 공백만 입력했을 경우");
-								
-					$(this).parent().find(".error").show();
-					$(":input").attr("disabled",true);
-					$("#btnRegister").attr("disabled",true); 
-					$(this).attr("disabled",false);
-				}
-				else{
-					// 공백이 아닌 글자를 입력한 경우
-					// swal("공백이 아닌 글자를 입력한 경우");
-					$(this).parent().find(".error").hide();
-					$(":input").attr("disabled",false);
-					$("#btnRegister").attr("disabled",false); 
-				}
-			});
+		$(".selectbtn").click(function(){
+			var $target = $(event.target);
 			
-		});// end of $(".requiredInfo").each()----------------	 */	
-	   
-	   
+			if(!$target.hasClass("changColor")){
+				$target.addClass("changColor");
+			}
+			else {
+				$target.removeClass("changColor");
+			}
+		});
 	   
        $(".upload-hidden").hide();
+       $(".error").hide();
+       $(".useridError").hide();
+       $(".useridDuplicate").hide();
+       $(".useridUsed").hide();
+       $(".pwdError").hide();
+       $(".pwdCheckError").hide();
+       $(".phoneError").hide();
       
        $('.profile').css('height', $(".profile").width()-1);
        $('.radius-box').css('width', $(".profile").width());
@@ -127,7 +122,7 @@
          $('.radius-box').css('width', $(".profile").width());
        });
       
-      // 수정해서 사용****************
+      // profile에 이미지 띄우기
       var imgTarget = $('.preview-image .upload-hidden'); 
       imgTarget.on('change', function(){ 
          var parent = $(this).parent(); 
@@ -143,115 +138,286 @@
             
             $(".profile").css('background-color','#f2f2f2');
          }
+      });// end of imgTarget.on()-----------------------
+      
+      
+      $(".selectbtn").click(function(){
+	   	  if($(this).val() == 0) {
+	   		$(this).val(1);
+	   	  } else {
+	   		$(this).val(0);
+	   	  }
+      });
+      
+      // 유효성 검사
+      $(".must").each(function() {
+    	 $(this).blur(function() {
+    		 var data = $(this).val().trim();
+    		 if(data == "") {
+    			 $(this).parent().find(".error").show();
+    			 return;
+    		 } else {
+    			 $(this).parent().find(".error").hide();
+    		 }
+    	 }) 
+      });// end of $(".must").each()------------------------
+      
+      // 아이디 유효성 검사
+      var cnt = 0;
+		$("#userid").blur(function(){
+			var userid = $(this).val();
+			var regExp_EMAIL = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
+			var isUseEmail = regExp_EMAIL.test(userid);
+			
+			if(!isUseEmail){
+				$(".useridError").show();
+				return;
+			}
+			else{
+				$(".useridError").hide();
+				
+				var data = {"userid":$("#userid").val()};
+				$.ajax({
+					url: "<%=request.getContextPath()%>/idDuplicateCheck.pet",
+					type: "GET",
+					data: data,
+					dataType: "JSON",
+					success: function(json){
+						$(".useridUsed").show();
+						$(".useridUsed").html(json.MSG);
+						cnt = json.CNT;
+					},
+					error: function(request, status, error) {
+						alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					}
+				}); // end of ajax
+			} // end of if~else
+		});
+      
+      // 비밀번호 유효성 검사
+      $("#pwd").blur(function() {
+    	 var passwd = $(this).val();
+    	 var regExp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
+    	 var isUsePasswd = regExp_pw.test(passwd);
+    	 if(passwd.length != 0 && !isUsePasswd) {
+    		 $(".pwdError").show();
+    		 $(this).val("");
+    		 return
+    	 }
+    	 else {
+    		 $(".pwdError").hide();
+    	 }
+      }); // end of $("#pwd").blur()-------------------------------
+      
+      // 비밀번호 체크
+      $("#pwdCheck").blur(function() {
+    	 var password = $("#pwd").val();
+    	 var pwdcheck = $(this).val();
+    	 
+    	 if(password != pwdcheck) {
+    		 $(".pwdCheckError").show();
+    		 $(this).val("");
+    		 return;
+    	 }
+    	 else {
+    		 $(".pwdCheckError").hide();
+    	 }
+      }); // end of $("#pwdCheck").blur()-----------------
+      
+      // 대표연락처 검사
+      $("#phone").blur(function(){
+			var phone = $(this).val();
+			var isphone = false;
+			var regExp_phone = /^[0-9]+$/g;
+
+			isphone = regExp_phone.test(phone);
+			
+			if(phone.length != 0 && (!isphone || !(phone.length == 11 || phone.length == 10) ) ) {
+				$(".phoneError").show();
+				$(this).val("");
+				return;
+			} else{
+				$(".phoneError").hide();
+			}	
+		}); --
+      
+      
+      $("#goBizJoinBtn").click(function() {
+    	 
+    	 $(".must").each(function() {
+    		 var data = $(this).val().trim();
+    		 if(data == "") {
+    			 $(this).parent().find(".error").show();
+    			 return;
+    		 }
+    		 else {
+    			 $(this).parent().find(".error").hide();
+    		 }
+    	  });
+    	  
+    	  var userid = $("#userid").val();
+    	  var regExp_EMAIL = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+    	  var isUseEmail = regExp_EMAIL.test(userid);
+    	  
+    	  if(!isUseEmail) {
+    		  $(".useridError").show();
+    		  return;
+    	  }
+    	  else {
+    		  $(".useridError").hide();
+    	  }
+    	  
+    	  if(cnt == null || cnt != 0) {
+    		  alert("아이디 중복 검사를 하셔야 합니다.");
+    		  return;
+    	  }
+    	  
+    	  var passwd = $("#pwd").val();
+    	  var regExp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
+    	  var isUsePasswd = regExp_pw.test(passwd);
+    	  if(passwd.length != 0 && !isUsePasswd) {
+    		  $(".pwdError").show();
+    		  $(this).val("");
+    		  return;
+    	  }
+    	  else {
+    		  $(".pwdError").hide();
+    	  }
+    	  
+    	  var password = $("#pwd").val();
+    	  var pwdcheck = $("#pwdCheck").val();
+    	  
+    	  if(password != pwdcheck) {
+    		  $(".pwdCheckError").show();
+    		  $(this).val("");
+    		  return;
+    	  }
+    	  else {
+    		  $(".pwdCheckError").hide();
+    	  }
+    	  
+    	  var phone = $("#phone").val();
+    	  var isphone = false;
+    	  var regExp_phone = /^[0-9]+$/g;
+    	  
+    	  isphone = regExp_phone.test(phone);
+    	  
+    	  if(phone.length != 0 && (!isphone || !(phone.length == 11 || phone.length == 10) ) ) {
+    		  $(".phoneError").show();
+    		  $(this).val("");
+    		  return;
+    	  }
+    	  else {
+    		  $(".phoneError").hide();
+    	  }
+    		  
+    	  var isCheckedAgree = $("input:checkbox[id=agree]").is(":checked");
+    	  if(!isCheckedAgree) {
+    		  alert("이용약관에 동의하셔야 가입이 가능합니다.");
+    		  return;
+    	  }
+    	  
+    	  var index = 0;
+    	  $(".tagsNo").each(function() {
+    		 if(!$(this).is(':checked')) {
+    			 $(this).parent().find(":input[name=tagName]").attr("disabled", true);
+    		 }
+    		 else {
+    			 index++;
+    		 }
+    	  });
+    	  
+    	  if(index > 5) {
+    		  alert("태그는 최대 5개까지만 선택 가능합니다");
+    		  return;
+    	  } 
+    	  
+    	  var frm = document.bizjoinFrm;
+    	  frm.action = "<%=request.getContextPath()%>/joinBizMemberInsert.pet";
+    	  frm.method = "POST";
+    	  frm.submit();
+    	  
       });
       
       
-      $("#userid").blur(function(){			
-			
-    	  	var email = $(this).val();
-			var regexp_email = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
-	         // e메일을 검사해주는 정규표현식 객체 생성
-			var bool = regexp_email.test(email);
+      // 프로필 사진 유효성 검사
+      // 크기
+      var maxSize = 10*1024*1024; // 10MB
+      var fileSize = document.getElementById("attach").files[0].size;
+      //alert(fileSize);
+      
+      // 이미지인지 확인
+      var extension = getFileExtension($("#attach").val());
+      //alert(extension);
+      
+      if(typeof $("#attach").val() == "undefined") {
+         alert("프로필을 입력하지 않으셨습니다.");
+         
+         return;
+      } else if(fileSize > maxSize) {
+         alert("프로필은 "+maxSize+"MB을 초과하였으므로 업로드가 불가합니다!");
+         
+         //attachFileValueDel();
+         return;
+      } else {
+         img_Check($("#attach").val());
+      } // end of if~else
     	  
-			var idchk = $("#userid").val().trim();				
-			$.ajax({							
-				url: "idcheck.action",
-				type: "GET",
-				data : {userid:$("#userid").val()},
-				dataType :"json",
-				success : function(json){						
-					if(json.cnt>0 || idchk.length == 0){								
-						$("#iderror").show();
-						$("#userid").val("");
-						$("#userid").focus();
-						$(":input").attr("disabled",false);
-						$("#error_passwd").hide(); 			
-						return;								
-					}else{
-						alert("사용 가능한 아이디입니다.");
-						$("#iderror").hide();						
-						$("#pwd").focus();
-						flag=1;
-					}						
-				}								
-			});	
-			
-			if(!bool) {
-	        	$(this).parent().find(".error").show();
-				$(":input").attr("disabled",true);
-				$("#btnRegister").attr("disabled",true);
-				
-				$(this).attr("disabled",false);
-	        } 
-	        else {
-	        	$(this).parent().find(".error").hide();
-				$(":input").attr("disabled",false);
-				$("#btnRegister").attr("disabled",false);
-	        }
-		});// end of $("#userid").blur(function()
-				
-		
-		$("#pwd").blur(function() {
-			
-			
-			var passwd = $(this).val();
-			
-			/* var regexp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;  */
-			
-			var regexp_passwd = new RegExp(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g); 
-			/* 암호는 숫자,영문자,특수문자가 포함된 형태의 8~15글자 이하만 허락해주는 정규표현식 객체 생성 */
-			
-			var bool = regexp_passwd.test(passwd);
-			/* 암호 정규표현식 검사를 하는 것 
-			      정규표현식에 만족하면 리턴값은 true,
-			      정규표현식에 틀리면 리턴값은 false */
-			      
-			if(!bool) {
-				$("#error_passwd").show();
-				$(":input").attr("disabled",true).addClass("bgcol");
-				$("#btnRegister").attr("disabled",true); 
-				$(this).attr("disabled",false).removeClass("bgcol");
-			}   
-			else {
-				$("#error_passwd").hide();
-				$(":input").attr("disabled",false).removeClass("bgcol");
-				$("#btnRegister").attr("disabled",false); 
-				$("#pwdcheck").focus();
-			}
-			
-		});// end of $("#pwd").blur()-------------------
-		
-		$("#pwdcheck").blur(function(){
-			var passwd = $("#pwd").val();
-			var passwdCheck = $(this).val();
-			
-			if(passwd != passwdCheck) {
-				$(this).parent().find(".error").show();
-				$(":input").attr("disabled",true).addClass("bgcol");
-				$("#btnRegister").attr("disabled",true);
-				
-			//	$("#pwd").attr("disabled",false).removeClass("bgcol");
-				$(this).attr("disabled",false).removeClass("bgcol");
-			}
-			else {
-				$(this).parent().find(".error").hide();
-				$(":input").attr("disabled",false).removeClass("bgcol");
-				$("#btnRegister").attr("disabled",false);
-			}
-			
-		});// end of $("#pwdcheck").blur()--------------
+      
+      // 옵션추가 버튼 클릭시
+      $("#docAddBtn").click(function(){
+    	  
+    	  var html = "<div class='row' style='padding-top: 20px;'>" 
+   	       + "<div class='col-sm-3'>"
+   	       + "<input type='text' class='form-control must' name='doctor' style='width: 100%'/>"
+   	       + "<span class='error'>필수 입력사항입니다.</span>"
+   	       + "</div>"
+   	       + "<div style='margin-top: 45px;'>"
+   	       + "<button type='button' class='selectbtn btn1' name='docdog' value='0'>강아지</button>"
+   	       + "<button type='button' class='selectbtn btn1' name='doccat' value='0'>고양이</button>"
+   	       + "<button type='button' class='selectbtn btn1' name='docsmallani' value='0'>소동물</button>"
+   	       + "<button type='button' class='selectbtn btn1' name='docetc' value='0'>기타</button>"
+   	       + "</div>"
+   	   	   + "</div>";
+    	     	  
+          $("#docAddSection").append(html);
+      });
+      
+      
+      $("#docMinusBtn").click(function() {
+    	  $("#docAddSection").removeClass(".row");
+      });
 
-      
-      
-      
-      
-      
       
    });// end of $(document).ready()----------------------
    
-   
+	// 파일 확장자 값 가져오기
+	function getFileExtension(filePath){
+      var lastIndex = -1;
+      lastIndex  = filePath.lastIndexOf('.');
+      var extension = "";
+
+      if(lastIndex != -1){
+         extension = filePath.substring( lastIndex+1, filePath.len );
+      }else{
+         extension = "";
+      }
+      return extension;
+   } // end of function getFileExtension(filePath)
+
+   // 파일 확장자 체크하기
+   function img_Check(value) {
+      var src = getFileExtension(value);
+    
+      if(!((src.toLowerCase() == "gif") || (src.toLowerCase() == "jpg") || (src.toLowerCase() == "jpeg") || (src.toLowerCase() == "png"))){
+         alert('gif, jpg, png 파일만 지원합니다.');
+         return;
+       }
+      
+   } // end of function fnImg_Check(value) 
+  
    <%-- 주소 --%>
-   function sample6_execDaumPostcode() {
+   function address() {
        new daum.Postcode({
            oncomplete: function(data) {
                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
@@ -269,152 +435,174 @@
                }
 
                // 우편번호와 주소 정보를 해당 필드에 넣는다.
-               document.getElementById('sample6_postcode').value = data.zonecode;
-               document.getElementById("sample6_address").value = addr;
+               document.getElementById('postcode').value = data.zonecode;
+               document.getElementById("addr1").value = addr;
                // 커서를 상세주소 필드로 이동한다.
-               document.getElementById("sample6_detailAddress").focus();
+               document.getElementById("addr2").focus();
+               
+               
+               
+          	    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+           	    mapOption = {
+        	        center: new daum.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        	        level: 3 // 지도의 확대 레벨
+           	    };  
+
+          	 	// 지도를 생성합니다    
+          	 	var map = new daum.maps.Map(mapContainer, mapOption); 
+          	
+          	 	// 주소-좌표 변환 객체를 생성합니다
+          	 	var geocoder = new daum.maps.services.Geocoder();
+          	 	
+          	 	var address2 = addr
+          	 	
+          	 	// alert(address2);
+          	
+          	 	// 주소로 좌표를 검색합니다
+          	 	geocoder.addressSearch(address2, function(result, status) {
+
+        	   	    // 정상적으로 검색이 완료됐으면 
+        	   	     if (status === daum.maps.services.Status.OK) {
+        	
+        	   	        var coords = new daum.maps.LatLng(result[0].y, result[0].x);
+        	   	        
+        	   	        //alert(coords);
+        	   	        
+        	   	        var spot = String(coords);
+        	   	       // alert(spot);
+        	   	        spot = spot.substring(1, spot.length-1);
+        	   	        //alert(spot);
+        	   	        
+        	   	        var locSplit = spot.split(',');
+        	   	        // alert(locSplit);
+        	   	        $("#latitude").val(locSplit[0].trim());
+        	   	        $("#longitude").val(locSplit[1].trim());
+        	   	        
+        	   	        
+        	   	    } 
+           		});// end of geocoder.addressSearch()
            }
        }).open();
    }
-	
-   <%-- 아이디체크 --%>
-   function idCheck(){
-		
-		if(flag==0){
-			$.ajax({					
-				url: "<%=request.getContextPath()%>/idDuplicateCheck.aciton",
-				type: "post",
-				data : {userid:$("#userid").val()},
-				dataType :"json",
-				success : function(json){						
-					if(json.cnt>0){							
-						swal("사용 불가능한 아이디입니다.");	
-						$("#userid").attr("disabled",false);
-						flag=0;
-						$("#userid").val("");
-						//$(":input").attr("disabled",false);
-						
-						return;
-					
-					}else{
-						swal("사용 가능한 아이디입니다.");
-						flag =1;
-					//	$("#pwd").focus();
-					}						
-				}								
-			});		   			    	 
-		}else{
-			return;
-		}
-	}
-   
-   
-   
-   
-   
    
 </script>
 
-<!-- ff6e60 -->
+<div id="map" style="width:100%;height:350px; display: none; "></div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d95bf006c44a2e98551f0af770a55949&libraries=services"></script>
 
 
 <div class="col-sm-12" style="margin-top: 8%; margin-bottom: 8%">
    <div class="col-sm-offset-2 col-sm-8" style="background-color: #f2f2f2;`">
-      
+      	
       <div class="col-sm-12" align="center">
          <h2>기업회원 회원가입</h2>
       </div>
-      <form name="joinFrm">
+      <form name="bizjoinFrm" enctype="multipart/form-data">
          <div class="col-sm-offset-2 col-sm-8 preview-image" style="margin-bottom: 15px;">
          <div class="row">
                <div class="col-sm-3">
                   <div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
-                     <label for="input-file">프로필</label>
-                     <input type="file" class="upload-hidden" id="input-file" name="profileimg"/>
+                     <label for="attach">프로필</label>
+                     <input type="file" class="upload-hidden must" id="attach" name="attach"/>
                   </div>
                </div>
          
             <div class="row">
-               <div class="col-sm-4" style="padding-top: 35px;">
+               <div class="col-sm-4">
                   <label style="color: #999;">ID(email)</label>
-                  <input type="text" class="requiredInfo form-control" id="userid" name="userid" />
-                  <span class="error" id="iderror">사용하실 수 없는 ID이거나 이메일 형식에 맞지 않습니다.</span>
+                  <input type="text" class="form-control must" id="userid" name="userid" />
+                  <span class="error">필수 입력사항입니다.</span>
+                  <span class="useridError" style="color: red;">아이디는 이메일 형식으로 입력해야합니다.<br/></span>
+				  <span class="useridDuplicate" style="color: red;">아이디 중복체크를 하셔야합니다.<br/></span>
+				  <span class="useridUsed"></span>
                </div>
-               <!-- <input type="button" id="idcheck" class="form-control" onclick="" value="중복확인" style=" width: 10%; margin-top: 54px; background-color: #ff6e60; color: white;"  > -->
+               
+               <div class="col-sm-4">
+               	 <input type="radio" class="" id="hospi" name="biztype" value="1"/> <label for="hospi" style="color: #999;">병원</label>
+				 <input type="radio" class="" id="drug" name="biztype" value="2"/> <label for="drug" style="color: #999;">약국</label>
+               </div>
             </div>
             
             <div class="row">
 	            <div class="col-sm-4" style="padding-top: 35px;">
 	                  <label style="color: #999;">password</label>
-	                  <input type="password" class="requiredInfo form-control" id="pwd" name="pwd" />
-	                  <span id="error_passwd">암호는 영문자,숫자,특수기호가 혼합된 8~15 글자로만 입력가능합니다.</span>
+	                  <input type="password" class="form-control must" id="pwd" name="pwd" />
+	                  <span class="error">필수 입력사항입니다.</span>
+	                  <span class="pwdError" style="color: red;">비밀번호는 8~16자 영문자,숫자,특수문자 모두 포함해야합니다.</span>
 	            </div>
-	            <div class="col-sm-4" style="padding-top: 35px;">
+	            <div class="col-sm-6" style="padding-top: 35px;">
 	                  <label style="color: #999;">password Check</label>
-	                  <input type="password" class="requiredInfo form-control" id="pwdcheck" name="pwdcheck" />
-	                  <span class="error">암호가 일치하지 않습니다.</span>
+	                  <input type="password" class="form-control must" id="pwdCheck" name="pwdCheck" />
+	                  <span class="error">필수 입력사항입니다.</span>
+	                  <span class="pwdCheckError" style="color: red;">비밀번호가 일치하지 않습니다.</span>
 	            </div>
             </div>
             
-            <div class="row" style="padding-top: 20px;" align="center">
-               <div class="col-sm-3 text-left">
+             <div class="row" style="padding-top: 20px;" align="center">
+               <div class="col-sm-4 text-left">
                   <label  style="color: #999;">병원/약국명</label>
-                  <input type="text" class="requiredInfo form-control" id="bizname" name="bizname"/>
+                  <input type="text" class="form-control must" id="name" name="name"/>
                   <span class="error">필수입력 사항입니다.</span>
                </div>
-               <div class="col-xs-2 text-left">
-                  <label style="color: #999;">대표자명</label>
-                  <input type="text" class="requiredInfo form-control" id="ceoname" name="ceoname"/>
+               
+               <div class="col-sm-4 text-left">
+                  <label style="color: #999;">대표자명</label><BR>
+                  <input type="text" class="form-control must" id="repname" name="repname"/>
                   <span class="error">필수입력 사항입니다.</span>
 	               </div>
-               <div class="col-sm-3 text-left" style="width:18%;">
-                  <label style="color: #999;">사업자번호</label>
-                  <input type="text" class="requiredInfo form-control" id="biznumber" name="biznumber"/>
+	               
+               <div class="col-sm-4 text-left">
+                  <label style="color: #999;">사업자번호</label><BR>
+                  <input type="text" class="form-control must" id="biznumber" name="biznumber"/>
                   <span class="error">필수입력 사항입니다.</span>
                </div>
             </div>
             
             <div class="row" style="padding-top: 20px;" >
-               <div class="col-sm-3">
+               <div class="col-sm-4">
                   <label style="color: #999;">대표 연락처</label>
-                  <input type="text" class="requiredInfo form-control" id="ceonumber" name="ceonumber" style="width: 80%;"/>
+                  <input type="text" class="form-control must" id="phone" name="phone" style="width: 80%;"/>
                   <span class="error">필수입력 사항입니다.</span>
+                  <span class="phoneError" style="color: red;">대표연락처는 10~11자 숫자만 가능합니다.</span>
                </div>
             </div>
             
             <div class="row" style="padding-top: 20px;">
-               <div class="col-sm-3" style="width: 15%;">
-                  <label style="color: #999;">주소</label> 
-                  <input type="text" class="requiredInfo form-control" id="sample6_postcode" placeholder="우편번호">
+                  <label style="color: #999; padding-left: 15px;">주소</label><BR>
+               <div class="col-sm-2">
+                  <input type="text" class="form-control must" name="postcode" id="postcode" placeholder="우편번호">
                   <span class="error">필수입력 사항입니다.</span>
                </div>
-               	<input type="button" class="requiredInfo form-control" onclick="sample6_execDaumPostcode()" value="우편번호" style=" width: 10%; margin-top: 20px; background-color: #ff6e60; color: white;"  >
+               <div class="col-sm-2">
+               	<input type="button" class="form-control must" onclick="address()" value="우편번호" style=" width: 73%; background-color: #ff6e60; color: white;" >
+               	</div>
             </div>
             <div class="row">
                <div class="col-sm-6" style="padding-top: 5px;">
-                  <input type="text" class="requiredInfo form-control" id="sample6_address" placeholder="주소">
+                  <input type="text" class="form-control must" name="addr1" id="addr1" placeholder="주소">
                </div>
             </div>
             <div class="row">
                <div class="col-sm-6" style="padding-top: 5px;">
-                  <input type="text" class="requiredInfo form-control" id="sample6_detailAddress" placeholder="상세주소">
+                  <input type="text" class="form-control must" name="addr2" id="addr2" placeholder="상세주소">
                </div>
             </div>
 
+			<input type="hidden" name="latitude" id="latitude">
+			<input type="hidden" name="longitude" id="longitude">
+			
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-6">
                   <label style="color: #999;">대표 이미지</label>
-                  <input type="file" class="form-control" id="ceoimage" name="ceoimage"/>
+                  <input type="file" class="form-control must" id="prontimg" name="attach2"/>
                </div>
             </div>
             
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-6">
                   <label style="color: #999;">추가 이미지</label>
-                  <input type="file" class="form-control" id="addimage" name="addimage"/>
-               </div>
-               <div style="margin-top:23px;">
-               <button type="button"><span class="glyphicon glyphicon-plus"></span></button>
+            	  <button type="button" id="addImgBtn" name="addImgBtn"><span class="glyphicon glyphicon-plus"></span></button>
+                  <input type="file" class="form-control must" id="addimage" name="addimage"/>
                </div>
             </div><!-- row -->
             
@@ -422,67 +610,99 @@
             <div class="row" style="padding-top: 20px;">
 	            <div class="col-sm-6">
 	            <label style="color: #999;">진료시간(운영시간)</label><BR>
-	               <div class="col-sm-4" style="padding-left: 0px;">
-	                  <select class="requiredInfo form-control">
-	                  <option selected="selected" value="">평일</option>
-	                  <option value="">월~금(주 5)</option>
-	                  <option value="">화~금(주 4)</option>
-	                  <option value="">월,수,금(주 3)</option>
+	               <div class="col-sm-4" style="padding-left: 0px; padding-right: 0px;">
+	                  <select class="form-control must" id="weekday" name="weekday" >
+		                  <option selected="selected" value="월~금(주 5)">월~금(주 5)</option>
+		                  <option value="화~금(주 4)">화~금(주 4)</option>
+		                  <option value="월,수,금(주 3)">월,수,금(주 3)</option>
 	                  </select>
 	               </div>
 	               
 	               <div class="col-sm-4" style="padding-right: 0px;">
-	               		<input type="time" class="requiredInfo form-control" >
+	               		<select id="wdstart" name="wdstart" class="form-control must" style="width: 111%;">
+	               		<option selected="selected" value="">선택하세요.</option>
+							<c:forEach items="${timeList}" var="time" >
+								<option value="${time.time1}">${time.time1}</option>
+								<option value="${time.time2}">${time.time2}</option>
+							</c:forEach>
+						</select>	 
 	               </div>
 	               <div class="col-sm-4" style="padding-right: 0px;">
-	               		<input type="time" class="requiredInfo form-control">
+	               		<select id="wdend" name="wdend" class="form-control must" style="width: 111%;">
+	               		<option selected="selected" value="">선택하세요.</option>
+							<c:forEach items="${timeList}" var="time" >
+								<option value="${time.time1}">${time.time1}</option>
+								<option value="${time.time2}">${time.time2}</option>
+							</c:forEach>
+						</select>	 
 	               </div>
 	            </div>
                
                <div class="col-sm-6">
-	               <div class="col-sm-12" style="margin-left: 12%;">
-	               <label style="color: #999;">일요일/공휴일</label>
-	               		<input type="text" class="requiredInfo form-control" >
+	               <label style="color: #999; margin-left:16%;">점심시간</label><BR>
+	               <div class="col-sm-4" style="margin-left: 12%;">
+	               		<select id="lunchstart" name="lunchstart" class="form-control must" style="width: 127%;">
+	               		<option selected="selected" value="">선택하세요.</option>
+							<c:forEach items="${timeList}" var="time" >
+								<option value="${time.time1}">${time.time1}</option>
+								<option value="${time.time2}">${time.time2}</option>
+							</c:forEach>
+						</select>	      
+	               		<span class="error">필수 입력사항입니다.</span>
+	               </div>
+	                <div class="col-sm-4">
+	               		<select id="lunchend" name="lunchend" class="form-control must" style="width: 127%;">
+	               		<option selected="selected" value="">선택하세요.</option>
+							<c:forEach items="${timeList}" var="time" >
+								<option value="${time.time1}">${time.time1}</option>
+								<option value="${time.time2}">${time.time2}</option>
+							</c:forEach>
+						</select>	
 	               </div>
                </div>
             </div><!-- row -->
             
-            
             <div class="row" style="padding-top: 20px;">
-               <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-                  <label style="color: #999;">점심시간</label>
-                  <input type="time" class="requiredInfo form-control">
-               </div>
+	            <div class="col-sm-6">
+	            <label style="color: #999;">토요일</label><BR>
+	            <span class="error">필수 입력사항입니다.</span>
+	               <div class="col-sm-4" style="padding-left: 0px; ">
+	               		<select id="satstart" name="satstart" class="form-control must" style="width: 111%;">
+	               				<option selected="selected" value="">선택하세요.</option>
+							<c:forEach items="${timeList}" var="time" >
+								<option value="${time.time1}">${time.time1}</option>
+								<option value="${time.time2}">${time.time2}</option>
+							</c:forEach>
+						</select>	 
+	               </div>
+	               <div class="col-sm-4" style="padding-right: 0px;">
+	               		<select id="satend" name="satend" class="form-control must" style="width: 111%;">
+	               		<option selected="selected" value="">선택하세요.</option>
+							<c:forEach items="${timeList}" var="time" >
+								<option value="${time.time1}">${time.time1}</option>
+								<option value="${time.time2}">${time.time2}</option>
+							</c:forEach>
+						</select>	 
+	               </div>
+	            </div>
                
-               <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-               		<input type="time" class="requiredInfo form-control" style="margin-top: 20px;">
-               </div>
-               	
-               <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-               <label style="color: #999;">토요일</label>
-               		<input type="time" class="requiredInfo form-control">
-               </div>
-               
-               <div class="col-sm-3" style="padding-right: 0px; width: 18%;">
-               		<input type="time" class="requiredInfo form-control" style="margin-top: 20px;">
+               <div class="col-sm-6">
+	               <label style="color: #999; margin-left:16%;">일요일/공휴일</label><BR>
+	               <span class="error">필수 입력사항입니다.</span>
+	               <div class="col-sm-8" style="margin-left: 12%;">
+	               		<input type="text" class="form-control must" id="dayoff" name="dayoff" style="widows: 112%;">
+	               </div>
                </div>
             </div><!-- row -->
-            
-            <div class="row" style="padding-top: 20px;">
-               <div class="col-sm-6">
-                  <label style="color: #999;">특이사항</label>
-                  <input type="text" class="requiredInfo form-control" id="birthday" name="birthday"/>
-               </div>
-            </div>
             
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-6">
                   <label style="color: #999;">진료/처방 가능 동물군 (다중 선택 가능)</label><br/>
                   <div style="margin-top: 10px;">
-	                  <button type="button" class="btn1">강아지</button>
-	                  <button type="button" class="btn1">고양이</button>
-	                  <button type="button" class="btn1">소동물</button>
-	                  <button type="button" class="btn1">기타</button>
+	                  <button type="button" class="selectbtn btn1" id="dog" name="dog" value="0">강아지</button>
+	                  <button type="button" class="selectbtn btn1" id="cat" name="cat" value="0">고양이</button>
+	                  <button type="button" class="selectbtn btn1" id="smallani" name="smallani" value="0">소동물</button>
+	                  <button type="button" class="selectbtn btn1" id="etc" name="etc" value="0">기타</button>
                   </div>
                </div>
             </div>
@@ -490,63 +710,65 @@
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-3">
                   <label style="color: #999;">의료진 소개</label><br/>
-                  <label style="color: #999;">(성함 및 직책병기)</label>
-                  <input type="text" class="requiredInfo form-control" id="birthday" name="birthday" style="width: 100%"/>
+                  <label style="color: #999;">(성함 및 직책병기)</label><button type="button" id="docAddBtn" name="docBtn"><span class="glyphicon glyphicon-plus"></span></button>
+                  <button type="button" id="docMinusBtn" name="docMinusBtn"><span class="glyphicon glyphicon-minus"></span></button>
+                  <input type="text" class="form-control must" id="doctor" name="doctor" style="width: 100%"/>
+                  <span class="error">필수 입력사항입니다.</span>
                </div>
                 <div style="margin-top: 45px;">
-	                  <button type="button" class="btn1">강아지</button>
-	                  <button type="button" class="btn1">고양이</button>
-	                  <button type="button" class="btn1">소동물</button>
+	               <button type="button" class="selectbtn btn1" id="docdog" name="docdog" value="0">강아지</button>
+	               <button type="button" class="selectbtn btn1" id="doccat" name="doccat" value="0">고양이</button>
+	               <button type="button" class="selectbtn btn1" id="docsmallani" name="docsmallani" value="0">소동물</button>
+	               <button type="button" class="selectbtn btn1" id="docetc" name="docetc" value="0">기타</button>
                 </div>
             </div>
-            <div class="row">
-               <div class="col-sm-3" style="margin-top: 2%;">
-                  <input type="text" class="requiredInfo form-control" id="birthday" name="birthday" style="width: 100%"/>
-               </div >
-                <div style="margin-top: 20px;">
-	                  <button type="button" class="btn1">강아지</button>
-	                  <button type="button" class="btn1">고양이</button>
-	                  <button type="button" class="btn1">소동물</button>
-                </div>
+            
+            <div id="docAddSection">
+            	
+            </div>
+            
+            <div class="row" style="padding-top: 20px;">
+            	<div class="col-sm-8">
+            		<label style="color: #999;">찾아오시는길</label><br/>
+            		<textarea class="form-control must" rows="5" cols="" id="easyway" name="easyway"></textarea>
+            	</div>
+            </div>
+            
+            <div class="row" style="padding-top: 20px;">
+            	<div class="col-sm-8">
+            		<label style="color: #999;">소개</label><br/>
+            		<textarea class="form-control must" rows="5" cols="" id="intro" name="intro"></textarea>
+            	</div>
             </div>
             
             <div class="row tagList1" style="margin-top: 3%;">
-               <div class="col-sm-2">
-                  <label style="color: #999;">시설상태</label>
-               </div>
-               <div class="col-sm-10">
-                  <input type="checkbox" class="" id="tag1" name="tag" value="깨끗함"/> <label style="color: #999;" for="tag1">#깨끗함</label>
-                  <input type="checkbox" class="" id="tag2" name="tag" value="세련됨"/> <label style="color: #999;" for="tag2">#세련됨</label>
-                  <input type="checkbox" class="" id="tag3" name="tag" value="동물친화적"/> <label style="color: #999;" for="tag3">#동물친화적</label>
-                  <input type="checkbox" class="" id="tag4" name="tag" value="대형병원"/> <label style="color: #999;" for="tag4">#대형병원</label>
-                  <input type="checkbox" class="" id="tag5" name="tag" value="종합병원"/> <label style="color: #999;" for="tag5">#종합병원</label>
-                  <input type="checkbox" class="" id="tag6" name="tag" value="편안한"/> <label style="color: #999;" for="tag6">#편안한</label>
-               </div>
-            </div>
-            
-            <div class="row tagList2" style="margin-top: 3%;">
-               <div class="col-sm-2">
-                  <label style="color: #999;">서비스</label>
-               </div>
-               <div class="col-sm-10">
-                  <input type="checkbox" class="" id="tag7" name="tag" value="친절한"/> <label style="color: #999;" for="tag7">#친절한</label>
-                  <input type="checkbox" class="" id="tag8" name="tag" value="친절한"/> <label style="color: #999;" for="tag8">#세심한</label>
-                  <input type="checkbox" class="" id="tag9" name="tag" value="친절한"/> <label style="color: #999;" for="tag9">#잘봐주는</label>
-               </div>
-            </div><!-- 이 외의 것은 DB 연결후에 하기!!! -->
+				<div class="col-sm-2">
+					<span style="color: #999;">시설상태</span>
+				</div>
+				<div class="col-sm-10">
+					<c:forEach var="tag" items="${tagList}">
+						<div class="col-sm-4">
+							<input type="checkbox" class="tagsNo" id="tag${tag.FK_TAG_UID}" name="tagNo" value="${tag.FK_TAG_UID}"/>
+							&nbsp;<label style="color: #999;" for="tag${tag.FK_TAG_UID}">#${tag.FK_TAG_NAME}</label>
+							<input type="hidden" class="" id="" name="tagName" value="${tag.FK_TAG_NAME}"/>
+						</div>
+					</c:forEach>
+				</div>
+			</div><!-- row -->
+          
             
             <div class="row" align="center" style="margin-top: 3%;">
                <input type="checkbox" class="requiredInfo" id="agree" name="agree"/> <label style="color: #999;" for="agree">서비스 이용 및 약관에 동의합니다.</label>
             </div>
-         </div>
+         </div> 
          
             <hr style="height: 1px; background-color: white; border: none; margin-bottom: 0px;">
             <div class="row">
 	            <div class="col-sm-6">
-	            <button type="button" class="cancelbtn" style="width: 100%; height: 60px;">CANCEL</button>
+	            <button type="button" class="cancelbtn" style="width: 100%; height: 60px;" onclick="javascript:location.href='<%=request.getContextPath()%>/index.pet'">CANCEL</button>
 	            </div>
 	            <div class="col-sm-6">
-	            <button type="button" class="submitbtn" id="btnRegister" onClick="goRegister(event);" style="width: 100%; height: 60px;">SUBMIT</button>
+	            <button type="button" class="submitbtn" id="goBizJoinBtn" style="width: 100%; height: 60px;">SUBMIT</button>
 	            </div>
             </div>
          </div>
