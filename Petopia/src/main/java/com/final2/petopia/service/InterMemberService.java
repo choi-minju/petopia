@@ -61,4 +61,9 @@ public interface InterMemberService {
 	// === 2019.01.24 === 비밀번호 찾기 시작 //
 	int selectMemberIsByUseridEmail(HashMap<String, String> paramap); // 아이디와 이메일로 회원이 있는지 찾기
 	// === 2019.01.24 === 비밀번호 찾기 //
+	
+	// === 2019.01.25 === 비밀번호 변경 //
+	// *** 비밀번호 변경 *** //
+	int updateMemberPwdByUserid(HashMap<String, String> paramap);
+	// === 2019.01.25 === 비밀번호 변경 //
 }
