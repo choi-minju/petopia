@@ -286,4 +286,5 @@ public class ChartController {
 		      return "chart/biz_rvchartList.tiles2";
 		   }
 		
+
 }// end of controller
