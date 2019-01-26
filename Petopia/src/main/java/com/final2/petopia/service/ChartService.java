@@ -74,9 +74,10 @@ public class ChartService implements InterChartService {
 			List<HashMap<String, String>> doclist=dao.selectDocList(ruid);
 			return doclist;
 		}
-        //병원페이지에서 차트내용 인서트하기 
+        //병원페이지에서 차트내용 인서트하기  0126
 		@Override
 		public int insertChart(ChartVO cvo) {
+		
 			int n =dao.insertChart(cvo);
 			return n;
 		}

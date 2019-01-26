@@ -71,9 +71,10 @@ import org.springframework.stereotype.Repository;
 				 List<HashMap<String, String>> doclist =sqlsession.selectList("chart.selectDocList",ruid);
 				return doclist ;
 			}
-			//병원페이지에서 차트 입력하기 
+			//병원페이지에서 차트 입력하기 0126
 			@Override
 			public int insertChart(ChartVO cvo) {
+				
 				int n = sqlsession.insert("chart.insertChart",cvo);
 				return n;
 			}

@@ -18,136 +18,98 @@
 
 <script type="text/javascript">
  $(document).ready(function(){
-    $('#calendar').fullCalendar({
-      selectable: true,
-      header: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'month,agendaSevenDay,agendaDay' 
-      },
-      contentHeight: 300,
-      views: {
-    	  agendaSevenDay: {
-    	     type: 'agenda',
-    	     duration: { days: 7 },
-    	     buttonText: 'week'
-    	   }
-	  },
-      defaultView: 'agendaSevenDay',
-      visibleRange: function(currentDate) {
-          return {
-            start: currentDate.clone().subtract(1, 'days'),
-            end: currentDate.clone().add(7, 'days') // exclusive end, so 3
-          };
-      },
-      events: function(start, end, timezone, callback){
-    	  var form_data = {"idx_biz": ${sessionScope.loginuser.idx}};
-        	
-        	$.ajax({
-        		url: "selectScheduleList.pet",
-        		type: "GET",
-        		data: form_data,
-        		dataType: "JSON",
-        		success: function(json){
-        			var events = [];
-        			$.each(json, function(entryIndex, entry){
-        				var schstatus = entry.schedule_status;
-        				if(schstatus=="2"){
-	        				events.push({
-	        					id: entry.schedule_UID,
-	            				title: entry.title, 
-	            				start: entry.start,
-	            				end: entry.end,
-	            				backgroundColor: "gray"
-	        				});
-        				}
-        				else {
-        					events.push({
-            					id: entry.schedule_UID,
-                				title: entry.title, 
-                				start: entry.start,
-                				end: entry.end
-            				});
-    					}
-        				
-        			});
-        			callback(events);
-        		},// end of success
-        		error: function(request, status, error){
-        			if(request.readyState == 0 || request.status == 0) return;
-        			else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-        		}
-        	});// end of $.ajax
-      }	
-      ,	
-      eventClick: function(eventObj) {
-    		  alert("선택완료");
-	       	  $(this).css('border-color', 'rgb(252, 118, 110)');
-	  		  $(this).css('backgroundColor', 'rgb(252, 118, 106)');
-	  		
-	  		  var scheduledate = chageDateFormat(eventObj.start);
-	  		  $("#schedule_date").text(scheduledate);
-	  		  $("#reservation_DATE").val(eventObj.start);
-	  		  $("#fk_schedule_UID").val(eventObj.id);
-     	}
-    });
-	 
+	$("#makeSchedule").hide();
+	if(scheduleCount >0){
+		
+		$('#calendar').fullCalendar({
+	      selectable: true,
+	      header: {
+	        left: 'prev,next today',
+	        center: 'title',
+	        right: 'month,agendaSevenDay,agendaDay' 
+	      },
+	      contentHeight: 300,
+	      views: {
+	    	  agendaSevenDay: {
+	    	     type: 'agenda',
+	    	     duration: { days: 7 },
+	    	     buttonText: 'week'
+	    	   }
+		  },
+	      defaultView: 'agendaSevenDay',
+	      visibleRange: function(currentDate) {
+	          return {
+	            start: currentDate.clone().subtract(1, 'days'),
+	            end: currentDate.clone().add(7, 'days') // exclusive end, so 3
+	          };
+	      },
+	      events: function(start, end, timezone, callback){
+	    	  var form_data = {"idx_biz": ${sessionScope.loginuser.idx}};
+	        	
+	        	$.ajax({
+	        		url: "selectScheduleList.pet",
+	        		type: "GET",
+	        		data: form_data,
+	        		dataType: "JSON",
+	        		success: function(json){
+	        			var events = [];
+	        			$.each(json, function(entryIndex, entry){
+	        				var schstatus = entry.schedule_status;
+	        				if(schstatus=="2"){
+		        				events.push({
+		        					id: entry.schedule_UID,
+		            				title: entry.title, 
+		            				start: entry.start,
+		            				end: entry.end,
+		            				backgroundColor: "gray"
+		        				});
+	        				}
+	        				else {
+	        					events.push({
+	            					id: entry.schedule_UID,
+	                				title: entry.title, 
+	                				start: entry.start,
+	                				end: entry.end
+	            				});
+	    					}
+	        				
+	        			});
+	        			callback(events);
+	        		},// end of success
+	        		error: function(request, status, error){
+	        			if(request.readyState == 0 || request.status == 0) return;
+	        			else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	        		}
+	        	});// end of $.ajax
+	      },	
+	      eventClick: function(eventObj) {
+	    		  alert("선택완료");
+		       	  $(this).css('border-color', 'rgb(252, 118, 110)');
+		  		  $(this).css('backgroundColor', 'rgb(252, 118, 106)');
+		  		
+		  		  var scheduledate = chageDateFormat(eventObj.start);
+		  		  $("#schedule_date").text(scheduledate);
+		  		  $("#reservation_DATE").val(eventObj.start);
+		  		  $("#fk_schedule_UID").val(eventObj.id);
+	     	}
+	    });
+	} 
+	else {
+		$("#makeSchedule").show();
+	}
+	
+	
+	$("#btnMakeSchedule").click(function(){
+		location.href="<%= ctxPath %>/insertScheduleFirst?idx_biz=${idx_biz}";
+	});
+
+	
  });
  
  
  function goReset(){
-	 $("#mypetopt").html("");
-	 $("#animalopt").val("");
-	 
-	 $("#schedule_date").html("");
-	 $("#schedule_UID").val("");
 	 
  }
- 
-// [190120] 예약하기 함수 생성
- function goReservation(){
-	 var frm = document.reservationFrm;
-	 var mypetopt = $("#mypetopt").text();
-	 var schedate = $("#schedule_date").text();
-	 var rvtype=frm.reservation_type.value;
-	 if(mypetopt=="" || mypetopt == null){
-		 alert("진료받을 반려동물을 선택하세요.");
-		 $("#selectPet").focus();
-		 return false;
-	 }
-	 if(schedate=="" || schedate==null){
-		 alert("진료일시를 선택하세요.");
-		 return false;
-	 }
-	 if(rvtype == null || rvtype ==""){
-		 alert("진료타입을 선택하세요.")
-		 $("#rvtype").focus();
-		 return false;
-	 }
-	 else{
-		 var flag = confirm("[병원명: ${bizmvo.name}/진료일시: "+schedate+"] 예약하시겠습니까?");
-		 if(flag){
-			 if(rvtype=="3"){
-				 
-				 frm.action = "<%=request.getContextPath()%>/goReservationSurgery.pet";
-				 frm.method = "POST";
-				 frm.submit();
-			 }
-			 else{
-				 frm.action = "<%=request.getContextPath()%>/goReservation.pet";
-				 frm.method = "POST";
-				 frm.submit();
-			 } 
-		 }
-		 else{
-			 goReset();
-			 return false;
-		 }
-	 }
-	 
- }
-// ---------------------------------
-
 	function chageDateFormat(date) {
 //		"Tue  Jan  22   2019       09:    00:    00 GMT+0000" -> "yyyy-mm-dd hh24:mi"
 //		 0123 4567 8910 1112131415 161718 192021
@@ -168,7 +130,6 @@
 		}
 		result += "월 "+date.substring(8, 10) + "일 "+date.substring(16, 21);
 		
-		console.log("날짜 포맷 변환 결과: "+result);
 		return result;
 	}
 
@@ -178,73 +139,30 @@
 	<!-- Container (Pricing Section) -->
 	<div id="pricing" class="container-fluid">
 	  <div class="text-center">
-	    <h2>Reservation</h2>
-	    <h4>원하시는 날짜와 시간을 선택하세요.</h4>
+	    <h2>Reservation Calendar</h2>
+	    <h4>우리 병원의 스케줄을 확인할 수 있습니다.</h4>
 	  </div>
 	  <div class="row slideanim">
-	    <div class="col-sm-4 col-xs-12">
+	    <div class="col-sm-4 col-xs-12" id="makeSchedule">
 	      <div class="panel panel-default text-center">
 	        <div class="panel-heading">
 	          <h3>My Pet Info</h3> 
 	        </div>
 	        <div class="panel-body text-left">
-	        	<!-- <p>
-	        		<label class="radio-inline"><input type="radio" id="mainPet" name="optradio">기존정보</label>
-					<label class="radio-inline"><input type="radio" id="newPet" name="optradio">새로입력하기</label>
-				</p> -->
-	          <p class="myPetList">
-	          	<label for="sel1">반려동물을 선택하세요</label>
-	          	 <c:if test="${petList == null || petList.size() == 0 }">
-			      등록된 반려동물이 없습니다. <br/>
-			      나의 반려동물에서 정보를 추가한 후 진행해주세요.
-			      <button type="button" class="btn btn-default" onClick="javascript: location.href='<%=ctxPath%>/petRegister.pet'">반려동물 등록하기</button>
-			     </c:if>
-			     <c:if test="${petList != null && petList.size() > 0 }">
-			      <select class="form-control " id="selectPet">
-			      	<option value="0">나의 반려동물</option>
-			      <c:forEach var="petvo" items="${petList}">
-			        <option value="${petvo.pet_UID}">${petvo.pet_name}</option>
-			      </c:forEach>
-			      </select>
-			     </c:if>
-			   </p>  
-	          <!-- [190120] 반려동물 이름 삭제, 동물군 select 타입 삭제, input 태그로 교체-->
-	          <div class="form-group">
-	          	<label class="col">동물군</label>
-	          	<input class="form-control" id="pet_type" readonly/>
-	          </div>
-	          <div class="form-group">
-	          	<label class="col">성별</label>
-	          	<div class="">
-	          	<label class="radio-inline"><input type="radio" id="gender1" name="genderradio" value="1" disabled/>남</label>
-			  	<label class="radio-inline"><input type="radio" id="gender2" name="genderradio" value="2" disabled/>여</label>
-			  	</div>
-			  </div>
-	          <div class="form-group">
-				  <label for="petcolor" class="col">사이즈</label>
-				  <span class="noneBorderText" style="font-weight: bold;" id="pet_size"></span>&nbsp;
-				  /<span class="noneBorderText" style="font-weight: bold;" id="pet_weight"></span>kg
-			  </div>
-			  <div class="form-group">
-	          	<label class="col">진료타입</label>
-	          	<select class="form-control" id="rvType">
-	          		<option value="">선택하세요</option>
-	          		<option value="1">외래진료</option>
-	          		<option value="2">예방접종</option>
-	          		<option value="3">수술</option>
-	          		<option value="4">호텔링상담</option>
-	          	</select>
-	          </div>
-	          <div class="text-center" id="notice_reservation"></div>
+				<p>최근 2주 내 스케줄이 없습니다.</p>
+				<p><button type="button" id="btnMakeSchedule">스케줄 생성하기</button></p>
+				<p>스케줄 생성하기 버튼을 클릭하시면 금일로부터 2주 분량의 스케줄이 자동 생성됩니다.</p>
+				<p>스케줄을 한번 생성하신 이후부터는 매일 자동으로 스케줄이 갱신/생성됩니다.</p>
 	        </div>
 	        <div class="panel-footer">
 	        </div>
 	      </div>      
-	    </div>     
+	    </div>
+	         
 	    <div class="col-sm-8 col-xs-12">
 	      <div class="panel panel-default text-center">
 	        <div class="panel-heading">
-	          <h3>Choose a Day</h3>
+	          <h3>My Schedule</h3>
 	        </div>
 	        <div class="panel-body">
 	         <div id="calendar"></div>
@@ -253,53 +171,6 @@
 	        </div>
 	      </div>      
 	    </div>        
-	  </div>
-	  
-	  <div class="row">
-	  	 <div class="col-sm-8 col-xs-8 col-sm-offset-2">
-	      <div class="panel panel-info text-center">
-	        <div class="panel-heading">
-	          <h5>Choose Result</h5>
-	        </div>
-	        <div class="panel-body text-left">
-	        <div class="row">
-	        
-	        <div class="col-md-8 col-sm-8 col-xs-12">
-	        <form name="reservationFrm">
-	          <p>
-	          	<label class="label label-info"> 병원명 </label>
-	          	<span class="noneBorderText">${bizmvo.name}</span>
-	          	<input type="hidden"  name="fk_idx_biz" value="${bizmvo.idx_biz}"/>
-	          	<input type="hidden"  name="fk_idx" value="${sessionScope.loginuser.idx}"/>
-	          </p>
-	          <p>
-	          	<label class="label label-info"> 연락처 </label>
-	          	<span class="noneBorderText">${bizmvo.phone}</span>
-	          	<input type="hidden"  value=""/>
-	          </p>
-	          <p>
-	          	<label class="label label-info"> 진료과 </label>
-	          	<span class="noneBorderText" id="mypetopt"></span>
-	          	<input type="hidden" id="fk_pet_UID" name="fk_pet_UID" value=""/>
-	          	<input type="hidden" id="reservation_type" name="reservation_type"/>
-	          </p>
-	          <p>
-	          	<label class="label label-info"> 진료일 </label>
-	          	<span class="noneBorderText" id="schedule_date"></span>
-	          	<input type="hidden" name="reservation_DATE" id="reservation_DATE"/>
-	          	<input type="hidden" name="fk_schedule_UID" id="fk_schedule_UID" />
-	          </p>
-	         </form>
-	         </div>
-	        
-	         <div class="col-md-4 col-sm-4 col-xs-12 text-right" style="position:absolute; right:5%; bottom:20%;">
-	         	<button type="button" class="btn btn-info" onClick="goReservation();">예약하기</button>
-	         	<button type="button" class="btn btn-default" onClick="goReset();">초기화</button>
-	         </div>
-	        </div>
-	       </div>
-	      </div>      
-	    </div>  
 	  </div>
 	  
 	</div>

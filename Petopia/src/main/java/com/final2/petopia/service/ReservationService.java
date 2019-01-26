@@ -206,8 +206,40 @@ public class ReservationService implements InterReservationService{
 //	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
 	@Override
 	public List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap) {
-		List<DepositVO> depositList = dao.selectDepositListByIdx(paraMap);
+		String type=paraMap.get("type");
+		List<DepositVO> depositList = null;
+		if(type.equals("-1")) {
+			paraMap.remove("type");
+			depositList = dao.selectDepositListByIdxNoneType(paraMap);
+		}
+		else {
+			depositList = dao.selectDepositListByIdx(paraMap);
+		}
 		return depositList;
+	}
+//	[190126] 예치금 히스토리 목록 페이지바 만들기
+	@Override
+	public int selectDepositListTotalCount(HashMap<String, String> paraMap) {
+		int totalCount = 0;
+		String type=paraMap.get("type");
+		if(type.equals("-1")) {
+			totalCount = dao.selectDepositListTotalCountNoneType(paraMap);
+		}
+		else {
+			totalCount = dao.selectDepositListTotalCount(paraMap);
+		}
+		return totalCount;
+	}
+//	#최초 스케줄 생성 프로시저
+	@Override
+	public void insertScheduleFirst(String idx_biz) {
+		dao.insertScheduleFirst(idx_biz);
+	}
+//	#병원회원의 스케줄 개수 가져오기
+	@Override
+	public int selectScheduleCountByIdx_biz(String idx_biz) {
+		int scheduleCount = dao.selectScheduleCountByIdx_biz(idx_biz);
+		return scheduleCount;
 	}
 
 
