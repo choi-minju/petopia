@@ -130,27 +130,32 @@ public class ChartController {
 			return "chart/InsertChart.tiles2"; 
 			
 		} //진료 내역 인서트 창띄우기 (기업회원페이지에서)
-		
+		//0125~0126
 		@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.POST })
 		public String InsertChartEnd(ChartVO cvo, HttpServletRequest req) {
-			System.out.println("chart_type"+ cvo.getChart_type() );
-			System.out.println("fk_pet_UID"+cvo.getFk_pet_UID() );
-			
-			System.out.println("bookingdate"+cvo.getBookingdate() );
-			System.out.println("reservation_DATE"+ cvo.getReservation_DATE());
-			
-			System.out.println("doc_name"+cvo.getDoc_name());
-			System.out.println("name"+cvo.getBiz_name());
-			
-			System.out.println("payment_pay"+ cvo.getPayment_pay());
-			System.out.println("payment_point"+cvo.getPayment_point());
-			System.out.println("totalpay"+ cvo.getTotalpay());
+		 
+		/*	0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
+			 * 
+			String ctype =cvo.getChart_type();
+			if (ctype.equals("약국")) {
+				
+				return n;
+			}*/
 			int n =service.insertChart(cvo);
 			
+			
+			String loc = "";
+			if(n==1) {
+				String msg="차트등록에 실패하였습니다.";
+			req.setAttribute("msg", msg);
+			}else {
+				loc=req.getContextPath()+"/bizReservationList.pet";
+			}
+			req.setAttribute("loc", loc);
 			return "chart/InsertChart.tiles2"; 
 			
 		} //진료 차트  인서트 완료  (기업회원페이지에서)
-		
+		//0126
 		
 		
 		
@@ -201,14 +206,16 @@ public class ChartController {
 		    return rlist;
 		}
 		
-		@RequestMapping(value = "/SelectChartSearch.pet", method = { RequestMethod.GET })
+		
+/*	0126 주석처리	 
+ * @RequestMapping(value = "/SelectChartSearch.pet", method = { RequestMethod.GET })
 		public String SelectChartSearch(HttpServletRequest req) {
 			
 
 			return "chart/SelectChartSearch.tiles2"; 
 			
 		} //예약 진료 관리 (기업회원페이지에서)
-		
+*/		
 	//   #예약목록
 		   @RequestMapping(value="/bizReservationList.pet", method={RequestMethod.GET})
 		   public String requireLogin_biz_rvchartList(HttpServletRequest req, HttpServletResponse res) {
@@ -278,7 +285,7 @@ public class ChartController {
 		      
 //		      #currentURL 뷰로 보내기
 		      String currentURL = MyUtil.getCurrentURL(req);
-		      System.out.println(currentURL);
+		      //System.out.println(currentURL);
 		      if(currentURL.substring(currentURL.length()-5).equals("?null")) {
 		         currentURL = currentURL.substring(0 , currentURL.length()-5);
 		      }
