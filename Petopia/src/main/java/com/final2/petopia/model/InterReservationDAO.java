@@ -56,7 +56,19 @@ public interface InterReservationDAO {
 	int getTotalCountNoSearch(int idx);
 	List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap);
 
-//	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
+//	[190125] 예치금 히스토리 목록 중 모두보기인 경우
+//	[190126] 메소드명 변경 selectDepositListByIdx -> selectDepositListByIdxNoneType
+	List<DepositVO> selectDepositListByIdxNoneType(HashMap<String, String> paraMap);
+//	[190126] 예치금 히스토리 목록 중 충전 또는 충전 목록인 경우 
 	List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap);
+//	#전체목록의 페이지바 만들기
+	int selectDepositListTotalCountNoneType(HashMap<String, String> paraMap);
+//	#충전 또는 사용목록 페이지바 만들기
+	int selectDepositListTotalCount(HashMap<String, String> paraMap);
+//	#최초 스케줄 생성 프로시저
+	void insertScheduleFirst(String idx_biz);
+//	#병원회원의 스케줄 개수 가져오기
+	int selectScheduleCountByIdx_biz(String idx_biz);
+
 
 }

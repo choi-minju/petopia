@@ -48,7 +48,7 @@
 
     // === !!! WebSocket 통신은 스크립트로 작성하는 것이다. !!! === //
     $(document).ready(function(){
-        
+    		
         var url = window.location.host;   // 웹브라우저의 주소창의 포트까지 가져옴
     //  alert("url : " + url);
     //  결과값  url: 192.168.50.53:9090
@@ -61,14 +61,14 @@
    	// pathname.lastIndexOf("/") ==> 15
     // 	alert("appCtx : " + appCtx);
     //  결과값  appCtx : /board/chatting
-    	 	
+    	var chatcode = $('input#hide').val();
+    	alert("chatcode : " + chatcode);
     	var root = url+appCtx;
+    	
     // 	alert("root : " + root);
     //  결과값   root : 192.168.50.53:9090/board/chatting
    	
-    	var chatcode = $('input#hide').val();
-    	alert("chatcode : " + chatcode);
-    	var wsUrl = "ws://"+root+"/multichatstart.action"/+chatcode; // http가아닌 ws를 사용 //multichatstart.action 은 xml에있음
+    	var wsUrl = "ws://"+root+"/multichatstart.action"+"?"+chatcode; // http가아닌 ws를 사용 //multichatstart.action 은 xml에있음
        	var websocket = new WebSocket(wsUrl);  //  /WEB-INF/web.xml 에 가서 appServlet 의 contextConfigLocation 을 수정한다. 
      // var websocket = new WebSocket("ws://192.168.50.53:9090/board/chatting/multichatstart.action");
         

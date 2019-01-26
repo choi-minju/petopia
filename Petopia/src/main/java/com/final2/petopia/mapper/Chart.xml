@@ -153,10 +153,12 @@ where A.fk_idx_biz = #{idx}
    </select>
    
    <insert id="insertChart" parameterType="com.final2.petopia.model.ChartVO">
-     insert into  chart(chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
+     insert into chart(chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
                    ,reservation_DATE,doc_name,cautions,chart_contents,
                    payment_pay,payment_point,addpay,totalpay)  
-     values(chart_seq.nextval,#{fk_pet_UID},#{fk_idx},#{chart_type}, #{biz_name}, #{bookingdate},#{reservation_DATE},
-            #{doc_name},#{cautions},#{chart_contents},#{payment_pay},#{payment_point},#{addpay},#{totalpay})
+     values(chart_seq.nextval,#{fk_pet_UID},#{fk_idx},#{chart_type}, 
+     #{biz_name},#{bookingdate},#{reservation_DATE},
+     #{doc_name},#{cautions},#{chart_contents},#{payment_pay},#{payment_point},#{addpay},#{totalpay}) 
+      
    </insert>
 </mapper>

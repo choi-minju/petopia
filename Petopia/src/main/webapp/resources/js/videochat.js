@@ -201,6 +201,26 @@ function onIceStateChange(pc, event) {
   }
 }
 
+var PeerConnection = (function(){
+	var PeerConnection = window.PeerConnection ||
+		window.webkitPeerConnection00 ||
+		window.webkitRTCPeerConnection ||
+		window.mozRTCPeerConnection ||
+		window.RTCPeerConnection;
+	return PeerConnection;
+})();
+
+var pc = new PeerConnection({
+	iceServers: [
+		{"url": "stun:23.21.150.121" },
+		{"url": "stun:stun.l.google.com:19302"}
+	]}, {
+		optional: [
+			{ DtlsSrtpKeyAgreement: true },
+			{ RtpDataChannels: false }
+		]
+});
+
 function hangup() {
 
   pc1.close();

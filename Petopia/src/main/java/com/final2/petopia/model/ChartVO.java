@@ -5,34 +5,35 @@ package com.final2.petopia.model;
 public class ChartVO {
 
 	
-int chart_UID  ;                   // 차트코드
-int  fk_pet_UID  ;     	          // 반려동물코드
-int fk_idx     ;      		     // 회원고유번호
+int chart_UID;                   // 차트코드
+int fk_pet_UID;     	          // 반려동물코드
+int fk_idx;      		     // 회원고유번호
 String chart_type;       	     // 진료타입
-String biz_name    ;             // 병원/약국명
-String bookingdate  ;            // 예약완료일시
-String  reservation_DATE ;       // 방문예정일
-String  doc_name  ;               // 수의사명
-String cautions   ;              // 주의사항
+String biz_name;             // 병원/약국명
+String bookingdate;            // 예약완료일시
+String reservation_DATE;       // 방문예정일
+String doc_name;               // 수의사명
+String cautions;              // 주의사항
 String chart_contents;           // 내용
-int  payment_pay  ;              // 사용예치금
-int  payment_point ;             // 사용포인트
-int  addpay   ;             // 본인부담금(추가결제금액)
-int totalpay   ;          // 진료비총액
-int  rx_UID    ;     	         // 처방코드
+int payment_pay;              // 사용예치금
+int payment_point;             // 사용포인트
+int addpay;             // 본인부담금(추가결제금액)
+int totalpay;          // 진료비총액
+/*int  rx_UID    ;     	         // 처방코드
 //처방전 
 String  rx_name ;             // 처방약
 String dose_number;            // 복용횟수
 String dosage ;            // 복용용량
 String rx_notice ;            // 처방안내
 String rx_regName;          // 등록한사람
-
+*/
 public ChartVO() {}
 
 public ChartVO(int chart_UID, int fk_pet_UID, int fk_idx, String chart_type, String biz_name, String bookingdate,
 		String reservation_DATE, String doc_name, String cautions, String chart_contents, int payment_pay,
-		int payment_point, int addpay, int totalpay, int rx_UID, String rx_name, String dose_number, String dosage,
-		String rx_notice, String rx_regName) {
+		int payment_point, int addpay, int totalpay) {
+	/*, int rx_UID, String rx_name, String dose_number, String dosage,
+		String rx_notice, String rx_regName*/
 	super();
 	this.chart_UID = chart_UID;
 	this.fk_pet_UID = fk_pet_UID;
@@ -48,12 +49,12 @@ public ChartVO(int chart_UID, int fk_pet_UID, int fk_idx, String chart_type, Str
 	this.payment_point = payment_point;
 	this.addpay = addpay;
 	this.totalpay = totalpay;
-	this.rx_UID = rx_UID;
+/*	this.rx_UID = rx_UID;
 	this.rx_name = rx_name;
 	this.dose_number = dose_number;
 	this.dosage = dosage;
 	this.rx_notice = rx_notice;
-	this.rx_regName = rx_regName;
+	this.rx_regName = rx_regName;*/
 }
 public int getChart_UID() {
 	return chart_UID;
@@ -139,7 +140,7 @@ public int getTotalpay() {
 public void setTotalpay(int totalpay) {
 	this.totalpay = totalpay;
 }
-public int getRx_UID() {
+/*public int getRx_UID() {
 	return rx_UID;
 }
 public void setRx_UID(int rx_UID) {
@@ -174,7 +175,7 @@ public String getRx_regName() {
 }
 public void setRx_regName(String rx_regName) {
 	this.rx_regName = rx_regName;
-}
+}*/
 
 
 
