@@ -1,3 +1,4 @@
+
 package com.final2.petopia.model;
 
 import java.util.HashMap;
@@ -25,6 +26,10 @@ public interface InterChartDAO {
 	int getTotalCountNoSearch(int idx_biz);
 
 	HashMap<String,String> selectReserverInfo(String ruid); //예약번호로 예약자 정보 불러오기 
+
+	List<HashMap<String, String>> selectDocList(String ruid); //예약번호로  의사 이름 알아오기
+
+	int insertChart(ChartVO cvo);//병원페이지에서 차트 입력하기 
 
 
 }

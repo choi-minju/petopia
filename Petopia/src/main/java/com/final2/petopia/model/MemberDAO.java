@@ -245,5 +245,23 @@ public class MemberDAO implements InterMemberDAO {
 	} // end of public int selectMemberIsByUseridEmail(HashMap<String, String> paramap)
 	// === 2019.01.24 === 비밀번호 찾기 //
 
+	// === 2019.01.25 === 비밀번호 변경 //
+	// *** 비밀번호 변경 *** //
+	// member 테이블 비밀번호 변경
+	@Override
+	public int updateMemberPwdByUserid(HashMap<String, String> paramap) {
+		int result = sqlsession.update("member.updateMemberPwdByUserid", paramap);
+		
+		return result;
+	} // end of public int updateMemberPwdByUserid(HashMap<String, String> paramap)
+	
+	// login_log 테이블 비밀번호 변경
+	@Override
+	public int updateLogin_logPwdByUserid(HashMap<String, String> paramap) {
+		int result = sqlsession.update("member.updateLogin_logPwdByUserid", paramap);
+		
+		return result;
+	} // end of public int updateLogin_logPwdByUserid(HashMap<String, String> paramap)
+	// === 2019.01.25 === 비밀번호 변경 //
 
 }

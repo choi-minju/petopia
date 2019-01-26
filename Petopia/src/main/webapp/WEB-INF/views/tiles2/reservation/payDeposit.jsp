@@ -51,9 +51,11 @@
 		$("#payUseOK").click(function(){
 			var val = $("#payPoint_input").val();
 			var ablePoint = ${point};
-			
+			// [190125] point 계산 제한 추가
+			var total = $("#payment_total").val()*1;
+			val = val*1;
 			if(ablePoint<val){
-				val = ablePoint;
+				val = total;
 				alert("보유포인트 이상 사용할 수 없습니다.");
 			}
 			$("#payPoint_span").text(numberWithCommas(val));
@@ -61,8 +63,6 @@
 			$("#payPoint_input").val("");
 			$('#tooltipbox').hide();
 			
-			val = val*1;
-			var total = $("#payment_total").val()*1;
 			var result = total-val;
 			
 			$("#payment_pay").val(result*-1);
@@ -75,12 +75,16 @@
 	
 	function usePoint(point){
 		point = point*1;
+		// [190125] point 계산 제한 추가
+		var total = $("#payment_total").val()*1;
+		if(point>total){
+			point = total;
+		}
 		$("#payPoint_span").text(numberWithCommas(point));
 		$("#payment_point").val(point);
 		$("#payPoint_input").val("");
 		$('#tooltipbox').hide();
 		
-		var total = $("#payment_total").val()*1;
 		var result = total-point;
 		
 		$("#payment_pay").val(result*-1);
@@ -199,6 +203,7 @@
 	</form>
 </div>
 <script>
+// 190125 collapse창 오픈하기 추가
 var coll = document.getElementsByClassName("collapsible");
 var i;
 
