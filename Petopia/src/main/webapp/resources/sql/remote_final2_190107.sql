@@ -11,6 +11,7 @@ show user;
 -- [190122] notification 테이블에 not_type 컬럼 check제약 조건 변경; 호환
 -- [190124] 1; deposit 테이블에 fk_payment_UID 컬럼 추가; 수미
 -- [190124] 2; notification 테이블에 컬럼 및 제약조건 추가 : 지민
+-- [190125] 프로시저 where절 추가; 민주
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -1458,7 +1459,7 @@ ALTER TABLE funding_refund
 		);
         
 
--- 관리자 회원 리스트 프로시저(검색X 정렬X)
+-- 관리자 회원 리스트 프로시저(검색X 정렬X) ++ [190125] 프로시저 where절 추가
 create or replace procedure pcd_selectMemberList
 (   p_startno       IN      member.idx%TYPE
   , p_endno         IN      member.idx%TYPE
@@ -1477,10 +1478,9 @@ begin
                 , trunc(months_between(sysdate, lastlogindate)) AS lastlogindategap
             from member a JOIN login_log b
             ON a.idx = b.idx
+            where a.membertype = 1
             order by idx asc
         ) V
     ) T
     where rno between p_startno and p_endno;
 end pcd_selectMemberList;
-
-commit;
