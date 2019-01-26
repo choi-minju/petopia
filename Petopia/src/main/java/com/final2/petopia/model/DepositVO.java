@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class DepositVO {
+	String rno;			// rownum	[190126] rownum 추가
 	String deposit_UID;	//	예치금코드
 	String fk_payment_UID;	// 결제코드
 	String fk_idx;		//	회원고유번호
@@ -11,7 +12,7 @@ public class DepositVO {
 	String deposit_status; // 예치금상태 1 사용가능 / 0 사용불가능 / 2 환불취소신청 / 3 출금
 	String deposit_type;	//	충전수단
 	String deposit_date;	//	충전일자
-	
+
 	public DepositVO() {}
 	public DepositVO(String deposit_UID, String fk_payment_UID, String fk_idx, String depositcoin,
 			String deposit_status, String deposit_type, String deposit_date) {
