@@ -142,4 +142,11 @@ public class ReservationDAO implements InterReservationDAO {
 		List<HashMap<String, String>> reservationList = sqlsession.selectList(ns+"selectUserReservationList",paraMap);
 		return reservationList;
 	}
+
+//	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
+	@Override
+	public List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap) {
+		List<DepositVO> depositList = sqlsession.selectList(ns+"selectDepositListByIdx",paraMap);
+		return depositList;
+	}
 }

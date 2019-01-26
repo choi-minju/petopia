@@ -385,4 +385,23 @@ public class MemberService implements InterMemberService {
 		return cnt;
 	} // end of public int selectMemberIsByUseridEmail(HashMap<String, String> paramap)
 	// === 2019.01.24 === 비밀번호 찾기 //
+
+	// === 2019.01.25 === 비밀번호 변경 //
+	// *** 비밀번호 변경 *** //
+	@Override
+	public int updateMemberPwdByUserid(HashMap<String, String> paramap) {
+		int result = 0;
+		
+		int n1 = dao.updateMemberPwdByUserid(paramap);
+		int n2 = dao.updateLogin_logPwdByUserid(paramap);
+		
+		if(n1*n2 == 0) {
+			result = 0;
+		} else {
+			result = 1;
+		} // end of if
+		
+		return result;
+	} // end of public int updateMemberPwdByUserid(HashMap<String, String> paramap)
+	// === 2019.01.25 === 비밀번호 변경 //
 }

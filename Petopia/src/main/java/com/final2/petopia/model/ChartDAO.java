@@ -65,6 +65,18 @@ import org.springframework.stereotype.Repository;
 				
 				return chartmap;
 			}
+			//0125  예약번호로 의사 이름 가져오기 
+			@Override
+			public List<HashMap<String, String>> selectDocList(String ruid) {
+				 List<HashMap<String, String>> doclist =sqlsession.selectList("chart.selectDocList",ruid);
+				return doclist ;
+			}
+			//병원페이지에서 차트 입력하기 
+			@Override
+			public int insertChart(ChartVO cvo) {
+				int n = sqlsession.insert("chart.insertChart",cvo);
+				return n;
+			}
 			
 			
 	}

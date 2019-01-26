@@ -100,7 +100,8 @@
 								<li class="dropdown">
 									<a class="dropdown-toggle" data-toggle="dropdown">마이페이지<span class="caret"></span></a>
 									<ul class="dropdown-menu">
-										<li><a href="<%= ctxPath %>/careIndex.pet">반려동물수첩</a></li>
+										<!-- [19-01-25] /careIndex.pet -> petList.pet 수정 -->
+										<li><a href="<%= ctxPath %>/petList.pet">반려동물수첩</a></li>
 										<li><a href="<%= ctxPath %>/infoMember.pet">나의정보보기</a></li>
 										<li><a href="<%= ctxPath %>/myReviewList.pet">나의병원리뷰</a></li>
 										<li><a href="<%= ctxPath %>/InsertMyPrescription.pet">나의진료관리</a></li>
@@ -140,7 +141,8 @@
 							<a href="<%= ctxPath %>/chat.pet">화상진료</a>
 						</div>
 						<div class="column" id="petCare">
-							<a href="<%= ctxPath %>/careIndex.pet">반려동물관리</a>
+							<!-- [19-01-25] /careIndex.pet -> petList.pet 수정 -->
+							<a href="<%= ctxPath %>/petList.pet">반려동물관리</a>
 							<a href="<%= ctxPath %>/careCalendar.pet">반려동물케어</a>
 							<a href="<%= ctxPath %>/InsertMyPrescription.pet">진료기록관리</a>
 							<a href="<%= ctxPath %>/myReviewList.pet">나의 병원리뷰</a>
