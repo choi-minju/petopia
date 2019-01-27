@@ -48,6 +48,12 @@ public interface InterReservationService {
 	List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap);
 
 	
-//	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
+//	[190126] 예치금 히스토리 목록
 	List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap);
+//	[190126] 예치금 히스토리 목록 페이지바 만들기
+	int selectDepositListTotalCount(HashMap<String, String> paraMap);
+//	#최초 스케줄 생성 프로시저
+	void insertScheduleFirst(String idx_biz);
+//	#병원회원의 스케줄 개수 가져오기
+	int selectScheduleCountByIdx_biz(String idx_biz);
 }

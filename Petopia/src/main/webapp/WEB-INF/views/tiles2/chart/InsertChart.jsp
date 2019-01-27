@@ -55,7 +55,7 @@
    <div class="span col-md-12">4.진료 동물 종류: <span>${chartmap.pet_type}</span></div>
    <div class="span col-md-12">5.진료 동물 이름: <span>${chartmap.pet_name}</span></div>
    <div class="span col-md-12">6.진료종류: <span>${chartmap.reservation_type}</span></div>
-   <div class="span col-md-12">7.투약 명 :  <input type="text" name="mname"/></div>
+  <!--   <div class="span col-md-12">7.투약 명 :  <input type="text" name="mname"/></div>  -->
    <div class="span col-md-12">8.주의 사항: </div>
    <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;"></textarea></div>
    <div class="span col-md-12">9.노트 : </div>
