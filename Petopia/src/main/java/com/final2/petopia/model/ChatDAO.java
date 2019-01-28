@@ -20,7 +20,8 @@ public class ChatDAO implements InterChatDAO {
 		
 		return n;
 	}
-
+	
+	//.
 	@Override
 	public String viewcode(String code) {
 		
