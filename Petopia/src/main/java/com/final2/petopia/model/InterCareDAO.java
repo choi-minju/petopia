@@ -17,4 +17,7 @@ public interface InterCareDAO {
 	//===== 케어 등록 caretype 가져오기 =====
 	List<HashMap<String, String>> getCaretype_infoList(String caertype);
 
+	//===== 케어 등록 =====
+	int insertPetcare(CareVO cvo);
+
 }

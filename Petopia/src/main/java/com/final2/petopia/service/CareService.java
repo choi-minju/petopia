@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.final2.petopia.model.CareVO;
 import com.final2.petopia.model.InterCareDAO;
 import com.final2.petopia.model.PetVO;
 
@@ -45,6 +46,14 @@ public class CareService implements InterCareService {
 	public List<HashMap<String, String>> getCaretype_infoList(String caertype) {
 		List<HashMap<String,String>> list = dao.getCaretype_infoList(caertype);
 		return list;
+	}
+
+
+	//===== 케어 등록 ===== 
+	@Override
+	public int insertPetcare(CareVO cvo) {
+		int n = dao.insertPetcare(cvo);
+		return n;
 	}
 
 

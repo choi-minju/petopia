@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.final2.petopia.model.CareVO;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.model.PetVO;
 import com.final2.petopia.service.InterCareService;
@@ -27,7 +28,7 @@ public class CareController {
 	
 	
 	// [19-01-24. 수정 시작_hyunjae]
-	//===== 반려동물관리 리스트 요청 =====
+	//===== 반려동물 리스트페이지 요청 =====
 	@RequestMapping(value="/petList.pet", method={RequestMethod.GET})
 	public String petList(HttpServletRequest req) {
 		
@@ -87,7 +88,7 @@ public class CareController {
 	}
 	
 	// [19-01-24. 수정 시작_hyunjae]
-	//===== 반려동물 등록페이지 요청완료 =====
+	//===== 반려동물 등록 요청완료 =====
 	@RequestMapping(value="/petRegisterEnd.pet", method={RequestMethod.POST})
 	public String registerEnd(PetVO pvo, HttpServletRequest req) {
 	
@@ -171,6 +172,25 @@ public class CareController {
 		}
 	
 		return returnmapList;
+	}
+	
+	//===== 케어 등록페이지 요청완료 =====
+	@RequestMapping(value="/careRegisterEnd.pet", method={RequestMethod.POST})
+	public String careRegisterEnd(CareVO cvo, HttpServletRequest req) {
+	
+		int n = service.insertPetcare(cvo);
+		
+		String msg ="";
+		if(n == 1) {
+			msg = "반려동물 등록 성공!!";
+		}
+		else {
+			msg = "반려동물 등록 실패!!";
+		}
+		
+		req.setAttribute("msg", msg);
+	 
+		return "care/petList.tiles2";
 	}
 	
 

@@ -3,7 +3,7 @@
 
 <mapper namespace="care">
 
-<!-- [19-01-24. 수정 시작_hyunjae] -->
+	<!-- [19-01-24. 수정 시작_hyunjae] -->
 	<!-- //===== 반려동물 리스트 ===== -->
 	<resultMap type="java.util.HashMap" id="getPet_infoListMap"> 
 		<result property="PET_UID" 	       column="pet_UID" 		javaType="int" />
@@ -26,7 +26,7 @@
 		      pet_status in('1','2')
 		order by pet_birthday asc
 	</select>
-<!-- [19-01-24. 수정 끝_hyunjae] -->
+	<!-- [19-01-24. 수정 끝_hyunjae] -->
 
 	<!-- //===== 반려동물 등록 ===== -->
 	<insert id="insertPet_info" parameterType="com.final2.petopia.model.PetVO">
@@ -53,5 +53,11 @@
 		where caretype_UID = #{caretype}
 	</select>
 	<!-- [19-01-25. 수정 끝_hyunjae] -->
+
+	<!-- //===== 케어 등록 ===== -->
+	<insert id="insertPetcare" parameterType="com.final2.petopia.model.CareVO">
+		insert into petcare(care_UID, fk_pet_UID, fk_caretype_UID, care_contents, care_memo, care_start, care_end, care_alarm, care_date)
+		values(seq_petcare_UID.nextval, #{fk_pet_UID}, #{fk_caretype_UID}, #{care_contents, jdbcType=VARCHAR}, #{care_memo}, #{care_start}, #{care_end}, #{care_alarm}, sysdate)
+	</insert>
 
 </mapper>
