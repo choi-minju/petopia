@@ -365,7 +365,7 @@ public class ConsultController {
 		return returnMap;
 	}
 	
-	
+	// .
 	// 1:1상담 댓글보여주기 [Ajax로 페이징처리] -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultCommentList.pet", method={RequestMethod.GET})
 	@ResponseBody
