@@ -55,7 +55,7 @@
 	// 글목록에서 제목, 작성자, 글내용으로 검색 
 	function goSearch() {
 		var frm = document.searchFrm;
-		frm.action = "<%=request.getContextPath()%>/consultList.action";
+		frm.action = "<%=request.getContextPath()%>/consultList.pet";
 		frm.method = "GET";
 		frm.submit();
 	}
@@ -70,6 +70,14 @@
 		frm.submit();
 	}
 	
+	// 내가 쓴 글 목록
+	function goMyConsult() {
+		var frm = document.myConsultFrm;
+		frm.action = "<%=request.getContextPath()%>/consultList.pet";
+		frm.method = "GET";
+		frm.submit();
+	}
+	
 </script>
 
 
@@ -79,11 +87,34 @@
 		
 		
 		<div class="row">
-			<div class="col-xs-12 col-md-4" style="background-color: #ffffff;"></div>
+			<%-- 일반회원 --%>
+			<c:if test="${sessionScope.loginuser.membertype==1}"> 
+				<div class="col-xs-12 col-md-4" style="background-color: #ffffff;">
+					<form name="myConsultFrm" >
+					<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}" />
+					<button type="button" class="btn btnmenu btn-rounder"  style="border: 1px solid #fc766b; float:left; border-radius:50px; width:30%; height:4%; font-size:12px;" onClick="goMyConsult();">
+					내가 쓴 글
+					</button>
+					</form>
+				</div>
+			</c:if>
+			
+			<%-- 기업회원 
+			<c:if test="${sessionScope.loginuser.membertype==2}"> 
+				<div class="col-xs-12 col-md-4" style="background-color: #ffffff;">
+					<form name="myConsultFrm" >
+					<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}" />
+					<button type="button" class="btn btnmenu btn-rounder"  style="border: 1px solid #fc766b; float:left; border-radius:50px; width:30%; height:4%; font-size:12px;" onClick="goMyConsult();">
+					내가 상담한 글
+					</button>
+					</form>
+				</div>
+			</c:if>
+			--%>
+			
 			<div class="col-xs-12 col-md-8" style="background-color: #ffffff;">
-				 
 				<form name="searchFrm" >
-				<select name="colname" id="colname" class="content" style="height:4%; width:23%; margin-left:20%;">
+				<select name="colname" id="colname" class="content" style="background-color:#ffffff; border: 1px solid #999; height:4%; width:23%; margin-left:25%;">
 					<option value="cs_title">제목</option>
 					<option value="nickname">작성자</option>
 					<option value="cs_contents">글내용</option>
@@ -106,37 +137,54 @@
 			<div class="col-xs-1 col-md-1 content">조회수</div>
 		</div>
 		
-		<!-- 로그인한 사람만 보이도록 -->
-		<c:forEach var="consultvo" items="${consultList}">
-			<div class="row" style="border-bottom: 1px solid #bebebe;">
-				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
-				<div class="col-xs-5 col-md-5 subject content" align="left"  style="background-color: #ffffff;"  onClick="goDetail('${consultvo.consult_UID}', '${goBackURL}');">${consultvo.cs_title}
-				<span style="font-size:90%; color:#b2b3b2;">&nbsp;[댓글${consultvo.commentCount}]</span></div>	
-				<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff;">${consultvo.nickname}</div>
-				<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
-				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
-			</div>
 		
-		<%-- 
-		<c:if test="${consultvo.cs_secret==1}"> <!-- ( (공개글 && (비공개글 && (아이디가 로그인한 유저랑 같을 경우||댓글을 단 수의사일 경우)) ) 
-			<div class="row" style="border-bottom: 1px solid #bebebe;">
-				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
-				<div class="col-xs-5 col-md-5 subject content" align="left"  style="background-color: #ffffff;"  onClick="goDetail('${consultvo.consult_UID}', '${goBackURL}');">${consultvo.cs_title}</div>	
-				<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff;">${consultvo.nickname}</div>
-				<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
-				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
-			</div>
-		</c:if>
-		<c:if test="${consultvo.cs_secret==0}"> <!--  (비공개글 && 아이디가 로그인한 유저랑 다를 경우)
-			<div class="row" style="border-bottom: 1px solid #bebebe;">
-				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
-				<div class="col-xs-5 col-md-5 subject content" align="left" style="background-color: #ffffff; font-size:80%; color:#b2b3b2; padding-top:0.7%;">비공개글입니다. 작성자만 읽을 수 있습니다.</div>	
-				<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff;">${consultvo.nickname}</div>
-				<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
-				<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
-			</div>
-		</c:if>
-		--%>
+		<c:forEach var="consultvo" items="${consultList}">
+		
+			<%-- 일반회원 --%>
+			<c:if test="${sessionScope.loginuser.membertype==1}"> 
+			
+				<%-- 공개글 || (비공개글 + 내가쓴글) --%>
+				<c:if test="${consultvo.cs_secret==1 || (consultvo.cs_secret==0 && sessionScope.loginuser.idx==consultvo.fk_idx)}"> 
+					<div class="row" style="border-bottom: 1px solid #bebebe;">
+						<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
+						<div class="col-xs-5 col-md-5 subject content" align="left"  style="background-color: #ffffff;"  onClick="goDetail('${consultvo.consult_UID}', '${goBackURL}');">${consultvo.cs_title}
+						<span style="font-size:90%; color:#b2b3b2;">&nbsp;[댓글${consultvo.commentCount}]</span></div>
+						<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff;">${consultvo.nickname}</div>
+						<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
+						<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
+					</div>
+				</c:if>
+				
+				<%-- 비공개글 && 자기가 쓴 글이 아닐 경우 --%>
+				<c:if test="${consultvo.cs_secret==0 && sessionScope.loginuser.idx!=consultvo.fk_idx}"> 
+					<div class="row" style="border-bottom: 1px solid #bebebe; ">
+						<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff; color:#b2b3b2;">${consultvo.consult_UID}</div>
+						<div class="col-xs-5 col-md-5 content" align="left" style="background-color: #ffffff; font-size:90%; color:#b2b3b2; padding-top:0.5%;">비공개글입니다. 작성자만 읽을 수 있습니다.
+						<span style="font-size:90%; color:#b2b3b2;">&nbsp;[댓글${consultvo.commentCount}]</span></div>
+						<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff; color:#b2b3b2;">${consultvo.nickname}</div>
+						<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff; color:#b2b3b2;">${consultvo.cs_writeday}</div>
+						<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff; color:#b2b3b2;">${consultvo.cs_hit}</div>
+					</div>
+				</c:if>
+			
+			</c:if>
+		
+			<%-- 기업회원 --%>
+			<c:if test="${sessionScope.loginuser.membertype==2}"> 
+			
+				<c:if test="${consultvo.cs_secret==0 || consultvo.cs_secret==1}"> 
+					<div class="row" style="border-bottom: 1px solid #bebebe;">
+						<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.consult_UID}</div>
+						<div class="col-xs-5 col-md-5 subject content" align="left"  style="background-color: #ffffff;"  onClick="goDetail('${consultvo.consult_UID}', '${goBackURL}');">${consultvo.cs_title}
+						<span style="font-size:90%; color:#b2b3b2;">&nbsp;[댓글${consultvo.commentCount}]</span></div>
+						<div class="col-xs-2 col-md-2 content"  style="background-color: #ffffff;">${consultvo.nickname}</div>
+						<div class="col-xs-3 col-md-3 content"  style="background-color: #ffffff;">${consultvo.cs_writeday}</div>
+						<div class="col-xs-1 col-md-1 content"  style="background-color: #ffffff;">${consultvo.cs_hit}</div>
+					</div>
+				</c:if>
+			
+			</c:if>
+		
 		</c:forEach>
 		
 		
@@ -145,15 +193,16 @@
 		</div>
 		<br/>
 		
-		
-		<div class="col-xs-12 col-md-12" style="background-color: #ffffff;">
-			<div class="col-xs-11 col-md-11" style="background-color: #ffffff;"></div>
-			<div class="col-xs-1 col-md-1" style="background-color: #ffffff;">
-				<button type="button" id="btnWrite" class="btn btnmenu btn-rounder" style="background-color: #ffffff; border: 1px solid #fc766b; border-radius:50px;  color:#fc766b;"
-				onClick="javascript:location.href='consultAdd.pet'">글쓰기</button>
+		<%-- 일반회원 --%>
+		<c:if test="${sessionScope.loginuser.membertype==1}"> 
+			<div class="col-xs-12 col-md-12" style="background-color: #ffffff;">
+				<div class="col-xs-11 col-md-11" style="background-color: #ffffff;"></div>
+				<div class="col-xs-1 col-md-1" style="background-color: #ffffff;">
+					<button type="button" id="btnWrite" class="btn btnmenu btn-rounder" style="background-color: #ffffff; border: 1px solid #fc766b; border-radius:50px;  color:#fc766b;"
+					onClick="javascript:location.href='consultAdd.pet'">글쓰기</button>
+				</div>
 			</div>
-		</div>
-		
+		</c:if>
 	</div> <!-- table -->
 	
 </div> <!-- 전체 -->

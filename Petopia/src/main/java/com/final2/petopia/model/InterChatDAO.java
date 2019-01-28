@@ -9,4 +9,6 @@ public interface InterChatDAO {
 
 	int addcode(HashMap<String, String> map);
 
+	String viewcode(String code);
+
 }

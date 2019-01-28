@@ -6,6 +6,7 @@
 %>
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <style type="text/css">
 
@@ -126,6 +127,19 @@
 			setBounds();
 		}
 		
+		var whereNo = ${whereNo};
+		
+		switch (whereNo) {
+		case 2:
+			$("#selectWhere option[value=2]").prop("selected", true);
+			break;
+		case 3:
+			$("#selectWhere option[value=3]").prop("selected", true);
+			break;
+		default:
+			break;
+		}
+		
 	});
 
 	function searchEnter(event) {
@@ -148,20 +162,19 @@
 	    } */
 	    
 	    if(event.keyCode == 13) {
-	    	var searchWord = $("#myInput").val();
-	    	location.href="<%= ctxPath%>/search.pet?searchWord="+searchWord;
+	    	
+	    	searchEnd();
+	    	
 	    }
 	    
-	    
-	    
 	}
 	
-	function enterGeocoder() {
-		if(event.keyCode == 13) {
-			setGeocoder();
-		}
+	function searchEnd() {
+		var whereNo = $("#selectWhere option:selected" ).val();
+    	var searchWord = $("#myInput").val();
+    	console.log(whereNo);
+    	location.href="<%= ctxPath%>/search.pet?searchWord="+searchWord+"&whereNo="+whereNo;
 	}
-	
 	
 	function selectOrderby(event) {
 		
@@ -207,9 +220,53 @@
 
 		}
 		
-		
-		
 	}
+	
+	function enterGeocoder() {
+		if(event.keyCode == 13) {
+			setGeocoder();
+		}
+	}
+	
+	<%-- 
+	function selectwhere(event) {
+
+		var whereNo = $(event.target).val();
+		var searchWord = $("#myInput").val();
+		
+
+		$.getJSON("<%= ctxPath%>/selectwhere.pet?whereNo="+whereNo+"&searchWord="+searchWord, 
+				  function(json){
+			
+						var html = "";
+						
+						$.each(json, function(entryIndex, entry){
+						
+							// 데이터넣고
+							html += "<div class='card text-left border-secondary' value="+entry.idx_biz+">";
+							html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
+							html += "  	<div class='card-body'>";
+							html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
+							html += "	    <p class='card-text'>평점&nbsp;";
+							
+							for(var i=0;i<entry.avg_startpoint;i++) {
+								html += "<span class='glyphicon glyphicon-star'></span>&nbsp;"; 
+							}
+							
+							
+							html += "</p><a href='#' class='btn btn-primary'>예약하기</a>";
+							html += "</div></div>";
+							
+						});
+					  	
+						$("#cards").empty().html(html);
+						
+		});
+		
+		
+		
+	} --%>
+	
 	
 
 
@@ -225,10 +282,10 @@
 		<div class="col-sm-2"></div>
 		<div class="col-sm-2">
 		  	<div class="form-group">
-			  <select class="form-control input-lg">
-		        <option>지역별</option>
-		        <option>동물병원</option>
-		        <option>동물약국</option>
+			  <select class="form-control input-lg" id="selectWhere">
+		        <option value="1">지역별</option>
+		        <option value="2">동물병원</option>
+		        <option value="3">동물약국</option>
 		      </select>
 			</div>
 		</div>
@@ -251,7 +308,7 @@
 		<div class="col-sm-2">
 			<div class="row">
 				<div class="col-sm-4">
-					<input type="button" class="btn input-lg" id="inputlg" value="검색" />
+					<input type="button" class="btn input-lg" id="inputlg" value="검색" onclick="searchEnd()"/>
 				</div>
 				<div class="col-sm-8">
 					<input type="button" class="btn btn-primary btn-block input-lg" id="inputlg" value="맞춤추천" data-toggle="tooltip" title="로그인 후 사용가능 합니다."/>
@@ -386,7 +443,7 @@
 							    	var polyline = new daum.maps.Polyline({
 							    	    path: linePath, // 선을 구성하는 좌표배열 입니다
 							    	    strokeWeight: 3, // 선의 두께 입니다
-							    	    strokeColor: '#75B8FA', // 선의 색깔입니다
+							    	    strokeColor: '#ff9900', // 선의 색깔입니다
 							    	    strokeOpacity: 0.7, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
 							    	    strokeStyle: 'solid' // 선의 스타일입니다
 							    	});
@@ -405,21 +462,62 @@
 							    });
 							    
 
-								var value = "";
+								var numbers = [];
 								for(var i=0;i<positions_array.length;i++) {
-								    value += positions_array[i].idx;
+								    numbers.push(positions_array[i].idx);
 								}
 								
-								console.log(value);
+								console.log(numbers);
 								
-							    
+								$.ajax({
+									url:'selectOrderbydistance.pet',
+									data:{'numbers' : numbers, 'searchWord': $("#myInput").val()},
+									type:'GET',
+									dataType:'JSON',
+									traditional : true,
+									async : false,
+									success: function(data) {
+
+										if(data.length > 0) {
+
+											var html = "";
+											
+											$.each(data, function(entryIndex, entry){
+											
+												html += "<div class='card text-left border-secondary' value="+entry.idx_biz+">";
+												html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
+												html += "  	<div class='card-body'>";
+												html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
+												html += "	    <p class='card-text'>평점&nbsp;";
+												
+												for(var i=0;i<entry.avg_startpoint;i++) {
+													html += "<span class='glyphicon glyphicon-star'></span>&nbsp;"; 
+												}
+												
+												
+												html += "</p><a href='#' class='btn btn-primary'>예약하기</a>";
+												html += "</div></div>";
+												
+											});
+										  	
+											$("#cards").empty().html(html);
+											
+										}
+										
+									},
+									error: function(request, status, error){
+										alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+									}
+									
+								});
+								
 						        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
 						        map.setCenter(coords);
 						        
 						    } 
 						});    
 						
-						// gocalc('1');
+						gocalc('1');
 						
 					}
 					// *** 거리순일때 현재 위치 표시하기 끝 ***//

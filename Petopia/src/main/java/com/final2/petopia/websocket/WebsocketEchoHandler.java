@@ -29,7 +29,6 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	    public void afterConnectionEstablished(WebSocketSession wsession) 
 	    	throws Exception {
 	    	// >>> 파라미터 WebSocketSession wsession 은  웹소켓서버에 접속한 클라이언트 사용자임. <<<
-	    	
 	    	connectedUsers.add(wsession);
 	 
 	    	// 웹소켓서버에 접속한 클라이언트의 IP Address 얻어오기

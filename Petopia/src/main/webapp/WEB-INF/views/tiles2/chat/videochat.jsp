@@ -68,8 +68,9 @@
     // 	alert("root : " + root);
     //  결과값   root : 192.168.50.53:9090/board/chatting
    	
-    	var wsUrl = "ws://"+root+"/multichatstart.action"+"?"+chatcode; // http가아닌 ws를 사용 //multichatstart.action 은 xml에있음
-       	var websocket = new WebSocket(wsUrl);  //  /WEB-INF/web.xml 에 가서 appServlet 의 contextConfigLocation 을 수정한다. 
+    	var wsUrl = "ws://"+root+"/multichatstart.pet";// http가아닌 ws를 사용 //multichatstart.action 은 xml에있음
+       	var websocket = new WebSocket(wsUrl);  //  /WEB-INF/web.xml 에 가서 appServlet 의 contextConfigLocation 을 수정한다.
+       	alert(wsUrl);
      // var websocket = new WebSocket("ws://192.168.50.53:9090/board/chatting/multichatstart.action");
         
      // alert(wsUrl);
@@ -84,8 +85,7 @@
     	
 	    // === 웹소켓에 최초로 연결이 되었을 경우에 실행되어지는 콜백함수 ===
     	websocket.onopen = function() {
-    	//	alert("웹소켓 연결됨!!");
-    		$("#chatStatus").text("정보: 웹소켓에 연결이 성공됨!!");
+    		alert("웹소켓 연결됨!!");
     	
     	/*	
             messageObj = {};  // 초기화
@@ -156,10 +156,19 @@
             }
         });
     });
+    
+    function chatend() {
+    	
+    	var frm = document.videochatFrm;
+    	frm.action="<%= ctxPath %>/chatend.pet";
+    	frm.method="GET";
+    	/* frm.submit(); */
+    }
 </script>
 
 <body>
 
+<form name="videochatFrm">
 <div id="container">
     <h1 style="padding-left: 15%; padding-right: 15%;">화상진료</h1>
 	<h2 style="margin-top: 4%; padding-left: 13%; padding-right: 15%;">Mine</h2>
@@ -187,7 +196,7 @@
         <img src="<%=ctxPath%>/resources/img/chat/computer-screen.png" id="startButton" style="height: 10%; width: 5%;">
         <img src="<%=ctxPath%>/resources/img/chat/phone.png" style="margin-left: 40px; height: 10%; width: 5%;" id="callButton">
         <img src="<%=ctxPath%>/resources/img/chat/phone-call.png" id="hangupButton" style="margin-left: 40px; height: 10%; width: 5%;">
-        <button type="button" class="btn2">종료하기</button>
+        <button type="button" class="btn2" <%-- onClick="chatend();" --%>>종료하기</button>
         <input type="hidden" name="hide" id="hide" value="${chatcode}" />
     </div>
 	
@@ -200,8 +209,8 @@
         </select>
     </div>
     
-	
 </div>
+</form>
 
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="<%=ctxPath%>/resources/js/videochat.js" async></script>

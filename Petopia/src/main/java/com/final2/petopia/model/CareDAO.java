@@ -46,6 +46,14 @@ public class CareDAO implements InterCareDAO {
 	}
 
 
+	//===== 케어 등록 =====
+	@Override
+	public int insertPetcare(CareVO cvo) {
+		int n = sqlsession.insert("care.insertPetcare", cvo);
+		return n;
+	}
+
+
 
 
 
