@@ -118,8 +118,9 @@
 		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID)
 		values(seq_deposit_UID.nextval, #{fk_idx}, #{depositcoin}, 3, 'used', sysdate, #{payment_UID})
 	</update>
+	<!-- [190125] 포인트 set 변경 -->
 	<update id="updatePointMember" parameterType="HashMap">
-		update member set point=${point} where idx=#{fk_idx}
+		update member set point=point+#{point} where idx=#{fk_idx}
 	</update>
 	<!-- #결제완료후 예약테이블의 예약상태 변경하기 -->
 	<update id="updateReservationStatusByFkRUID" parameterType="String">
@@ -157,5 +158,54 @@
 		)
 		where rno between #{startRno} and #{endRno}
 	</select>
-
+	
+	<!-- [190125] 예치금 히스토리 목록에서 모두보기 -->
+	<select id="selectDepositListByIdxNoneType" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
+		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+		(
+		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+			(
+			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
+			from deposit
+			where fk_idx = #{idx} and depositcoin != 0
+			order by deposit_UID desc
+			)
+		)
+		where rno between #{rno1} and #{rno2}
+	</select>
+	
+	<!-- [190126] 예치금 히스토리 목록에서 충전/사용목록 보기 -->
+	<select id="selectDepositListByIdx" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
+		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+		(
+		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+			(
+			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
+			from deposit
+			where fk_idx = #{idx} and deposit_status = #{type} and depositcoin != 0
+			order by deposit_UID desc
+			)
+		)
+		where rno between #{rno1} and #{rno2}
+	</select>
+	<!-- [190126] 예치금 히스토리 목록; 모든 건수 -->
+	<select id="selectDepositListTotalCountNoneType" parameterType="HashMap" resultType="int">
+		select count(*) from deposit where fk_idx=#{idx} and depositcoin != 0
+	</select>
+	<!-- [190126] 예치금 히스토리 목록; 충전/사용건수 -->
+	<select id="selectDepositListTotalCount" parameterType="HashMap" resultType="int">
+		select count(*) from deposit where fk_idx=#{idx} and deposit_status=#{type} and depositcoin != 0
+	</select>
+	<!-- [190126] 최초 스케줄 생성 프로시저 -->
+	<insert id="insertScheduleFirst" statementType="CALLABLE" parameterType="String">
+		{call PCD_FIRSTADDSCHEDULE(#{idx_biz, mode=IN})}
+	</insert>
+	<!-- [190126] 병원회원의 스케줄 개수 가져오기 -->
+	<select id="selectScheduleCountByIdx_biz" parameterType="String" resultType="int">
+		select count(*) from schedule where fk_idx_biz = ${idx_biz}
+	</select>
 </mapper>

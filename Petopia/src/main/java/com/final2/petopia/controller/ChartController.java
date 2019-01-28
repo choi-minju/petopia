@@ -119,49 +119,43 @@ public class ChartController {
 			chartmap = service.selectReserverInfo(ruid); //예약번호를 이용하여 차트에 예약자 정보 불러오기 
 			
 			req.setAttribute("chartmap", chartmap);
+			//0125
+			List<HashMap<String,String>> doclist=new ArrayList<HashMap<String,String>>();
+			doclist=service.selectDocList(ruid);
 			
-			/*List<HashMap<String,String>> doclist=new ArrayList<HashMap<String,String>>();
-			doclist=service.selectDocList(ruid);*/
+		
 			
+			
+			req.setAttribute("doclist", doclist);
 			return "chart/InsertChart.tiles2"; 
 			
 		} //진료 내역 인서트 창띄우기 (기업회원페이지에서)
-		
-		@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.GET })
-		public String InsertChartEnd(ReservationVO rvo, HttpServletRequest req) {
-           
-			String ruid=req.getParameter("reservation_UID");
-			
-			HashMap<String,String> chartmap=new HashMap<String,String>();
-			chartmap = service.selectReserverInfo(ruid);
-			
-			/*
-			 * chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
-                   ,reservation_DATE,doc_name,cautions,chart_contents,
-                   payment_pay,payment_point,addpay,totalpay
-			 * */
-			String fk_pet_UID=(String)chartmap.get("fk_pet_UID");
-			String fk_idx=(String)chartmap.get("fk_idx");
-			String chart_type=(String)chartmap.get("chart_type");
-			//String biz_name =chartmap.get("biz_name");
-			String bookingdate=(String)chartmap.get("bookingdate");
-			String reservation_DATE=(String)chartmap.get("reservation_DATE");
-			String docname =(String)chartmap.get("doc_name");
-			String mname= req.getParameter("mname");
-			String caution = req.getParameter("caution");
-			String note = req.getParameter("note");
-			 
-			HashMap<String,String> insertmap = new HashMap<String,String> ();
-			
-			insertmap.put("mname", mname);
-			insertmap.put("caution", caution);
-			insertmap.put("note", note);
+		//0125~0126
+		@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.POST })
+		public String InsertChartEnd(ChartVO cvo, HttpServletRequest req) {
+		 
+		/*	0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
+			 * 
+			String ctype =cvo.getChart_type();
+			if (ctype.equals("약국")) {
+				
+				return n;
+			}*/
+			int n =service.insertChart(cvo);
 			
 			
+			String loc = "";
+			if(n==1) {
+				String msg="차트등록에 실패하였습니다.";
+			req.setAttribute("msg", msg);
+			}else {
+				loc=req.getContextPath()+"/bizReservationList.pet";
+			}
+			req.setAttribute("loc", loc);
 			return "chart/InsertChart.tiles2"; 
 			
 		} //진료 차트  인서트 완료  (기업회원페이지에서)
-		
+		//0126
 		
 		
 		
@@ -212,14 +206,16 @@ public class ChartController {
 		    return rlist;
 		}
 		
-		@RequestMapping(value = "/SelectChartSearch.pet", method = { RequestMethod.GET })
+		
+/*	0126 주석처리	 
+ * @RequestMapping(value = "/SelectChartSearch.pet", method = { RequestMethod.GET })
 		public String SelectChartSearch(HttpServletRequest req) {
 			
 
 			return "chart/SelectChartSearch.tiles2"; 
 			
 		} //예약 진료 관리 (기업회원페이지에서)
-		
+*/		
 	//   #예약목록
 		   @RequestMapping(value="/bizReservationList.pet", method={RequestMethod.GET})
 		   public String requireLogin_biz_rvchartList(HttpServletRequest req, HttpServletResponse res) {
@@ -228,7 +224,7 @@ public class ChartController {
 		      HttpSession session = req.getSession();
 		      MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		      int idx_biz = loginuser.getIdx();
-		      System.out.println("idx_biz : "+idx_biz);
+		     
 		      HashMap<String, String> paraMap = new HashMap<String ,String>();
 		      paraMap.put("idx_biz", String.valueOf(idx_biz));
 		      
@@ -289,7 +285,7 @@ public class ChartController {
 		      
 //		      #currentURL 뷰로 보내기
 		      String currentURL = MyUtil.getCurrentURL(req);
-		      System.out.println(currentURL);
+		      //System.out.println(currentURL);
 		      if(currentURL.substring(currentURL.length()-5).equals("?null")) {
 		         currentURL = currentURL.substring(0 , currentURL.length()-5);
 		      }
@@ -297,4 +293,5 @@ public class ChartController {
 		      return "chart/biz_rvchartList.tiles2";
 		   }
 		
+
 }// end of controller

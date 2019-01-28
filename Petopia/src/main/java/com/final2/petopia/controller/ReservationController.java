@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.final2.petopia.common.MyUtil;
 import com.final2.petopia.model.Biz_MemberVO;
+import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.model.PaymentVO;
 import com.final2.petopia.model.PetVO;
@@ -319,5 +320,128 @@ public class ReservationController {
 		
 		return "reservation/depositList.tiles2";
 	}
+	
+//	[190126] 예치금 히스토리 목록
+	@RequestMapping(value="/depositHistory.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, Object>> depositHistory(HttpServletRequest req, HttpServletResponse res) {
+		List<HashMap<String, Object>> mapList = new ArrayList<HashMap<String, Object>>();
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		
+		String currentShowPageNo = req.getParameter("currentShowPageNo");
+		if(currentShowPageNo == null || "".equals(currentShowPageNo)) {
+			currentShowPageNo = "1";
+		}
+		String type = req.getParameter("type");
+		if(type == null || "".equals(type)) {
+			type = "-1";
+		}
+		
+		int sizePerPage = 10;	// 한 페이지 당 보여줄 댓글의 갯수
+		int rno1 = Integer.parseInt(currentShowPageNo) * sizePerPage - (sizePerPage-1);
+		int rno2 = Integer.parseInt(currentShowPageNo) * sizePerPage;
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("idx", String.valueOf(idx));
+		paraMap.put("rno1", String.valueOf(rno1));
+		paraMap.put("rno2", String.valueOf(rno2));
+		paraMap.put("type", type);
+		List<DepositVO> depositList = service.selectDepositListByIdx(paraMap);
+		
+		for(DepositVO dvo : depositList) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("deposit_UID", dvo.getDeposit_UID());
+			map.put("depositcoin", dvo.getDepositcoin());
+			map.put("deposit_date", dvo.getDeposit_date());
+			map.put("showDepositStatus", dvo.getShowDepositStatus());
+			map.put("deposit_status", dvo.getDeposit_status());
+			
+			mapList.add(map);
+		}
+		
+		return mapList;
+	}
+	
+	@RequestMapping(value="/depositHistoryPageBar.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public  HashMap<String, Integer> depositHistoryPageBar(HttpServletRequest req) {
+		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String idx = String.valueOf(loginuser.getIdx());
+		String sizePerPage = req.getParameter("sizePerPage");
+		String type = req.getParameter("type");
+		if(type == null || "".equals(type)) {
+			type = "-1";
+		}
+		if(sizePerPage == null || "".equals(sizePerPage)) {
+			sizePerPage = "5";
+		}
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("idx", idx);
+		paraMap.put("type", type);
+		paraMap.put("sizePerPage", sizePerPage);
+		int totalCount = service.selectDepositListTotalCount(paraMap);
+		
+//		총 페이지 수 구하기
+//		ex) 57.0(행 개수)/10(sizePerPage) => 5.7 => 6.0 => 6
+//		ex2) 57.0(행 개수)/5(sizePerPage) => 11.4 => 12.0 => 12
+		int totalPage = (int)Math.ceil((double)totalCount/Integer.parseInt(sizePerPage));
+		
+		returnMap.put("totalPage", totalPage);
+		returnMap.put("type", Integer.parseInt(type));
+		return returnMap;
+
+	}
+	@RequestMapping(value="/SelectChartSearch.pet", method={RequestMethod.GET})
+	public String requireLogin_selectChartSearch(HttpServletRequest req, HttpServletResponse res) {
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String membertype = loginuser.getMembertype();
+		String idx_biz = String.valueOf(loginuser.getIdx());
+		if(!"2".equals(membertype)) {
+			session.invalidate(); // 강제 로그아웃(세션에서 지움)
+			
+			String msg = "접근이 불가합니다.";
+			String loc = "javascript:history.back();";
+			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", loc);
+			
+			return "msg";
+
+		}
+		else {
+			int scheduleCount = service.selectScheduleCountByIdx_biz(idx_biz);
+			req.setAttribute("idx_biz", idx_biz);
+			req.setAttribute("scheduleCount", scheduleCount);
+			return "reservation/biz_rvCalendar.tiles2";
+		}
+	}
+	
+	@RequestMapping(value="/insertScheduleFirst.pet", method= {RequestMethod.GET})
+	public String insertScheduleFirst(HttpServletRequest req) {
+		String idx_biz = req.getParameter("idx_biz");
+
+		String msg = "";
+		String loc = "";
+		
+		try {
+			service.insertScheduleFirst(idx_biz);
+			msg = "스케줄 생성 성공!";
+			loc = "javascript:loctaion.href='"+req.getContextPath()+"/SelectChartSearch.pet'";
+		} catch (Exception e) {
+			msg = "스케줄 생성 실패";
+			loc="javascript:history.back();";
+		}
+	
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		return "msg";
+	}
+//	------------- 190126 끝
 	
 }

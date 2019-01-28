@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.final2.petopia.model.Biz_MemberVO;
+import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.PaymentVO;
 import com.final2.petopia.model.PetVO;
 import com.final2.petopia.model.ReservationVO;
@@ -45,4 +46,14 @@ public interface InterReservationService {
 //	#예약목록
 	int getTotalCountNoSearch(int idx);
 	List<HashMap<String, String>> selectUserReservationList(HashMap<String, String> paraMap);
+
+	
+//	[190126] 예치금 히스토리 목록
+	List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap);
+//	[190126] 예치금 히스토리 목록 페이지바 만들기
+	int selectDepositListTotalCount(HashMap<String, String> paraMap);
+//	#최초 스케줄 생성 프로시저
+	void insertScheduleFirst(String idx_biz);
+//	#병원회원의 스케줄 개수 가져오기
+	int selectScheduleCountByIdx_biz(String idx_biz);
 }

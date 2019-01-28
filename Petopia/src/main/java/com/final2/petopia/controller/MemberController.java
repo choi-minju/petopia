@@ -193,7 +193,7 @@ public class MemberController {
         req.setAttribute("url", naverAuthUrl);
         
         /* ==== 2019.01.24 ==== 아이디 비번찾기를 위한 상태 표시 */
-        req.setAttribute("status", 0);
+        //req.setAttribute("status", 0);
         /* ==== 2019.01.24 ==== 아이디 비번찾기를 위한 상태 표시 */
         
 		return "join/login.tiles1";
@@ -773,7 +773,9 @@ public class MemberController {
 		paraMap.put("SEARCH", search);
 		paraMap.put("ORDERBY", orderBy);
 		
-		System.out.println("searchWhat: "+searchWhat+", search: "+search+", orderBy: "+orderBy);
+		// === 2019.01.25 === 주석 //
+		// System.out.println("searchWhat: "+searchWhat+", search: "+search+", orderBy: "+orderBy);
+		// === 2019.01.25 === 주석 //
 		
 		// 해당하는 총회원 수
 		if(search == null || "".equals(search)) {
@@ -904,11 +906,21 @@ public class MemberController {
 	} // end of public int requireLoginAdmin_updateAdminMemberStatusInByIdx(HttpServletRequest req, HttpServletResponse res)
 
 	// *** 비밀번호 찾기 *** //
+	// === 2019.01.25 === 비밀번호 찾기 수정 //
+	// 비밀번호 찾는 모달
+	@RequestMapping(value="/findPwd.pet", method={RequestMethod.GET})
+	public String findPwd() {
+		
+		return "tiles1/findMember/findPwd";
+	} // end of public String findPwd()
+	
 	// === 2019.01.24 === 비밀번호 찾기 시작 //
 	// 아이디와 이메일로 회원이 있는지 찾고 있을 경우 이메일로 보내기
 	@RequestMapping(value="/selectCheckUser.pet", method={RequestMethod.POST})
 	@ResponseBody
-	public int selectCheckUser(HttpServletRequest req) {
+	public HashMap<String, String> selectCheckUser(HttpServletRequest req) { // HashMap으로 바꾸기 ==> status와 code보내기 위해
+		
+		HashMap<String, String> resultMap = new HashMap<String, String>();
 		
 		String userid = req.getParameter("userid");
 		String name = req.getParameter("name");
@@ -923,7 +935,7 @@ public class MemberController {
 		int status = 0;
 		if(cnt == 0) {
 			// 회원이 없는 경우
-			status = 1; // 회원이 없음
+			status = 0; // 회원이 없음
 		} else {
 			// 코드 생성
 			// 인증키를 랜덤하게 생성하도록 한다.
@@ -932,14 +944,14 @@ public class MemberController {
 			String certificationCode = "";
 			
 			char randchar = ' ';
-			for(int i=0; i<3; i++) {
+			for(int i=0; i<4; i++) {
 				randchar = (char)(rnd.nextInt('z'-'a'+1) + 'a');
 				
 				certificationCode += randchar;
 			} // 문자
 			
 			int randnum = 0;
-			for(int i=0; i<9; i++) {
+			for(int i=0; i<4; i++) {
 				randnum = rnd.nextInt(9-0+1)+0;
 				certificationCode += randnum;
 			} // 숫자
@@ -962,15 +974,87 @@ public class MemberController {
 			     
 			      mailSender.send(message);
 		    } catch(Exception e){
-		      System.out.println(e);
+		      e.printStackTrace();
 		    } // end of try-catch
 			
-			status = 2;
+			status = 1;
+			
+			resultMap.put("certificationCode", certificationCode);
 		} // enf of if~else
 		
 		// System.out.println("cnt: "+cnt);
 		
-		return status;
+		resultMap.put("status", String.valueOf(status));
+		
+		return resultMap;
 	} // end of public int selectCheckUser(HttpServletRequest req)
 	// === 2019.01.24 === 비밀번호 찾기 //
+	
+	String code = "";
+	// 코드 입력하는 창으로 이동
+	@RequestMapping(value="/findPwdCodeCheck.pet", method={RequestMethod.GET})
+	public String findPwdCodeCheck(HttpServletRequest req) {
+		
+		String certificationCode = req.getParameter("certificationCode");
+		String userEmail = req.getParameter("userEmail");
+		code = certificationCode;
+		
+		//System.out.println("======================================================");
+		//System.out.println("certificationCode: "+certificationCode);
+		//System.out.println("userEmail: "+userEmail);
+		
+		req.setAttribute("certificationCode", certificationCode);
+		req.setAttribute("userEmail", userEmail);
+		
+		return "tiles1/findMember/findPwdCodeCheck";
+	} // end of public String findPwdCodeCheck(HttpServletRequest req)
+	
+	// 비밀번호 수정 페이지
+	@RequestMapping(value="/changePwd.pet", method={RequestMethod.GET})
+	public String changePwd(HttpServletRequest req) {
+		
+		String userid = req.getParameter("userid");
+		String userCode = req.getParameter("code");
+		System.out.println("code: "+code);
+		
+		if(code.equals(userCode)) {
+			// 일치하는 경우
+			req.setAttribute("userid", userid);
+			
+			return "tiles1/findMember/changePwd";
+		} else {
+			// 불일치하는 경우
+			req.setAttribute("userEmail", userid);
+			req.setAttribute("fail", 1);
+			
+			return "tiles1/findMember/findPwdCodeCheck";
+		} // end of if~else
+	} // end of public String changePwd(HttpServletRequest req)
+	
+	// 비밀번호 변경
+	@RequestMapping(value="/updatePwd.pet", method={RequestMethod.POST})
+	public String updatePwd(HttpServletRequest req) {
+		String userid = req.getParameter("userid");
+		String pwd = req.getParameter("pwd");
+		
+		pwd = SHA256.encrypt(pwd);
+		
+		HashMap<String, String> paramap = new HashMap<String, String>();
+		paramap.put("USERID", userid);
+		paramap.put("PWD", pwd);
+		
+		int result = service.updateMemberPwdByUserid(paramap);
+		
+		String msg = "";
+		if(result == 0) {
+			msg = "비밀번호 변경에 실패하였습니다.";
+		} else {
+			msg = "비밀번호가 변경되었습니다.";
+		} // end of if~else
+		
+		req.setAttribute("msg", msg);
+		
+		return "tiles1/findMember/changePwdFinish"; // 비밀번호 완료 페이지로 이동
+	} // end of public String updatePwd(HttpServletRequest req)
+	// === 2019.01.25 === 비밀번호 찾기 수정 //
 }

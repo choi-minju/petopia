@@ -2,10 +2,51 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
 <mapper namespace="biz_member">
-
-<select id="idDuplicateCheck" parameterType="String" resultType="Integer">
-		SELECT COUNT(*) AS CNT
-		FROM member
-		WHERE userid = #{userid}
+	
+	<resultMap type="HashMap" id="tagListMap">
+		<result property="FK_TAG_NAME"	column="fk_tag_name"	javaType="String"/>
+		<result property="FK_TAG_UID"	column="fk_tag_uid"	javaType="String"/>
+	</resultMap>
+	<select id="selectHaveTagList" resultMap="tagListMap">
+		select distinct fk_tag_name, fk_tag_uid
+		from have_tag
 	</select>
+	
+	<!-- <select id="selectBizMemberIdIsUsed" parameterType="String" resultType="int">
+		select count(*)
+		from member
+		userid = #{userid}
+	</select> -->
+	
+	<!-- 회원가입할 회원번호 받아오기 -->
+	<select id="selectBizMemberSeq" resultType="int">
+		select seq_member.nextval
+		from dual
+	</select>
+	
+	<!-- member 테이블 insert -->
+	<insert id="insertMemberByMvo" parameterType="com.final2.petopia.model.Biz_MemberVO">
+		insert into member(idx, userid, pwd, name, nickname, birthday, phone, profileimg, fileName, membertype)
+		values(#{idx_biz}, #{userid}, #{pwd}, #{name}, #{name}, sysdate, #{phone}, #{profileimg}, #{fileName}, 2)
+	</insert>
+	
+	<insert id="insertLogin_logByMvo" parameterType="com.final2.petopia.model.Biz_MemberVO">
+		insert into login_log(idx, fk_userid, fk_pwd, lastlogindate)
+		values(#{idx_biz}, #{userid}, #{pwd}, sysdate)
+	</insert>
+	
+	<!-- have_tag 테이블 insert -->
+	<insert id="insertHave_tagByTagList" parameterType="HashMap">
+		insert into have_tag(fk_tag_UID, fk_idx, fk_tag_name) values
+		(#{FK_TAG_UID}, #{FK_IDX}, #{FK_TAG_NAME})
+	</insert>
+	
+	<!-- biz_info 테이블 insert  -->
+	<insert id="insertBizInfo" parameterType="com.final2.petopia.model.Biz_MemberVO">
+		insert into biz_info(idx_biz, biztype, repname, biznumber, postcode, addr1, addr2, latitude, longitude, prontimg
+			,weekday, wdstart, wdend, lunchstart, lunchend, satstart, satend, dayoff, dog, cat, smallani, etc, easyway, intro)
+		values(#{idx_biz}, #{biztype}, #{repname}, #{biznumber}, #{postcode}, #{addr1}, #{addr2}, #{latitude}, #{longitude}, #{prontimg}
+			, #{weekday}, to_date(#{wdstart}, 'hh24:mi'), to_date(#{wdend}, 'hh24:mi'), to_date(#{lunchstart}, 'hh24:mi'), to_date(#{lunchend}, 'hh24:mi'), to_date(#{satstart}, 'hh24:mi'), to_date(#{satend}, 'hh24:mi'), #{dayoff}, #{dog}, #{cat}, #{smallani}, #{etc}, #{easyway}, #{intro})
+	</insert>
+	
 </mapper>

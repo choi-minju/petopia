@@ -7,10 +7,12 @@ show user;
 -- [190114] 회원 등급 삭제(fk컬럼, 테이블); 회의 결과
 -- [190118] consult 테이블, consult_comment 테이블 컬럼추가 및 변경; 지예
 -- [190120] reservation 테이블에 fk_idx_biz 컬럼 및 fk 제약조건 추가; 수미
--- [190122] pet_info 테이블에 pet_size, pet_weight 컬럼 not null 변경; 현재
+-- [190122] pet_info 테이블에 pet_size, pet_weight 컬럼 not null 변경, pet_status 컬럼 추가; 현재
 -- [190122] notification 테이블에 not_type 컬럼 check제약 조건 변경; 호환
 -- [190124] 1; deposit 테이블에 fk_payment_UID 컬럼 추가; 수미
 -- [190124] 2; notification 테이블에 컬럼 및 제약조건 추가 : 지민
+-- [190125] 프로시저 where절 추가; 민주
+-- [190126] 병원회원 최초 예약 스케줄 생성 프로시저 추가; 수미
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -498,6 +500,7 @@ CREATE TABLE petcare (
 		PRIMARY KEY (care_UID)
 );
 
+-- drop sequence seq_petcare_UID
 create sequence seq_petcare_UID  --펫케어
 start with 1
 increment by 1
@@ -515,6 +518,7 @@ CREATE TABLE caretype (
 		PRIMARY KEY (caretype_UID)
 );
 
+-- drop sequence seq_caretype_UID
 create sequence seq_caretype_UID --케어 타입
 start with 1
 increment by 1
@@ -1456,7 +1460,7 @@ ALTER TABLE funding_refund
 		);
         
 
--- 관리자 회원 리스트 프로시저(검색X 정렬X)
+-- 관리자 회원 리스트 프로시저(검색X 정렬X) ++ [190125] 프로시저 where절 추가
 create or replace procedure pcd_selectMemberList
 (   p_startno       IN      member.idx%TYPE
   , p_endno         IN      member.idx%TYPE
@@ -1475,10 +1479,197 @@ begin
                 , trunc(months_between(sysdate, lastlogindate)) AS lastlogindategap
             from member a JOIN login_log b
             ON a.idx = b.idx
+            where a.membertype = 1
             order by idx asc
         ) V
     ) T
     where rno between p_startno and p_endno;
 end pcd_selectMemberList;
 
-commit;
+-- [190126] 병원회원의 최초 예약스케줄 생성 프로시저 (학원PC에는 생성되어있음)
+create or replace procedure pcd_firstAddSchedule(p_idx_biz IN number)
+is
+    v_weekday varchar2(1); 
+begin
+        select substr(weekday, -2, 1) as weekday into v_weekday from biz_info where idx_biz = p_idx_biz;
+        
+        if(v_weekday='5')
+        then
+            insert into schedule(schedule_UID, fk_idx_biz, schedule_DATE)
+            select seq_schedule_UID.nextval, idx_biz, scheduledate
+            from
+            (
+            select idx_biz, to_date(V.DT || ''|| T.time_str, 'yyyy-mm-dd hh24:mi') as scheduledate
+            from
+            (select to_char(s + (((level*0.5)-0.5)/24), 'hh24:mi') as time_str, idx_biz
+             from   (select wdstart s,
+                           lunchstart e,
+                           idx_biz
+                    from   biz_info
+                    where idx_biz = p_idx_biz)
+            connect by s + (((level*0.5)-0.5)/24) < e) T
+            left join 
+            (
+            SELECT A.DT
+              FROM (    SELECT TO_CHAR (SDT + LEVEL - 1, 'YYYYMMDD') DT,
+                               TO_CHAR (SDT + LEVEL - 1, 'D') D
+                          FROM (SELECT sysdate SDT,
+                                       sysdate+14  EDT
+                                  FROM dual)
+                    CONNECT BY LEVEL <= EDT - SDT + 1) A
+            WHERE A.D NOT IN ('1', '7') 
+            ) V
+            on 1=1
+            UNION
+            select idx_biz, to_date(V.DT || ''|| T.time_str, 'yyyy-mm-dd hh24:mi') as scheduledate
+            from
+            (select to_char(s + (((level*0.5)-0.5)/24), 'hh24:mi') as time_str, idx_biz
+             from   (select lunchend s,
+                           wdend e,
+                           idx_biz
+                    from   biz_info
+                    where idx_biz = p_idx_biz)
+            connect by s + (((level*0.5)-0.5)/24) < e) T
+            left join 
+            (
+            SELECT A.DT
+              FROM (    SELECT TO_CHAR (SDT + LEVEL - 1, 'YYYYMMDD') DT,
+                               TO_CHAR (SDT + LEVEL - 1, 'D') D
+                          FROM (SELECT sysdate SDT,
+                                       sysdate+14  EDT
+                                  FROM dual)
+                    CONNECT BY LEVEL <= EDT - SDT + 1) A
+            WHERE A.D NOT IN ('1', '7') 
+            ) V
+            on 1=1
+            order by 1);
+            
+        elsif(v_weekday=4)
+        then
+            insert into schedule(schedule_UID, fk_idx_biz, schedule_DATE)
+            select seq_schedule_UID.nextval, idx_biz, scheduledate
+            from
+            (
+            select idx_biz, to_date(V.DT || ''|| T.time_str, 'yyyy-mm-dd hh24:mi') as scheduledate
+            from
+            (select to_char(s + (((level*0.5)-0.5)/24), 'hh24:mi') as time_str, idx_biz
+             from   (select wdstart s,
+                           lunchstart e,
+                           idx_biz
+                    from   biz_info
+                    where idx_biz = p_idx_biz)
+            connect by s + (((level*0.5)-0.5)/24) < e) T
+            left join 
+            (
+            SELECT A.DT
+              FROM (    SELECT TO_CHAR (SDT + LEVEL - 1, 'YYYYMMDD') DT,
+                               TO_CHAR (SDT + LEVEL - 1, 'D') D
+                          FROM (SELECT sysdate SDT,
+                                       sysdate+14  EDT
+                                  FROM dual)
+                    CONNECT BY LEVEL <= EDT - SDT + 1) A
+            WHERE A.D NOT IN ('1', '2', '7') 
+            ) V
+            on 1=1
+            UNION
+            select idx_biz, to_date(V.DT || ''|| T.time_str, 'yyyy-mm-dd hh24:mi') as scheduledate
+            from
+            (select to_char(s + (((level*0.5)-0.5)/24), 'hh24:mi') as time_str, idx_biz
+             from   (select lunchend s,
+                           wdend e,
+                           idx_biz
+                    from   biz_info
+                    where idx_biz = p_idx_biz)
+            connect by s + (((level*0.5)-0.5)/24) < e) T
+            left join 
+            (
+            SELECT A.DT
+              FROM (    SELECT TO_CHAR (SDT + LEVEL - 1, 'YYYYMMDD') DT,
+                               TO_CHAR (SDT + LEVEL - 1, 'D') D
+                          FROM (SELECT sysdate SDT,
+                                       sysdate+14  EDT
+                                  FROM dual)
+                    CONNECT BY LEVEL <= EDT - SDT + 1) A
+            WHERE A.D NOT IN ('1', '2', '7') 
+            ) V
+            on 1=1
+            order by 1);
+        elsif(v_weekday='3')
+        then
+            insert into schedule(schedule_UID, fk_idx_biz, schedule_DATE)
+            select seq_schedule_UID.nextval, idx_biz, scheduledate
+            from
+            (
+            select idx_biz, to_date(V.DT || ''|| T.time_str, 'yyyy-mm-dd hh24:mi') as scheduledate
+            from
+            (select to_char(s + (((level*0.5)-0.5)/24), 'hh24:mi') as time_str, idx_biz
+             from   (select wdstart s,
+                           lunchstart e,
+                           idx_biz
+                    from   biz_info
+                    where idx_biz = p_idx_biz)
+            connect by s + (((level*0.5)-0.5)/24) < e) T
+            left join 
+            (
+            SELECT A.DT
+              FROM (    SELECT TO_CHAR (SDT + LEVEL - 1, 'YYYYMMDD') DT,
+                               TO_CHAR (SDT + LEVEL - 1, 'D') D
+                          FROM (SELECT sysdate SDT,
+                                       sysdate+14  EDT
+                                  FROM dual)
+                    CONNECT BY LEVEL <= EDT - SDT + 1) A
+            WHERE A.D NOT IN ('1', '3', '5', '7') 
+            ) V
+            on 1=1
+            UNION
+            select idx_biz, to_date(V.DT || ''|| T.time_str, 'yyyy-mm-dd hh24:mi') as scheduledate
+            from
+            (select to_char(s + (((level*0.5)-0.5)/24), 'hh24:mi') as time_str, idx_biz
+             from   (select lunchend s,
+                           wdend e,
+                           idx_biz
+                    from   biz_info
+                    where idx_biz = p_idx_biz)
+            connect by s + (((level*0.5)-0.5)/24) < e) T
+            left join 
+            (
+            SELECT A.DT
+              FROM (    SELECT TO_CHAR (SDT + LEVEL - 1, 'YYYYMMDD') DT,
+                               TO_CHAR (SDT + LEVEL - 1, 'D') D
+                          FROM (SELECT sysdate SDT,
+                                       sysdate+14  EDT
+                                  FROM dual)
+                    CONNECT BY LEVEL <= EDT - SDT + 1) A
+            WHERE A.D NOT IN ('1', '3', '5', '7') 
+            ) V
+            on 1=1
+            order by 1);
+        end if;
+        insert into schedule(schedule_UID, fk_idx_biz, schedule_DATE)
+        select seq_schedule_UID.nextval, idx_biz, scheduledate
+        from
+        (
+        select idx_biz, to_date(V.DT || ''|| T.time_str, 'yyyy-mm-dd hh24:mi') as scheduledate
+        from
+        (select to_char(s + (((level*0.5)-0.5)/24), 'hh24:mi') as time_str, idx_biz
+         from   (select satstart s,
+                       satend e,
+                       idx_biz
+                from   biz_info
+                where idx_biz = p_idx_biz)
+        connect by s + (((level*0.5)-0.5)/24) < e) T
+        left join 
+        (
+        SELECT A.DT, A.D
+          FROM (    SELECT TO_CHAR (SDT + LEVEL - 1, 'YYYYMMDD') DT,
+                           TO_CHAR (SDT + LEVEL - 1, 'D') D
+                      FROM (SELECT sysdate SDT,
+                                   sysdate+14  EDT
+                              FROM dual)
+                CONNECT BY LEVEL <= EDT - SDT + 1) A
+        WHERE A.D = '7'
+        ) V
+        on 1=1
+        order by 1
+        );
+end;
