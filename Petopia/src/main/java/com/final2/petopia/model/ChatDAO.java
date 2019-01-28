@@ -20,5 +20,13 @@ public class ChatDAO implements InterChatDAO {
 		
 		return n;
 	}
+
+	@Override
+	public String viewcode(String code) {
+		
+		String n = sqlsession.selectOne("chat.viewcode", code);
+		
+		return n;
+	}
 	
 }

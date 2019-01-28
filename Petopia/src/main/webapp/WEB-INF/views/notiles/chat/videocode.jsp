@@ -25,21 +25,22 @@
 	$(document).ready(function(){
 		
 		var n = "${n}";
+		var chatcode = $('input#code').val();
 		
 		$("#code").keydown(function(event){
 			
 			if(event.keyCode == 13) {
-				join();
+				viewcode(chatcode);
 			}
 		});
 		
 		$("#join-button").click(function(){
-			join();
+			viewcode(chatcode);
 		});
 		
 	}); // end of document.ready
 		
-	function join() {
+	<%-- function join() {
 		
 		var chatcode = $('input#code').val();
 		/* var confirmcode = $("#div_code").find("input[id=hide]").val(); */
@@ -52,6 +53,40 @@
 		else{
 			alert("번호가 일치하지 않습니다 다시입력해주세요");
 		}
+	} --%>
+	
+	function viewcode() {
+		
+		var chatcode = $("#code").val();
+		console.log(chatcode);
+		
+		var form_data = {"code" : chatcode};
+		console.log(form_data);
+		
+		$.ajax({
+			url : "<%= request.getContextPath() %>/viewcode.pet",
+			type : "GET",
+			data : form_data,
+			dataType : "JSON",
+			success : function(json) {
+				var result = json.code;
+				/* var chatcode = $('input#code').val(); */
+				/* var confirmcode = $("#div_code").find("input[id=hide]").val(); */
+				if(chatcode == result) {
+					var frm = document.videochatFrm;
+					parent.location.href="<%= serverName %><%= ctxPath %>/videochat.pet";
+					frm.submit();
+				}
+				else{
+					alert("번호가 일치하지 않습니다 다시입력해주세요");
+				}
+			},
+			
+			error : function() {
+				alert("코드불러오는데 실패했습니다. DB를 확인해주세요");
+			}
+		})
+
 	}
 
 </script>
@@ -61,14 +96,12 @@
 	<div id="div_code" align="center">
 		<span style="color: white; font-size: 12pt;">상담을 위한 코드를 입력해주세요</span><br/>
 		<input type="text" name="code" id="code" size="15" placeholder="123456" required />
-		<input type="hidden" name="hide" id="hide" value="${chatcode}" />
 		<c:if test="${n == 0}">
 			<span style="color: red;">번호가 맞지않습니다 다시 시도해주세요.</span>
 		</c:if>
 	</div>
-	</br>
 	<div id="div_input" align="center">
-		<button id="join-button" type="button" class="btn btn-default myclose" data-dismiss="modal">확인</button>
+		<button id="join-button"  onclick="viewcode();" type="button" class="btn btn-default myclose" data-dismiss="modal">확인</button>
 	</div>
 </form>
 </body>
