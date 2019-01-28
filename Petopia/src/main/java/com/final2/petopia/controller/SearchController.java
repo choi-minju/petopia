@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.final2.petopia.model.Biz_MemberVO;
 import com.final2.petopia.service.InterSearchService;
@@ -27,14 +28,44 @@ public class SearchController {
 	public String search(HttpServletRequest req) {
 		
 		String searchWord = req.getParameter("searchWord");
+		String orderbyNo = req.getParameter("orderbyNo");
+		String[] numbers = req.getParameterValues("numbers");
+		String str_numbers = "";
+		String whereNo = req.getParameter("whereNo");
 		
 		if(searchWord == null || searchWord.trim().isEmpty()) {
 			searchWord = "";
 		}
+		
+		if(orderbyNo == null || orderbyNo.trim().isEmpty()) {
+			orderbyNo = "1";
+		}
+		
+		if(whereNo == null || orderbyNo.trim().isEmpty()) {
+			whereNo = "1";
+		}
+		
+		if(numbers == null || numbers[0].trim().isEmpty()) {
+			str_numbers = "";
+		}
+
 		int cnt = service.searchCount(searchWord);
 		// 지도화면으로 넘어갈때 몇건 검색되었는지도 보내기
 		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(searchWord,"1");
+		if(numbers != null && !numbers[0].trim().isEmpty()) {
+			for(int i=0;i<numbers.length;i++) {
+				if(numbers[i].equals("현재위치")) {
+					continue;
+				}
+				if(i == 1) {
+					str_numbers += "DECODE(idx_biz,";
+				}
+				
+				str_numbers += (i!=(numbers.length-1))?numbers[i]+","+i+",":numbers[i]+","+i+")";
+			}
+		}
+		
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,str_numbers,orderbyNo);
 		// 검색어를 기준으로 biz_member 정보 리스트 불러오기
 		
 		Gson gson = new Gson();
@@ -44,9 +75,10 @@ public class SearchController {
 		req.setAttribute("cnt", cnt);
 		req.setAttribute("gson_bizmemList", gson_bizmemList);
 		req.setAttribute("bizmemList", bizmemList);
-		
+		req.setAttribute("whereNo", whereNo);
+	
 		return "search/index.tiles2";
-		
+	
 	}
 	
 	// 검색어를 기준으로 지역별, 병원별, 약국별 갯수 보여주는 AJAX
@@ -81,7 +113,7 @@ public class SearchController {
 		
 	}
 	
-	// 검색결과 창에서 평점순/거리순으로 정렬을 요청했을때 order by 해서 넘겨주는 AJAX
+	// 검색결과 창에서 평점순으로 정렬을 요청했을때 order by 해서 넘겨주는 AJAX
 	@RequestMapping(value="selectOrderbyNo.pet", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
 	@ResponseBody
 	public String selectOrderbyNo(HttpServletRequest req) {
@@ -89,7 +121,7 @@ public class SearchController {
 		String orderbyNo = req.getParameter("orderbyNo");
 		String searchWord = req.getParameter("searchWord");
 		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(searchWord,orderbyNo);
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord("1",searchWord,"",orderbyNo);
 
 		Gson gson = new Gson();
 		String gson_bizmemList = gson.toJson(bizmemList);
@@ -97,6 +129,52 @@ public class SearchController {
 		return gson_bizmemList;
 		
 	}
+
+	// 검색결과 창에서 거리순으로 정렬을 요청했을때 order by 해서 넘겨주는 AJAX
+	@RequestMapping(value="selectOrderbydistance.pet", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	@ResponseBody
+	public String selectOrderbydistance(HttpServletRequest req) {
+
+		String[] numbers = req.getParameterValues("numbers");
+		String searchWord = req.getParameter("searchWord");
+		
+		String str_numbers = "";
+		for(int i=0;i<numbers.length;i++) {
+			if(numbers[i].equals("현재위치")) {
+				continue;
+			}
+			if(i == 1) {
+				str_numbers += "DECODE(idx_biz,";
+			}
+			
+			str_numbers += (i!=(numbers.length-1))?numbers[i]+","+i+",":numbers[i]+","+i+")";
+		}
+		
+		// System.out.println(str_numbers);
+		
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord("1",searchWord,str_numbers,"2");
+
+		Gson gson = new Gson();
+		String gson_bizmemList = gson.toJson(bizmemList);
+		
+		return gson_bizmemList;
+	}
 	
 	
+	@RequestMapping(value="selectwhere.pet", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	@ResponseBody
+	public String selectwhere(HttpServletRequest req) {
+		
+		String whereNo = req.getParameter("whereNo");
+		String searchWord = req.getParameter("searchWord");
+		String orderbyNo = "1";
+		
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,"",orderbyNo);
+
+		Gson gson = new Gson();
+		String gson_bizmemList = gson.toJson(bizmemList);
+		
+		return gson_bizmemList;
+		
+	}
 }

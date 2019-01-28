@@ -35,14 +35,20 @@ public class SearchService implements InterSearchService {
 	
 	// 검색어를 기준으로 biz_member 정보 리스트 불러오기
 	@Override
-	public List<Biz_MemberVO> getBizmemListBySearchWord(String searchWord, String orderbyNo) {
+	public List<Biz_MemberVO> getBizmemListBySearchWord(String whereNo, String searchWord, String numbers, String orderbyNo) {
 		
-		HashMap<String, String> map = new HashMap<String, String>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 		
+		if(!numbers.equals("")) {
+			map.put("STR_NUMBERS", numbers);
+		}
+
+		map.put("WHERENO", whereNo);
 		map.put("SEARCHWORD", searchWord);
 		map.put("ORDERBYNO", orderbyNo);
 		
 		List<Biz_MemberVO> bizMemList = dao.getBizmemListBySearchWord(map);
+		
 		return bizMemList;
 	}
 
