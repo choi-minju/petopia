@@ -46,17 +46,12 @@
 		from caretype
 	</select>
 	
-	<!-- //===== 케어 등록 caretype 가져오기 ===== -->
-<!-- 	<resultMap type="java.util.HashMap" id="getCaretypeListMap">
-		<result property="CARETYPE_UID" 	column="caretype_UID" 	javaType="String" />
-		<result property="CARETYPE_NAME" 	column="caretype_name" 	javaType="String" />
-		<result property="CARETYPE_INFO"    column="caretype_info" 	javaType="String" />
-	</resultMap>
-	<select id="getCaretypeList" resultMap="getCaretypeListMap">
+	<!-- //===== 케어 등록 caretype_info 가져오기 ===== -->
+	<select id="getCaretype_infoList" parameterType="String" resultMap="getCaretypeListMap">
 		select caretype_UID, caretype_name, caretype_info
 		from caretype
+		where caretype_UID = #{caretype}
 	</select>
-	 -->
 	<!-- [19-01-25. 수정 끝_hyunjae] -->
 
 </mapper>

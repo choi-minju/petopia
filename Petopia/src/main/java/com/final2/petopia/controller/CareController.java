@@ -140,12 +140,12 @@ public class CareController {
 	public String careRegister(HttpServletRequest req) {
 		
 		//String fk_pet_UID = req.getParameter("fk_pet_UID");
-		//String fk_caretype_UID = req.getParameter("fk_caretype_UID");
+		String fk_caretype_UID = req.getParameter("fk_caretype_UID");
 		
 		List<HashMap<String,String>> caretypeList = service.getCaretypeList();
 		
 		req.setAttribute("caretypeList", caretypeList);
-		//req.setAttribute("fk_caretype_UID", fk_caretype_UID);
+		req.setAttribute("fk_caretype_UID", fk_caretype_UID);
 		
 		return "care/careRegister.tiles2";
 	}
@@ -158,8 +158,8 @@ public class CareController {
 		
 		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
 		
-		String caertype = req.getParameter("caertype");
-/*		List<HashMap<String,String>> list = service.getCaretype_infoList(caertype);
+		String caretype = req.getParameter("caertype");
+		List<HashMap<String,String>> list = service.getCaretype_infoList(caretype);
 		
 		if(list != null) {
 			for(HashMap<String,String> datamap : list) {
@@ -169,9 +169,10 @@ public class CareController {
 				returnmapList.add(submap);
 			}
 		}
-		*/
+	
 		return returnmapList;
 	}
+	
 
 	// [19-01-24. 수정 끝_hyunjae]
 	// [19-01-25. 수정 끝_hyunjae]
