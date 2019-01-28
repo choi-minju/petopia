@@ -45,6 +45,7 @@ public class CareController {
 		return "care/petList.tiles2";
 	}
 	
+	
 	//===== 반려동물 리스트 완료 =====
 	@RequestMapping(value="/getPet.pet", method={RequestMethod.GET})
 	@ResponseBody
@@ -80,12 +81,14 @@ public class CareController {
 	}
 	// [19-01-24. 수정 끝_hyunjae]
 
+	
 	//===== 반려동물 등록페이지 요청 =====
 	@RequestMapping(value="/petRegister.pet", method={RequestMethod.GET})
 	public String register(HttpServletRequest req) {
 		
 		return "care/petRegister.tiles2";
 	}
+	
 	
 	// [19-01-24. 수정 시작_hyunjae]
 	//===== 반려동물 등록 요청완료 =====
@@ -94,17 +97,22 @@ public class CareController {
 	
 		int n = service.insertPet_info(pvo);
 
-		String msg ="";
+		String msg = "";
+		String loc = "";
+		
 		if(n == 1) {
 			msg = "반려동물 등록 성공!!";
+			loc = "/petopia/petList.pet";
 		}
 		else {
 			msg = "반려동물 등록 실패!!";
+			loc = "javascript:history.back();";
 		}
 		
 		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
 
-		return "care/petList.tiles2";
+		return "msg";
 	}
 	// [19-01-24. 수정 끝_hyunjae]
 	
@@ -174,23 +182,29 @@ public class CareController {
 		return returnmapList;
 	}
 	
+	
 	//===== 케어 등록페이지 요청완료 =====
 	@RequestMapping(value="/careRegisterEnd.pet", method={RequestMethod.POST})
 	public String careRegisterEnd(CareVO cvo, HttpServletRequest req) {
 	
 		int n = service.insertPetcare(cvo);
 		
-		String msg ="";
+		String msg = "";
+		String loc = "";
+		
 		if(n == 1) {
-			msg = "반려동물 등록 성공!!";
+			msg = "케어 등록 성공!!";
+			loc = "/petopia/careCalendar.pet";
 		}
 		else {
-			msg = "반려동물 등록 실패!!";
+			msg = "케어 등록 실패!!";
+			loc = "javascript:history.back();";
 		}
 		
 		req.setAttribute("msg", msg);
-	 
-		return "care/petList.tiles2";
+		req.setAttribute("loc", loc);
+
+		return "msg";		
 	}
 	
 

@@ -109,7 +109,7 @@
    function getPet() { 
       
       var form_data = {fk_idx : $("#fk_idx").val()}; 
-      console.log(form_data);
+
       $.ajax({
          url : "getPet.pet",   
          type :"GET",                               // method
