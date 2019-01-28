@@ -191,7 +191,7 @@ public class CareController {
 		
 		String msg = "";
 		String loc = "";
-		
+		 
 		if(n == 1) {
 			msg = "케어 등록 성공!!";
 			loc = "/petopia/careCalendar.pet";
