@@ -183,9 +183,10 @@
 		
 		$("#goEditBtn").click(function(){
 			
-			// 유효성 검사
+			// 유효성 검사 -> 비밀번호 유효성이 안됨 ㅜㅜ
 			$(".must").each(function() {
 				var data = $(this).val().trim();
+				
 				if(data == ""){
 					$(this).parent().find(".error").show();
 					return;
@@ -202,8 +203,7 @@
 				$(".pwdError").show();
 				$(this).val("");
 				return;
-			}
-			else{
+			} else{
 				$(".pwdError").hide();
 			}
 			
