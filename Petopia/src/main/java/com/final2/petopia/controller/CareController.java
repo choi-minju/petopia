@@ -124,11 +124,17 @@ public class CareController {
 		String pet_UID = req.getParameter("pet_UID");
 	
 		if(pet_UID != null) {
+/*						
+			HashMap<String, Object> paraMap = new HashMap<String, Object>(); 
+			paraMap.put("PET_UID", pet_UID);
 			
-			req.setAttribute("pet_UID", pet_UID);
+			ArrayList<PetVO> petInfo = service.Pet_info(paraMap);
 			
+			req.setAttribute("petInfo", petInfo);
+ 			req.setAttribute("pet_UID", pet_UID);
+*/			
 		}
-		
+
 		return "care/petView.tiles2";
 	}
 	
