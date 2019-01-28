@@ -50,33 +50,10 @@
 	$(document).ready(function(){
 	    
 		$('#cs_contents').summernote({
-            height: 300,                 // set editor height
-            minHeight: null,             // set minimum height of editor
-            maxHeight: null,             // set maximum height of editor
-            focus: true                  // set focus to editable area after initializing summernote
-            
+            minHeight: 500,
+            maxHeight: null,
+            focus: true
     	});
-		
-		<%--
-	    //전역변수
-	    var obj = [];
-	    
-	    //스마트에디터 프레임생성
-	    nhn.husky.EZCreator.createInIFrame({
-	        oAppRef: obj,
-	        elPlaceHolder: "content",
-	        sSkinURI: "<%= request.getContextPath() %>/resources/smarteditor/SmartEditor2Skin.html",
-	        htParams : {
-	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
-	            bUseToolbar : true,            
-	            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
-	            bUseVerticalResizer : true,    
-	            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
-	            bUseModeChanger : true,
-	        }
-	    });
-		--%>
-		
 		
 	    //쓰기버튼
 	    $("#btnAdd").click(function(){
@@ -162,7 +139,7 @@
 			--%>
 			
 			<div class="col-xs-12 col-md-12">
-				<textarea name="cs_contents" id="cs_contents" rows="10" cols="100" style="width:100%; height:412px; border-radius:3px;" class="summernote"></textarea>
+				<textarea name="cs_contents" id="cs_contents" style="width:100%; border-radius:3px;" class="summernote" ></textarea>
            		<%-- ** textarea 태그에서 required="required" 속성을 사용하면 스마트 에디터는 오류가 발생하므로 사용하지 않는다. ** --%>
 			</div>
 		</div>	

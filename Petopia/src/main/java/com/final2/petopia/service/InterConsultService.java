@@ -17,6 +17,9 @@ public interface InterConsultService {
 	// [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
 	int selectTotalCountWithSearch(HashMap<String, String> paraMap);
 
+	// [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
+	int selectMyConsultCountNoSearch(String idx);
+	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	int selectTotalCountNoSearch();
 
@@ -31,9 +34,11 @@ public interface InterConsultService {
 
 	// [조회수 증가 X] 수정하기 위한 글 가져오기
 	ConsultVO selectConsultEditNoCount(String consult_UID);
-	// 글상세 수정하기 
+	// 글상세 수정하기
 	int updateConsultDetail(HashMap<String, String> paraMap);
 
+	// [조회수증가 X] 삭제할 글 정보 전체 가져오기
+	ConsultVO selectConsultDeleteNoCount(String consult_UID);
 	// 글상세 삭제하기
 	int deleteConsult(String consult_UID) throws Throwable;
 
@@ -50,6 +55,10 @@ public interface InterConsultService {
 
 	// 댓글 총 갯수
 	int selectCommentTotalCount(HashMap<String, String> paraMap);
+
+	
+
+	
 
 	
 

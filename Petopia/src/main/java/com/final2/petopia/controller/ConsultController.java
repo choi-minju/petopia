@@ -94,13 +94,18 @@ public class ConsultController {
 		String colname = req.getParameter("colname");
 		String search = req.getParameter("search");
 		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
+		String idx = req.getParameter("fk_idx");
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
 		HashMap<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("COLNAME", colname);
 		paraMap.put("SEARCH", search);
 		
+		
 		int totalCount = 0;			// 총게시물 갯수
-		int sizePerPage = 3;		// 한 페이지당 보여줄 게시물 갯수
+		int sizePerPage = 10;		// 한 페이지당 보여줄 게시물 갯수
 		int currentShowPageNo = 0;	// 현재 보여주는 페이지번호
 		int totalPage = 0; 			// 총페이지수 (웹브라우저상에 보여줄 총 페이지 갯수)
 		
@@ -112,6 +117,10 @@ public class ConsultController {
 		// - [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
 		if(search!=null && !search.trim().equals("") && !search.trim().equals("null")) {
 			totalCount = service.selectTotalCountWithSearch(paraMap);
+		}
+		// - [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
+		else if(idx!=null && loginuser.getIdx()==Integer.parseInt(idx)) {
+			totalCount = service.selectMyConsultCountNoSearch(idx);
 		}
 	 	// - [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 		else {
@@ -143,6 +152,8 @@ public class ConsultController {
 		
 		paraMap.put("STARTRNO", String.valueOf(startRno));
 		paraMap.put("ENDRNO", String.valueOf(endRno));
+		
+		paraMap.put("IDX", idx);
 
 		// - [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select
 		consultList = service.selectConsultListPaging(paraMap);
@@ -151,10 +162,11 @@ public class ConsultController {
 		pagebar += MyUtil.getPageBarWithSearch(sizePerPage, blockSize, totalPage, currentShowPageNo, colname, search, null, "consultList.pet");
 		pagebar += "</ul>";
 		
-		HttpSession session = req.getSession();
+		
 		session.setAttribute("readCountPermission", "yes");
 		
 		req.setAttribute("consultList", consultList);
+	
 		
 		req.setAttribute("colname", colname);
 		req.setAttribute("search", search);
@@ -181,9 +193,6 @@ public class ConsultController {
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
-		// #67. 글조회수(readCount)증가 (DML문 update)는 
-		/*      반드시 해당 글제목을 클릭했을 경우에만 글조회수가 증가되고 
-		        이전보기, 다음보기를 했을 경우나 웹브라우저에서 새로고침(F5)을 했을 경우에는 증가가 안되도록 한다. */
 		String readCountPermission = (String)session.getAttribute("readCountPermission");
 
 		String userid = null;
@@ -205,7 +214,16 @@ public class ConsultController {
 			// - [조회수 증가 X] 글 상세보기
 			consultvo = service.selectConsultDetailNoCount(consult_UID);
 		}
+
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("CONSULT_UID", consult_UID);
+		int totalCount = service.selectCommentTotalCount(paraMap);
+	
+		int sizePerPage = 10;
 		
+		int totalPage = (int)Math.ceil((double)totalCount/sizePerPage);
+		
+		req.setAttribute("totalPage", totalPage);
 		req.setAttribute("consultvo", consultvo);
 		req.setAttribute("gobackURL", gobackURL);
 		
@@ -283,11 +301,14 @@ public class ConsultController {
 	
 	// 1:1상담 삭제 요청 ------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultDelete.pet", method={RequestMethod.GET})
-	public String requireLogin_consultDelete(HttpServletRequest req, HttpServletResponse res, ConsultVO consultvo) throws Throwable {
+	public String requireLogin_consultDelete(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
 		// 삭제해야할 글번호 가져오기
 		String consult_UID = req.getParameter("consult_UID");
 		
+		// [조회수증가 X] 삭제할 글 정보 전체 가져오기
+		ConsultVO consultvo = service.selectConsultDeleteNoCount(consult_UID); //  selectConsultDetailNoCount 이 함수로 사용
+				
 		String msg = "";
 		String loc = "";
 		
@@ -295,12 +316,14 @@ public class ConsultController {
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
+		
+		System.out.println(consultvo.getUserid());
 		// !삭제하는사람=로그인사용자 
 		if(!loginuser.getUserid().equals(consultvo.getUserid())) {
 			msg = "다른 사용자의 글은 삭제가 불가합니다.";
 			loc = "javascript:history.back();";
 		}
-		// 삭제하는사람=로그인사용자 (내가쓴글)이면 view단 페이지로 넘긴다.
+		// 삭제하는사람=로그인사용자 (내가쓴글)
 		else {
 			// - 1:1상담글 삭제하기
 			int result = service.deleteConsult(consult_UID);
@@ -312,7 +335,7 @@ public class ConsultController {
 			}
 			else {
 				msg = "글삭제 성공!";
-				loc = req.getContextPath()+"/consultlist.pet";
+				loc = req.getContextPath()+"/consultList.pet";
 			}
 		}
 		req.setAttribute("msg", msg);
@@ -336,7 +359,7 @@ public class ConsultController {
 			// 댓글쓰기insert 및 원글의댓글갯수update 성공시
 			returnMap.put("CSCMT_NICKNAME", commentvo.getCscmt_nickname());
 			returnMap.put("CSCMT_CONTENTS", commentvo.getCscmt_contents());
-			returnMap.put("CSCMT_WRITEDAY", commentvo.getCscmt_writeday());
+			returnMap.put("CSCMT_WRITEDAY", MyUtil.getNowTime());
 		}
 		
 		return returnMap;
@@ -362,7 +385,7 @@ public class ConsultController {
 			currentShowPageNo = "1";
 		}
 		
-		int sizePerPage = 5;
+		int sizePerPage = 10;
 		
 		int rno1 = Integer.parseInt(currentShowPageNo) * sizePerPage - (sizePerPage-1);
 		int rno2 = Integer.parseInt(currentShowPageNo) * sizePerPage;
@@ -412,9 +435,6 @@ public class ConsultController {
 		int totalCount = service.selectCommentTotalCount(paraMap);
 	
 		int totalPage = (int)Math.ceil((double)totalCount/Integer.parseInt(sizePerPage));
-
-		
-		//req.setAttribute("totalPage", totalPage);
 		
 		retrunMap.put("TOTALPAGE", totalPage);
 		
@@ -437,6 +457,7 @@ public class ConsultController {
 		String cscmt_contents = req.getParameter("cscmt_contents");
 		String fk_consult_UID = req.getParameter("fk_consult_UID");
 	
+		/*
 		System.out.println("fk_cmt_id : "+fk_cmt_id);
 		System.out.println("fk_idx : "+fk_idx);
 		System.out.println("str_cscmt_group : "+str_cscmt_group);
@@ -445,7 +466,7 @@ public class ConsultController {
 		System.out.println("cscmt_nickname : "+cscmt_nickname);
 		System.out.println("cscmt_contents : "+cscmt_contents);
 		System.out.println("fk_consult_UID : "+fk_consult_UID);
-		
+		*/
 		commentvo.setFk_cmt_id(fk_cmt_id);
 		commentvo.setFk_idx(fk_idx);
 		commentvo.setCscmt_group(Integer.parseInt(str_cscmt_group));
@@ -462,7 +483,7 @@ public class ConsultController {
 			// 대댓글쓰기insert 및 원글의댓글갯수update 성공시
 			returnMap.put("CSCMT_NICKNAME", commentvo.getCscmt_nickname());
 			returnMap.put("CSCMT_CONTENTS", commentvo.getCscmt_contents());
-			returnMap.put("CSCMT_WRITEDAY", commentvo.getCscmt_writeday());
+			returnMap.put("CSCMT_WRITEDAY", MyUtil.getNowTime());
 		}
 		
 		return returnMap;
