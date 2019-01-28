@@ -14,6 +14,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
+import com.final2.petopia.common.MyUtil;
 // import com.final2.petopia.common.MyUtil;
 import com.final2.petopia.model.MemberVO;
 
@@ -47,8 +48,8 @@ public class LoginCheck {
 				req.setAttribute("msg", msg);
 				req.setAttribute("loc", loc);
 //			3) 로그인 성공 후 로그인 전 페이지로 돌아가는 작업; req에 담겨있는 add.action URL 가져와서 세션에 저장
-			//	String url = MyUtil.getCurrentURL(req);
-			//	session.setAttribute("goBackURL", url);
+				String url = MyUtil.getCurrentURL(req);
+				session.setAttribute("goBackURL", url);
 				
 //			4) 메시지와 함께 디스패쳐로 뷰 페이지로 보내기
 				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/msg.jsp");
@@ -86,8 +87,8 @@ public class LoginCheck {
 				req.setAttribute("msg", msg);
 				req.setAttribute("loc", loc);
 //			3) 로그인 성공 후 로그인 전 페이지로 돌아가는 작업; req에 담겨있는 add.action URL 가져와서 세션에 저장
-			//	String url = MyUtil.getCurrentURL(req);
-			//	session.setAttribute("goBackURL", url);
+				String url = MyUtil.getCurrentURL(req);
+				session.setAttribute("goBackURL", url);
 				
 //			4) 메시지와 함께 디스패쳐로 뷰 페이지로 보내기
 				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/msg.jsp");

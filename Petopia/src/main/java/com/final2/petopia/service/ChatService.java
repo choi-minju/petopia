@@ -17,7 +17,18 @@ public class ChatService implements InterChatService {
 	public int createcode(HashMap<String, String> map) throws Throwable{
 		
 		int n = 0;
+		
 		n = dao.addcode(map);
+		
+		return n;
+	}
+
+	@Override
+	public String viewcode(String code) throws Throwable {
+		
+		String n = "";
+		
+		n = dao.viewcode(code);
 		
 		return n;
 	}

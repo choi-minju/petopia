@@ -1,3 +1,4 @@
+<%@page import="com.final2.petopia.common.MyUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 

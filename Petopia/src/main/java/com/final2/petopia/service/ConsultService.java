@@ -40,6 +40,13 @@ public class ConsultService implements InterConsultService {
 		return n;
 	}
 
+	// [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
+	@Override
+	public int selectMyConsultCountNoSearch(String idx) {
+		int n = dao.selectMyConsultCountNoSearch(idx);
+		return n;
+	}
+	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	@Override
 	public int selectTotalCountNoSearch() {
@@ -88,6 +95,13 @@ public class ConsultService implements InterConsultService {
 		return n;
 	}
 
+	// [조회수증가 X] 삭제할 글 정보 전체 가져오기
+	@Override
+	public ConsultVO selectConsultDeleteNoCount(String consult_UID) {
+		ConsultVO consultvo = dao.selectConsultDetailNoCount(consult_UID);
+		return consultvo;
+	}
+	
 	// 글상세 삭제하기
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
@@ -139,15 +153,24 @@ public class ConsultService implements InterConsultService {
 		int result2 = 0;
 		int result3 = 0;
 		
-		if( commentvo.getFk_cmt_id()==null || commentvo.getFk_cmt_id().trim().isEmpty() ) {
-			int group_odr = dao.getGroupOdrMax(commentvo)+1; // 댓글그룹순서 최대값 받아옴 + 1
+		if( commentvo.getFk_cmt_id()!=null && commentvo.getFk_cmt_id()!="0" ) {
+			int fk_cmt_idCount = dao.getFk_cmt_idCount(commentvo); // 받아온 fk_cmt_id값이 기존에 fk_cmt_id과 같은게 있는지 없는지
+			//commentvo.setFk_cmt_idCount(fk_cmt_idCount);
+			//System.out.println("fk_cmt_idCount 입니다아아아ㅏ"+fk_cmt_idCount);
+			int group_odr = 0;
+			if(fk_cmt_idCount==0) {
+				group_odr = dao.getGroupOdrMax1(commentvo)+1; // 댓글그룹순서 최대값 받아옴 + 1 (기존에 fk_cmt_id이 없을때)
+			}
+			else if(fk_cmt_idCount>=1) {
+				group_odr = dao.getGroupOdrMax2(commentvo)+1; // 댓글그룹순서 최대값 받아옴 + 1
+			}
 			commentvo.setCscmt_g_odr(group_odr);
 		}
 		result1 = dao.insertCommentByComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert
 		
 		if(result1==1) {
-			result2 = dao.updateCommentCscmtgOdr(commentvo.getCscmt_g_odr()); // - cscmt_g_odr update
-			if(result2>=1) {
+			result2 = dao.updateCommentCscmtgOdr(commentvo); // - cscmt_g_odr update
+			if(result2>=0) {
 				result3 = dao.updateConsultCommentCount(commentvo.getFk_consult_UID()); // - [consult]commentCount 원글의 댓글갯수 1 update
 			}
 		}
@@ -168,6 +191,10 @@ public class ConsultService implements InterConsultService {
 		int totalCount = dao.selectCommentTotalCount(paraMap);
 		return totalCount;
 	}
+
+	
+
+	
 
 	
 

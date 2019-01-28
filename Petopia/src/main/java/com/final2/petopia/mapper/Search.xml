@@ -46,7 +46,22 @@
 		on B.idx_biz = M.idx
 		FULL JOIN review R
 		on M.idx = R.fk_idx_biz
-		where B.addr1 like '%' || #{SEARCHWORD} || '%'
+		where 1=1 and 
+		<if test="WHERENO == 1 || SEARCHWORD != null">
+			B.addr1 like '%' || #{SEARCHWORD} || '%'
+		</if>
+		<if test="WHERENO == 2">
+			<if test="SEARCHWORD != null">
+			and
+			</if>
+			B.biztype = 1
+		</if>
+		<if test="WHERENO == 3">
+			<if test="SEARCHWORD != null">
+			and
+			</if>
+			B.biztype = 2
+		</if>
 		group by idx_biz
 		) P
 		on V.idx_biz = P.idx_biz2
@@ -54,9 +69,9 @@
 			order by startpoint desc
 		</if>
 		<if test="ORDERBYNO == 2"> <!-- 거리순 -->
-			
+			order by ${STR_NUMBERS}
 		</if>
 
 	</select>
-
+	
 </mapper>
