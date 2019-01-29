@@ -3,10 +3,14 @@
     
 <%
 	String ctxPath = request.getContextPath();
+	String whereNo = request.getParameter("whereNo");
+	
+	if(whereNo == null || whereNo.trim().isEmpty()) {
+		whereNo = "1";
+	}
 %>
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <style type="text/css">
 
@@ -60,6 +64,7 @@
 	
 	.card-img-top {
 		max-width: 100%;
+		cursor:pointer;
 	}
 	
 	.card {
@@ -68,6 +73,7 @@
 	
 	.card-title {
 		font-weight: bold;
+		cursor:pointer;
 	}
 	
 	.resultHeader h3 {
@@ -127,19 +133,6 @@
 			setBounds();
 		}
 		
-		var whereNo = ${whereNo};
-		
-		switch (whereNo) {
-		case 2:
-			$("#selectWhere option[value=2]").prop("selected", true);
-			break;
-		case 3:
-			$("#selectWhere option[value=3]").prop("selected", true);
-			break;
-		default:
-			break;
-		}
-		
 	});
 
 	function searchEnter(event) {
@@ -170,21 +163,22 @@
 	}
 	
 	function searchEnd() {
-		var whereNo = $("#selectWhere option:selected" ).val();
+		var whereNo = $("#selectWhere option:selected").val();
     	var searchWord = $("#myInput").val();
-    	console.log(whereNo);
+    	// console.log(whereNo);
     	location.href="<%= ctxPath%>/search.pet?searchWord="+searchWord+"&whereNo="+whereNo;
 	}
 	
 	function selectOrderby(event) {
 		
+		var whereNo = $("#selectWhere option:selected").val();
 		var orderbyNo = $(event.target).val();
 		var searchWord = $("#myInput").val();
 		
 		if(orderbyNo == 1) {
 			// 평점순이라면
 
-			$.getJSON("<%= ctxPath%>/selectOrderbyNo.pet?orderbyNo="+orderbyNo+"&searchWord="+searchWord, 
+			$.getJSON("<%= ctxPath%>/selectOrderbyNo.pet?orderbyNo="+orderbyNo+"&searchWord="+searchWord+"&whereNo="+whereNo, 
 					  function(json){
 				
 							var html = "";
@@ -228,46 +222,16 @@
 		}
 	}
 	
-	<%-- 
-	function selectwhere(event) {
-
-		var whereNo = $(event.target).val();
-		var searchWord = $("#myInput").val();
-		
-
-		$.getJSON("<%= ctxPath%>/selectwhere.pet?whereNo="+whereNo+"&searchWord="+searchWord, 
-				  function(json){
-			
-						var html = "";
-						
-						$.each(json, function(entryIndex, entry){
-						
-							// 데이터넣고
-							html += "<div class='card text-left border-secondary' value="+entry.idx_biz+">";
-							html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
-							html += "  	<div class='card-body'>";
-							html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
-							html += "	    <p class='card-text'>평점&nbsp;";
-							
-							for(var i=0;i<entry.avg_startpoint;i++) {
-								html += "<span class='glyphicon glyphicon-star'></span>&nbsp;"; 
-							}
-							
-							
-							html += "</p><a href='#' class='btn btn-primary'>예약하기</a>";
-							html += "</div></div>";
-							
-						});
-					  	
-						$("#cards").empty().html(html);
-						
-		});
-		
-		
-		
-	} --%>
+	function personalRecomm() {
 	
-	
+		if("${sessionScope.loginuser == null}") {
+			alert("로그인 후 사용가능합니다.");
+			return false;	
+		}
+		
+		location.href="<%= ctxPath%>/requireLogin_search.pet";
+		
+	}
 
 
 </script>
@@ -283,9 +247,9 @@
 		<div class="col-sm-2">
 		  	<div class="form-group">
 			  <select class="form-control input-lg" id="selectWhere">
-		        <option value="1">지역별</option>
-		        <option value="2">동물병원</option>
-		        <option value="3">동물약국</option>
+		        <option value="1" <%=whereNo.equals("1")?"selected":""%>>지역별</option>
+		        <option value="2" <%=whereNo.equals("2")?"selected":""%>>동물병원</option>
+		        <option value="3" <%=whereNo.equals("3")?"selected":""%>>동물약국</option>
 		      </select>
 			</div>
 		</div>
@@ -311,7 +275,7 @@
 					<input type="button" class="btn input-lg" id="inputlg" value="검색" onclick="searchEnd()"/>
 				</div>
 				<div class="col-sm-8">
-					<input type="button" class="btn btn-primary btn-block input-lg" id="inputlg" value="맞춤추천" data-toggle="tooltip" title="로그인 후 사용가능 합니다."/>
+					<input type="button" class="btn btn-primary btn-block input-lg" id="inputlg" value="맞춤추천" onclick="personalRecomm()" />
 				</div>
 			</div>
 		</div>
@@ -471,7 +435,7 @@
 								
 								$.ajax({
 									url:'selectOrderbydistance.pet',
-									data:{'numbers' : numbers, 'searchWord': $("#myInput").val()},
+									data:{'numbers' : numbers, 'searchWord': $("#myInput").val(), 'whereNo': $("#selectWhere option:selected").val()},
 									type:'GET',
 									dataType:'JSON',
 									traditional : true,
@@ -851,14 +815,14 @@
 					  	 --%>
 				  		<c:forEach items="${ bizmemList }" var="biz_mem">
 				  			<div class="card text-left">
-							  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/${biz_mem.prontimg}" alt="Card image cap">
+							  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/${biz_mem.prontimg}" alt="Card image cap" onclick="javascript:location.href='<%= ctxPath%>/bizDetail.pet?idx_biz=${biz_mem.idx_biz}'" />
 							  	<div class="card-body">
-								    <h5 class="card-title">${biz_mem.name }</h5>
+								    <h5 class="card-title" onclick="javascript:location.href='<%= ctxPath%>/bizDetail.pet?idx_biz=${biz_mem.idx_biz}'">${biz_mem.name }</h5>
 								    <p class="card-text">평점
 								    <c:forEach begin="1" end="${biz_mem.avg_startpoint }">
 								    	<span class="glyphicon glyphicon-star"></span>
 								    </c:forEach>
-								    </p><a href="#" class="btn btn-primary">예약하기</a>
+								    </p><a href="<%= ctxPath %>/reservation.pet?idx_biz=${biz_mem.idx_biz}" class="btn btn-primary">예약하기</a>
 								</div>
 						  	</div>
 				  		</c:forEach>
