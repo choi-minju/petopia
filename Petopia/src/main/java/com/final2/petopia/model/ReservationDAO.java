@@ -222,5 +222,31 @@ public class ReservationDAO implements InterReservationDAO {
 		int result = sqlsession.insert(ns+"insertBizScheduleOne", svo);
 		return result;
 	}
-
+	
+//	[190129]
+//	#기업회원; 예약 일정 취소하기 - 수술상담 및 결제완료의 경우
+//	1) payment테이블에서 실제 결제한 포인트와 예치금금액 select
+	@Override
+	public PaymentVO selectPayPointAndPayCoin(String reservation_UID) {
+		PaymentVO pvo = sqlsession.selectOne(ns+"selectPayPointAndPayCoin", reservation_UID);
+		return pvo;
+	}
+//	2) payment 테이블의 status 2(취소)로 변경
+	@Override
+	public int updatePaymentStatusTo3ByFK_rvUID(String reservation_UID) {
+		int result = sqlsession.update(ns+"updatePaymentStatusTo3ByFK_rvUID", reservation_UID);
+		return result;
+	}
+//	3) deposit 테이블에 취소한 값 insert
+	@Override
+	public int insertDepositPlus(HashMap<String, String> paraMap) {
+		int result = sqlsession.insert(ns+"insertDepositPlus", paraMap);
+		return result;
+	}
+//	4) 일정변경된 내용 알람보내기
+	@Override
+	public int insertNoteForReservation(HashMap<String, String> noteMap) {
+		int result = sqlsession.insert(ns+"insertNoteForReservation", noteMap);
+		return result;
+	}
 }

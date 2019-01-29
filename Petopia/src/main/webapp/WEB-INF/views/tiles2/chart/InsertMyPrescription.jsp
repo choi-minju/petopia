@@ -8,63 +8,6 @@
 
 <%@page import="java.util.Calendar"%>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-<%
-
-Calendar cal = Calendar.getInstance();
-
-String strYear = request.getParameter("year");
-
-String strMonth = request.getParameter("month");
-
-int year = cal.get(Calendar.YEAR);
-
-int month = cal.get(Calendar.MONTH);
-
-int date = cal.get(Calendar.DATE);
-
-if(strYear != null)
-
-{
-
-  year = Integer.parseInt(strYear);
-
-  month = Integer.parseInt(strMonth);
-
-  
-
-}else{
-
- 
-
-}
-
-//년도/월 셋팅
-
-cal.set(year, month, 1);
-
- 
-
-int startDay = cal.getMinimum(java.util.Calendar.DATE);
-
-int endDay = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
-
-int start = cal.get(java.util.Calendar.DAY_OF_WEEK);
-
-int newLine = 0;
-
- 
-
-//오늘 날짜 저장.
-
-Calendar todayCal = Calendar.getInstance();
-
-SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd");
-
-int intToday = Integer.parseInt(sdf.format(todayCal.getTime()));
-
-%>
 
 <style>
 body {
@@ -100,8 +43,6 @@ body {
 
              }
 
- 
-
             A:link { font-size:9pt; font-family:"돋움";color:#000000; text-decoration:none; }
 
             A:visited { font-size:9pt; font-family:"돋움";color:#000000; text-decoration:none; }
@@ -109,9 +50,6 @@ body {
             A:active { font-size:9pt; font-family:"돋움";color:red; text-decoration:none; }
 
             A:hover { font-size:9pt; font-family:"돋움";color:red;text-decoration:none;}
-
-
-
 
 .divbox1{ /*전체 */
    margin-top: 3%;
@@ -222,7 +160,6 @@ color:rgb(252, 118, 106);
     padding: 2% 2% 2% 2%;
   }
   
- 
 </style>
 
 <script type="text/javascript">
@@ -233,7 +170,6 @@ color:rgb(252, 118, 106);
 			 
 		 });
 		
-		
 		 $("#register").click(function(){
 			 
 			var frm=document.registerFrm;
@@ -242,10 +178,149 @@ color:rgb(252, 118, 106);
 			frm.submit();
 		 });
 	});// end of $(document).ready()----------------------
-	
+	<!-- 0129-->
+<%-- function getNextmon(){
 
+	form_data={
+			startDay:${paramap.startDay},
+			endDay:${paramap.endDay},
+			start:${paramap.start},
+			todayCal:${paramap.todayCal},
+			startDay:${paramap.startDay},
+			sdf:${paramap.sdf},
+			intToday:${paramap.intToday},	
+			year:${paramap.year},
+			month:${paramap.month},
+			date:${paramap.date}
+	}	
+  $.ajax({
+	  url="<%=ctxPath%>/getCalendar.pet",
+	type="GET",
+	data: form_data,
+	dataType:JSON,
+	success:function(json){
+		var html1 =
+			    "<table width='100%' border='0' cellspacing='0' cellpadding='0'>"+
+	             "<tr>"+
+	             "<td height='10'>"+
+	              "</td></tr><tr>"+
+	              "<td align='center'>"+
+			      "<tr>"+
+                  "<td align='center'>"+
+                  "<a href='<c:url value=\'"+/getCalendar.pet+'/>?year='+json.year-1+'&amp;month='+json.month+'target='_self'>"+
+                  "<b>&lt;&lt;</b>"+
+                  "</a>";
+                <c:if test="json.month > 0">
+                  html1 += "<a href='<c:url value=\'"+/getCalendar.pet+'/>?year='+json.year+'&amp;month='+json.month-1+'target='_self''>"+
+                         "<b>&lt;</b>"+"</a>";<!-- 이전달 -->
+                </c:if>
+                <c:if test="json.month < 0">
+                     html1 += "<b>&lt;</b>&nbsp;&nbsp;";
+                </c:if>
+                   html1 +="<p>"+json.year+"년 </p>";
+                   html1 +="<p>"+json.month+1 +"월</p> &nbsp;&nbsp;";
 
+                <c:if test="json.month < 11">
+	                html1 += "<a href='<c:url value=\'"+/getCalendar.pet+'/>?year='+json.year+'&amp;month='+json.month+1+'target='_self'>"+
+	                         "<b>&gt;</b></a>";
+	                 
+	                 <c:if test="json.month > 11">
+	                   html1 += "<a href='<c:url value=\'"+/getCalendar.pet+'/>?year='+json.year+1+'&amp;month='+json.month+'target='_self'>"+
+	                            "<b>&gt;&gt;</b></a>";
+	                 </c:if>
+                    html1 +="</td></tr></table>";
+                 </c:if>
+              var html2 ="<TR bgcolor='#CECECE'>"+
+                   "<TD width='100px'>"+
+                   "<DIV align='center'>"+
+                   "<font color='red'>일</font></DIV></TD>"+
+                   "<TD width='100px'>"+
+                   "<DIV align='center'>월</DIV></TD>"+
+			        "<TD width='100px'>"+
+			        "<DIV align='center'>화</DIV></TD>"+
+			        "<TD width='100px'>"+
+			        "<DIV align='center'>수</DIV></TD>"+
+			        "<TD width='100px'>"+
+			        "<DIV align='center'>목</DIV></TD>"+
+			        "<TD width='100px'>"+
+			        "<DIV align='center'>금</DIV></TD>"+
+			        "<TD width='100px'>"+
+			        "<DIV align='center'><font color='#529dbc'>토</font></DIV></TD></TR>";
+            var html3="";
+			for(int json.index = 1; json.index < json.start ; json.index++ ){
+				  html3+="<TD >&nbsp;</TD>";
+				  json.newLine++;
+			     }
+			for(int json.index = 1; json.index <= json.endDay; json.index++){
+			       
+		       String color = "";
 
+		         if(json.newLine == 0){         
+		        	   color = "RED";
+                    }else if(json.newLine == 6){    
+                    	color = "#529dbc";
+                    }else{ 
+                        color = "BLACK";}
+
+		       String sUseDate = Integer.toString(json.year); 
+
+		       sUseDate += Integer.toString(json.month+1).length() == 1 ? "0" + Integer.toString(json.month+1) : Integer.toString(json.month+1);
+
+		       sUseDate += Integer.toString(json.index).length() == 1 ? "0" + Integer.toString(json.index) : Integer.toString(json.index);
+
+		       int iUseDate = Integer.parseInt(sUseDate);
+
+		       String backColor = "#EFEFEF";
+
+		       if(iUseDate ==json.intToday ) {
+
+		             backColor = "#c9c9c9";
+		       } 
+			   
+		       html3=+"<TD valign='top' align='left' height='92px' bgcolor='"+backColor+"' nowrap>";
+
+		      if(json.iUseDate == json.intToday ) {
+		        	    backColor = "#c9c9c9";
+
+		               } 
+		           html3 +="<TD valign='top' align='left' height='92px' bgcolor='"+backColor+"' nowrap>"+
+                           "<font color=json.paramap.color>"+json.index+"</font>";
+
+                    html3 +="<BR>"+
+                            "<p>"+json.iUseDate+"</p>"
+                            "<BR>";
+		               //기능 제거  
+                    html3 +="</TD>";
+
+		               json..newLine++;
+
+		               if(json.newLine == 7){
+		            	   html3 +="</TR>";
+		                 if(json.index <= json.endDay)
+		                 {
+		                	html3 +="<TR>";
+		                 }
+		                 json.newLine=0;
+
+		               }
+		        }
+
+		        //마지막 공란 LOOP
+
+		        while(json.newLine > 0 && json.newLine < 7){
+		           html3 += "<TD>&nbsp;</TD>";
+		           json.newLine++;
+		        }
+
+		     $("#months").html(html1);
+		     $("#weeks").html(html2);
+		     $("#days").html(html3);
+	},error: function(request, status, error){ 
+        alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+    }
+  });//end of ajax
+	 --%>	
+	}
 </script>
 <div class="container divbox1">
    <h3 class="h3_1">진료기록 관리하기</h3>
@@ -270,282 +345,45 @@ color:rgb(252, 118, 106);
 	   </div>
   </div>
   
-  <div class="divbox4" id="content" style="width:712px" >
-	<!-- <div id="calendar"  class="calendar">
-	   
-	</div> -->
+<div class="divbox4" id="content" style="width:712px" >
 	
 <table width="100%" border="0" cellspacing="1" cellpadding="1">
-
+<!-- 버튼  -->
 <tr>
+     <td align ="right">
 
-       <td align ="right">
+       <input type="hidden" onclick="javascript:location.href='<c:url value='/InsertMyPrescription.pet' />'" value="오늘"/>
 
-             <input type="button" onclick="javascript:location.href='<c:url value='/CalendarExam2.jsp' />'" value="오늘"/>
-
-       </td>
-
-</tr>
+     </td>
+</tr> 
 
 </table>
 
 <!--날짜 네비게이션  -->
 
 <table width="100%" border="0" cellspacing="1" cellpadding="1" id="KOO" bgcolor="#F3F9D7" style="border:1px solid #CED99C">
-
-
-<tr>
-
-<td height="60">
-
-       <table width="100%" border="0" cellspacing="0" cellpadding="0">
-
-       <tr>
-
-             <td height="10">
-
-             </td>
-
-       </tr>
-
-
-       <tr>
-
-             <td align="center" >
-
-                    <a href="<c:url value='/CalendarExam2.jsp' />?year=<%=year-1%>&amp;month=<%=month%>" target="_self">
-
-                           <b>&lt;&lt;</b><!-- 이전해 -->
-
-                    </a>
-
-                    <%if(month > 0 ){ %>
-
-                    <a href="<c:url value='/CalendarExam2.jsp' />?year=<%=year%>&amp;month=<%=month-1%>" target="_self">
-
-                           <b>&lt;</b><!-- 이전달 -->
-
-                    </a>
-
-                    <%} else {%>
-
-                           <b>&lt;</b>
-
-                    <%} %>
-
-                    &nbsp;&nbsp;
-
-                    <%=year%>년
-
-                    
-
-                    <%=month+1%>월
-
-                    &nbsp;&nbsp;
-
-                    <%if(month < 11 ){ %>
-
-                    <a href="<c:url value='/CalendarExam2.jsp' />?year=<%=year%>&amp;month=<%=month+1%>" target="_self">
-
-                           <!-- 다음달 --><b>&gt;</b>
-
-                    </a>
-
-                    <%}else{%>
-
-                           <b>&gt;</b>
-
-                    <%} %>
-
-                    <a href="<c:url value='/CalendarExam2.jsp' />?year=<%=year+1%>&amp;month=<%=month%>" target="_self">
-
-                           <!-- 다음해 --><b>&gt;&gt;</b>
-
-                    </a>
-
-             </td>
-
-       </tr>
-
-       </table>
-
-</td>
-
-</tr>
-
+	<tr>
+		<td height="60">
+		    <div id="months"></div>
+		</td>
+	</tr>
 </table>
-
 <br>
 
 <table border="0" cellspacing="1" cellpadding="1" bgcolor="#FFFFFF">
 
 <THEAD>
-
-<TR bgcolor="#CECECE">
-
-       <TD width='100px'>
-
-       <DIV align="center"><font color="red">일</font></DIV>
-
-       </TD>
-
-       <TD width='100px'>
-
-       <DIV align="center">월</DIV>
-
-       </TD>
-
-       <TD width='100px'>
-
-       <DIV align="center">화</DIV>
-
-       </TD>
-
-       <TD width='100px'>
-
-       <DIV align="center">수</DIV>
-
-       </TD>
-
-       <TD width='100px'>
-
-       <DIV align="center">목</DIV>
-
-       </TD>
-
-       <TD width='100px'>
-
-       <DIV align="center">금</DIV>
-
-       </TD>
-
-       <TD width='100px'>
-
-       <DIV align="center"><font color="#529dbc">토</font></DIV>
-
-       </TD>
-
-</TR>
-
+<div id="weeks"></div>
 </THEAD>
 
 <TBODY>
-
 <TR>
-
-<%
-
-//처음 빈공란 표시
-
-for(int index = 1; index < start ; index++ )
-
-{
-
-  out.println("<TD >&nbsp;</TD>");
-
-  newLine++;
-
-}
-
- 
-
-for(int index = 1; index <= endDay; index++)
-
-{
-
-       String color = "";
-
- 
-       if(newLine == 0){          color = "RED";
-
-       }else if(newLine == 6){    color = "#529dbc";
-
-       }else{                     color = "BLACK"; };
-
-       String sUseDate = Integer.toString(year); 
-
-       sUseDate += Integer.toString(month+1).length() == 1 ? "0" + Integer.toString(month+1) : Integer.toString(month+1);
-
-       sUseDate += Integer.toString(index).length() == 1 ? "0" + Integer.toString(index) : Integer.toString(index);
-
- 
-       int iUseDate = Integer.parseInt(sUseDate);
-
-       
-       String backColor = "#EFEFEF";
-
-       if(iUseDate == intToday ) {
-
-             backColor = "#c9c9c9";
-
-       } 
-
-       out.println("<TD valign='top' align='left' height='92px' bgcolor='"+backColor+"' nowrap>");
-
-       %>
-
-       <font color='<%=color%>'>
-
-             <%=index %>
-
-       </font>
-
-       <%
-
-       out.println("<BR>");
-
-       out.println(iUseDate);
-
-       out.println("<BR>");
-
-       //기능 제거  
-
-       out.println("</TD>");
-
-       newLine++;
-
-       if(newLine == 7)
-
-       {
-
-         out.println("</TR>");
-
-         if(index <= endDay)
-
-         {
-
-           out.println("<TR>");
-
-         }
-
-         newLine=0;
-
-       }
-
-}
-
-//마지막 공란 LOOP
-
-while(newLine > 0 && newLine < 7)
-
-{
-
-  out.println("<TD>&nbsp;</TD>");
-
-  newLine++;
-
-}
-
-%>
-
+<div id="days"></div>
 </TR>
-
 </TBODY>
-
 </TABLE>
-
 </DIV>
-  
+</div>  
  
 <div class="tab-content divbox5 container">
    <div class="container" Style="width:100%;">

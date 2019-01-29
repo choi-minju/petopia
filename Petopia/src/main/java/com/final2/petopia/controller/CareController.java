@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class CareController {
 	// [19-01-24. 수정 시작_hyunjae]
 	//===== 반려동물 리스트페이지 요청 =====
 	@RequestMapping(value="/petList.pet", method={RequestMethod.GET})
-	public String petList(HttpServletRequest req) {
+	public String requireLogin_petList(HttpServletRequest req, HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -46,7 +47,7 @@ public class CareController {
 	}
 	
 	
-	//===== 반려동물 리스트 완료 =====
+	//===== 반려동물 리스트 가져오기(Ajax) =====
 	@RequestMapping(value="/getPet.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> getPet(HttpServletRequest req) {
@@ -90,6 +91,7 @@ public class CareController {
 	}
 	
 	
+	
 	// [19-01-24. 수정 시작_hyunjae]
 	//===== 반려동물 등록 요청완료 =====
 	@RequestMapping(value="/petRegisterEnd.pet", method={RequestMethod.POST})
@@ -120,22 +122,27 @@ public class CareController {
 	//===== 특정 반려동물관리 상세페이지 요청 =====
 	@RequestMapping(value="/petView.pet", method={RequestMethod.GET})
 	public String view(HttpServletRequest req) {
-		
-		String pet_UID = req.getParameter("pet_UID");
 	
-		if(pet_UID != null) {
-/*						
-			HashMap<String, Object> paraMap = new HashMap<String, Object>(); 
-			paraMap.put("PET_UID", pet_UID);
+		String str_pet_UID = "";
+		
+		try {
+		
+			str_pet_UID = req.getParameter("pet_UID");
 			
-			ArrayList<PetVO> petInfo = service.Pet_info(paraMap);
+			int pet_UID = Integer.parseInt(str_pet_UID); 
+
+			HashMap<String, Object> petInfo = service.getPet_info(pet_UID); 
 			
 			req.setAttribute("petInfo", petInfo);
- 			req.setAttribute("pet_UID", pet_UID);
-*/			
+			req.setAttribute("pet_UID", pet_UID);
+			
+			return "care/petView.tiles2";
+			
+		} catch (NumberFormatException e) {
+			req.setAttribute("str_pet_UID", str_pet_UID);
+			return "care/petRegister.tiles2";			
 		}
-
-		return "care/petView.tiles2";
+		
 	}
 	
 	
