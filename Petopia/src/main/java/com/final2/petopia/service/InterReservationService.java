@@ -56,4 +56,9 @@ public interface InterReservationService {
 	void insertScheduleFirst(String idx_biz);
 //	#병원회원의 스케줄 개수 가져오기
 	int selectScheduleCountByIdx_biz(String idx_biz);
+//	[190128]
+//	#캘린더에서 이벤트 클릭 시 예약 정보 가져오기
+	HashMap<String, String> selectScheduleOneByScheduleUID(String schedule_UID);
+//	#기업회원 예약 일정 수정하기
+	int updateReservationSchedule(HashMap<String, String> paraMap, ReservationVO rvo);
 }

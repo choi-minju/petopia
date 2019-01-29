@@ -23,7 +23,7 @@ public interface InterReservationDAO {
 	int insertReservationByRvo(ReservationVO rvo);
 	
 //	#예약일정 인서트 성공시 스케줄테이블의 스케줄 상태 변경 트랜잭션 처리
-	int updateScheduleStatusBySUID(String fk_schedule_UID);
+	int updateScheduleStatusBySUID(HashMap<String, String> paraMap);
 	
 //	#예약테이블 시퀀스 채번
 	String selectReservation_Seq();
@@ -69,6 +69,22 @@ public interface InterReservationDAO {
 	void insertScheduleFirst(String idx_biz);
 //	#병원회원의 스케줄 개수 가져오기
 	int selectScheduleCountByIdx_biz(String idx_biz);
+//	[190128]
+//	#캘린더에서 이벤트 클릭 시 예약 정보 가져오기
+	HashMap<String, String> selectScheduleOneByScheduleUID(String schedule_UID);
+//	#예약 테이블에서 해당 날짜와 일치하는 예약건이 있는지 확인하기(기업회원)
+	int selectReservationByDate(HashMap<String, String> paraMap);
+//	#스케줄 테이블에서 날짜에 맞는 스케줄 UID 가져오기
+	String selectScheduleOneByDate(HashMap<String, String> paraMap);
+//	#기업회원 예약건을 취소로 변경
+	int updateReservationStatusTo4(HashMap<String, String> paraMap);
+//	#예약타입이 수술인 경우 payment 테이블의 예약UID 변경
+	int updatePaymentReservationUID(HashMap<String, String> paraMap);
+//	#스케줄 테이블 시퀀스 채번하기
+	String selectScheduleSeq();
+//	#기업회원 스케줄 1개 인서트하기
+	int insertBizScheduleOne(ScheduleVO svo);
+
 
 
 }
