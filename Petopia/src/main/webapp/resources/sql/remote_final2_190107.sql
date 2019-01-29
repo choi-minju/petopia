@@ -13,9 +13,13 @@ show user;
 -- [190124] 2; notification 테이블에 컬럼 및 제약조건 추가 : 지민
 -- [190125] 프로시저 where절 추가; 민주
 -- [190126] 병원회원 최초 예약 스케줄 생성 프로시저 추가; 수미
+-- [190128] 양방향 메세지, 시간 삭제;; 호환
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
+
+select *
+from notification;
 
 -- 모든 테이블 조회
 select * from user_tables;
@@ -423,6 +427,9 @@ CREATE TABLE pet_info (
 alter table pet_info
 add pet_status VARCHAR2(1) DEFAULT 1 NOT NULL;
 
+select *
+from member;
+
 create sequence seq_pet_info_UID --반려동물정보
 start with 1
 increment by 1
@@ -526,6 +533,11 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+select *
+from member
+
+select fk_idx_biz from reservation group by fk_idx_biz
 
 -- 진료기록
 CREATE TABLE chart (
@@ -634,7 +646,8 @@ nominvalue
 nocycle
 nocache; 
 
-
+select *
+from notification
 
 -- 알림
 CREATE TABLE notification (
@@ -743,6 +756,9 @@ nominvalue
 nocycle
 nocache;
 
+select *
+from video_advice;
+
 -- 화상 상담(video advice)
 CREATE TABLE video_advice (
 	va_UID      NUMBER       NOT NULL, -- 화상상담 번호
@@ -762,6 +778,16 @@ CREATE TABLE video_advice (
     ,CONSTRAINT PK_video_advice -- 화상 상담(video advice) 기본키
 		PRIMARY KEY (va_UID)
 );
+
+alter table video_advice drop column usermessage;
+alter table video_advice drop column docmessage;
+alter table video_advice drop column umtime;
+alter table video_advice drop column dmtime;
+alter table video_advice drop column endTime;
+
+alter table video_advice rename column startTime to Time;
+
+commit;
 
 create sequence seq_video_advice_UID  --화상상담
 start with 1
@@ -1673,3 +1699,8 @@ begin
         order by 1
         );
 end;
+
+insert into caretype(caretype_UID, caretype_name, caretype_info)
+values(seq_caretype_UID.nextval, '식사', '<p>각 항목 작성 안내사항<br/>[식사의 경우]</p>');
+
+commit;

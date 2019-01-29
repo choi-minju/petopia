@@ -366,7 +366,7 @@ public class ReservationController {
 	
 	@RequestMapping(value="/depositHistoryPageBar.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public  HashMap<String, Integer> depositHistoryPageBar(HttpServletRequest req) {
+	public HashMap<String, Integer> depositHistoryPageBar(HttpServletRequest req) {
 		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -432,7 +432,7 @@ public class ReservationController {
 		try {
 			service.insertScheduleFirst(idx_biz);
 			msg = "스케줄 생성 성공!";
-			loc = "javascript:loctaion.href='"+req.getContextPath()+"/SelectChartSearch.pet'";
+			loc = "javascript:location.href='"+req.getContextPath()+"/SelectChartSearch.pet'"; // [190128] 오타 수정
 		} catch (Exception e) {
 			msg = "스케줄 생성 실패";
 			loc="javascript:history.back();";
@@ -443,5 +443,67 @@ public class ReservationController {
 		return "msg";
 	}
 //	------------- 190126 끝
-	
+
+//	[190128]
+//	#캘린더에서 이벤트 클릭 시 예약 정보 가져오기
+	@RequestMapping(value="selectScheduleOneByScheduleUID.pet", method= {RequestMethod.GET})
+	@ResponseBody
+	public HashMap<String, String> selectScheduleOneByScheduleUID(HttpServletRequest req){
+		HashMap<String, String> returnMap = new HashMap<String, String>();
+		
+		String schedule_UID = req.getParameter("schedule_UID");
+		
+		returnMap = service.selectScheduleOneByScheduleUID(schedule_UID);
+		
+		return returnMap;
+	}
+//	#기업회원 예약 일정 수정하기
+	@RequestMapping(value="rvScheduleEdit.pet", method= {RequestMethod.POST})
+	public String updateReservationSchedule(HttpServletRequest req) {
+		String rvdate1 = req.getParameter("edit_rvDATE_YMD");
+		String rvdate2 = req.getParameter("edit_rvDATE_HM");
+		String reservation_DATE = rvdate1 + " " + rvdate2;
+		
+		String reservation_UID = req.getParameter("edit_rvUID");
+		String fk_schedule_UID = req.getParameter("edit_scUID");
+		String fk_idx_biz = req.getParameter("edit_fk_idx_biz");
+		String reservation_type = req.getParameter("edit_reservation_type");
+		String reservation_status = req.getParameter("edit_reservation_status");
+		String schedule_status = req.getParameter("edit_schedule_status");
+		String fk_idx = req.getParameter("edit_fk_idx");
+		String fk_pet_UID = req.getParameter("edit_fk_pet_UID");
+		
+		ReservationVO rvo = new ReservationVO();
+		rvo.setFk_idx(fk_idx);
+		rvo.setFk_idx_biz(fk_idx_biz);
+		rvo.setFk_pet_UID(fk_pet_UID);
+		rvo.setReservation_type(reservation_type);
+		rvo.setReservation_status(reservation_status);
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("reservation_DATE", reservation_DATE);
+		paraMap.put("reservation_UID", reservation_UID);
+		paraMap.put("fk_schedule_UID", fk_schedule_UID);
+		paraMap.put("schedule_status", schedule_status);
+		paraMap.put("fk_idx_biz", fk_idx_biz);
+		
+		int result = service.updateReservationSchedule(paraMap, rvo);
+		
+		String msg = "";
+		String loc = "";
+		if(result==1) {
+			msg="일정 수정 완료";
+			loc="javascript: location.href="+req.getContextPath()+"/SelectChartSearch.pet";
+		}
+		else if(result==2) {
+			msg="입력하신 스케줄에 기예약건이 있습니다.";
+			loc="javascript:history.back();";
+		}
+		else {
+			msg="일정 수정 실패";
+			loc="javascript:history.back();";
+		}
+		
+		return "msg";
+	}
 }

@@ -72,7 +72,11 @@ public class ReservationService implements InterReservationService{
 		int result = dao.insertReservationByRvo(rvo);
 		
 		if(result==1) {
-			result = dao.updateScheduleStatusBySUID(rvo.getFk_schedule_UID());
+			// [190128] 스케줄 스테이터스 변경하기 파라미터 타입 변경
+			HashMap<String, String> paraMap = new HashMap<String, String>();
+			paraMap.put("fk_schedule_UID", rvo.getFk_schedule_UID());
+			paraMap.put("status", "1");
+			result = dao.updateScheduleStatusBySUID(paraMap);
 		}
 		
 		return result;
@@ -90,7 +94,11 @@ public class ReservationService implements InterReservationService{
 		int result = dao.insertReservationSurgeryByRvo(rvo);
 		
 		if(result==1) {
-			result = dao.updateScheduleStatusBySUID(rvo.getFk_schedule_UID());
+			// [190128] 스케줄 스테이터스 변경하기 파라미터 타입 변경
+			HashMap<String, String> paraMap = new HashMap<String, String>();
+			paraMap.put("fk_schedule_UID", rvo.getFk_schedule_UID());
+			paraMap.put("status", "1");
+			result = dao.updateScheduleStatusBySUID(paraMap);
 		}
 		
 		returnMap.put("seq", seq);
@@ -241,6 +249,109 @@ public class ReservationService implements InterReservationService{
 		int scheduleCount = dao.selectScheduleCountByIdx_biz(idx_biz);
 		return scheduleCount;
 	}
+	
+//	[190128]
+//	#캘린더에서 이벤트 클릭 시 예약 정보 가져오기
+	@Override
+	public HashMap<String, String> selectScheduleOneByScheduleUID(String schedule_UID) {
+		HashMap<String, String> returnMap = dao.selectScheduleOneByScheduleUID(schedule_UID);
+		
+		String pet_type = returnMap.get("pet_type");
+		switch (pet_type) {
+		case "dog":
+			pet_type="강아지";
+			break;
+		case "cat":
+			pet_type="고양이";
+			break;
+		case "smallani":
+			pet_type="소동물";
+			break;
+		case "etc":
+			pet_type="기타";
+			break;
+		default:
+			break;
+		}
+		returnMap.put("pet_type", pet_type);
+		return returnMap;
+	}
+//	#기업회원 예약 일정 수정하기
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public int updateReservationSchedule(HashMap<String, String> paraMap, ReservationVO rvo) {
+		int result = 0;
+		int n = 0;
+		int n1 = 0;
+		int n2 = 0;
+		int n3 = 0;
+		int n4 = 0;
+		int n5 = 0;
+		int n6 = 0;
+		String schedule_UID = "";
+		String reservation_UID = "";
+		
+		n = dao.selectReservationByDate(paraMap);	// 1. 예약테이블 일치값 찾기
+		if(n!=0) {
+			return 2;
+		}
+		
+		schedule_UID = dao.selectScheduleOneByDate(paraMap); // 2. 스케줄 테이블에서 날짜값과 일치하는 값 가져오기
+		
+		if(schedule_UID ==null || schedule_UID.equals("")) {
+			schedule_UID = dao.selectScheduleSeq(); // 스케줄 테이블 시퀀스 채번
+			
+			ScheduleVO svo = new ScheduleVO();
+			svo.setFk_idx_biz(Integer.parseInt(rvo.getFk_idx_biz()));
+			svo.setSchedule_DATE(paraMap.get("reservation_DATE"));
+			svo.setSchedule_UID(Integer.parseInt(schedule_UID));
+			
+			n6 = dao.insertBizScheduleOne(svo); 	// 2-2. 스케줄이 없는 경우 스케줄 생성하기
+		}
+		else {
+			n6 = 1;
+		}
+		
+		if(n==0 && n6==1) {
+			n1 = dao.updateReservationStatusTo4(paraMap);	// 3. 기존 예약건 취소상태로 변경
+		}
+		
+		if(n1==1) {
+			reservation_UID = dao.selectReservation_Seq();	// 4. 예약테이블 시퀀스 채번
+			rvo.setFk_schedule_UID(schedule_UID);
+			rvo.setReservation_UID(reservation_UID);
+			if(rvo.getReservation_type().equals("3") && rvo.getReservation_status().equals("1")) {
+				n2 = dao.insertReservationSurgeryByRvo(rvo);	// 5-1. 예약 테이블에 새로운 일정 insert
+			}
+			else {
+				n2 = dao.insertReservationByRvo(rvo);	// 5-2. 예약 테이블에 새로운 일정 insert
+			}
+		}
+		
+		if(n2==1) {
+			paraMap.put("status", "0");
+			n3 = dao.updateScheduleStatusBySUID(paraMap);	// 6. 기존 스케줄 스테이터스 0으로 변경
+			
+			paraMap.put("status", "1");
+			paraMap.put("fk_schedule_UID", schedule_UID);
+			n4 = dao.updateScheduleStatusBySUID(paraMap); 	// 7. 새로운 스케줄 스테이터스 1로 변경
+		}
+		
+		if(n3*n4==1) {
+			if(rvo.getReservation_type().equals("3") && rvo.getReservation_status().equals("2")) {
+				paraMap.put("n_reservation_UID", reservation_UID);
+				n5 = dao.updatePaymentReservationUID(paraMap);	// 8. 수술인 경우 payment테이블의 예약UID 변경
+				
+				if(n5==1) {
+					result = 1;
+				}
+			}
+			else {
+				result = 1;
+			}
+		}
 
+		return result;
+	}
 
 }
