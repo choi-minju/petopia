@@ -16,51 +16,83 @@
 		where fk_idx = #{IDX} and trunc(months_between(sysdate, reservation_DATE)) <![CDATA[<]]> #{PERIOD}
 	</select>
 	
+	<!-- === 2019.01.29 === -->
 	<!-- 병원 리스트를 담는 HashMap -->
 	<resultMap type="HashMap" id="hosListMap">
-		<result property="RNO"				column="rno"				javaType="String"/>
-		<result property="PET_PROFILEIMG"	column="pet_profileimg"		javaType="String"/>
-		<result property="PET_NAME"			column="pet_name"			javaType="String"/>
-		<result property="NAME"				column="name"				javaType="String"/>
-		<result property="FILENAME"			column="fileName"			javaType="String"/>
-		<result property="RESERVATION_DATE"	column="reservation_date"	javaType="String"/>
-		<result property="DOC_NAME"			column="doc_name"			javaType="String"/>
-		<result property="CHART_TYPE"		column="chart_type"			javaType="String"/>
+		<result property="RNO"					column="rno"							javaType="String"/>
+		<result property="PET_PROFILEIMG"		column="pet_profileimg"					javaType="String"/>
+		<result property="PET_NAME"				column="pet_name"						javaType="String"/>
+		<result property="NAME"					column="name"							javaType="String"/>
+		<result property="FILENAME"				column="fileName"						javaType="String"/>
+		<result property="RESERVATION_DATE"		column="reservation_date"				javaType="String"/>
+		<result property="DOC_NAME"				column="doc_name"						javaType="String"/>
+		<result property="CHART_TYPE"			column="chart_type"						javaType="String"/>
+		<result property="FK_RESERVATION_UID"	column="fk_reservation_UID"				javaType="String"/>
+		<result property="REVIEWCNT"			column="reviewCnt"						javaType="String"/>
 	</resultMap>
 	
 	<!-- 병원 리스트 - 기간이 없는 -->
 	<select id="selectHosList" parameterType="HashMap" resultMap="hosListMap">
-		select rno, pet_profileimg, pet_name, name, fileName, reservation_date, doc_name, chart_type
-		from
+		select rno, pet_profileimg, pet_name, name, fileName, reservation_date, doc_name, fk_reservation_UID, chart_type, nvl(reviewCnt, 0) AS reviewCnt
+		from 
 		(
-		    select rownum as rno, pet_profileimg, pet_name, c.name, c.fileName, reservation_date, doc_name
+		    select rownum as rno, pet_profileimg, pet_name, c.name, c.fileName, reservation_date, doc_name, fk_reservation_UID
 		        , case chart_type when 1 then '진료' when 2 then '예방접종' when 3 then '수술' else '호텔링' end AS chart_type
 		    from pet_info a JOIN chart b
 		    ON a.pet_uid = b.fk_pet_uid
 		    JOIN member c
 		    ON b.biz_name = c.name
-		    where b.fk_idx = #{IDX}
+		    where b.fk_idx = #{IDX} and fk_reservation_UID is not null
 		    order by reservation_date desc
 		) V
+		LEFT JOIN
+		(
+		    select fk_reservation_UID as fk_reservation_UID2, count(*) AS reviewCnt
+		    from review
+		    group by fk_reservation_UID
+		) T
+		ON v.fk_reservation_UID = t.fk_reservation_UID2
 		where rno between #{START} and #{END}
 	</select>
 	
 	<!-- 병원 리스트 - 기간이 있는 -->
 	<select id="selectHosListByPeriod" parameterType="HashMap" resultMap="hosListMap">
-		select rno, pet_profileimg, pet_name, name, fileName, reservation_date, doc_name, chart_type, period
-		from
+		select rno, pet_profileimg, pet_name, name, fileName, reservation_date, doc_name, fk_reservation_UID, chart_type, nvl(reviewCnt, 0) AS reviewCnt
+		from 
 		(
-		    select rownum as rno, pet_profileimg, pet_name, c.name, c.fileName, reservation_date, doc_name
+		    select rownum as rno, pet_profileimg, pet_name, c.name, c.fileName, reservation_date, doc_name, fk_reservation_UID
 		        , case chart_type when 1 then '진료' when 2 then '예방접종' when 3 then '수술' else '호텔링' end AS chart_type
-		        , trunc(months_between(sysdate, reservation_DATE)) AS period
 		    from pet_info a JOIN chart b
 		    ON a.pet_uid = b.fk_pet_uid
 		    JOIN member c
 		    ON b.biz_name = c.name
-		    where b.fk_idx = #{IDX} and trunc(months_between(sysdate, reservation_DATE)) <![CDATA[<]]> #{PERIOD}
+		    where b.fk_idx = #{IDX} and fk_reservation_UID is not null 
+		    	and trunc(months_between(sysdate, reservation_DATE)) <![CDATA[<]]> #{PERIOD}
 		    order by reservation_date desc
 		) V
+		LEFT JOIN
+		(
+		    select fk_reservation_UID as fk_reservation_UID2, count(*) AS reviewCnt
+		    from review
+		    group by fk_reservation_UID
+		) T
+		ON v.fk_reservation_UID = t.fk_reservation_UID2
 		where rno between #{START} and #{END}
 	</select>
 	<!-- === 2019.01.28 ==== -->
+	
+	<!-- *** 리뷰 쓰기 *** -->
+	<!-- 리뷰를 쓸 기업 번호 알아오기 -->
+	<select id="selectBizIdxByReservationUID" parameterType="String" resultType="String">
+		select fk_idx_biz
+		from reservation
+		where reservation_UID = #{reservationUID}
+	</select>
+	
+	<!-- review 테이블에 insert -->
+	<insert id="insertReviewByReviewMap" parameterType="HashMap">
+		insert into review(review_UID, fk_idx_biz, fk_idx, fk_reservation_UID, startpoint, fk_userid, fk_nickname, rv_contents, rv_status, rv_blind, rv_writeDate)
+		values(seq_review_UID.nextval, #{FK_IDX_BIZ}, #{FK_IDX}, #{FK_RESERVATION_UID}, #{STARTPOINT}, #{FK_USERID}, #{FK_NICKNAME}, #{RV_CONTENTS}, 1, 0, sysdate)
+	</insert>
+	<!-- === 2019.01.29 === -->
 </mapper>
