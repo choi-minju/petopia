@@ -14,9 +14,9 @@ public class Biz_MemberDAO implements InterBiz_MemberDAO {
 	private SqlSessionTemplate sqlsession;
 	
 	@Override
-	public List<HashMap<String, String>> selectHaveTagList() {
+	public List<HashMap<String, String>> selectRecommendTagList() {
 		
-		List<HashMap<String, String>> tagList = sqlsession.selectList("biz_member.selectHaveTagList");
+		List<HashMap<String, String>> tagList = sqlsession.selectList("biz_member.selectRecommendTagList");
 		
 		return tagList;
 	}
@@ -71,6 +71,40 @@ public class Biz_MemberDAO implements InterBiz_MemberDAO {
 	public int insertBizInfo(Biz_MemberVO bmvo) {
 		
 		int result = sqlsession.insert("biz_member.insertBizInfo", bmvo);
+		return result;
+	}
+
+	// biz_info_img 테이블 insert
+	@Override
+	public int insertBizInfoImg(List<HashMap<String, String>> addImgmapList) {
+		int result = 0;		
+		
+		for(HashMap<String, String> addImgMap : addImgmapList) {
+			result = sqlsession.insert("biz_member.insertBizInfoImg", addImgMap);
+			
+			if(result == 0) {
+				return 0;
+			} else {
+				result = 1;
+			}
+		} // end
+		
+		return result;
+	}
+
+	@Override
+	public int insertDoctor(List<HashMap<String, String>> docList) {
+		int result = 0;
+		
+		for(HashMap<String, String> docMap : docList) {
+			result = sqlsession.insert("biz_member.insertDoctor", docMap);
+			
+			if(result == 0) {
+				return 0;
+			} else {
+				result = 1;
+			}
+		}
 		
 		return result;
 	}

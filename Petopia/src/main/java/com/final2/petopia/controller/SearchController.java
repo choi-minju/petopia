@@ -1,19 +1,19 @@
 package com.final2.petopia.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.final2.petopia.model.Biz_MemberVO;
+import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.service.InterSearchService;
 import com.google.gson.Gson;
 
@@ -41,17 +41,13 @@ public class SearchController {
 			orderbyNo = "1";
 		}
 		
-		if(whereNo == null || orderbyNo.trim().isEmpty()) {
+		if(whereNo == null || whereNo.trim().isEmpty()) {
 			whereNo = "1";
 		}
 		
-		if(numbers == null || numbers[0].trim().isEmpty()) {
-			str_numbers = "";
-		}
-
-		int cnt = service.searchCount(searchWord);
 		// 지도화면으로 넘어갈때 몇건 검색되었는지도 보내기
-		
+		int	cnt = service.searchCount(searchWord,whereNo);
+
 		if(numbers != null && !numbers[0].trim().isEmpty()) {
 			for(int i=0;i<numbers.length;i++) {
 				if(numbers[i].equals("현재위치")) {
@@ -117,11 +113,12 @@ public class SearchController {
 	@RequestMapping(value="selectOrderbyNo.pet", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
 	@ResponseBody
 	public String selectOrderbyNo(HttpServletRequest req) {
-	
+
+		String whereNo = req.getParameter("whereNo");
 		String orderbyNo = req.getParameter("orderbyNo");
 		String searchWord = req.getParameter("searchWord");
 		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord("1",searchWord,"",orderbyNo);
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,"",orderbyNo);
 
 		Gson gson = new Gson();
 		String gson_bizmemList = gson.toJson(bizmemList);
@@ -137,6 +134,15 @@ public class SearchController {
 
 		String[] numbers = req.getParameterValues("numbers");
 		String searchWord = req.getParameter("searchWord");
+		String whereNo = req.getParameter("whereNo");
+
+		if(searchWord == null || searchWord.trim().isEmpty()) {
+			searchWord = "";
+		}
+		
+		if(whereNo == null || whereNo.trim().isEmpty()) {
+			whereNo = "1";
+		}
 		
 		String str_numbers = "";
 		for(int i=0;i<numbers.length;i++) {
@@ -152,7 +158,7 @@ public class SearchController {
 		
 		// System.out.println(str_numbers);
 		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord("1",searchWord,str_numbers,"2");
+		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,str_numbers,"2");
 
 		Gson gson = new Gson();
 		String gson_bizmemList = gson.toJson(bizmemList);
@@ -160,21 +166,17 @@ public class SearchController {
 		return gson_bizmemList;
 	}
 	
-	
-	@RequestMapping(value="selectwhere.pet", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
-	@ResponseBody
-	public String selectwhere(HttpServletRequest req) {
-		
-		String whereNo = req.getParameter("whereNo");
-		String searchWord = req.getParameter("searchWord");
-		String orderbyNo = "1";
-		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,"",orderbyNo);
+	@RequestMapping(value="requireLogin_search.pet", method= {RequestMethod.GET})
+	public String requireLogin_search(HttpServletRequest req) {
 
-		Gson gson = new Gson();
-		String gson_bizmemList = gson.toJson(bizmemList);
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
-		return gson_bizmemList;
+		int loginuser_idx = loginuser.getIdx();
 		
+		
+		
+		return "";
 	}
+
 }

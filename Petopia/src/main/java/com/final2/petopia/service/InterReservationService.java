@@ -61,4 +61,10 @@ public interface InterReservationService {
 	HashMap<String, String> selectScheduleOneByScheduleUID(String schedule_UID);
 //	#기업회원 예약 일정 수정하기
 	int updateReservationSchedule(HashMap<String, String> paraMap, ReservationVO rvo);
+	
+//	[190129]
+//	#기업회원; 예약 일정 취소하기 - 수술상담 및 결제완료의 경우
+	int updateRvAndScdStatusCancleForSurgery(HashMap<String, String> paraMap);
+//	#기업회원; 예약 일정 취소하기 - 미결제 및 수술상담제외 타입의 경우
+	int updateRvAndScdStatusCancle(HashMap<String, String> paraMap);
 }

@@ -40,8 +40,12 @@ public interface InterChartDAO {
 	String getChartuid(String ruid); //차트번호가져오기 
 
 	String getPuid(HashMap<String,String> map); //처방전 번호 알아오기 
-	
-	HashMap<String, String> selectPreinfo(HashMap<String, String> map); //처방전 내용 불러오기
+
+	//0129
+	//예약자번호로 처방전 인서트 내용 가져오기
+	HashMap<String, String> selectpreinfobyruid(String ruid);
+
+	HashMap<String, String> selectPreinfo(HashMap<String, String> map2); //셀렉트창에서 처방전 내용가져오기 
 
 
 }

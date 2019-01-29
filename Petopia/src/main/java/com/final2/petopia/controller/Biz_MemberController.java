@@ -61,7 +61,6 @@ public class Biz_MemberController {
 			halfTime.add(map);
 			
 		}
-		
 		return halfTime;
 	}
 	
@@ -70,7 +69,7 @@ public class Biz_MemberController {
 	@RequestMapping(value="/joinBizMember.pet", method={RequestMethod.GET})
 	public String joinBizMember(HttpServletRequest req) {
 		
-		List<HashMap<String, String>> tagList = service.selectHaveTagList();
+		List<HashMap<String, String>> tagList = service.selectRecommendTagList();
 		
 		req.setAttribute("tagList", tagList);
 		
@@ -107,7 +106,6 @@ public class Biz_MemberController {
 		
 	}// end of bizIdDuplicateCheck()---------------
 	
-
 	
 	@RequestMapping(value="/editBizMember.pet", method={RequestMethod.GET})
 	public String editBizMember() {
@@ -115,11 +113,18 @@ public class Biz_MemberController {
 		return "join/editBizMember.tiles1";
 	} // end of public String editBizMember()
 	
+	
+	
+	
 	@RequestMapping(value="/bizDetail.pet", method={RequestMethod.GET})
-	public String bizDetail() {
+	public String bizDetail(HttpServletRequest req) {
+		
+		/*String idx_biz = req.getAttribute("idx_biz");*/
 		
 		return "join/bizDetail.tiles1";
 	} // end of public String bizDetail()
+
+	
 	
 	
 	@RequestMapping(value="/joinBizMemberInsert.pet", method= {RequestMethod.POST})
@@ -179,20 +184,48 @@ public class Biz_MemberController {
 			} // end of try~catch
 		} // end of if --> 첨부파일
 		
+		List<MultipartFile> addimgList = req.getFiles("addimg");
+		
+		List<HashMap<String, String>> addImgmapList = new ArrayList<HashMap<String, String>>();
+		
+		if(addimgList != null) {
+			
+			HttpSession session = req.getSession();
+			String root = session.getServletContext().getRealPath("/"); 
+			String path = root+"resources"+File.separator+"img"+File.separator+"member"+File.separator+"addimg";
+			
+			String newFileName = "";
+			
+			byte[] bytes = null;
+			
+			for(int i=0; i<addimgList.size(); i++) {
+				try {
+					bytes = addimgList.get(i).getBytes(); // 첨부파일의 내용물(byte)을 읽어옴.
+					 
+					 newFileName = fileManager.doFileUpload(bytes, addimgList.get(i).getOriginalFilename(), path);
+					 
+					 HashMap<String, String> addImgmap = new HashMap<String, String>();
+					 
+					 addImgmap.put("IMGFILENAME", newFileName);
+					 
+					 addImgmapList.add(addImgmap);
+					 
+				} catch (Exception e) {}
+				
+				
+			} // end of for
+			
+		} // end of if
+		
+		
+		String[] doctor = req.getParameterValues("doctor");
+		String[] docdog = req.getParameterValues("docdog");
+		String[] doccat = req.getParameterValues("doccat");
+		String[] docsmallani = req.getParameterValues("docsmallani");
+		String[] docetc = req.getParameterValues("docetc");
 		
 		String[] tagNoArr = req.getParameterValues("tagNo");
 		String[] tagNameArr = req.getParameterValues("tagName");
-		
-		
-		/*int n = 0;
-		String[] addimgArr = req.getParameterValues("addimage");
-		if(addimgArr != null) {
-			n = service.insertBizInfoImg(addimgArr);
-		}*/
-		
-		
-		
-		
 		
 		
 		try {
@@ -206,11 +239,53 @@ public class Biz_MemberController {
 		
 		int result = 0;
 		if(tagNoArr != null && tagNameArr != null) {
-			// 태그가 있는 경우 회원가입
-			result = service.insertMemberByMvoTagList(bmvo, tagNoArr, tagNameArr);
+			
+			if(addImgmapList == null || addImgmapList.size() == 0) {
+				// 태그가 있고 이미지가 없고 의사가 없는 경우 회원가입
+				if(doctor == null || doctor.length == 0 || doctor[0] == "") {
+					System.out.println(1);
+					result = service.insertMemberByMvoTagList(bmvo, tagNoArr, tagNameArr);
+				} else {
+					System.out.println(2);
+					// 태그가 있고 이미지가 없고 의사가 있는 경우 회원가입
+					result = service.insertMemberByMvoTagListDoc(bmvo, tagNoArr, tagNameArr, doctor, docdog, doccat, docsmallani, docetc);
+				}
+			} else {
+				if(doctor == null || doctor.length == 0|| doctor[0] == "") {
+					// 태그가 있고 이미지가 있고 의사가 없는 경우 회원가입
+					System.out.println(3);
+					result = service.insertMemberByMvoTagListImg(bmvo, tagNoArr, tagNameArr, addImgmapList);
+				} else {
+					// 태그가 있고 이미지가 있고 의사가 있는 경우 회원가입
+					System.out.println(4);
+					result = service.insertMemberByMvoTagImgListDoc(bmvo, tagNoArr, tagNameArr,addImgmapList, doctor, docdog, doccat, docsmallani, docetc);
+				}
+				
+			} // end
+			
 		} else {
-			// 태그가 없는 경우 회원가입
-			result = service.insertMemberByMvo(bmvo);
+			if(addImgmapList == null || addImgmapList.size() == 0) {
+				if(doctor == null || doctor.length == 0|| doctor[0] == "") {
+					// 태그가 없고 이미지도 없고 의사도없는 경우 회원가입
+					System.out.println(5);
+					result = service.insertMemberByMvo(bmvo);
+				} else {
+					// 태그가 없고 이미지도 없고 의사는 있는 경우 회원가입
+					System.out.println(6);
+					result = service.insertMemberByMvoDoc(bmvo, doctor, docdog, doccat, docsmallani, docetc);
+				}
+			} else {
+				if(doctor == null || doctor.length == 0|| doctor[0] == "") {
+					// 태그가 없고 이미지는 있고 의사는 없는 경우 회원가입
+					System.out.println(7);
+					result = service.insertMemberByMvoImg(bmvo, addImgmapList);
+				} else {
+					// 태그가 없고 이미지는 있고 의사도 있는 경우 회원가입
+					System.out.println(8);
+					result = service.insertMemberByMvoImgDoc(bmvo, addImgmapList, doctor, docdog, doccat, docsmallani, docetc);
+				}
+			
+			}
 		} // end of if~else
 		
 		String msg = "";
