@@ -17,7 +17,7 @@
 	$(document).ready(function(){
 		
 		$("#register").click(function(){
-			var frm = document.prescriptFrm;
+			var frm = document.chartFrm;
 			frm.action="<%=ctxPath%>/InsertChartEnd.pet";
 			frm.method="POST";
 			frm.submit();
@@ -36,7 +36,7 @@
 	});// end of $(document).ready()----------------------
 </script>
 <div class="container"> 
-<Form name="prescriptFrm" 
+<Form name="chartFrm" 
   style="margin-left:18%; border:0px solid black;border-radius:10px;width:70%; background-color: #eaebed">
 <div class="row">  
    
@@ -51,10 +51,10 @@
 	      </c:forEach>
      </select>
    </div>
-   <div class="span col-md-12">3.진료 회원 이름: <span>${chartmap.name}</span></div>
-   <div class="span col-md-12">4.진료 동물 종류: <span>${chartmap.pet_type}</span></div>
-   <div class="span col-md-12">5.진료 동물 이름: <span>${chartmap.pet_name}</span></div>
-   <div class="span col-md-12">6.진료종류: <span>${chartmap.reservation_type}</span></div>
+   <div class="span col-md-12">4.진료 회원 이름: <span>${chartmap.name}</span></div>
+   <div class="span col-md-12">5.진료 동물 종류: <span>${chartmap.pet_type}</span></div>
+   <div class="span col-md-12">6.진료 동물 이름: <span>${chartmap.pet_name}</span></div>
+   <div class="span col-md-12">7.진료종류: <span>${chartmap.reservation_type}</span></div>
   <!--   <div class="span col-md-12">7.투약 명 :  <input type="text" name="mname"/></div>  -->
    <div class="span col-md-12">8.주의 사항: </div>
    <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;"></textarea></div>

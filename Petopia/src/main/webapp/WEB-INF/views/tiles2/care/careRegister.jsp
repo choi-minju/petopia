@@ -38,60 +38,69 @@
 
 	$(document).ready(function() {
 		
-		$(function() {
-			$(".datepicker").datepicker();
-		});
+		$(".datepicker").datepicker({
+		      dateFormat:"yy/mm/dd",
+		      dayNamesMin:["일", "월", "화", "수", "목", "금", "토"],
+		      monthNames:["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+		      onSelect:function( d ){
+		          var arr = d.split("/");
+		         $(".datepicker").text(arr[0]);
+		         $(".datepicker").append(arr[1]);
+		         $(".datepicker").append(arr[2]);
+		      }
+		      });
+		
+		$("#caertype").val("${fk_caretype_UID}");
 		
 		getCaretype_info();
 		
+		$("#caertype").bind("change", function() {
+			getCaretype_info();
+		}); // #타입이 채운 이후 -> 주문량을 채운다.
+
 		// 등록버튼
 		$("#btnRegister").click(function() {
 
 			//폼 submit
 			var registerFrm = document.registerFrm;
 			registerFrm.action = "careRegisterEnd.pet";
-			registerFrm.method = "GET";
+			registerFrm.method = "POST";
 			registerFrm.submit();
-			
+
 		});
 
 	}); // end of ready()-------------------------------------------
-	
 
 	function getCaretype_info() {
-		
-		var form_data = {caertype : $("#caertype").val()}; // 키값:밸류값 #감자깡, 새우깡
-			
+
+		var form_data = {
+			caertype : $("#caertype").val()
+		};
+
 		$.ajax({
 			url : "getCaretype_info.pet",
-			type : "GET", 			   // method
-			data : form_data, 		   // 위의 URL 페이지로 사용자가 보내는 ajax 요청 데이터.
-			dataType : "JSON",  	   // URL 페이지로 부터 받아오는 데이터타입
+			type : "GET", // method
+			data : form_data, // 위의 URL 페이지로 사용자가 보내는 ajax 요청 데이터.
+			dataType : "JSON", // URL 페이지로 부터 받아오는 데이터타입
 			success : function(json) { // 데이터 전송이 성공적으로 이루어진 후 처리해줄 callback 함수
-			
-				
-			
+
 				$("#displayCaretype_info").empty();
-				/*
+
 				var html = "";
 
 				$.each(json, function(entryIndex, entry) {
-					html += "<textarea id=\"content\" rows=\"10\" cols=\"100\" style=\"width: 95%; height: 212px;\" readonly>" + entry.CARETYPE_INFO + "</textarea>";
+					html += "<div style='padding: 10px; border: 1px solid gray;'>" + entry.CARETYPE_INFO + "</div>";
 				});
 
 				$("#displayCaretype_info").append(html);
-				*/
-			
-			
 			},
 			error : function(request, status, error) {
-				alert("code: " + request.status + "\n" + "message: "
-						+ request.responseText + "\n" + "error: "
-						+ error);
+				alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
 			}
 		});
 
-	}
+	} // end of function getCaretype_info()-------------------------------------------
+	
 </script>
 
 
@@ -105,7 +114,7 @@
 
 			<div class="col-sm-12">
 				<form name="registerFrm">
-					<input type="hidden" name="fk_pet_UID" value="13" /> <%-- 수정_value를 받아와야 한다. --%>
+					<input type="hidden" name="fk_pet_UID" value="16" /> <%-- 수정_value를 받아와야 한다. --%>
 				
 					<div class="col-sm-offset-2 col-sm-8 preview-image" style="margin-bottom: 20px;">
 					
@@ -131,15 +140,11 @@
 
 										</select>
 									</li>
+									
 									<div id="displayCaretype_info">
-									<!-- 
-										<li>
-											<textarea id="content" rows="10" cols="100" style="width: 95%; height: 212px;" placeholder="각 항목에 관련된 안내사항 또는 예시" readonly></textarea>
-										</li> 
-									-->
+
 									</div>
 									
-
 								</ul>
 							</div>
 						</div>
@@ -167,8 +172,7 @@
 						<div class="row">
 							<div class="col-sm-12">
 								<div>사진 올리기</div>
-								<div style="display: inline-block;"><input type="file" id="" class="" name="" /></div>	
-								<div style="display: inline-block;"><input type="file" id="" class="" name="" /></div>					
+								<div style="display: inline-block;"><input type="file" id="" class="" name="" /></div>				
 							</div>
 						</div> 
 	

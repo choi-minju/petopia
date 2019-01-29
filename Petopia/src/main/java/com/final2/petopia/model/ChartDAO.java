@@ -78,6 +78,42 @@ import org.springframework.stereotype.Repository;
 				int n = sqlsession.insert("chart.insertChart",cvo);
 				return n;
 			}
+			//병원페이지에서 처방전 입력하기 0128
+			@Override
+			public int insertPre(ChartVO cvo) {
+				int n = sqlsession.insert("chart.insertPre",cvo);
+				return n;
+			}
+            //처방전 인서트 완료후 예약스테이터스 변경하기 
+			@Override
+			public void updaterstatus(String ruid) {
+				sqlsession.update("chart.updaterstatus",ruid);
+				
+			}
+			//병원페이지에서 차트 내역불러오기 
+			@Override
+			public HashMap<String, String> selectChart(HashMap<String,String> map) {
+				HashMap<String, String> cmap = sqlsession.selectOne("chart.selectChart",map);
+				return cmap;
+			}
+			//차트번호 가져오기 
+			@Override
+			public String getChartuid(String ruid) {
+				String cuid=sqlsession.selectOne("chart.getChartuid",ruid);
+				return cuid;
+			}
+			//처방전 번호 알아오기 
+			@Override
+			public String getPuid(HashMap<String,String> map) {
+				String puid = sqlsession.selectOne("chart.getPuid",map);
+				return puid;
+			}
+            //처방전 내용 알아오기 
+			@Override
+			public HashMap<String, String> selectPreinfo(HashMap<String, String> map) {
+				 HashMap<String, String> pmap = sqlsession.selectOne("chart.selectPreinfo",map);
+				return pmap;
+			}
 			
 			
 	}

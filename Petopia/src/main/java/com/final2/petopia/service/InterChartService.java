@@ -31,6 +31,18 @@ public interface InterChartService {
 	 List<HashMap<String, String>> selectDocList(String ruid); //예약번호로 의사이름 목록 알아오기
 
 	int insertChart(ChartVO cvo); //병원페이지에서 차트 내용 인서트하기 
+    //0128
+	int insertPre(ChartVO cvo); //병원페이지에서 처방전 인서트 하기 
+
+	void updaterstatus(String ruid); //처방전인서트 성공하면 예약스테이터스 변경하기
+
+	HashMap<String, String> selectChart(HashMap<String, String> map); //차트 내용 불러오기 
+
+	String getChartuid(String ruid); //차트번호알아오기 
+
+	String getPuid(HashMap<String, String> map);//처방전번호 알아오기 
+
+	HashMap<String, String> selectPreinfo(HashMap<String, String> map); //처방전 내용 불러오기
 
 	
 
