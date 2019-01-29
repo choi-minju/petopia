@@ -134,43 +134,133 @@ public class ChartController {
 		@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.POST })
 		public String InsertChartEnd(ChartVO cvo, HttpServletRequest req) {
 		 
-		/*	0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
-			 * 
+			///0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
 			String ctype =cvo.getChart_type();
-			if (ctype.equals("약국")) {
-				
-				return n;
-			}*/
-			int n =service.insertChart(cvo);
-			
-			
-			String loc = "";
-			if(n==1) {
-				String msg="차트등록에 실패하였습니다.";
-			req.setAttribute("msg", msg);
-			}else {
-				loc=req.getContextPath()+"/bizReservationList.pet";
+			String result="";
+			int n=0;
+			if(ctype.equals("약국")) {
+				 result = "0";
+			}else if(ctype.equals("외래진료")) {
+				 result = "1";
+			}else if(ctype.equals("예방접종")) {
+				 result = "2";
+			}else if(ctype.equals("수술상담")) {
+				 result = "3";
+			}else if(ctype.equals("호텔링")) {
+				 result = "4";
 			}
-			req.setAttribute("loc", loc);
-			return "chart/InsertChart.tiles2"; 
+			
+			cvo.setChart_type(result);
+			 n =service.insertChart(cvo);
+			
+			String msg="";
+			//String loc="";
+			if(n!=1) {
+				 msg="차트등록에 실패하였습니다.";
+				 //loc = "javascript:histroy.back();";
+				
+				 req.setAttribute("msg", msg);
+				 //req.setAttribute("loc", loc);
+			}else {
+				 msg = "차트 등록이 완료되었습니다.";
+				 //loc = req.getContextPath()+"/bizReservationList.pet";
+				 
+				 req.setAttribute("msg", msg);
+				 //req.setAttribute("loc", loc);
+			}
+			
+			
+			return "chart/biz_rvchartList.tiles2";
 			
 		} //진료 차트  인서트 완료  (기업회원페이지에서)
 		//0126
 		
 		
-		
+		//0128
 		@RequestMapping(value = "/InsertPrescription.pet", method = { RequestMethod.GET })
 		public String InsertPrescription(HttpServletRequest req) {
 			
+            String ruid=req.getParameter("reservation_UID");
+            
+			HashMap<String,String> chartmap =new HashMap<String,String>();
+			chartmap = service.selectReserverInfo(ruid); //예약번호를 이용하여 차트에 예약자 정보 불러오기 
 			
-
+			req.setAttribute("chartmap", chartmap);
 			return "chart/InsertPrescription.tiles2"; 
 			
-		} //처방전 인서트 (기업회원페이지에서)
+		} //처방전 인서트창  띄우기  (기업회원페이지에서)
 		
+		//0128
+		@RequestMapping(value = "/InsertPrescriptionEnd.pet", method = { RequestMethod.POST})
+		public String InsertPrescription(ChartVO cvo,HttpServletRequest req) {
+			
+			String ruid=req.getParameter("reservation_UID");
+			String cuid=service.getChartuid(ruid); //예약번호로 차트번호알아오기 
+			cvo.setChart_UID(Integer.parseInt(cuid));
+			System.out.println("cuid"+cuid);
+			int n= service.insertPre(cvo);
+			
+            if(n==1) {
+            	service.updaterstatus(ruid); //처방전까지 인서트 완료하면 예약스테이터스 변경하기 
+            	
+            }
+			return "chart/biz_rvchartList.tiles2";
+			
+		} //처방전 인서트완료  (기업회원페이지에서)
+	    
+		@RequestMapping(value = "/SelectChart.pet", method = { RequestMethod.GET })
+
+		public String SelectChart(ChartVO cvo,HttpServletRequest req) {
+			
+			String ruid=req.getParameter("reservation_UID");
+			String cuid=service.getChartuid(ruid); //예약번호로 차트번호알아오기 
+			
+			HashMap<String,String> map = new HashMap<String,String>();
+			map.put("ruid", ruid);
+			map.put("cuid", cuid);
+			
+			HashMap<String,String> cmap = new HashMap<String,String>();
+			cmap=service.selectChart(map);
+			
+			req.setAttribute("cmap", cmap);
+			return "chart/SelectChart.tiles2"; 
+			
+		} //기업회원 페이지에서 차트불러오기 
 		
-	
-	
+		@RequestMapping(value = "/EditChart.pet", method = { RequestMethod.GET })
+
+		public String EditChart(HttpServletRequest req) {
+			
+			return "chart/SelectChart.tiles2"; 
+			
+		} //기업회원 페이지에서 차트수정하기 
+		
+		@RequestMapping(value = "/SelectPrescription.pet", method = { RequestMethod.GET })
+
+		public String SelectPrescription(HttpServletRequest req) {
+			String ruid=req.getParameter("reservation_UID");
+		    String cuid = service.getChartuid(ruid);
+		    HashMap<String,String> map = new HashMap<String,String> ();
+		    map.put("ruid",ruid );
+		    map.put("cuid", cuid);
+		    System.out.println("ruid"+ruid);
+		    System.out.println("cuid"+cuid);
+			String puid =service.getPuid(map); //처방전 번호 불러오기 
+			
+			HashMap<String,String> pmap = new HashMap<String,String>();
+			pmap= service.selectPreinfo(map);
+			
+			return "chart/SelectPrescription.tiles2"; 
+			
+		} //기업회원 페이지에서 처방전 불러오기 
+		
+		@RequestMapping(value = "/EditPrescription.pet", method = { RequestMethod.GET })
+
+		public String EditPrescription(HttpServletRequest req) {
+			
+			return "chart/SelectPrescription.tiles2"; 
+			
+		} //기업회원 페이지에서 처방전 수정하기  
 	
 		@RequestMapping(value = "/SelectReserveChart.pet", method = { RequestMethod.GET })
 

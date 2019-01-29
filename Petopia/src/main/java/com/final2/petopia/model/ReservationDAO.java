@@ -53,9 +53,10 @@ public class ReservationDAO implements InterReservationDAO {
 	}
 
 //	#예약일정 인서트 성공시 스케줄테이블의 스케줄 상태 변경 트랜잭션 처리
+//	[190128] 파라미터 타입 String -> HashMap으로 변경
 	@Override
-	public int updateScheduleStatusBySUID(String fk_schedule_UID) {
-		int result = sqlsession.update(ns+"updateScheduleStatusBySUID", fk_schedule_UID);
+	public int updateScheduleStatusBySUID(HashMap<String, String> paraMap) {
+		int result = sqlsession.update(ns+"updateScheduleStatusBySUID", paraMap);
 		return result;
 	}
 	
@@ -179,6 +180,47 @@ public class ReservationDAO implements InterReservationDAO {
 	public int selectScheduleCountByIdx_biz(String idx_biz) {
 		int scheduleCount = sqlsession.selectOne(ns+"selectScheduleCountByIdx_biz", idx_biz);
 		return scheduleCount;
-	}	
+	}
+//	[190128]
+//	#캘린더에서 이벤트 클릭 시 예약 정보 가져오기
+	@Override
+	public HashMap<String, String> selectScheduleOneByScheduleUID(String schedule_UID) {
+		HashMap<String, String> returnMap = sqlsession.selectOne(ns+"selectScheduleOneByScheduleUID", schedule_UID);
+		return returnMap;
+	}
+//	#예약 테이블에서 해당 날짜와 일치하는 예약건이 있는지 확인하기(기업회원)
+	public int selectReservationByDate(HashMap<String, String> paraMap) {
+		int result = sqlsession.selectOne(ns+"selectReservationByDate", paraMap);
+		return result;
+	}
+//	#스케줄 테이블에서 날짜에 맞는 스케줄 UID 가져오기
+	public String selectScheduleOneByDate(HashMap<String, String> paraMap) {
+		String schedule_UID = sqlsession.selectOne(ns+"selectScheduleOneByDate", paraMap);
+		return schedule_UID;
+	}
+//	#기업회원 예약 일정 수정하기
+	@Override
+	public int updateReservationStatusTo4(HashMap<String, String> paraMap) {
+		int result = sqlsession.update(ns+"updateReservationStatusTo4", paraMap);
+		return result;
+	}
+//	#예약타입이 수술인 경우 payment 테이블의 예약UID 변경
+	@Override
+	public int updatePaymentReservationUID(HashMap<String, String> paraMap) {
+		int result = sqlsession.update(ns+"updatePaymentReservationUID", paraMap);
+		return result;
+	}
+//	#스케줄 테이블 시퀀스 채번하기
+	@Override
+	public String selectScheduleSeq() {
+		String seq = sqlsession.selectOne(ns+"selectScheduleSeq");
+		return seq;
+	}
+//	#기업회원 스케줄 1개 인서트하기
+	@Override
+	public int insertBizScheduleOne(ScheduleVO svo) {
+		int result = sqlsession.insert(ns+"insertBizScheduleOne", svo);
+		return result;
+	}
 
 }

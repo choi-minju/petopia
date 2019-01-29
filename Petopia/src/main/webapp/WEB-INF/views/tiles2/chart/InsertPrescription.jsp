@@ -23,6 +23,13 @@
 <script type="text/javascript">
     
 	$(document).ready(function(){
+
+		$("#register").click(function(){
+			var frm = document.prescriptFrm;
+			frm.action="<%=ctxPath%>/InsertPrescriptionEnd.pet";
+			frm.method="POST";
+			frm.submit();
+		});
 		
 	});// end of $(document).ready()----------------------
 </script>
@@ -32,27 +39,19 @@
 <div class="row">  
    
    <div class="col-md-12 ">
-   <h4 style="text-align:center; padding-top: 6%;">야옹님의 처방전</h4>
-   <div class="span col-md-12 "><span>1.날짜: 2019년 01원 14일 </span></div>
-   <div class="span col-md-12" ><span>2.병원 이름: 뚝딱뚜딱 병원</span></div>
-   <div class="span col-md-12"><span>3.진료 회원 아이디: mint</span></div>
-   <div class="span col-md-12"><span>4.진료 동물 종류: 고양이</span></div>
-   <div class="span col-md-12"><span>5.진료 동물 이름: 냥냥이1</span></div>
-   <div class="span col-md-12"><span>6.처방전 번호: A102</span></div>
-   <div class="span col-md-12"><span>7.처방 약 이름 : </span><input type="text"/></div>
-   <div class="span col-md-12"><span>8.투약 량 :  </span><input type="text"/></div>
-   <div  class="span col-md-12"><span>9.하루 복용 횟수 :
-      <select name="times" name="times">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-      </select>
-   </span>
-   </div>  
-	<div class="span col-md-12"><span>10.주의 사항:</span></div>
-	<div class="span col-md-12"><textarea name="caution" style="width:50%; height:15%;"></textarea></div>
-	<div class="span col-md-12"><span>11.노트 : </span></div>
-	<div class="span col-md-12"><textarea name="note" style="width:50%; height:15%;"></textarea></div>
+   <h4 style="text-align:center; padding-top: 6%;">[ ${chartmap.pet_name} ] 님의 처방전</h4>
+   <div class="span col-md-12 ">1.날짜: <span>${chartmap.reservation_DATE}</span></div>
+   <div class="span col-md-12" >2.병원 이름: <span>${sessionScope.loginuser.name}</span></div>
+   <div class="span col-md-12">3.진료 회원 이름: <span>${chartmap.name}</span></div>
+   <div class="span col-md-12">4.진료 동물 종류: <span>${chartmap.pet_type}</span></div>
+   <div class="span col-md-12">5.진료 동물 이름: <span>${chartmap.pet_name}</span></div>
+   <div class="span col-md-12">6.처방 약 이름 : <input type="text" name="rx_name"/></div>
+   <div class="span col-md-12">7.투약 량 : <input type="text" name="dosage"/></div>
+   <div  class="span col-md-12">8.하루 복용 횟수 :<input type="text" name="dose_number"/></div>  
+	<div class="span col-md-12"><span>9.주의 사항:</span></div>
+	<div class="span col-md-12"><textarea name="rx_cautions" style="width:50%; height:15%;"></textarea></div>
+	<div class="span col-md-12"><span>10.노트 : </span></div>
+	<div class="span col-md-12"><textarea name="rx_notice" style="width:50%; height:15%;"></textarea></div>
    
    
    </div>
@@ -60,5 +59,12 @@
 
 
 </div>
+<input type="hidden" name="bookingdate" value="${chartmap.bookingdate}"/>
+<input type="hidden" name="reservation_DATE" value="${chartmap.reservation_DATE}"/>
+<input type="hidden" name="biz_name" value="${sessionScope.loginuser.name}"/>
+<input type="hidden" name="name" value="${chartmap.name}"/>
+<input type="hidden" name="pet_type" value="${chartmap.pet_type}"/>
+<input type="hidden" name="pet_name" value="${chartmap.pet_name}"/>
+<input type="hidden" name="rx_regName" value="${sessionScope.loginuser.name}"/>
 </Form>
 </div>
