@@ -46,6 +46,25 @@ public class ReviewDAO implements InterReviewDAO {
 
 		return hosList;
 	} // end of public List<HashMap<String, Object>> selectHosListByPeriod(HashMap<String, Integer> paramap)
-	
 	// === 2019.01.28 ==== //
+	
+	// === 2019.01.29 ==== //
+	// *** 리뷰 쓰기 *** //
+	// 리뷰를 쓸 기업 번호 알아오기
+	@Override
+	public String selectBizIdxByReservationUID(String reservationUID) {
+		String bizIdx = sqlsession.selectOne("review.selectBizIdxByReservationUID", reservationUID);
+		
+		return bizIdx;
+	} // end of public String selectBizIdxByReservationUID(String string)
+
+	// review 테이블에 insert
+	@Override
+	public int insertReviewByReviewMap(HashMap<String, String> reviewMap) {
+		int result = sqlsession.insert("review.insertReviewByReviewMap", reviewMap);
+		
+		return result;
+	} // end of public int insertReviewByReviewMap(HashMap<String, String> reviewMap)
+	// === 2019.01.29 ==== //
 }
+

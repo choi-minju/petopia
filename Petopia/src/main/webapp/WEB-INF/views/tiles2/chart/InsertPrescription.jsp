@@ -39,12 +39,12 @@
 <div class="row">  
    
    <div class="col-md-12 ">
-   <h4 style="text-align:center; padding-top: 6%;">[ ${chartmap.pet_name} ] 님의 처방전</h4>
-   <div class="span col-md-12 ">1.날짜: <span>${chartmap.reservation_DATE}</span></div>
+   <h4 style="text-align:center; padding-top: 6%;">[ ${premap.pet_name} ] 님의 처방전 등록</h4>
+   <div class="span col-md-12 ">1.날짜: <span>${premap.reservation_DATE}</span></div>
    <div class="span col-md-12" >2.병원 이름: <span>${sessionScope.loginuser.name}</span></div>
-   <div class="span col-md-12">3.진료 회원 이름: <span>${chartmap.name}</span></div>
-   <div class="span col-md-12">4.진료 동물 종류: <span>${chartmap.pet_type}</span></div>
-   <div class="span col-md-12">5.진료 동물 이름: <span>${chartmap.pet_name}</span></div>
+   <div class="span col-md-12">3.진료 회원 이름: <span>${premap.name}</span></div>
+   <div class="span col-md-12">4.진료 동물 종류: <span>${premap.pet_type}</span></div>
+   <div class="span col-md-12">5.진료 동물 이름: <span>${premap.pet_name}</span></div>
    <div class="span col-md-12">6.처방 약 이름 : <input type="text" name="rx_name"/></div>
    <div class="span col-md-12">7.투약 량 : <input type="text" name="dosage"/></div>
    <div  class="span col-md-12">8.하루 복용 횟수 :<input type="text" name="dose_number"/></div>  
@@ -59,12 +59,13 @@
 
 
 </div>
-<input type="hidden" name="bookingdate" value="${chartmap.bookingdate}"/>
-<input type="hidden" name="reservation_DATE" value="${chartmap.reservation_DATE}"/>
+<input type="hidden" name="chart_UID" value="${premap.cuid}"/>
+<input type="hidden" name="bookingdate" value="${premap.bookingdate}"/>
+<input type="hidden" name="reservation_DATE" value="${premap.reservation_DATE}"/>
 <input type="hidden" name="biz_name" value="${sessionScope.loginuser.name}"/>
-<input type="hidden" name="name" value="${chartmap.name}"/>
-<input type="hidden" name="pet_type" value="${chartmap.pet_type}"/>
-<input type="hidden" name="pet_name" value="${chartmap.pet_name}"/>
+<input type="hidden" name="name" value="${premap.name}"/>
+<input type="hidden" name="pet_type" value="${premap.pet_type}"/>
+<input type="hidden" name="pet_name" value="${premap.pet_name}"/>
 <input type="hidden" name="rx_regName" value="${sessionScope.loginuser.name}"/>
 </Form>
 </div>

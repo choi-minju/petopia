@@ -144,6 +144,7 @@
 	<select id="selectTotalCount" resultType="int">
 		select count(*)
 		from member
+		where membertype = 1
 	</select>
 	
 	<!-- 검색 O -->
@@ -176,6 +177,7 @@
 		{ call pcd_selectMemberList(?,?,?) }
 	</select>
 	
+	<!-- === 2019.01.25 ==== 관리자 회원 리스트 수정 -->
 	<!-- === 2019.01.24 ==== 관리자 회원 리스트 코딩 -->
 	<!-- 프로시저 안 됨 ==> 일반 sql 쿼리로 -->
 	<!-- 검색 X 정렬 O -->
@@ -189,6 +191,7 @@
 		        select a.idx, userid, name, nickname, noshow, phone, member_status
 		        from member a JOIN login_log b
 		        ON a.idx = b.idx
+		        where a.membertype = 1
 		        order by ${ORDERBY}, idx asc
 		    ) V
 		) T
@@ -206,7 +209,7 @@
 		        select a.idx, userid, name, nickname, noshow, phone, member_status
 		        from member a JOIN login_log b
 		        ON a.idx = b.idx
-		        where ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+		        where a.membertype = 1 and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
 		        order by idx asc
 		    ) V
 		) T
@@ -224,13 +227,14 @@
 		        select a.idx, userid, name, nickname, noshow, phone, member_status
 		        from member a JOIN login_log b
 		        ON a.idx = b.idx
-		        where ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+		        where a.membertype = 1 and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
 		        order by ${ORDERBY}, idx asc
 		    ) V
 		) T
 		where rno between #{STARTRNO} and #{ENDRNO}
 	</select>
 	<!-- === 2019.01.24 ==== 관리자 회원 리스트 코딩 -->
+	<!-- === 2019.01.25 ==== 관리자 회원 리스트 수정 -->
 	
 	<!-- *** 회원 휴면 해제 *** -->
 	<update id="updateAdminMemberDateByIdx" parameterType="int">
@@ -254,4 +258,17 @@
 		where b.member_status = 1 and userid = #{USERID} and a.name = #{NAME}
 	</select>
 	<!-- === 2019.01.24 === 비밀번호 찾기 -->
+	
+	<!-- === 2019.01.25 === 비밀번호 변경 -->
+	<!-- *** 비밀번호 변경 *** -->
+	<update id="updateMemberPwdByUserid" parameterType="HashMap">
+		update member set pwd = #{PWD}
+		where userid = #{USERID}
+	</update>
+	
+	<update id="updateLogin_logPwdByUserid" parameterType="HashMap">
+		update login_log set fk_pwd = #{PWD}
+		where fk_userid = #{USERID}
+	</update>
+	<!-- === 2019.01.25 === 비밀번호 변경 -->
 </mapper>

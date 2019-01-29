@@ -31,26 +31,7 @@
       width: 100%;
       height: 180px;
    }
-/*   
-   .image {
-      opacity: 1;
-      display: block; 
-      width: 100%;
-      height: auto;
-      transition: .5s ease;
-      backface-visibility: hidden;
-   }
-   
-   .no-img-box img {
-      height: 2%;
-      width: 2%;
-      margin-top: 10px;
-      border-radius: 7px;
-      background: #fff;
-      text-align: center;
-      width: 20%;
-   }
-*/   
+
    .prod-none {
       display: none;
    } 

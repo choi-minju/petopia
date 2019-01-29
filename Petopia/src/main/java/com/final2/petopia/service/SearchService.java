@@ -28,8 +28,8 @@ public class SearchService implements InterSearchService {
 	}
 
 	// 검색창으로 넘어갈때 검색된 병원/약국 수 보내기 
-	public int searchCount(String searchWord) {
-		int cnt = dao.searchCount(searchWord);
+	public int searchCount(String searchWord,String whereNo) {
+		int cnt = dao.searchCount(searchWord, whereNo);
 		return cnt;
 	}
 	

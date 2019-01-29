@@ -14,6 +14,8 @@ show user;
 -- [190125] 프로시저 where절 추가; 민주
 -- [190126] 병원회원 최초 예약 스케줄 생성 프로시저 추가; 수미
 -- [190128] 양방향 메세지, 시간 삭제;; 호환
+-- [190129] 1; 예약 리스트에 필요한 view; 수미
+-- [190129] 2; chart 테이블에 fk_reservation_UID 추가; 혜원
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -535,9 +537,9 @@ nocycle
 nocache;
 
 select *
-from member
+from member;
 
-select fk_idx_biz from reservation group by fk_idx_biz
+select fk_idx_biz from reservation group by fk_idx_biz;
 
 -- 진료기록
 CREATE TABLE chart (
@@ -554,7 +556,8 @@ CREATE TABLE chart (
 	payment_pay      NUMBER   NULL,     -- 사용예치금
 	payment_point    NUMBER   NULL,     -- 사용포인트
 	addpay           NUMBER   NULL,     -- 본인부담금(추가결제금액)
-	totalpay         NUMBER   NULL      -- 진료비총액
+	totalpay         NUMBER   NULL,      -- 진료비총액
+    fk_reservation_UID NUMBER NULL     -- 예약코드 [190129]
     ,CONSTRAINT PK_chart -- 진료기록 기본키
 		PRIMARY KEY (chart_UID)
     ,CONSTRAINT ck_chart_type -- 진료타입 체크제약
@@ -568,6 +571,11 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+-- [190129] chart 테이블에 fk_reservation_UID 추가
+alter table chart
+add fk_reservation_UID NUMBER NULL;
+
 
 -- 예치금결제
 CREATE TABLE payment (
@@ -778,7 +786,7 @@ CREATE TABLE video_advice (
     ,CONSTRAINT PK_video_advice -- 화상 상담(video advice) 기본키
 		PRIMARY KEY (va_UID)
 );
-
+-- [190128] 오라클DB; 시간, 메세지 삭제 Video_advice; 호환
 alter table video_advice drop column usermessage;
 alter table video_advice drop column docmessage;
 alter table video_advice drop column umtime;
@@ -1704,3 +1712,9 @@ insert into caretype(caretype_UID, caretype_name, caretype_info)
 values(seq_caretype_UID.nextval, '식사', '<p>각 항목 작성 안내사항<br/>[식사의 경우]</p>');
 
 commit;
+
+-- [190129] 예약 리스트에 필요한 view
+create or replace view view_biz_memberinfo as 
+select idx_biz, name as biz_name, phone, postcode, addr1, addr2
+from member join biz_info
+on idx = idx_biz;

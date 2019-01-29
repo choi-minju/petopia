@@ -13,7 +13,11 @@
   font-size: 13px;
   height: 13px; 
   border-bottom: 1px solid #A6A6A6;
-} 
+}
+.selectedEvent{
+	border-color: rgb(252, 118, 110);
+	background-color: rgb(252, 118, 106);
+}
 </style>
 
 <script type="text/javascript">
@@ -31,11 +35,7 @@
 	});
 // [190119]
 // #펫목록에서 선택시 아래에 정보 자동 입력
-	$("#rvType").bind("change", function(){
-		var rvType = $("#rvType").val();
-		$("#").text(rvType);
-	});
-	
+//	[190129] 쓸모없는 코드 삭제
 	$("#selectPet").bind("change", function(){
 		var pet_UID = $("#selectPet").val();
 		var form_data = {"pet_UID" : pet_UID};
@@ -91,7 +91,9 @@
           };
       },
       events: function(start, end, timezone, callback){
-    	  var form_data = {"idx_biz": "5"};
+    	  // [190129] form_data에 idx_biz 고정값 삭제, 변수 추가
+    	  var idx_biz = ${bizmvo.idx_biz};
+    	  var form_data = {"idx_biz": idx_biz};
         	
         	$.ajax({
         		url: "selectScheduleList.pet",
@@ -131,16 +133,16 @@
       }	
       ,	
       eventClick: function(eventObj) {
-    	  
-    		  alert("선택완료");
-	       	  $(this).css('border-color', 'rgb(252, 118, 110)');
-	  		  $(this).css('backgroundColor', 'rgb(252, 118, 106)');
-	  		
-	  		  var scheduledate = chageDateFormat(eventObj.start);
-	  		  $("#schedule_date").text(scheduledate);
-	  		  $("#reservation_DATE").val(eventObj.start);
-	  		  $("#fk_schedule_UID").val(eventObj.id);
-
+    	  // [190129] 이벤트객체 중복선택 막기
+    	  	var fcevent = $(".fc-time-grid-event").parent();
+    	  	fcevent.not($(this)).find('a').removeClass("selectedEvent");
+    	  	
+    	  	$(this).addClass("selectedEvent"); 
+	  		  
+	  		var scheduledate = chageDateFormat(eventObj.start);
+	  		$("#schedule_date").text(scheduledate);
+	  		$("#reservation_DATE").val(eventObj.start);
+	  		$("#fk_schedule_UID").val(eventObj.id);
      	}
     });
 	 

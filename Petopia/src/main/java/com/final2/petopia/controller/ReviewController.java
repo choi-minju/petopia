@@ -94,4 +94,53 @@ public class ReviewController {
 		return hosList;
 	} // end of 
 	// === 2019.01.28 ==== //
+	
+	// === 2019.01.29 ==== //
+	@RequestMapping(value="/addReview.pet", method={RequestMethod.POST})
+	public String requireLogin_addReview(HttpServletRequest req, HttpServletResponse res) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		String startpoint = req.getParameter("startpoint");
+		String fk_reservation_UID = req.getParameter("fk_reservation_UID");
+		String rv_contents = req.getParameter("rv_contents");
+		
+		if(startpoint == null || "".equals(startpoint)) {
+			startpoint = "0";
+		}
+		
+		/*System.out.println("startpoint: "+startpoint);
+		System.out.println("fk_reservation_UID: "+fk_reservation_UID);
+		System.out.println("rv_contents: "+rv_contents);*/
+		
+		HashMap<String, String> reviewMap = new HashMap<String, String>();
+		reviewMap.put("FK_IDX", String.valueOf(loginuser.getIdx()));
+		reviewMap.put("FK_RESERVATION_UID", fk_reservation_UID);
+		reviewMap.put("STARTPOINT", startpoint);
+		reviewMap.put("FK_USERID", loginuser.getUserid());
+		reviewMap.put("FK_NICKNAME", loginuser.getNickname());
+		reviewMap.put("RV_CONTENTS", rv_contents);
+		reviewMap.put("STARTPOINT", startpoint);
+		
+		int result = service.insertReviewByReviewMap(reviewMap);
+		
+		String msg = "";
+		String loc = "";
+		if(result == 0) {
+			msg = "리뷰 등록 실패했습니다.";
+			loc = "javascript:history.back();";
+		} else {
+			msg = "리뷰 등록 성공했습니다.";
+			loc = req.getContextPath()+"/myReviewList.pet";
+		} // end of if~else
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} //  end of 
+	// === 2019.01.29 ==== //
+	
+	
 }
