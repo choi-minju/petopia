@@ -47,7 +47,23 @@ public class ReviewService implements InterReviewService {
 		
 		return hosList;
 	} // end of public List<HashMap<String, Object>> selectHosListByPeriod(HashMap<String, Integer> paramap)
-	
 	// === 2019.01.28 ==== //
 	
+	// === 2019.01.29 ==== //
+	// *** 리뷰 쓰기 *** //
+	@Override
+	public int insertReviewByReviewMap(HashMap<String, String> reviewMap) {
+		
+		// 리뷰를 쓸 기업 번호 알아오기
+		String fk_idx_biz = dao.selectBizIdxByReservationUID(reviewMap.get("FK_RESERVATION_UID"));
+		
+		reviewMap.put("FK_IDX_BIZ", fk_idx_biz);
+		
+		// review 테이블에 insert
+		int result = dao.insertReviewByReviewMap(reviewMap);
+		
+		return result;
+	} // end of public int insertReviewByReviewMap(HashMap<String, String> reviewMap)
+	
+	// === 2019.01.29 ==== //
 }

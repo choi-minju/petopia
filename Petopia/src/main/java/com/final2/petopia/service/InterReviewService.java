@@ -12,7 +12,11 @@ public interface InterReviewService {
 	
 	List<HashMap<String, String>> selectHosList(HashMap<String, Integer> paramap); // 병원 리스트 - 기간이 없는
 	List<HashMap<String, String>> selectHosListByPeriod(HashMap<String, Integer> paramap); // 병원 리스트 - 기간이 있는
-	
 	// === 2019.01.28 ==== //
+	
+	// === 2019.01.29 ==== //
+	// *** 리뷰 쓰기 *** //
+	int insertReviewByReviewMap(HashMap<String, String> reviewMap);
+	// === 2019.01.29 ==== //
 	
 }

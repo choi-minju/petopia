@@ -22,6 +22,11 @@
 	where ${COLNAME} like '%'||#{SEARCH}||'%'
 </select>
 
+<select id="selectMyConsultCountNoSearch" parameterType="String" resultType="int">
+	select count(*)
+	from consult
+	where fk_idx = #{idx}
+</select>
 
 <!-- [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount -->
 <select id="selectTotalCountNoSearch" resultType="int">
@@ -31,21 +36,24 @@
 
 <!-- [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select -->
 <select id="selectConsultListPaging" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultVO">
-	select consult_UID, fk_idx, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
+	select consult_UID, fk_idx, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret, commentCount
 	from 
 	(
-	    select rownum AS RNO, consult_UID, fk_idx, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
+	    select rownum AS RNO, consult_UID, fk_idx, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret, commentCount
 	    from
 	    (
-	        select consult_UID, fk_idx, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
+	        select consult_UID, fk_idx, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret, commentCount
 	        from consult C JOIN member M
 	        on C.fk_idx = M.idx
+	        order by consult_UID desc
 	    )
 	    where 1=1
 	    <if test='SEARCH != null and SEARCH != "" and SEARCH != "null" '>
 	    and ${COLNAME} like '%'||#{SEARCH}||'%'
 	    </if>
-	    order by consult_UID desc
+	    <if test='IDX != null'>
+	    and fk_idx = #{IDX}
+	    </if>
 	) T
 	where RNO between #{STARTRNO} and #{ENDRNO}
 </select>
@@ -81,32 +89,41 @@
 	where consult_UID = #{CONSULT_UID}
 </update>
 
-<!-- 원글상세 삭제 delete-->
+<!-- 원글상세 삭제 delete -->
 <delete id="deleteConsult" parameterType="String" >
 	delete from consult
 	where consult_UID = #{CONSULT_UID}
 </delete>
-
-
+<!-- 원글상세 삭제 delete
+<update id="deleteComment" parameterType="String">
+	update consult set cs_del = 0
+	where consult_UID = #{consult_UID}
+</update>
+-->
 
 <!-- 원글에 달린 댓글갯수 select -->
 <select id="selectCommentWithConsult" parameterType="String" resultType="int">
 	select count(*)
 	from consult_comment
-	where fk_consult_UID = #{CONSULT_UID}
+	where fk_consult_UID = #{consult_UID}
 </select>
 
-<!-- 원글에 달린 댓글삭제 delete 
-<delete id="deleteConsult" parameterType="String">
+<!-- 원글에 달린 댓글삭제 delete -->
+<delete id="deleteComment" parameterType="String">
 	delete from consult_comment
 	where fk_consult_UID = #{CONSULT_UID}
 </delete>
--->
+<!-- 원글에 달린 댓글삭제 update
+<update id="deleteComment" parameterType="String">
+	update consult_comment set cscmt_del = 0
+	where fk_consult_UID = #{consult_UID}
+</update>
+ -->
 
-<!-- [consult_comment]commentvo 댓글쓰기 insert -->
+<!-- [consult_comment]commentvo 원댓글쓰기 insert -->
 <insert id="insertComment" parameterType="com.final2.petopia.model.ConsultCommentVO">
 	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
-	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, seq_consult_comment.nextval, seq_consult_comment.nextval, default, default, default)
+	values(seq_consult_comment.nextval, #{fk_consult_UID}, #{fk_idx}, #{cscmt_nickname}, #{cscmt_contents}, default, 0, seq_consult_comment.nextval, default, default, default)
 <!--
 <if test="!cscmt_group.equals('')">  원댓글 제외 
 	insert into consult_comment(cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del)
@@ -133,24 +150,7 @@
 	where consult_UID = #{fk_consult_UID}
 </update>
 
-<!-- 댓글리스트 select : 1번 
-<select id="selectCommentList" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultCommentVO">
-	select cscmt_nickname, cscmt_contents, cscmt_writeday
-	from
-	(
-	    select rownum AS rno, cscmt_nickname, cscmt_contents, cscmt_writeday
-	    from
-	    (
-	        select fk_consult_UID, cscmt_del, cscmt_nickname, cscmt_contents, to_char(cscmt_writeday, 'yyyy-mm-dd hh24:mi:ss') AS cscmt_writeday
-	        from consult_comment
-	        where cscmt_del = 1 and fk_consult_UID = #{CONSULT_UID}
-	        order by fk_consult_UID asc
-	    ) V
-	) T
-	where rno between #{RNO1} and #{RNO2}
-</select>
--->
-<!-- 댓글리스트 select : 2번 -->
+<!-- 댓글리스트 select -->
 <select id="selectCommentList" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultCommentVO">
 	select cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del
 	from
@@ -167,26 +167,40 @@
 	    ) V
 	) T
 	where rno between #{RNO1} and #{RNO2}
+
 </select>
 
 <!-- 댓글 총 갯수 select -->
 <select id="selectCommentTotalCount" parameterType="HashMap" resultType="int" >
 	select count(*)
 	from consult_comment
-	where fk_consult_UID = #{CONSULT_UID}
+	where cscmt_del = 1 and fk_consult_UID = #{CONSULT_UID}
 </select>
 
-<!-- 댓글그룹순서 최대값 -->
-<select id="getGroupOdrMax" parameterType="com.final2.petopia.model.ConsultCommentVO" resultType="int" >
+<!--  받아온 fk_cmt_id값이 기존에 fk_cmt_id과 같은게 있는지 없는지 -->
+<select id="getFk_cmt_idCount" parameterType="com.final2.petopia.model.ConsultCommentVO" resultType="int">
+	select count(*)
+	from consult_comment
+	where cscmt_del = 1 and cscmt_group = #{cscmt_group} and fk_cmt_id = #{fk_cmt_id}
+</select>
+
+<!-- 댓글그룹순서 최대값 : 댓글그룹순서 최대값 받아옴 + 1 (기존에 fk_cmt_id이 없을때) -->
+<select id="getGroupOdrMax1" parameterType="com.final2.petopia.model.ConsultCommentVO" resultType="int" >
+	select cscmt_g_odr
+	from consult_comment
+	where cscmt_del = 1 and cscmt_group = #{cscmt_group} and cmt_id = #{fk_cmt_id}
+</select>
+<!-- 댓글그룹순서 최대값 : 댓글그룹순서 최대값 받아옴 + 1 -->
+<select id="getGroupOdrMax2" parameterType="com.final2.petopia.model.ConsultCommentVO" resultType="int" >
 	select nvl(max(cscmt_g_odr), 0)
 	from consult_comment
-	where cscmt_group = #{cscmt_group} and fk_cmt_id = #{cmt_id}
+	where cscmt_del = 1 and cscmt_group = #{cscmt_group} and fk_cmt_id = #{fk_cmt_id}
 </select>
 
 <!-- cscmt_g_odr그룹순서 update -->
-<update id="updateCommentCscmtgOdr" parameterType="int">
+<update id="updateCommentCscmtgOdr" parameterType="com.final2.petopia.model.ConsultCommentVO" >
 	update consult_comment set cscmt_g_odr = cscmt_g_odr + 1
-	where cscmt_group = #{cscmt_group} and cscmt_g_odr >= #{cscmt_g_odr}
+	where cscmt_del = 1 and cscmt_group = #{cscmt_group} and fk_cmt_id != #{fk_cmt_id} and cscmt_g_odr >= #{cscmt_g_odr}
 </update>
 
 

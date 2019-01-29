@@ -225,6 +225,7 @@
 		<result property="pet_type" column="PET_TYPE" javaType="String" />
 	</resultMap>
 	<!-- [190128] 캘린더에서 이벤트 클릭 시 예약 정보 가져오기 -->
+	<!-- [190129] reservation_status 비교절 추가 -->
 	<select id="selectScheduleOneByScheduleUID" parameterType="String" resultMap="biz_scheduleMap">
 		SELECT S.SCHEDULE_UID, RESERVATION_UID, R.FK_IDX_BIZ ,TO_CHAR(RESERVATION_DATE, 'yyyy-MM-dd') AS RESERVATION_DATE_YMD
 				, TO_CHAR(RESERVATION_DATE, 'HH24:MI') AS RESERVATION_DATE_HM, RESERVATION_TYPE, RESERVATION_STATUS, SCHEDULE_STATUS
@@ -235,18 +236,20 @@
 		ON R.FK_IDX = M.IDX
 		JOIN PET_INFO P
 		ON R.FK_PET_UID=P.PET_UID
-		WHERE S.SCHEDULE_UID=#{SCHEDULE_UID}
+		WHERE S.SCHEDULE_UID=#{SCHEDULE_UID} AND R.RESERVATION_STATUS != 4
 	</select>
 	<!-- [190128] 기업회원 예약 일정 수정하기 -->
 	<!-- 1. 예약테이블 일치값 찾기  -->
+	<!-- [190129] reservation_status 비교절 추가 -->
 	<select id="selectReservationByDate" parameterType="HashMap" resultType="int">
 		select count(*)
 		from reservation
 		where reservation_date = to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi')
 		and fk_idx_biz = #{fk_idx_biz}
+		and reservation_status in (1, 2)
 	</select>
 	<!-- 2. 스케줄 테이블에서 날짜값과 일치하는 값 가져오기  -->
-	<select id="selectScheduleOneByDate" parameterType="HashMap" resultType="int">	
+	<select id="selectScheduleOneByDate" parameterType="HashMap" resultType="String">	
 		select schedule_UID
 		from schedule
 		where fk_idx_biz = #{fk_idx_biz} and schedule_DATE = to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi')
@@ -267,5 +270,27 @@
 	<!-- 스케줄 테이블에 새 스케줄 입력하기 -->
 	<insert id="insertBizScheduleOne" parameterType="com.final2.petopia.model.ScheduleVO">
 		insert into schedule(schedule_UID, fk_idx_biz, schedule_DATE, schedule_status) values(#{schedule_UID}, #{fk_idx_biz}, to_date(#{schedule_DATE}, 'yyyy-mm-dd hh24:mi'), default)
+	</insert>
+	
+	<!-- [190129] -->
+	<!-- #기업회원; 예약 일정 취소하기 - 수술상담 및 결제완료의 경우 -->
+	<!-- 1) payment테이블에서 실제 결제한 포인트와 예치금금액 select -->
+	<select id="selectPayPointAndPayCoin" parameterType="String" resultType="com.final2.petopia.model.PaymentVO">
+		select payment_point, payment_pay from payment where fk_reservation_UID=#{reservation_UID}
+	</select>
+	<!-- 2) payment 테이블의 status 3(환불)로 변경 -->
+	<update id="updatePaymentStatusTo3ByFK_rvUID" parameterType="String">
+		update payment set payment_status=3 where fk_reservation_UID=#{reservation_UID}
+	</update>
+	<!-- 3) 예치금 테이블에 충전 또는 환불받은 값 인서트하기 -->
+	<insert id="insertDepositPlus" parameterType="HashMap">
+		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID)
+		values(seq_deposit_UID.nextval, #{fk_idx}, to_number(#{depositcoin}), #{deposit_status}, #{deposit_type}, sysdate, default)
+	</insert>
+	
+	<!-- #notification 테이블에 insert -->
+	<insert id="insertNoteForReservation" parameterType="HashMap">
+		insert into notification(not_UID, fk_idx, not_type, not_message, not_date)
+		values(seq_notification_UID.nextval, #{fk_idx}, 2, #{not_message}, sysdate)
 	</insert>
 </mapper>

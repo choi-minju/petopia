@@ -150,7 +150,34 @@
 		success: function(json){
 			$("#edit_rvUID").val(json.reservation_UID);
 			$("#edit_rvDATE_YMD").val(json.reservation_DATE_YMD);
-			$("#edit_rvDATE_HM").val(json.reservation_DATE_HM);
+			// [190129] 예약정보 추가
+			$(".timeopt").each(function(){
+			    if($(this).val()==json.reservation_DATE_HM){
+			      $(this).attr("selected","selected"); // attr적용안될경우 prop으로 
+			    }
+			});
+			var rvTypeText = "";
+			if(json.reservation_type=="1"){
+				rvTypeText = "외래진료";
+			}
+			else if(json.reservation_type=="2"){
+				rvTypeText = "예방접종";
+			}
+			else if(json.reservation_type=="3"){
+				rvTypeText = "수술상담";
+			}
+			else if(json.reservation_type=="4"){
+				rvTypeText = "호텔링상담";
+			}
+			$("#rvTypeText").val(rvTypeText);
+			
+			if(json.reservation_type=="3" && json.reservation_status=="1"){
+				$("#rvStatus").val("미결제");
+			}
+			else{
+				$("#rvStatus").val("예약완료");
+			}
+			// 190129 끝 ---------------
 			$("#edit_reservation_status").val(json.reservation_status);
 			$("#edit_scUID").val(json.schedule_UID);
 			$("#edit_memberName").val(json.name);
@@ -195,6 +222,13 @@
 		var frm = document.scheduleEditFrm;
 		frm.method="POST";
 		frm.action="<%= ctxPath %>/rvScheduleEdit.pet";
+		frm.submit();
+	}
+//	[190129] 예약 취소	
+	function goCancle(){
+		var frm = document.scheduleEditFrm;
+		frm.method="POST";
+		frm.action="<%= ctxPath %>/rvScheduleCancle.pet";
 		frm.submit();
 	}
 
@@ -254,7 +288,14 @@
 								변경할 시간을 선택해주세요.
 								<form name="scheduleEditFrm">
 									<input type="date" class="form-control" id="edit_rvDATE_YMD" name="edit_rvDATE_YMD" placeholder="2019-01-28" style="width: 40%; display: inline-block;"/>
-									<input type="time" class="form-control" id="edit_rvDATE_HM" name="edit_rvDATE_HM" style="width: 30%; display: inline-block;"/>
+									<%-- [190129] 시간 선택 셀렉트박스 추가 --%>
+									<select id="edit_rvDATE_HM" name="edit_rvDATE_HM" class="form-control" style="width: 30%; display: inline-block;">
+									<option value="">선택하세요.</option>
+										<c:forEach items="${timeList}" var="time">
+											<option class="timeopt" value="${time.time1}">${time.time1}</option>
+											<option class="timeopt" value="${time.time2}">${time.time2}</option>
+										</c:forEach>
+									</select>
 									<input type="hidden" id="edit_rvUID" name="edit_rvUID" />
 									<input type="hidden" id="edit_scUID" name="edit_scUID" />
 									<input type="hidden" id="edit_fk_idx_biz" name="edit_fk_idx_biz"/>
@@ -272,9 +313,16 @@
 							</li>
 							<li>
 								반려동물 정보
-								<input type="text" class="form-control" id="edit_pet_name" style="width: 40%;" readonly/>
-								<input type="text" class="form-control" id="edit_pet_type" style="width: 40%;" readonly/><br/>
+								<input type="text" class="form-control" id="edit_pet_name" style="width: 40%;" readonly />
+								<input type="text" class="form-control" id="edit_pet_type" style="width: 40%;" readonly /><br/>
 							</li>
+							<%-- [190129] 예약정보 추가 --%>
+							<li>
+								예약타입/상태
+								<input type="text" class="form-control" id="rvTypeText" style="width: 40%;" readonly/>
+								<input type="text" class="form-control" id="rvStatus" style="width: 40%;" readonly/>
+							</li>
+							
 						</ul>
 						
 					</div>			

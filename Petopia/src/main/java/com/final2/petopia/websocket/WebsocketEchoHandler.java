@@ -30,7 +30,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	    	throws Exception {
 	    	// >>> 파라미터 WebSocketSession wsession 은  웹소켓서버에 접속한 클라이언트 사용자임. <<<
 	    	connectedUsers.add(wsession);
-	 
+	    	
 	    	// 웹소켓서버에 접속한 클라이언트의 IP Address 얻어오기
 	    	/*
 	    	  STS 메뉴의 
@@ -40,7 +40,6 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	    	      --> 한칸 띄우고 -Djava.net.preferIPv4Stack=true 
 	    	                  을 추가한다.  
 	    	*/
-	        
 	        System.out.println("====> 웹채팅확인용 : " + wsession.getId() + "님이 접속했습니다.");
 	        // ====> 웹채팅확인용 : 0님이 접속했습니다. 
 	        // ====> 웹채팅확인용 : 1님이 접속했습니다.
@@ -85,7 +84,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	    	Map<String, Object> map = wsession.getAttributes();
 	    	MemberVO loginuser = (MemberVO)map.get("loginuser");  // "loginuser" 은 HttpSession에 저장된 키 값이다. 
 	    	
-	    	System.out.println("====> 웹채팅확인용 : 로그인ID : " + loginuser.getUserid());
+	    	System.out.println("====> 내아이디 : 로그인ID : " + loginuser.getUserid());
 	    	// ====> 웹채팅확인용 : 로그인ID : seoyh
 	    	
 	        MessageVO messageVO = MessageVO.convertMessage(message.getPayload());
@@ -123,6 +122,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	    	
 	    	Map<String, Object> map = wsession.getAttributes();
 	    	MemberVO loginuser = (MemberVO)map.get("loginuser");
+	    	
 	    	
 	    	connectedUsers.remove(wsession);
 	   	 

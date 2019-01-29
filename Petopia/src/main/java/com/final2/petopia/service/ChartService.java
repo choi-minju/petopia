@@ -111,10 +111,17 @@ public class ChartService implements InterChartService {
 			String puid = dao.getPuid(map);
 			return puid;
 		}
-        //처방전 내용불러오기 
+		//0129
+		//예약자번호로 처방전 인서트 내용 가져오기
 		@Override
-		public HashMap<String, String> selectPreinfo(HashMap<String, String> map) {
-			HashMap<String, String> pmap = new HashMap<String, String>();
+		public HashMap<String, String> selectpreinfobyruid(String ruid) {
+			HashMap<String, String> preinfo =dao.selectpreinfobyruid(ruid);
+			return preinfo;
+		}
+		 //셀렉트창에서 처방전 내용가져오기 
+		@Override
+		public HashMap<String, String> selectPreinfo(HashMap<String, String> map2) {
+			 HashMap<String, String> pmap =dao.selectPreinfo(map2);
 			return pmap;
 		}
 

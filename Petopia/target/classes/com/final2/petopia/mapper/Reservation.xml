@@ -34,9 +34,9 @@
 		insert into reservation(reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, bookingdate, reservation_DATE, reservation_status, reservation_type)
 		values(seq_reservation_UID.nextval, #{fk_idx}, #{fk_idx_biz}, #{fk_schedule_UID}, #{fk_pet_UID}, default, to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi'), 2, #{reservation_type})
 	</insert>
-	
-	<update id="updateScheduleStatusBySUID" parameterType="String">
-		update schedule set schedule_status = 1 where schedule_UID=#{fk_schedule_UID}
+	<!-- [190128] 파라미터 타입 변경, 값 변경 -->
+	<update id="updateScheduleStatusBySUID" parameterType="HashMap">
+		update schedule set schedule_status = #{status} where schedule_UID=#{fk_schedule_UID}
 	</update>
 	
 	<select id="selectReservation_Seq" resultType="String">
@@ -160,6 +160,23 @@
 	</select>
 	
 	<!-- [190125] 예치금 히스토리 목록에서 모두보기 -->
+	<select id="selectDepositListByIdxNoneType" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
+		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+		(
+		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+			(
+			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
+			from deposit
+			where fk_idx = #{idx} and depositcoin != 0
+			order by deposit_UID desc
+			)
+		)
+		where rno between #{rno1} and #{rno2}
+	</select>
+	
+	<!-- [190126] 예치금 히스토리 목록에서 충전/사용목록 보기 -->
 	<select id="selectDepositListByIdx" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
 		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
 		from
@@ -169,10 +186,111 @@
 			(
 			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
 			from deposit
-			where fk_idx = #{idx}
+			where fk_idx = #{idx} and deposit_status = #{type} and depositcoin != 0
 			order by deposit_UID desc
 			)
 		)
 		where rno between #{rno1} and #{rno2}
 	</select>
+	<!-- [190126] 예치금 히스토리 목록; 모든 건수 -->
+	<select id="selectDepositListTotalCountNoneType" parameterType="HashMap" resultType="int">
+		select count(*) from deposit where fk_idx=#{idx} and depositcoin != 0
+	</select>
+	<!-- [190126] 예치금 히스토리 목록; 충전/사용건수 -->
+	<select id="selectDepositListTotalCount" parameterType="HashMap" resultType="int">
+		select count(*) from deposit where fk_idx=#{idx} and deposit_status=#{type} and depositcoin != 0
+	</select>
+	<!-- [190126] 최초 스케줄 생성 프로시저 -->
+	<insert id="insertScheduleFirst" statementType="CALLABLE" parameterType="String">
+		{call PCD_FIRSTADDSCHEDULE(#{idx_biz, mode=IN})}
+	</insert>
+	<!-- [190126] 병원회원의 스케줄 개수 가져오기 -->
+	<select id="selectScheduleCountByIdx_biz" parameterType="String" resultType="int">
+		select count(*) from schedule where fk_idx_biz = #{idx_biz}
+	</select>
+	
+	<resultMap type="HashMap" id="biz_scheduleMap">
+		<result property="schedule_UID" column="SCHEDULE_UID" javaType="String" />
+		<result property="reservation_UID" column="RESERVATION_UID" javaType="String" />
+		<result property="fk_idx_biz" column="FK_IDX_BIZ" javaType="String" />
+		<result property="reservation_DATE_YMD" column="RESERVATION_DATE_YMD" javaType="String" />
+		<result property="reservation_DATE_HM" column="RESERVATION_DATE_HM" javaType="String" />
+		<result property="reservation_type" column="RESERVATION_TYPE" javaType="String" />
+		<result property="reservation_status" column="RESERVATION_STATUS" javaType="String" />
+		<result property="schedule_status" column="SCHEDULE_STATUS" javaType="String"/>
+		<result property="name" column="NAME" javaType="String" />
+		<result property="fk_idx" column="IDX" javaType="String" />
+		<result property="fk_pet_UID" column="FK_PET_UID" javaType="String" />
+		<result property="pet_name" column="PET_NAME" javaType="String" />
+		<result property="pet_type" column="PET_TYPE" javaType="String" />
+	</resultMap>
+	<!-- [190128] 캘린더에서 이벤트 클릭 시 예약 정보 가져오기 -->
+	<!-- [190129] reservation_status 비교절 추가 -->
+	<select id="selectScheduleOneByScheduleUID" parameterType="String" resultMap="biz_scheduleMap">
+		SELECT S.SCHEDULE_UID, RESERVATION_UID, R.FK_IDX_BIZ ,TO_CHAR(RESERVATION_DATE, 'yyyy-MM-dd') AS RESERVATION_DATE_YMD
+				, TO_CHAR(RESERVATION_DATE, 'HH24:MI') AS RESERVATION_DATE_HM, RESERVATION_TYPE, RESERVATION_STATUS, SCHEDULE_STATUS
+		        ,M.NAME, M.IDX, R.FK_PET_UID, P.PET_NAME, P.PET_TYPE
+		FROM SCHEDULE S JOIN RESERVATION R
+		ON S.SCHEDULE_UID=R.FK_SCHEDULE_UID
+		JOIN MEMBER M
+		ON R.FK_IDX = M.IDX
+		JOIN PET_INFO P
+		ON R.FK_PET_UID=P.PET_UID
+		WHERE S.SCHEDULE_UID=#{SCHEDULE_UID} AND R.RESERVATION_STATUS != 4
+	</select>
+	<!-- [190128] 기업회원 예약 일정 수정하기 -->
+	<!-- 1. 예약테이블 일치값 찾기  -->
+	<!-- [190129] reservation_status 비교절 추가 -->
+	<select id="selectReservationByDate" parameterType="HashMap" resultType="int">
+		select count(*)
+		from reservation
+		where reservation_date = to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi')
+		and fk_idx_biz = #{fk_idx_biz}
+		and reservation_status in (1, 2)
+	</select>
+	<!-- 2. 스케줄 테이블에서 날짜값과 일치하는 값 가져오기  -->
+	<select id="selectScheduleOneByDate" parameterType="HashMap" resultType="String">	
+		select schedule_UID
+		from schedule
+		where fk_idx_biz = #{fk_idx_biz} and schedule_DATE = to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi')
+		and schedule_status=0
+	</select>
+	<!-- 기존 예약건의 상태를 4(취소)로 변경 -->
+	<update id="updateReservationStatusTo4" parameterType="HashMap">
+		update reservation set reservation_status=4 where reservation_UID=#{reservation_UID}
+	</update>
+	<!-- 수술타입 예약인 경우 결제테이블의 예약 UID를 새로운 UID로 변경 -->
+	<update id="updatePaymentReservationUID" parameterType="HashMap">
+		update payment set fk_reservation_UID = #{n_reservation_UID} where fk_reservation_UID = #{reservation_UID}
+	</update>
+	<!-- 스케줄 테이블 시퀀스 채번하기 -->
+	<select id="selectScheduleSeq" resultType="String">
+		select seq_schedule_UID.nextval as seq from dual
+	</select>
+	<!-- 스케줄 테이블에 새 스케줄 입력하기 -->
+	<insert id="insertBizScheduleOne" parameterType="com.final2.petopia.model.ScheduleVO">
+		insert into schedule(schedule_UID, fk_idx_biz, schedule_DATE, schedule_status) values(#{schedule_UID}, #{fk_idx_biz}, to_date(#{schedule_DATE}, 'yyyy-mm-dd hh24:mi'), default)
+	</insert>
+	
+	<!-- [190129] -->
+	<!-- #기업회원; 예약 일정 취소하기 - 수술상담 및 결제완료의 경우 -->
+	<!-- 1) payment테이블에서 실제 결제한 포인트와 예치금금액 select -->
+	<select id="selectPayPointAndPayCoin" parameterType="String" resultType="com.final2.petopia.model.PaymentVO">
+		select payment_point, payment_pay from payment where fk_reservation_UID=#{reservation_UID}
+	</select>
+	<!-- 2) payment 테이블의 status 3(환불)로 변경 -->
+	<update id="updatePaymentStatusTo3ByFK_rvUID" parameterType="String">
+		update payment set payment_status=3 where fk_reservation_UID=#{reservation_UID}
+	</update>
+	<!-- 3) 예치금 테이블에 충전 또는 환불받은 값 인서트하기 -->
+	<insert id="insertDepositPlus" parameterType="HashMap">
+		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID)
+		values(seq_deposit_UID.nextval, #{fk_idx}, to_number(#{depositcoin}), #{deposit_status}, #{deposit_type}, sysdate, default)
+	</insert>
+	
+	<!-- #notification 테이블에 insert -->
+	<insert id="insertNoteForReservation" parameterType="HashMap">
+		insert into notification(not_UID, fk_idx, not_type, not_message, not_date)
+		values(seq_notification_UID.nextval, #{fk_idx}, 2, #{not_message}, sysdate)
+	</insert>
 </mapper>
