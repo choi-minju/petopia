@@ -3,6 +3,9 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
 
+<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/resources/jquery-ui-1.11.4.custom/jquery-ui.css" />
+<script type="text/javascript" src="<%= request.getContextPath() %>/resources/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+
 <style type="text/css">
    .profile label { 
       display: inline-block; 
@@ -92,7 +95,115 @@
 <script type="text/javascript">
    $(document).ready(function(){
 	   
-		$(".selectbtn").click(function(){
+	      $("#spinnerOqty1").spinner({
+	  	      spin: function( event, ui ) {
+	  	        if( ui.value > 10 ) {
+	  	          $( this ).spinner( "value", 0 ); 
+	  	          return false;
+	  	        } 
+	  	        else if ( ui.value < 0 ) {
+	  	          $( this ).spinner( "value", 10 );
+	  	          return false;
+	  	        }
+	  	      }
+	  	    });
+			
+			// 추가이미지 스피너
+			$("#spinnerOqty1").bind("spinstop", function(){
+				// 스핀너는 이벤트가 "change" 가 아니라 "spinstop" 이다.
+				var html = "";
+				
+				var spinnerOqtyVal = $("#spinnerOqty1").val();
+				
+				if(spinnerOqtyVal == "0") {
+					$("#divFileattach").empty();
+					return;
+				}
+				else
+				{
+					for(var i=0; i<parseInt(spinnerOqtyVal); i++) {
+						html += "<br/>";
+						html += "<input type='file' name='addimg' class='btn btn-default' />";
+					}
+					
+					$("#divFileattach").empty();
+					$("#divFileattach").append(html);	
+				}
+			});
+			$("#spinnerOqty2").spinner({
+		  	      spin: function( event, ui ) {
+		  	        if( ui.value > 10 ) {
+		  	          $( this ).spinner( "value", 0 ); 
+		  	          return false;
+		  	        } 
+		  	        else if ( ui.value < 0 ) {
+		  	          $( this ).spinner( "value", 10 );
+		  	          return false;
+		  	        }
+		  	      }
+		  	    });
+				
+				// 의료진 추가 스피너
+				$("#spinnerOqty2").bind("spinstop", function(){
+					// 스핀너는 이벤트가 "change" 가 아니라 "spinstop" 이다.
+					var html = "";
+					
+					var spinnerOqtyVal = $("#spinnerOqty2").val();
+					
+					if(spinnerOqtyVal == "0") {
+						$("#doc_attached").empty();
+						return;
+					}
+					else // spinnerOqty2
+					{
+						for(var i=0; i<parseInt(spinnerOqtyVal); i++) {
+							html += "<br/>";
+							html +='<div class="row">' 
+								+'<div class="col-sm-3 col-md-3">'
+			                  +'<input type="text" class="form-control must" name="doctor" style="width: 100%"/>'
+			               +'</div>'
+			                +'<div class="col-sm-6 col-md-6" style="margin-top: 0.5%;">'
+			                	+'<button type="button" class="selectbtn btn1 docdog'+i+'">강아지</button>'
+			                	+'<input type="hidden" name="docdog" id="docdog'+i+'" value="0">'
+				                +'<button type="button" class="selectbtn btn1 doccat'+i+'">고양이</button>'
+				                +'<input type="hidden" name="doccat" id="doccat'+i+'" value="0">'
+				                +'<button type="button" class="selectbtn btn1 docsma'+i+'">소동물</button>'
+				                +'<input type="hidden" name="docsmallani" id="docsma'+i+'" value="0">'
+				                +'<button type="button" class="selectbtn btn1 docetc'+i+'">기타</button>'
+				                +'<input type="hidden" name="docetc" id="docetc'+i+'" value="0">'
+			                +'</div></div>';
+						}
+						
+						$("#doc_attached").empty();
+						$("#doc_attached").append(html);	
+					}
+				});
+
+			$(document).on('click', '.selectbtn', function(){
+				var $target = $(event.target);
+				
+				var cl = $(this).attr('class');
+				var str_cl = String(cl);
+				var start = str_cl.indexOf('doc');
+				var idName = str_cl.substr(start, 7);
+				
+				var val = $("#"+idName).val();
+				
+				if(!$target.hasClass("changColor")){
+					$target.addClass("changColor");
+					
+					val = 1;
+				}
+				else {
+					$target.removeClass("changColor");
+					
+					val = 0;
+					
+				} // end of if
+				
+				$("#"+idName).val(val);
+			});
+		/* $(".selectbtn").click(function(){
 			var $target = $(event.target);
 			
 			if(!$target.hasClass("changColor")){
@@ -101,7 +212,7 @@
 			else {
 				$target.removeClass("changColor");
 			}
-		});
+		}); */
 	   
        $(".upload-hidden").hide();
        $(".error").hide();
@@ -239,7 +350,7 @@
 			} else{
 				$(".phoneError").hide();
 			}	
-		}); --
+		});
       
       
       $("#goBizJoinBtn").click(function() {
@@ -336,7 +447,6 @@
     	  frm.action = "<%=request.getContextPath()%>/joinBizMemberInsert.pet";
     	  frm.method = "POST";
     	  frm.submit();
-    	  
       });
       
       
@@ -363,31 +473,7 @@
          img_Check($("#attach").val());
       } // end of if~else
     	  
-      
-      // 옵션추가 버튼 클릭시
-      $("#docAddBtn").click(function(){
-    	  
-    	  var html = "<div class='row' style='padding-top: 20px;'>" 
-   	       + "<div class='col-sm-3'>"
-   	       + "<input type='text' class='form-control must' name='doctor' style='width: 100%'/>"
-   	       + "<span class='error'>필수 입력사항입니다.</span>"
-   	       + "</div>"
-   	       + "<div style='margin-top: 45px;'>"
-   	       + "<button type='button' class='selectbtn btn1' name='docdog' value='0'>강아지</button>"
-   	       + "<button type='button' class='selectbtn btn1' name='doccat' value='0'>고양이</button>"
-   	       + "<button type='button' class='selectbtn btn1' name='docsmallani' value='0'>소동물</button>"
-   	       + "<button type='button' class='selectbtn btn1' name='docetc' value='0'>기타</button>"
-   	       + "</div>"
-   	   	   + "</div>";
-    	     	  
-          $("#docAddSection").append(html);
-      });
-      
-      
-      $("#docMinusBtn").click(function() {
-    	  $("#docAddSection").removeClass(".row");
-      });
-
+     
       
    });// end of $(document).ready()----------------------
    
@@ -600,9 +686,9 @@
             
             <div class="row" style="padding-top: 20px;">
                <div class="col-sm-6">
-                  <label style="color: #999;">추가 이미지</label>
-            	  <button type="button" id="addImgBtn" name="addImgBtn"><span class="glyphicon glyphicon-plus"></span></button>
-                  <input type="file" class="form-control must" id="addimage" name="addimage"/>
+                  <label style="color: #999;" for="spinnerOqty1">추가 이미지</label>
+            	  <input id="spinnerOqty1" value="0" style="width: 30px; height: 20px;">
+                  <div id="divFileattach"></div>
                </div>
             </div><!-- row -->
             
@@ -706,26 +792,16 @@
                   </div>
                </div>
             </div>
-            
             <div class="row" style="padding-top: 20px;">
-               <div class="col-sm-3">
-                  <label style="color: #999;">의료진 소개</label><br/>
-                  <label style="color: #999;">(성함 및 직책병기)</label><button type="button" id="docAddBtn" name="docBtn"><span class="glyphicon glyphicon-plus"></span></button>
-                  <button type="button" id="docMinusBtn" name="docMinusBtn"><span class="glyphicon glyphicon-minus"></span></button>
-                  <input type="text" class="form-control must" id="doctor" name="doctor" style="width: 100%"/>
-                  <span class="error">필수 입력사항입니다.</span>
-               </div>
-                <div style="margin-top: 45px;">
-	               <button type="button" class="selectbtn btn1" id="docdog" name="docdog" value="0">강아지</button>
-	               <button type="button" class="selectbtn btn1" id="doccat" name="doccat" value="0">고양이</button>
-	               <button type="button" class="selectbtn btn1" id="docsmallani" name="docsmallani" value="0">소동물</button>
-	               <button type="button" class="selectbtn btn1" id="docetc" name="docetc" value="0">기타</button>
-                </div>
-            </div>
+            	<div class="col-md-5">
+            		<label style="color: #999;">의료진 소개</label><br/>
+            		<label style="color: #999;">(성함 및 직책병기)</label>&nbsp;&nbsp;
+            		<input id="spinnerOqty2" value="0" style="width: 30px; height: 20px;">
+            	</div>
+	           	<div class="col-md-1"></div>
+	        </div>
             
-            <div id="docAddSection">
-            	
-            </div>
+            <div id="doc_attached"></div>
             
             <div class="row" style="padding-top: 20px;">
             	<div class="col-sm-8">
@@ -741,17 +817,105 @@
             	</div>
             </div>
             
+            
             <div class="row tagList1" style="margin-top: 3%;">
 				<div class="col-sm-2">
 					<span style="color: #999;">시설상태</span>
 				</div>
 				<div class="col-sm-10">
 					<c:forEach var="tag" items="${tagList}">
-						<div class="col-sm-4">
-							<input type="checkbox" class="tagsNo" id="tag${tag.FK_TAG_UID}" name="tagNo" value="${tag.FK_TAG_UID}"/>
-							&nbsp;<label style="color: #999;" for="tag${tag.FK_TAG_UID}">#${tag.FK_TAG_NAME}</label>
-							<input type="hidden" class="" id="" name="tagName" value="${tag.FK_TAG_NAME}"/>
-						</div>
+						<c:if test="${tag.TAG_TYPE == '시설상태'}">
+							<div class="col-sm-4">
+								<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
+								&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
+								<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
+							</div>
+						</c:if>
+					</c:forEach>
+				</div>
+			</div><!-- row -->
+            
+            <div class="row tagList2" style="margin-top: 3%;">
+				<div class="col-sm-2">
+					<span style="color: #999;">서비스</span>
+				</div>
+				<div class="col-sm-10">
+					<c:forEach var="tag" items="${tagList}">
+						<c:if test="${tag.TAG_TYPE == '서비스'}">
+							<div class="col-sm-4">
+								<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
+								&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
+								<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
+							</div>
+						</c:if>
+					</c:forEach>
+				</div>
+			</div><!-- row -->
+			
+			<div class="row tagList3" style="margin-top: 3%;">
+				<div class="col-sm-2">
+					<span style="color: #999;">가격</span>
+				</div>
+				<div class="col-sm-10">
+					<c:forEach var="tag" items="${tagList}">
+						<c:if test="${tag.TAG_TYPE == '가격'}">
+							<div class="col-sm-4">
+								<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
+								&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
+								<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
+							</div>
+						</c:if>
+					</c:forEach>
+				</div>
+			</div><!-- row -->
+			
+			<div class="row tagList4" style="margin-top: 3%;">
+				<div class="col-sm-2">
+					<span style="color: #999;">전문분야</span>
+				</div>
+				<div class="col-sm-10">
+					<c:forEach var="tag" items="${tagList}">
+						<c:if test="${tag.TAG_TYPE == '전문분야'}">
+							<div class="col-sm-4">
+								<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
+								&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
+								<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
+							</div>
+						</c:if>
+					</c:forEach>
+				</div>
+			</div><!-- row -->
+			
+			<div class="row tagList5" style="margin-top: 3%;">
+				<div class="col-sm-2">
+					<span style="color: #999;">시간</span>
+				</div>
+				<div class="col-sm-10">
+					<c:forEach var="tag" items="${tagList}">
+						<c:if test="${tag.TAG_TYPE == '시간'}">
+							<div class="col-sm-4">
+								<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
+								&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
+								<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
+							</div>
+						</c:if>
+					</c:forEach>
+				</div>
+			</div><!-- row -->
+			
+			<div class="row tagList6" style="margin-top: 3%;">
+				<div class="col-sm-2">
+					<span style="color: #999;">편의시설</span>
+				</div>
+				<div class="col-sm-10">
+					<c:forEach var="tag" items="${tagList}">
+						<c:if test="${tag.TAG_TYPE == '편의시설'}">
+							<div class="col-sm-4">
+								<input type="checkbox" class="tagsNo" id="tag${tag.TAG_UID}" name="tagNo" value="${tag.TAG_UID}"/>
+								&nbsp;<label style="color: #999;" for="tag${tag.TAG_UID}">#${tag.TAG_NAME}</label>
+								<input type="hidden" name="tagName" value="${tag.TAG_NAME}"/>
+							</div>
+						</c:if>
 					</c:forEach>
 				</div>
 			</div><!-- row -->

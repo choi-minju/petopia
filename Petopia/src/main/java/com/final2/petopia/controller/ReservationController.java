@@ -52,13 +52,39 @@ public class ReservationController {
 //		System.out.println("날짜 포맷 변환 결과: "+result);
 		return result;
 	}
-	
+	public List<HashMap<String, String>> makeHalfTime() {
+		List<HashMap<String, String>> halfTime = new ArrayList<HashMap<String, String>>();
+		
+		String hour = "";
+		String time1 = "";
+		String time2 = "";
+		
+		for(int i=0; i<24; i++) {
+			if(i<10) {
+				hour="0"+i;
+			}
+			else {
+				hour = String.valueOf(i);
+			}
+			time1 = hour+":00";
+			
+			time2 = hour+":30";
+			HashMap<String, String> map = new HashMap<String, String>();
+			
+			map.put("time1", time1);
+			map.put("time2", time2);
+			halfTime.add(map);
+			
+		}
+		
+		return halfTime;
+	}
 	
 	@RequestMapping(value="/reservation.pet", method= {RequestMethod.GET})
 	public String requireLogin_goReservationPage(HttpServletRequest req, HttpServletResponse res) {
-		
-//		String idx_biz = req.getParameter("idx_biz");
-		String idx_biz="5";
+		// [190129] idx_biz getParameter 주석 해제
+		String idx_biz = req.getParameter("idx_biz");
+//		String idx_biz="5";
 //		[190119]---------------------------------------------------------
 //		#로그인한 유저 정보로 펫 정보 가져오기
 		HttpSession session = req.getSession();
@@ -418,6 +444,9 @@ public class ReservationController {
 			int scheduleCount = service.selectScheduleCountByIdx_biz(idx_biz);
 			req.setAttribute("idx_biz", idx_biz);
 			req.setAttribute("scheduleCount", scheduleCount);
+			// [190129] 시간 드롭박스 생성
+			List<HashMap<String, String>> timeList = makeHalfTime();
+			req.setAttribute("timeList", timeList);
 			return "reservation/biz_rvCalendar.tiles2";
 		}
 	}
@@ -479,6 +508,7 @@ public class ReservationController {
 		rvo.setFk_pet_UID(fk_pet_UID);
 		rvo.setReservation_type(reservation_type);
 		rvo.setReservation_status(reservation_status);
+		rvo.setReservation_DATE(reservation_DATE);	// [190129] 예약시간 추가
 		
 		HashMap<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("reservation_DATE", reservation_DATE);
@@ -493,7 +523,7 @@ public class ReservationController {
 		String loc = "";
 		if(result==1) {
 			msg="일정 수정 완료";
-			loc="javascript: location.href="+req.getContextPath()+"/SelectChartSearch.pet";
+			loc="javascript:location.href='"+req.getContextPath()+"/SelectChartSearch.pet'";
 		}
 		else if(result==2) {
 			msg="입력하신 스케줄에 기예약건이 있습니다.";
@@ -504,6 +534,58 @@ public class ReservationController {
 			loc="javascript:history.back();";
 		}
 		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
 		return "msg";
 	}
+	
+//	[190129]
+//	#기업회원 예약 취소
+	@RequestMapping(value="rvScheduleCancle.pet", method= {RequestMethod.POST})
+	public String rvScheduleCancle(HttpServletRequest req) {
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		String rvdate1 = req.getParameter("edit_rvDATE_YMD");
+		String rvdate2 = req.getParameter("edit_rvDATE_HM");
+		String reservation_DATE = rvdate1 + " " + rvdate2;
+		
+		String reservation_UID = req.getParameter("edit_rvUID");
+		String fk_schedule_UID = req.getParameter("edit_scUID");
+		String fk_idx_biz = req.getParameter("edit_fk_idx_biz");
+		String fk_idx = req.getParameter("edit_fk_idx");
+		String reservation_type = req.getParameter("edit_reservation_type");
+		String reservation_status = req.getParameter("edit_reservation_status");
+		
+		paraMap.put("reservation_UID", reservation_UID);
+		paraMap.put("fk_schedule_UID", fk_schedule_UID);
+		paraMap.put("fk_idx_biz", fk_idx_biz);
+		paraMap.put("fk_idx", fk_idx);
+		paraMap.put("reservation_type", reservation_type);
+		paraMap.put("reservation_status", reservation_status);
+		paraMap.put("reservation_DATE", reservation_DATE);
+		
+		int result = 0;
+		if(reservation_type.equals("3") && reservation_status.equals("2")) {
+			result = service.updateRvAndScdStatusCancleForSurgery(paraMap);
+		}
+		else {
+			result = service.updateRvAndScdStatusCancle(paraMap);
+		}
+		
+		String msg = "";
+		String loc = "";
+		if(result==1) {
+			msg="일정 취소 완료";
+			loc="javascript:location.href='"+req.getContextPath()+"/SelectChartSearch.pet'";
+		}
+		else {
+			msg="일정 취소 실패";
+			loc="javascript:history.back();";
+		}
+			
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	}
+	
 }

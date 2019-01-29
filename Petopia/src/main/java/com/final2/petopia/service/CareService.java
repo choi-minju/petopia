@@ -1,5 +1,6 @@
 package com.final2.petopia.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,6 +55,14 @@ public class CareService implements InterCareService {
 	public int insertPetcare(CareVO cvo) {
 		int n = dao.insertPetcare(cvo);
 		return n;
+	}
+
+
+	//===== 특정 반려동물 리스트 =====
+	@Override
+	public HashMap<String, Object> getPet_info(int pet_UID) {
+		HashMap<String, Object> petInfo = dao.getPet_info(pet_UID);
+		return petInfo;
 	}
 
 

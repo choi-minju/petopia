@@ -3,13 +3,17 @@
 
 <mapper namespace="biz_member">
 	
+	<!-- 태그 리스트 보여주기 -->
 	<resultMap type="HashMap" id="tagListMap">
-		<result property="FK_TAG_NAME"	column="fk_tag_name"	javaType="String"/>
-		<result property="FK_TAG_UID"	column="fk_tag_uid"	javaType="String"/>
+		<result property="TAG_UID"	column="tag_UID"	javaType="String"/>
+		<result property="TAG_TYPE"	column="tag_type"	javaType="String"/>
+		<result property="TAG_NAME"	column="tag_name"	javaType="String"/>
 	</resultMap>
-	<select id="selectHaveTagList" resultMap="tagListMap">
-		select distinct fk_tag_name, fk_tag_uid
-		from have_tag
+
+	<select id="selectRecommendTagList" resultMap="tagListMap">
+		select tag_UID, tag_type, tag_name
+		from recommend_tag
+		order by tag_UID
 	</select>
 	
 	<!-- <select id="selectBizMemberIdIsUsed" parameterType="String" resultType="int">
@@ -49,4 +53,30 @@
 			, #{weekday}, to_date(#{wdstart}, 'hh24:mi'), to_date(#{wdend}, 'hh24:mi'), to_date(#{lunchstart}, 'hh24:mi'), to_date(#{lunchend}, 'hh24:mi'), to_date(#{satstart}, 'hh24:mi'), to_date(#{satend}, 'hh24:mi'), #{dayoff}, #{dog}, #{cat}, #{smallani}, #{etc}, #{easyway}, #{intro})
 	</insert>
 	
+	<insert id="insertBizInfoImg" parameterType="HashMap">
+		insert into biz_info_img(img_uid, fk_idx_biz, imgfilename)
+		values(biz_info_img_seq.nextval, #{FK_IDX_BIZ}, #{IMGFILENAME})
+	</insert>
+	
+	<insert id="insertDoctor" parameterType="HashMap">
+		insert into doctors(doc_uid, fk_idx_biz, docname, dog, cat, smallani, etc)
+		values(seq_doctors_UID.nextval, #{IDX}, #{DOCTOR}, #{DOCDOG}, #{DOCCAT}, #{DOCSMALLANI}, #{DOCETC})
+	</insert>
+	
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

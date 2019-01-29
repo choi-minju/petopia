@@ -17,7 +17,7 @@
    }
    
    .navbar li a, .navbar .navbar-brand {
-     color: white !important;
+     color: white;
    }
    
    .navbar-brand{
@@ -46,7 +46,47 @@
      .navbar-default .navbar-nav .open .dropdown-menu>li>a,.navbar-default .navbar-nav .open .dropdown-menu {
        background-color: #fff !important;
        color: rgb(252, 118, 106) !important;
-     }
+     } 
+    
+.notdropbtn {
+  cursor: pointer;
+}
+
+.notdropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.notdropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 280px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  padding: 20%;
+}
+
+.notmassage {
+  display: block;
+}
+
+.notdropdown-content .a:hover {font-weight: bold; }
+
+.notdropdown:hover .notdropdown-content {
+  display: block;
+}
+
+.badge {
+	position: absolute;
+	top: 10px;
+	right: -4px;
+	padding: 2px 3px 2px 3px;
+	border-radius: 50%;
+	background-color: white;
+	color: #fc766b;
+	letter-spacing: 1pt;
+}
      
 </style>
 
@@ -61,7 +101,7 @@
 		
 	});
 	
-	function logOut(){
+	function logOut(){ 
 		// 카카오 로그아웃
 		Kakao.init('b5a80832c3cb255d6b0092b12fa51f95');
 		Kakao.Auth.getAccessToken();
@@ -95,10 +135,24 @@
 							<li><a href="<%= ctxPath %>/login.pet" >로그인</a></li>
 						</c:if>
 						<c:if test="${sessionScope.loginuser != null }">
-							<li><a onclick="logOut();" href="<%= ctxPath %>/logout.pet">[${sessionScope.loginuser.nickname }] 로그아웃</a></li>
+						<li class="notdropdown">
+							<span class="notdropbtn">
+								<img src="<%=request.getContextPath() %>/resources/img/notification/icon.png" style="margin-left: 50%; margin-top: 20%; width: 40%;" />
+								<span id="badge" class="badge">5</span>
+							</span>
+								<div class="notdropdown-content">
+									<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">게시판에 새 댓글이 있습니다.</a>
+									<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">화상상담 코드가 도착했습니다.</a>
+									<hr align="center" width="100%" style="border:0.5px solid #fc766b; margin-top: 35%;">
+									<a class="notmassage" style="color: #fc766b; border: 0px solid; margin-top: -5%; margin-left: 35%;" href="<%= ctxPath %>/alarmList.pet">더보기</a>
+									
+								</div>
+						</li>
+						
+							<li><a onclick="logOut();" style="color: #ffffff;" href="<%= ctxPath %>/logout.pet">[${sessionScope.loginuser.nickname }] 로그아웃</a></li>
 							<c:if test="${sessionScope.loginuser != null && sessionScope.loginuser.membertype == 1 }"><%-- 관리자일 경우 없애기 --%>
 								<li class="dropdown">
-									<a class="dropdown-toggle" data-toggle="dropdown">마이페이지<span class="caret"></span></a>
+									<a class="dropdown-toggle" style="color: #ffffff;" data-toggle="dropdown">마이페이지<span class="caret"></span></a>
 									<ul class="dropdown-menu">
 										<!-- [19-01-25] /careIndex.pet -> petList.pet 수정 -->
 										<li><a href="<%= ctxPath %>/petList.pet">반려동물수첩</a></li>
@@ -132,7 +186,6 @@
 						<div class="column" id="search">
 						</div>
 						<div class="column" id="reservation">
-							<a href="<%= ctxPath %>/reservation.pet">병원예약</a>
 							<a href="<%= ctxPath %>/reservationList.pet">예약내역</a>
 							<a href="<%= ctxPath %>/deposit.pet">예치금관리</a>
 						</div>
@@ -183,7 +236,7 @@
 							<a href="<%= ctxPath %>/SelectChartSearch.pet">예약스케쥴</a>
 						</div>
 						<div class="column" id="bizConsult">
-							<a href="<%= ctxPath %>/bizConsultList.pet">1:1 문의상담</a>
+							<a href="<%= ctxPath %>/consultList.pet">1:1 문의상담</a>
 							<a href="<%= ctxPath %>/bizchat.pet">화상진료</a>
 						</div>
 						<div class="column" id="bizBoard">

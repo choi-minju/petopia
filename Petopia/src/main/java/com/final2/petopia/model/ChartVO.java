@@ -4,13 +4,13 @@ package com.final2.petopia.model;
 
 public class ChartVO {
 
-	
-int chart_UID;                   // 차트코드
-int fk_pet_UID;     	          // 반려동물코드
+String reservation_UID;      //예약코드 
+int chart_UID;               // 차트코드
+int fk_pet_UID;     	     // 반려동물코드
 int fk_idx;      		     // 회원고유번호
-String chart_type;       	     // 진료타입
+String chart_type;       	 // 진료타입
 String biz_name;             // 병원/약국명
-String bookingdate;            // 예약완료일시
+String bookingdate;          // 예약완료일시
 String reservation_DATE;       // 방문예정일
 String doc_name;               // 수의사명
 String cautions;              // 주의사항
@@ -30,12 +30,12 @@ String rx_cautions;       // 처방주의사항
 String rx_regName;        // 등록한사람
 
 public ChartVO() {}
-
-public ChartVO(int chart_UID, int fk_pet_UID, int fk_idx, String chart_type, String biz_name, String bookingdate,
-		String reservation_DATE, String doc_name, String cautions, String chart_contents, int payment_pay,
-		int payment_point, int addpay, int totalpay, int rx_UID, String rx_name, String dose_number, String dosage,
-		String rx_notice, String rx_cautions, String rx_regName) {
+public ChartVO(String reservation_UID, int chart_UID, int fk_pet_UID, int fk_idx, String chart_type, String biz_name,
+		String bookingdate, String reservation_DATE, String doc_name, String cautions, String chart_contents,
+		int payment_pay, int payment_point, int addpay, int totalpay, int rx_UID, String rx_name, String dose_number,
+		String dosage, String rx_notice, String rx_cautions, String rx_regName) {
 	super();
+	this.reservation_UID = reservation_UID;
 	this.chart_UID = chart_UID;
 	this.fk_pet_UID = fk_pet_UID;
 	this.fk_idx = fk_idx;
@@ -58,6 +58,8 @@ public ChartVO(int chart_UID, int fk_pet_UID, int fk_idx, String chart_type, Str
 	this.rx_cautions = rx_cautions;
 	this.rx_regName = rx_regName;
 }
+
+
 public int getChart_UID() {
 	return chart_UID;
 }
@@ -226,6 +228,13 @@ public void setRx_regName(String rx_regName) {
 	this.rx_regName = rx_regName;
 }
 
+public String getReservation_UID() {
+	return reservation_UID;
+}
+
+public void setReservation_UID(String reservation_UID) {
+	this.reservation_UID = reservation_UID;
+}
 
 
 }

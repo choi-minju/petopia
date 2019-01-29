@@ -1,5 +1,6 @@
 package com.final2.petopia.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,6 +52,14 @@ public class CareDAO implements InterCareDAO {
 	public int insertPetcare(CareVO cvo) {
 		int n = sqlsession.insert("care.insertPetcare", cvo);
 		return n;
+	}
+
+
+	//===== 특정 반려동물 리스트 =====
+	@Override
+	public HashMap<String, Object> getPet_info(int pet_UID) {
+		HashMap<String, Object> petInfo = sqlsession.selectOne("care.getPet_info", pet_UID);
+		return petInfo;
 	}
 
 

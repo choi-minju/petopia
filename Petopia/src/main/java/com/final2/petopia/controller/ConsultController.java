@@ -352,7 +352,7 @@ public class ConsultController {
 	public HashMap<String, String> requireLogin_consultCommentAdd(HttpServletRequest req, HttpServletResponse res, ConsultCommentVO commentvo) throws Throwable {
 	
 		HashMap<String, String> returnMap = new HashMap<String, String>();
-		
+			
 		int n = service.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1증가 update
 		
 		if(n==1) {
@@ -361,11 +361,11 @@ public class ConsultController {
 			returnMap.put("CSCMT_CONTENTS", commentvo.getCscmt_contents());
 			returnMap.put("CSCMT_WRITEDAY", MyUtil.getNowTime());
 		}
-		
+	
 		return returnMap;
 	}
 	
-	// .
+	
 	// 1:1상담 댓글보여주기 [Ajax로 페이징처리] -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultCommentList.pet", method={RequestMethod.GET})
 	@ResponseBody
@@ -488,4 +488,14 @@ public class ConsultController {
 		
 		return returnMap;
 	}
+	
+	// 1:1상담 관리자 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// 1:1상담 글쓰기 페이지 요청 -------------------------------------------------------------------------------------------
+	@RequestMapping(value="/adminConsultList.pet", method= {RequestMethod.GET})
+	public String requireLogin_adminConsultList(HttpServletRequest req, HttpServletResponse res) {
+		return "consult/adminConsultList.tiles2";
+	}
+	
+	
 }

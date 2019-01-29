@@ -13,7 +13,7 @@ public interface InterSearchDAO {
    Biz_MemberVO getFullnameAndIdx(String searchWord);
 
    // 검색창으로 넘어갈때 검색된 병원/약국 수 보내기 
-   int searchCount(String searchWord);
+   int searchCount(String searchWord, String whereNo);
 
    // 검색어를 기준으로 biz_member 정보 리스트 불러오기
    List<Biz_MemberVO> getBizmemListBySearchWord(HashMap<String, Object> map);
