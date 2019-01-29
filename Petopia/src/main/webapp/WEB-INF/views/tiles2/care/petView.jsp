@@ -34,48 +34,52 @@
 
 <div class="container" style="margin-top: 10px;">
 	
-	<div class="row">
-		<div class="out">
-			<div class="in" style="margin-right: 12%;">
-				<ul style="list-style-type: none;">
-					<li>다른 반려동물</li>
-					<li><i class="fa fa-angle-double-left" style="font-size: 30pt;"></i></li>
-				</ul>
-			</div>
-			<div class="pointer in" onclick=window.open("careCalendar.pet?pet_UID=${pet_UID}","_self")>
-				<img src="resources/img/care/dog.png" class="profileimg">	
-			</div>
-			
-			<div class="in">
-				<ul style="list-style-type: none;">
-					<li>반려동물이름</li>
-					<li>생일</li>
-					<li>성별</li>
-					<li>종</li>
-				</ul>
-			</div>
-			<div class="in" style="margin-left: 6%;">
-				<ul style="list-style-type: none;">
-					<li>다른 반려동물</li>
-					<li><i class="fa fa-angle-double-right" style="font-size: 30pt;"></i></li>
-				</ul>
-			</div>
-		</div>	
-	</div>
 	
-	
-	<div class="row" style="text-align: center; margin-top: 5px;">
-		<div style="margin:0 auto;">
-			<button type="button">수정하기</button>
-			<button type="button">지우기</button>	
+	<div class="col-sm-12">
+		<div class="row">
+			<div class="out">
+				<div class="in" style="margin-right: 12%;">
+					<ul style="list-style-type: none;">
+						<li><span class="pointer" onclick="javascript:location.href='petView.pet?pet_UID=${petInfo.PREVIOUSPET_UID}'">${petInfo.PREVIOUSPET_NAME}</span></li>
+						<li><i class="fa fa-angle-double-left" style="font-size: 30pt;"></i></li>
+					</ul>
+				</div>
+				<div class="pointer in" onclick=window.open("careCalendar.pet?pet_UID=${pet_UID}","_self")>
+					<img src="resources/img/care/${petInfo.PET_PROFILEIMG}" class="profileimg">	
+				</div>
+				
+				<div class="in">
+					<ul style="list-style-type: none;">
+						<li>${petInfo.PET_NAME}</li>
+						<li>${petInfo.PET_BIRTHDAY}</li>
+						<li>${petInfo.PET_GENDER}</li>
+						<li>${petInfo.PET_TYPE}</li>
+					</ul>
+				</div>
+				<div class="in" style="margin-left: 6%;">
+					<ul style="list-style-type: none;">
+						<li><span class="pointer" onclick="javascript:location.href='petView.pet?pet_UID=${petInfo.NEXTPET_UID}'">${petInfo.NEXTPET_NAME}</span></li>
+						<li><i class="fa fa-angle-double-right" style="font-size: 30pt;"></i></li>
+					</ul>
+				</div>
+			</div>	
 		</div>
 	</div>
 	
+	<div class="col-sm-12">
+		<div class="row" style="text-align: center; margin-top: 5px; margin-right: 10px;" >
+			<div style="margin:0 auto;">
+				<button type="button">수정하기</button>
+				<button type="button">지우기</button>	
+			</div>
+		</div>
+	</div>
 	
+	<div class="col-sm-12">
 	<div class="row" style="margin-top: 8%;">
 		<div class="out">
 			<div class="in col-md-4" >
-				현재 체중 : 0kg / 목표 체중 : 1kg
+				현재 체중 : ${petInfo.PET_WEIGHT}kg / 목표 체중 : 1kg
 				<img src="resources/img/care/chart.PNG">
 				<table class="table table-hover">
 				    <thead>
@@ -165,7 +169,7 @@
 			</div>	
 		</div>
 	</div>
-	
+	</div> 
 
 
 </div>    

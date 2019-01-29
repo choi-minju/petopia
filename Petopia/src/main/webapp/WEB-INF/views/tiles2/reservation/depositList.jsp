@@ -16,7 +16,7 @@
 		});
 		
 		$("#used").click(function(){
-			charged("1");
+			used("1");	// [190129] 함수 수정
 		});
 		
 	});
@@ -45,13 +45,13 @@
 					if(entry.deposit_status=="1"){
 						html += "<button type='button' class='btn btn-default' onClick='goCancleDeposit("+entry.deposit_UID+");'>충전취소</button>";
 					}
-					else if(entry.deposit_status=="2"){
+					else if(entry.deposit_status=="3"){ // [190129] 상태 숫자 변경
 						html += "<button type='button' class='btn btn-default' onClick='javascript:location.href=/reservationView.pet?payment_UID="+entry.fk_payment_UID+"'>예약상세</button>";
 					}
-					else if(entry.deposit_status=="3"){
+					else if(entry.deposit_status=="2"){	// [190129] 상태 숫자 변경
 						html += "환불완료";
 					}
-					else if(entry.deposit_status=="4"){
+					else if(entry.deposit_status=="0"){ // [190129] 상태 숫자 변경
 						html += "출금완료";
 					}
 					html += "</td>";
@@ -113,7 +113,7 @@
 
 	function used(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "2"};
+						, "type": "3"};	// [190129] 타입 숫자 변경
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",

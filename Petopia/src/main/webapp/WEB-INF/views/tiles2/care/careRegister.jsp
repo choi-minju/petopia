@@ -180,9 +180,9 @@
 						<div class="row"> 
 							<div class="col-sm-12">
 								<div style="padding: 0px;">시작 일시</div>
-								<div class="col-sm-4" style="display: inline-block;"><input type="text" id="" class="form-control input-md short datepicker date" name="care_start" /></div>
+								<div class="col-sm-4" style="display: inline-block;"><input type="text" id="" class="form-control input-md short datepicker date" name="care_start" autocomplete="off" /></div>
 								<div class="col-sm-4" align="center" style="display: inline-block;"><i class="fa fa-angle-double-right" style="font-size: 30pt;"></i></div>
-								<div class="col-sm-4" style="display: inline-block;"><input type="text" id="" class="form-control input-md short datepicker date" name="care_end" /></div>	
+								<div class="col-sm-4" style="display: inline-block;"><input type="text" id="" class="form-control input-md short datepicker date" name="care_end" autocomplete="off" /></div>	
 							</div>
 						</div>  
 	

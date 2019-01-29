@@ -6,7 +6,7 @@ import java.util.List;
 public interface InterBiz_MemberDAO {
 
 	// 태그 리스트 보여주기
-	List<HashMap<String, String>> selectHaveTagList();
+	List<HashMap<String, String>> selectRecommendTagList();
 
 	// 아이디 중복확인
 	int selectBizMemberIdIsUsed(String userid);
@@ -25,6 +25,12 @@ public interface InterBiz_MemberDAO {
 	
 	// biz_info 테이블 insert
 	int insertBizInfo(Biz_MemberVO bmvo);
+
+	// biz_info_img 테이블 insert
+	int insertBizInfoImg(List<HashMap<String, String>> addImgmapList);
+	
+	// doctors 테이블 insert
+	int insertDoctor(List<HashMap<String, String>> docList);
 
 	
 

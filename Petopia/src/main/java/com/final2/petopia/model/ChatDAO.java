@@ -21,7 +21,7 @@ public class ChatDAO implements InterChatDAO {
 		return n;
 	}
 	
-	//..
+	
 	@Override
 	public String viewcode(String code) {
 		
@@ -29,5 +29,16 @@ public class ChatDAO implements InterChatDAO {
 		
 		return n;
 	}
+
+
+	@Override
+	public String selectend(HashMap<String, String> map) {
+		
+		String n = sqlsession.selectOne("chat.selectend", map);
+		
+		return n;
+	}
+
+
 	
 }

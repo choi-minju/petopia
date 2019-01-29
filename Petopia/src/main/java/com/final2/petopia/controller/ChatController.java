@@ -1,6 +1,9 @@
 package com.final2.petopia.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.final2.petopia.model.ChatVO;
 import com.final2.petopia.model.MemberVO;
@@ -21,7 +26,9 @@ import com.final2.petopia.service.InterChatService;
 
 @Controller
 @Component
-public class ChatController {
+public class ChatController extends TextWebSocketHandler{
+	
+	private List<WebSocketSession> connectedUsers = new ArrayList<WebSocketSession>();
 	
 	@Autowired
 	private InterChatService service;
@@ -104,19 +111,33 @@ public class ChatController {
 		
 		return "chat/videocode.notiles";
 	}
-	
+	/*
 	//채팅 종료
-	/*@RequestMapping(value="/chatend.pet", method= {RequestMethod.GET})
+	@RequestMapping(value="/chatend.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, String> chatend(HttpServletRequest req, HttpServletResponse res) throws Throwable {
+	public HashMap<String, String> chatend(WebSocketSession wsession, HttpServletRequest req, HttpServletResponse res) throws Throwable {
 	
 		HashMap<String, String> map = new HashMap<String, String>();
 		
+		HttpSession session = req.getSession();
 		
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		System.out.println(idx);
+		
+		Map<String, Object> wmap = wsession.getAttributes();
+    	MemberVO wloginuser = (MemberVO)wmap.get("loginuser");
+		int widx = wloginuser.getIdx();
+    	System.out.println(widx);
+		
+		map.put("bizidx", value);
+		map.put("memberidx", String.valueOf(idx));
+		
+		int result = service.chatend(map);
 		
 		return map;
-	}*/
-	
+	}
+	*/
 	
 	
 }

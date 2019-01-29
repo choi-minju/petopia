@@ -277,6 +277,7 @@ public class ReservationService implements InterReservationService{
 		return returnMap;
 	}
 //	#기업회원 예약 일정 수정하기
+//	[190129] 추가수정
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
 	public int updateReservationSchedule(HashMap<String, String> paraMap, ReservationVO rvo) {
@@ -351,6 +352,91 @@ public class ReservationService implements InterReservationService{
 			}
 		}
 
+		return result;
+	}
+	
+//	[190129]
+//	#기업회원; 예약 일정 취소하기 - 수술상담 및 결제완료의 경우
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public int updateRvAndScdStatusCancleForSurgery(HashMap<String, String> paraMap) {
+		int result = 0;
+		int n1=0;
+		int n2=0;
+		int n3=0;
+		int n4=0;
+		int n5=0;
+		int n6=0;
+		// 예약UID로 payment테이블에서 결제한 포인트와 실결제금액 가져오기
+		PaymentVO pvo = dao.selectPayPointAndPayCoin(paraMap.get("reservation_UID"));
+		// 예약 테이블 상태 변경
+		n1 = dao.updateReservationStatusTo4(paraMap);
+		
+		if(n1==1) {
+			// 스케줄 테이블 상태 변경
+			paraMap.put("status", "0");
+			n2 = dao.updateScheduleStatusBySUID(paraMap);
+		}
+		if(n2==1) {
+			// payment 테이블의 status 3(환불)로 변경
+			n3 = dao.updatePaymentStatusTo3ByFK_rvUID(paraMap.get("reservation_UID"));
+		}
+		if(n3==1) {
+			// deposit 테이블에 취소한 값 insert
+			int payment_pay = pvo.getPayment_pay()*-1;	// 음수인 결제금액을 양수로 치환
+			paraMap.put("depositcoin", String.valueOf(payment_pay));
+			paraMap.put("deposit_status", "2");
+			paraMap.put("deposit_type", "예약취소환불");
+			n4 = dao.insertDepositPlus(paraMap);
+		}
+		if(n4==1) {
+			// 포인트값 플러스
+			HashMap<String, Integer> pointParaMap = new HashMap<String, Integer>();
+			pointParaMap.put("fk_idx", Integer.parseInt(paraMap.get("fk_idx")));
+			pointParaMap.put("point", pvo.getPayment_point());
+			n5 = dao.updatePointMember(pointParaMap);
+		}
+		if(n5==1) {
+			HashMap<String, String> noteMap = new HashMap<String, String>();
+			noteMap.put("fk_idx", paraMap.get("fk_idx"));
+			noteMap.put("not_message", "[일정: "+paraMap.get("reservation_DATE")+"] 예약일정 취소 및 예치금 환불 완료. 관련 사항은 해당 병원으로 연락바랍니다.");
+			noteMap.put("not_URL", "<%= request.getContextPath() %>/reservationList.pet");
+			
+			n6=dao.insertNoteForReservation(noteMap);
+		}
+		if(n1*n2*n3*n4*n5*n6==1) {
+			result = 1;
+		}
+		
+		return result;
+	}
+//	#기업회원; 예약 일정 취소하기 - 미결제 및 수술상담제외 타입의 경우
+	@Override
+	public int updateRvAndScdStatusCancle(HashMap<String, String> paraMap) {
+		int result = 0;
+		int n1=0;
+		int n2=0;
+		int n3=0;
+		
+		// 예약 테이블 상태 변경
+		n1 = dao.updateReservationStatusTo4(paraMap);
+				
+		if(n1==1) {
+			// 스케줄 테이블 상태 변경
+			paraMap.put("status", "0");
+			n2 = dao.updateScheduleStatusBySUID(paraMap);
+		}
+		if(n2==1) {
+			HashMap<String, String> noteMap = new HashMap<String, String>();
+			noteMap.put("fk_idx", paraMap.get("fk_idx"));
+			noteMap.put("not_message", "[일정: "+paraMap.get("reservation_DATE")+"] 예약일정이 취소되었습니다. 관련 사항은 해당 병원으로 연락바랍니다.");
+			noteMap.put("not_URL", "<%= request.getContextPath() %>/reservationList.pet");
+			
+			n3=dao.insertNoteForReservation(noteMap);
+		}
+		if(n1*n2*n3==1) {
+			result=1;
+		}
 		return result;
 	}
 

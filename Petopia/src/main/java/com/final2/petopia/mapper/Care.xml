@@ -3,6 +3,7 @@
 
 <mapper namespace="care">
 
+
 	<!-- [19-01-24. 수정 시작_hyunjae] -->
 	<!-- //===== 반려동물 리스트 ===== -->
 	<resultMap type="java.util.HashMap" id="getPet_infoListMap"> 
@@ -24,15 +25,17 @@
 		from pet_info
 		where fk_idx = #{fk_idx} and
 		      pet_status in('1','2')
-		order by pet_birthday asc
+		order by pet_UID desc
 	</select>
 	<!-- [19-01-24. 수정 끝_hyunjae] -->
+
 
 	<!-- //===== 반려동물 등록 ===== -->
 	<insert id="insertPet_info" parameterType="com.final2.petopia.model.PetVO">
 		insert into pet_info(pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg)
 		values(seq_pet_info_UID.nextval, #{fk_idx}, #{pet_name}, #{pet_type}, #{pet_birthday, jdbcType=VARCHAR}, #{pet_size, jdbcType=VARCHAR}, #{pet_weight, jdbcType=INTEGER}, #{pet_gender, jdbcType=INTEGER}, #{pet_neutral, jdbcType=INTEGER}, #{medical_history, jdbcType=VARCHAR}, #{allergy, jdbcType=VARCHAR}, #{pet_profileimg, jdbcType=VARCHAR})
 	</insert>
+	
 	
 	<!-- [19-01-25. 수정 시작_hyunjae] -->
 	<!-- //===== 케어 등록 caretype 가져오기 ===== -->
@@ -54,10 +57,49 @@
 	</select>
 	<!-- [19-01-25. 수정 끝_hyunjae] -->
 
+
 	<!-- //===== 케어 등록 ===== -->
 	<insert id="insertPetcare" parameterType="com.final2.petopia.model.CareVO">
 		insert into petcare(care_UID, fk_pet_UID, fk_caretype_UID, care_contents, care_memo, care_start, care_end, care_alarm, care_date)
 		values(seq_petcare_UID.nextval, #{fk_pet_UID}, #{fk_caretype_UID}, #{care_contents, jdbcType=VARCHAR}, #{care_memo}, #{care_start}, #{care_end}, #{care_alarm}, sysdate)
 	</insert>
+	
+	
+	<!-- //===== 케어 등록 ===== -->
+	<resultMap type="HashMap" id="Pet_InfoMap">
+		<result property="PET_UID" 	       	 column="pet_UID" 			javaType="int" />
+		<result property="FK_IDX" 	       	 column="fk_idx" 			javaType="int" />
+		<result property="PET_NAME" 	   	 column="pet_name" 			javaType="String" />
+		<result property="PET_TYPE" 	   	 column="pet_type" 			javaType="String" />
+		<result property="PET_BIRTHDAY"    	 column="pet_birthday" 		javaType="String" />
+		<result property="PET_SIZE" 	  	 column="pet_size" 			javaType="String" />
+		<result property="PET_WEIGHT" 	   	 column="pet_weight" 		javaType="String" />
+		<result property="PET_GENDER" 	   	 column="pet_gender" 		javaType="String" />
+		<result property="PET_NEUTRAL" 	   	 column="pet_neutral" 		javaType="String" />
+		<result property="MEDICAL_HISTORY" 	 column="medical_history" 	javaType="String" />
+		<result property="ALLERGY" 		   	 column="allergy" 			javaType="String" />
+		<result property="PET_PROFILEIMG"  	 column="pet_profileimg"    javaType="String" />
+		<result property="PREVIOUSPET_UID"   column="previouspet_UID"   javaType="String" />
+		<result property="PREVIOUSPET_NAME"  column="previouspet_name"  javaType="String" />
+		<result property="NEXTPET_UID"  	 column="nextpet_UID"  		javaType="String" />
+		<result property="NEXTPET_NAME"  	 column="nextpet_name"  	javaType="String" />
+	</resultMap>
+	<select id="getPet_info" parameterType="int" resultMap="Pet_InfoMap">
+		select previouspet_UID, previouspet_name
+		     , pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		     , nextpet_UID, nextpet_name
+		from
+		(
+		    select lag(pet_UID, 1) over(order by pet_UID desc) as previouspet_UID
+		         , lag(pet_name, 1) over(order by pet_UID desc) as previouspet_name
+		         , pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		         , lead(pet_UID, 1) over(order by pet_UID desc) as nextpet_UID
+		         , lead(pet_name, 1) over(order by pet_UID desc) as nextpet_name
+		    from pet_info
+		    where pet_status = 1
+		) V
+		where pet_UID = #{pet_UID}
+	</select>
+	
 
 </mapper>
