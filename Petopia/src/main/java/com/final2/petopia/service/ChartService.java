@@ -81,6 +81,42 @@ public class ChartService implements InterChartService {
 			int n =dao.insertChart(cvo);
 			return n;
 		}
+        //0128 병원페이지에서 처방전 인서트하기
+		@Override
+		public int insertPre(ChartVO cvo) {
+			int n = dao.insertPre(cvo);
+			return n;
+		}
+        //처방전인서트 성공하면 예약스테이터스 변경하기
+		@Override
+		public void updaterstatus(String ruid) {
+			dao.updaterstatus(ruid);
+			
+		}
+		//병원페이지에서 처방전 내용 불러오기
+		@Override
+		public HashMap<String, String> selectChart(HashMap<String,String> map) {
+			HashMap<String, String> cmap= dao.selectChart(map);
+			return cmap;
+		}
+		//차트번호 불러오기 
+		@Override
+		public String getChartuid(String ruid) {
+			String cuid = dao.getChartuid(ruid);
+			return cuid;
+		}
+		//처방전번호 알아오기 
+		@Override
+		public String getPuid(HashMap<String, String> map) {
+			String puid = dao.getPuid(map);
+			return puid;
+		}
+        //처방전 내용불러오기 
+		@Override
+		public HashMap<String, String> selectPreinfo(HashMap<String, String> map) {
+			HashMap<String, String> pmap = new HashMap<String, String>();
+			return pmap;
+		}
 
 
 
