@@ -30,6 +30,13 @@ public class ConsultDAO implements InterConsultDAO {
 		return n;
 	}
 
+	// [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
+	@Override
+	public int selectMyConsultCountNoSearch(String idx) {
+		int n = sqlsession.selectOne("consult.selectMyConsultCountNoSearch", idx);
+		return n;
+	}
+	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	@Override
 	public int selectTotalCountNoSearch() {
@@ -121,17 +128,31 @@ public class ConsultDAO implements InterConsultDAO {
 
 	// 댓글그룹순서 최대값
 	@Override
-	public int getGroupOdrMax(ConsultCommentVO commentvo) {
-		int n = sqlsession.selectOne("consult.getGroupOdrMax", commentvo);
+	public int getGroupOdrMax1(ConsultCommentVO commentvo) {
+		int n = sqlsession.selectOne("consult.getGroupOdrMax1", commentvo);
+		return n;
+	}
+	@Override
+	public int getGroupOdrMax2(ConsultCommentVO commentvo) {
+		int n = sqlsession.selectOne("consult.getGroupOdrMax2", commentvo);
 		return n;
 	}
 
 	// cscmt_g_odr그룹순서 update
 	@Override
-	public int updateCommentCscmtgOdr(int cscmt_g_odr) {
-		int n = sqlsession.update("consult.updateCommentCscmtgOdr", cscmt_g_odr);
+	public int updateCommentCscmtgOdr(ConsultCommentVO commentvo) {
+		int n = sqlsession.update("consult.updateCommentCscmtgOdr", commentvo);
 		return n;
 	}
+
+	// fk_cmt_idCount 그룹순서 
+	@Override
+	public int getFk_cmt_idCount(ConsultCommentVO commentvo) {
+		int n = sqlsession.selectOne("consult.getFk_cmt_idCount", commentvo);
+		return n;
+	}
+
+	
 
 	
 

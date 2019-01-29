@@ -3,6 +3,7 @@ package com.final2.petopia.service;
 import java.util.HashMap;
 import java.util.List;
 
+import com.final2.petopia.model.CareVO;
 import com.final2.petopia.model.PetVO;
 
 public interface InterCareService {
@@ -18,6 +19,9 @@ public interface InterCareService {
 
 	//===== 케어타입 코드 =====
 	List<HashMap<String, String>> getCaretype_infoList(String caertype);
+
+	//===== 케어 등록 =====
+	int insertPetcare(CareVO cvo);
 
 
 

@@ -15,6 +15,7 @@
 	   padding: 0.5%;
 	   text-align:left;
 	}
+	
 </style>
 
 <!-- include summernote css/js-->
@@ -39,21 +40,23 @@
 	$(document).ready(function(){
 	    
 		$('#cs_contents').summernote({
-            height: 300,                 // set editor height
-            minHeight: null,             // set minimum height of editor
-            maxHeight: null,             // set maximum height of editor
-            focus: true                  // set focus to editable area after initializing summernote
-            
+            minHeight: 500,
+            maxHeight: null,
+            focus: true
     	});
-	
 		
 		// 수정완료버튼
 	    $("#btnEdit").click(function(){
 	
-	        // === 유효성 검사 ===
 	        var cs_title = $("#cs_title").val().trim();  
 	        if(cs_title=="") {
 	        	alert("글제목을 입력하세요!!");
+	        	return;
+	        }
+	        
+	        var cs_contents = $("#cs_contents").val().trim();  
+	        if(cs_contents=="") {
+	        	alert("글을 입력하세요!!");
 	        	return;
 	        }
 	        
@@ -124,7 +127,7 @@
 			</div>
 			
 			<div class="col-xs-12 col-md-12 content">
-				<textarea name="cs_contents" id="cs_contents" rows="10" cols="100" style="width:100%; height:412px; border-radius:3px;" class="summernote"></textarea>
+				<textarea name="cs_contents" id="cs_contents" style="width:100%; border-radius:3px;" class="summernote" >${consultvo.cs_contents}</textarea>
            		<%-- ** textarea 태그에서 required="required" 속성을 사용하면 스마트 에디터는 오류가 발생하므로 사용하지 않는다. ** --%>
 			</div>
 		</div>	

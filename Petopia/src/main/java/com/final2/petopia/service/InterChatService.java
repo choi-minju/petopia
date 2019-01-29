@@ -9,4 +9,6 @@ public interface InterChatService {
 
 	int createcode(HashMap<String, String> map) throws Throwable; // 랜덤코드생성
 
+	String viewcode(String code) throws Throwable;
+
 }
