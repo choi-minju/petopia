@@ -51,7 +51,7 @@ th{
         <th>예약일시</th>
         <th>예약상태</th>
         <!-- -버튼 1: 예약완료 2결제(차트작성 처방전작성 노쇼// 예약상태업데이트) 3 진료완료(진료완료 진료기록상세보기)4:노쇼 -->
-        <th>차트작성</th>
+        <th>차트/처방전</th>
         <th>취소</th>
       </tr>
     </thead>
@@ -77,9 +77,18 @@ th{
         <td>
           <c:if test="${rmap.reservation_status=='2'}"> <!-- 차트처방전 기록이 없으면 클릭 인서트, 있으면 셀렉트  -->
         	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/InsertChart.pet?reservation_UID=${rmap.reservation_UID}'">차트</button>
-        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/InsertPrescription.pet'">처방전</button>
+        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/InsertPrescription.pet?reservation_UID=${rmap.reservation_UID}'">처방전</button>
             <input type="hidden" name="reservation_UID" value="reservation_UID"/>
-        </c:if>
+          </c:if>
+           <c:if test="${rmap.reservation_status=='3'}"> <!-- 차트처방전 기록이 없으면 클릭 인서트, 있으면 셀렉트  -->
+        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">차트</button>
+        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/SelectPrescription.pet?reservation_UID=${rmap.reservation_UID}'">처방전</button>
+            <input type="hidden" name="reservation_UID" value="reservation_UID"/>
+          </c:if>
+          <c:if test="${rmap.reservation_status=='4'}"> <!-- 차트처방전 기록이 없으면 클릭 인서트, 있으면 셀렉트  -->
+        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">노쇼</button>
+            <input type="hidden" name="reservation_UID" value="reservation_UID"/>
+          </c:if>
         </td>
         <td>
         	<c:if test="${rmap.reservation_status=='1'|| rmap.reservation_status=='2'}">

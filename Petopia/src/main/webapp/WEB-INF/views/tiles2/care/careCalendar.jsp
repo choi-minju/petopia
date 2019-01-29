@@ -200,7 +200,7 @@
 			<div id='external-events' style="border: 1px solid red;">
 			<li style="list-style-type: none;">
 		      	<ul><a href="careRegister.pet?fk_pet_UID=16&fk_caretype_UID=1" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-cutlery"></span>&nbsp;식사</a></ul>
-		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-trash"></span>&nbsp;용변</a></ul>
+		      	<ul><a href="careRegister.pet?fk_pet_UID=16&fk_caretype_UID=2" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-trash"></span>&nbsp;용변</a></ul>
 		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-glass"></span>&nbsp;양치</a></ul>
 		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-tint"></span>&nbsp;목욕</a></ul>
 		      	<ul><a href="#" class="fc-event btn btn-lg btn-default"><span class="glyphicon glyphicon-calendar"></span>&nbsp;달력</a></ul>

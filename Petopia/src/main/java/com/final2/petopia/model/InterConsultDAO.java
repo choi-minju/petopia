@@ -14,6 +14,9 @@ public interface InterConsultDAO {
 	// [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
 	int selectTotalCountWithSearch(HashMap<String, String> paraMap);
 
+	// [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
+	int selectMyConsultCountNoSearch(String idx);
+	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	int selectTotalCountNoSearch();
 
@@ -53,10 +56,16 @@ public interface InterConsultDAO {
 	int selectCommentTotalCount(HashMap<String, String> paraMap);
 
 	// 댓글그룹순서
-	int getGroupOdrMax(ConsultCommentVO commentvo);
+	int getGroupOdrMax1(ConsultCommentVO commentvo);
+	int getGroupOdrMax2(ConsultCommentVO commentvo);
 
 	// cscmt_g_odr그룹순서 update
-	int updateCommentCscmtgOdr(int cscmt_g_odr);
+	int updateCommentCscmtgOdr(ConsultCommentVO commentvo);
+
+	// fk_cmt_idCount 그룹순서 
+	int getFk_cmt_idCount(ConsultCommentVO commentvo);
+
+	
 
 	
 

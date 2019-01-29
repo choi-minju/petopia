@@ -144,7 +144,7 @@ margin-bottom: 2%;
 			        }); //end f ajax
 		      }
 		    }); // end of  $('#calendar').fullCalendar --%>
-
+	/* , */
 	/* 달력  끝  */
 	});// end of $(document).ready()----------------------
 	

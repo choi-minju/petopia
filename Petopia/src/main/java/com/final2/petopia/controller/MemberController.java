@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.final2.petopia.common.AES256;
 import com.final2.petopia.common.FileManager;
+import com.final2.petopia.common.MyUtil;
 import com.final2.petopia.common.NaverLoginBO;
 import com.final2.petopia.common.SHA256;
 import com.final2.petopia.model.MemberVO;
@@ -795,6 +796,7 @@ public class MemberController {
 	public String requireLoginAdmin_adminInfoMember(HttpServletRequest req, HttpServletResponse res) {
 		
 		String str_idx = req.getParameter("idx");
+		String goBackURL = req.getParameter("goBackURL");
 		
 		MemberVO mvo = null;
 		List<HashMap<String, String>> haveTagList = null;
@@ -828,6 +830,7 @@ public class MemberController {
 			
 			req.setAttribute("mvo", mvo);
 			req.setAttribute("haveTagList", haveTagList);
+			req.setAttribute("goBackURL", goBackURL);
 			
 			return "admin/member/adminInfoMember.tiles2";
 		} // end of if~else

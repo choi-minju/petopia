@@ -14,7 +14,7 @@
     
     <beans:bean id="echoHandler" class="com.final2.petopia.websocket.WebsocketEchoHandler" init-method="init" />
     <websocket:handlers>
-        <websocket:mapping path="/multichatstart.action" handler="echoHandler" />
+        <websocket:mapping path="multichatstart.pet" handler="echoHandler" />
         <!-- websocket:handlers 태그안의 websocket:mapping 태그안의 websocket:handshake-interceptors에
              HttpSessionHandshakeInterceptor를 추가해주면
              WebSocketHandler에 접근하기 전에 
