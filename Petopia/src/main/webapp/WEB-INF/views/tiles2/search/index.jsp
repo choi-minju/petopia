@@ -127,9 +127,9 @@
 
 		$("#myUL").hide();
 		$("#myInput").val("${searchWord}");		
-		$("#cnt").text("${cnt}");
+		var cnt = $("#cnt").text("${cnt}");
 		
-		if("${cnt != 0}") {
+		if(cnt != 0) {
 			setBounds();
 		}
 		
@@ -221,18 +221,6 @@
 			setGeocoder();
 		}
 	}
-	
-	function personalRecomm() {
-	
-		if("${sessionScope.loginuser == null}") {
-			alert("로그인 후 사용가능합니다.");
-			return false;	
-		}
-		
-		location.href="<%= ctxPath%>/requireLogin_search.pet";
-		
-	}
-
 
 </script>
 
@@ -275,7 +263,7 @@
 					<input type="button" class="btn input-lg" id="inputlg" value="검색" onclick="searchEnd()"/>
 				</div>
 				<div class="col-sm-8">
-					<input type="button" class="btn btn-primary btn-block input-lg" id="inputlg" value="맞춤추천" onclick="personalRecomm()" />
+					<input type="button" class="btn btn-primary btn-block input-lg" id="inputlg" value="맞춤추천" onclick="javascript:location.href='<%= ctxPath%>/requireLogin_search.pet'" />
 				</div>
 			</div>
 		</div>
