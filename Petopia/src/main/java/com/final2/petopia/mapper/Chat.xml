@@ -15,4 +15,24 @@
 	from notification
 	where DBMS_LOB.INSTR(not_message, #{code})>0
  </select>
+ 
+<!-- idx에 따라 회원정보 가져오기 -->
+ <!-- <select id="selectend" parameterType="HashMap" resultType="String">
+ 	select biz_name, bizidx, docname, memberidx, not_message, userid
+	from
+	(
+	    select b.name as biz_name, idx as bizidx, docname
+	    from member b join doctors D
+	    on b.idx = d.fk_idx_biz
+	    where b.idx=3
+	)
+	join
+	(
+	    select m.idx as memberidx, m.userid as userid, not_message
+	    from member m join notification c
+	    on m.idx = c.fk_idx
+	    where m.idx=#{memberidx}
+	)
+	on 1=1;
+ </select> -->
 </mapper>

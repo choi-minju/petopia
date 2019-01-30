@@ -62,7 +62,7 @@
     // 	alert("appCtx : " + appCtx);
     //  결과값  appCtx : /board/chatting
     	var chatcode = $('input#hide').val();
-    	alert("chatcode : " + chatcode);
+    //	alert("chatcode : " + chatcode);
     	var root = url+appCtx;
     	
     // 	alert("root : " + root);
@@ -70,7 +70,7 @@
    	
     	var wsUrl = "ws://"+root+"/multichatstart.pet";// http가아닌 ws를 사용 //multichatstart.action 은 xml에있음
        	var websocket = new WebSocket(wsUrl);  //  /WEB-INF/web.xml 에 가서 appServlet 의 contextConfigLocation 을 수정한다.
-       	alert(wsUrl);
+     //  	alert(wsUrl);
      // var websocket = new WebSocket("ws://192.168.50.53:9090/board/chatting/multichatstart.action");
         
      // alert(wsUrl);
@@ -162,7 +162,7 @@
     	var frm = document.videochatFrm;
     	frm.action="<%= ctxPath %>/chatend.pet";
     	frm.method="GET";
-    	/* frm.submit(); */
+    	frm.submit();
     }
 </script>
 
@@ -196,7 +196,7 @@
         <img src="<%=ctxPath%>/resources/img/chat/computer-screen.png" id="startButton" style="height: 10%; width: 5%;">
         <img src="<%=ctxPath%>/resources/img/chat/phone.png" style="margin-left: 40px; height: 10%; width: 5%;" id="callButton">
         <img src="<%=ctxPath%>/resources/img/chat/phone-call.png" id="hangupButton" style="margin-left: 40px; height: 10%; width: 5%;">
-        <button type="button" class="btn2" <%-- onClick="chatend();" --%>>종료하기</button>
+        <button type="button" class="btn2" onClick="chatend();">종료하기</button>
         <input type="hidden" name="hide" id="hide" value="${chatcode}" />
     </div>
 	

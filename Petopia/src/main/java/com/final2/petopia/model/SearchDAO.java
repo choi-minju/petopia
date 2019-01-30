@@ -46,8 +46,26 @@ public class SearchDAO implements InterSearchDAO {
 
 	// 검색창으로 넘어갈때 검색된 병원/약국 수 보내기 
 	@Override
-	public int searchCount(String searchWord) {
-		int cnt = sqlsession.selectOne("search.addrCount", searchWord);
+	public int searchCount(String searchWord, String whereNo) {
+		
+		int cnt = 0;
+		
+		switch (whereNo) {
+			case "1":
+				cnt = sqlsession.selectOne("search.addrCount", searchWord);
+				break;
+			case "2":
+				cnt = sqlsession.selectOne("search.hsptalCount", searchWord);
+				break;
+			case "3":
+				cnt = sqlsession.selectOne("search.pharmCount", searchWord);
+				break;
+	
+			default:
+				cnt = sqlsession.selectOne("search.addrCount", searchWord);
+				break;
+		}
+		
 		return cnt;
 	}
 

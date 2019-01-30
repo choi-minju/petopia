@@ -14,7 +14,7 @@ public interface InterSearchService {
 	public Biz_MemberVO getFullnameAndIdx(String searchWord);
 
 	// 검색창으로 넘어갈때 검색된 병원/약국 수 보내기
-	public int searchCount(String searchWord);
+	public int searchCount(String searchWord, String whereNo);
 	
 	// 검색어를 기준으로 biz_member 정보 리스트 불러오기
 	public List<Biz_MemberVO> getBizmemListBySearchWord(String whereNo, String searchWord, String numbers, String orderbyNo);

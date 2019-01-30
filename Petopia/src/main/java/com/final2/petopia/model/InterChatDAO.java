@@ -11,4 +11,6 @@ public interface InterChatDAO {
 
 	String viewcode(String code);
 
+	String selectend(HashMap<String, String> map); // 화상상담종료시 ID에해당하는값 select
+
 }

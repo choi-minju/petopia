@@ -108,10 +108,17 @@ import org.springframework.stereotype.Repository;
 				String puid = sqlsession.selectOne("chart.getPuid",map);
 				return puid;
 			}
-            //처방전 내용 알아오기 
+			//0129
+			//예약자번호로 처방전 인서트 내용 가져오기
 			@Override
-			public HashMap<String, String> selectPreinfo(HashMap<String, String> map) {
-				 HashMap<String, String> pmap = sqlsession.selectOne("chart.selectPreinfo",map);
+			public HashMap<String, String> selectpreinfobyruid(String ruid) {
+				HashMap<String, String> preinfo = sqlsession.selectOne("chart.selectpreinfobyruid",ruid);
+				return preinfo;
+			}
+			//셀렉트창에서 처방전 내용가져오기 
+			@Override
+			public HashMap<String, String> selectPreinfo(HashMap<String, String> map2) {
+				HashMap<String, String> pmap = sqlsession.selectOne("chart.selectPreinfo",map2);
 				return pmap;
 			}
 			

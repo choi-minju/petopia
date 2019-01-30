@@ -1,6 +1,8 @@
 package com.final2.petopia.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +46,7 @@ public class ChartController {
 			
 		} //차트 디테일 불러오기 (마이페이지에서 )
 
+		
 		@RequestMapping(value = "/InsertMyPrescription.pet", method = { RequestMethod.GET })
 		public String InsertMyChart(HttpServletRequest req) {
 			
@@ -56,21 +59,70 @@ public class ChartController {
 		
 			List<PetVO> petlist = service.selectpetlist(idx); //펫 uid로 펫정보 가져오기 
 			req.setAttribute("petlist", petlist);
-/*
-		    HashMap<String,Object> paramap =new HashMap<String,Object>();
-		    String rdate = req.getParameter("rdate");
-		    paramap.put("idx", idx);
-		    paramap.put("rdate",rdate);
-		     int ruid=  service.selecttabuid(paramap); //탭에 넣을 예약 번호 알아오기 
-*/		   
+
+		
 			
 		    return "chart/InsertMyPrescription.tiles2"; 
 		
 		} //진료 내역 인서트 (마이 페이지에서)
-		
+		//달력 0129
+		@RequestMapping(value = "/getCalendar.pet", method = { RequestMethod.GET })
+		@ResponseBody
+		public HashMap<String,Object> getCalendar(HttpServletRequest req) {
+			//0129 달력 시작************************* 
+			Calendar cal = Calendar.getInstance();
+			String strYear = req.getParameter("year");
+			String strMonth = req.getParameter("month");
+			int year = cal.get(Calendar.YEAR);//2019
+			int month = cal.get(Calendar.MONTH);//0
+			int date = cal.get(Calendar.DATE); //29
+			
+			if(strYear != null){
+
+				  year = Integer.parseInt(strYear);
+				  month = Integer.parseInt(strMonth);
+
+			}else{
+
+			}
+
+			//년도/월 셋팅
+			cal.set(year, month, 1);
+			int startDay = cal.getMinimum(java.util.Calendar.DATE);//1 한 달의 첫날 
+			int endDay = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);//31
+			int start = cal.get(java.util.Calendar.DAY_OF_WEEK); //3  요일(3=화)
+			int newLine = 0;
+
+			//오늘 날짜 저장.
+			Calendar todayCal = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd");
+			int intToday = Integer.parseInt(sdf.format(todayCal.getTime()));  //20190129
+			 
+			//날짜 부분 
+			
+			//처음 빈공란 표시
+			
 
 
-		@RequestMapping(value = "/InsertMyChartEnd.pet", method = { RequestMethod.GET })
+			HashMap<String,Object> paramap = new HashMap<String,Object>();
+			
+			paramap.put("year", year);
+			paramap.put("month", month);
+			paramap.put("date", date);
+			paramap.put("startDay", startDay);
+			paramap.put("endDay", endDay);
+			paramap.put("start", start);
+			paramap.put("todayCal", todayCal);
+			paramap.put("sdf", sdf);
+			paramap.put("intToday", intToday);
+			paramap.put("newLine", newLine);
+			//달력 끝 
+			
+			return paramap;
+			
+		}//end of /getCalendar.pet
+
+		@RequestMapping(value = "/InsertMyChartEnd.pet", method = { RequestMethod.POST })
 		public int InsertMyChartEnd(ChartVO cvo, HttpServletRequest req) {
 
 			HttpSession session = req.getSession();
@@ -176,33 +228,32 @@ public class ChartController {
 		//0126
 		
 		
-		//0128
+		//0128~0129
 		@RequestMapping(value = "/InsertPrescription.pet", method = { RequestMethod.GET })
 		public String InsertPrescription(HttpServletRequest req) {
+			String ruid=req.getParameter("reservation_UID");
 			
-            String ruid=req.getParameter("reservation_UID");
-            
-			HashMap<String,String> chartmap =new HashMap<String,String>();
-			chartmap = service.selectReserverInfo(ruid); //예약번호를 이용하여 차트에 예약자 정보 불러오기 
+			HashMap<String,String> premap =new HashMap<String,String>();
+			premap = service.selectpreinfobyruid(ruid); //예약자번호로 처방전 정보 불러오기 
 			
-			req.setAttribute("chartmap", chartmap);
+			req.setAttribute("premap", premap);
+			
+		
 			return "chart/InsertPrescription.tiles2"; 
 			
 		} //처방전 인서트창  띄우기  (기업회원페이지에서)
 		
-		//0128
+		//0128~0129
 		@RequestMapping(value = "/InsertPrescriptionEnd.pet", method = { RequestMethod.POST})
 		public String InsertPrescription(ChartVO cvo,HttpServletRequest req) {
 			
 			String ruid=req.getParameter("reservation_UID");
-			String cuid=service.getChartuid(ruid); //예약번호로 차트번호알아오기 
-			cvo.setChart_UID(Integer.parseInt(cuid));
-			System.out.println("cuid"+cuid);
 			int n= service.insertPre(cvo);
 			
             if(n==1) {
-            	service.updaterstatus(ruid); //처방전까지 인서트 완료하면 예약스테이터스 변경하기 
             	
+            	service.updaterstatus(ruid); //처방전까지 인서트 완료하면 예약스테이터스 변경하기 
+            	System.out.println("ruid");
             }
 			return "chart/biz_rvchartList.tiles2";
 			
@@ -238,17 +289,22 @@ public class ChartController {
 		@RequestMapping(value = "/SelectPrescription.pet", method = { RequestMethod.GET })
 
 		public String SelectPrescription(HttpServletRequest req) {
+			
 			String ruid=req.getParameter("reservation_UID");
 		    String cuid = service.getChartuid(ruid);
-		    HashMap<String,String> map = new HashMap<String,String> ();
-		    map.put("ruid",ruid );
-		    map.put("cuid", cuid);
-		    System.out.println("ruid"+ruid);
-		    System.out.println("cuid"+cuid);
-			String puid =service.getPuid(map); //처방전 번호 불러오기 
+			
+		    HashMap<String,String> map1 = new HashMap<String,String> ();
+		    map1.put("ruid",ruid );
+		    map1.put("cuid", cuid);
+		    
+		    String puid =service.getPuid(map1); //처방전 번호 불러오기 
+		    HashMap<String,String> map2 = new HashMap<String,String> ();
+		    map2.put("ruid",ruid );
+		    map2.put("cuid", cuid);
+		    map2.put("puid", puid);
 			
 			HashMap<String,String> pmap = new HashMap<String,String>();
-			pmap= service.selectPreinfo(map);
+			pmap= service.selectPreinfo(map2);
 			
 			return "chart/SelectPrescription.tiles2"; 
 			

@@ -139,20 +139,27 @@ public class PetVO {
 		this.pet_status = pet_status;
 	}
 	
-	public String getShowPet_type(String pet_type){
+	public String getShowPet_type(){
 		if(pet_type.equals("cat")) {
-		pet_type="고양이";
+			pet_type="고양이";
 		}
 		else if(pet_type.equals("dog")) {
-		pet_type="강아지";
+			pet_type="강아지";
 		}
 		else if(pet_type.equals("smallani")) {
-		pet_type="소동물";
+			pet_type="소동물";
 		}
 		else if(pet_type.equals("etc")) {
-		pet_type="기타분류";
+			pet_type="기타분류";
 		}
 		return pet_type;
 	}
 	
+	public String getShowPet_gender(){
+		if("1".equals(pet_gender))
+			pet_gender = "수컷";
+		else
+			pet_gender = "암컷";
+		return pet_gender;
+	}
 } // end of class PetVO
