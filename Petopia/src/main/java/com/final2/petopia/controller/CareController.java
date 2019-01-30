@@ -29,7 +29,7 @@ public class CareController {
 	
 	
 	// [19-01-24. 수정 시작_hyunjae]
-	//===== 반려동물 리스트페이지 요청 =====
+	// ===== 반려동물 리스트페이지 요청 =====
 	@RequestMapping(value="/petList.pet", method={RequestMethod.GET})
 	public String requireLogin_petList(HttpServletRequest req, HttpServletResponse res) {
 		
@@ -47,7 +47,7 @@ public class CareController {
 	}
 	
 	
-	//===== 반려동물 리스트 가져오기(Ajax) =====
+	// ===== 반려동물 리스트 가져오기(Ajax) =====
 	@RequestMapping(value="/getPet.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> getPet(HttpServletRequest req) {
@@ -91,7 +91,6 @@ public class CareController {
 	}
 	
 	
-	
 	// [19-01-24. 수정 시작_hyunjae]
 	//===== 반려동물 등록 요청완료 =====
 	@RequestMapping(value="/petRegisterEnd.pet", method={RequestMethod.POST})
@@ -127,8 +126,7 @@ public class CareController {
 		
 		try {
 		
-			str_pet_UID = req.getParameter("pet_UID");
-			
+			str_pet_UID = req.getParameter("pet_UID");			
 			int pet_UID = Integer.parseInt(str_pet_UID); 
 
 			HashMap<String, Object> petInfo = service.getPet_info(pet_UID); 
@@ -146,7 +144,69 @@ public class CareController {
 	}
 	
 	
-	// [19-01-24. 수정 끝_hyunjae]
+	// [19-01-30. 수정 시작_hyunjae]
+	//===== 특정 반려동물관리 몸무게(Ajax) =====
+	@RequestMapping(value="/getWeight.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, Object>> getWeight(HttpServletRequest req) {
+		
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
+
+		String pet_UID = req.getParameter("pet_UID");
+		
+		List<HashMap<String,String>> list = service.getWeight(pet_UID);
+		
+		if(list != null) {
+			for(HashMap<String,String> datamap : list) {
+				HashMap<String, Object> submap = new HashMap<String, Object>(); 
+				submap.put("PETWEIGHT_UID", datamap.get("PETWEIGHT_UID"));
+				submap.put("FK_PET_UID", datamap.get("FK_PET_UID"));
+				submap.put("PETWEIGHT_PAST", datamap.get("PETWEIGHT_PAST"));
+				submap.put("PETWEIGHT_DATE", datamap.get("PETWEIGHT_DATE"));
+				
+				returnmapList.add(submap);
+			}
+		}
+
+		return returnmapList;
+	}
+
+	
+	//===== 특정 반려동물관리 체중 추가 =====
+	@RequestMapping(value="/addWeight.pet", method={RequestMethod.GET})
+	public String addWeight(HttpServletRequest req) {
+		
+		return "care/addWeight.notiles";
+	}
+
+	
+	//===== 특정 반려동물관리 진료기록(Ajax) =====
+	@RequestMapping(value="/getChart.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, Object>> getChart(HttpServletRequest req) {
+		
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
+
+		String pet_UID = req.getParameter("pet_UID");
+		
+		List<HashMap<String,String>> list = service.getChart(pet_UID);
+		
+		if(list != null) {
+			for(HashMap<String,String> datamap : list) {
+				HashMap<String, Object> submap = new HashMap<String, Object>(); 
+				submap.put("CHART_UID", datamap.get("CHART_UID"));
+				submap.put("BIZ_NAME", datamap.get("BIZ_NAME"));
+				submap.put("RESERVATION_DATE", datamap.get("RESERVATION_DATE"));
+				
+				returnmapList.add(submap);
+			}
+		}
+
+		return returnmapList;
+	}
+	// [19-01-30. 수정 끝_hyunjae]
+	
+	
 	// [19-01-25. 수정 시작_hyunjae]
 	//===== 케어관리페이지 요청 =====
 	@RequestMapping(value="/careCalendar.pet", method={RequestMethod.GET})
@@ -219,9 +279,8 @@ public class CareController {
 
 		return "msg";		
 	}
-	
-
 	// [19-01-24. 수정 끝_hyunjae]
 	// [19-01-25. 수정 끝_hyunjae]
+	
 	
 } // end of class CareController

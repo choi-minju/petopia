@@ -65,7 +65,7 @@
 	</insert>
 	
 	
-	<!-- //===== 케어 등록 ===== -->
+	<!-- //===== 특정 반려동물관리 상세페이지 요청 ===== -->
 	<resultMap type="HashMap" id="Pet_InfoMap">
 		<result property="PET_UID" 	       	 column="pet_UID" 			javaType="int" />
 		<result property="FK_IDX" 	       	 column="fk_idx" 			javaType="int" />
@@ -101,5 +101,33 @@
 		where pet_UID = #{pet_UID}
 	</select>
 	
+	
+	<!-- //===== 특정 반려동물관리 몸무게(Ajax) ===== -->
+	<resultMap type="java.util.HashMap" id="petweightMap">
+		<result property="PETWEIGHT_UID"  column="petweight_UID"  javaType="String" />
+		<result property="FK_PET_UID" 	  column="fk_pet_UID" 	  javaType="String" />
+		<result property="PETWEIGHT_PAST" column="petweight_past" javaType="String" />
+		<result property="PETWEIGHT_DATE" column="petweight_date" javaType="String" />
+	</resultMap>
+	<select id="getWeight" parameterType="String" resultMap="petweightMap">
+		select petweight_UID, fk_pet_UID, petweight_past, petweight_date
+		from petweight 
+		where fk_pet_UID = #{pet_UID}
+	</select>
+	
+	
+	<!-- //===== 특정 반려동물관리 진료기록(Ajax) ===== -->
+	<resultMap type="java.util.HashMap" id="petchartMap">
+		<result property="CHART_UID"  		column="chart_UID"        javaType="String" />
+		<result property="BIZ_NAME" 	  	column="biz_name" 	  	  javaType="String" />
+		<result property="RESERVATION_DATE" column="reservation_date" javaType="String" />
+	</resultMap>
+	<select id="getChart" parameterType="String" resultMap="petchartMap">
+		select chart_UID, biz_name, to_char(reservation_date, 'yyyy-mm-dd') as reservation_date
+		from chart
+		where fk_pet_UID = #{pet_UID}
+	</select>
+	
+
 
 </mapper>
