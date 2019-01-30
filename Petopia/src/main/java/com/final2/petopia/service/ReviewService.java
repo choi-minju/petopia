@@ -64,6 +64,31 @@ public class ReviewService implements InterReviewService {
 		
 		return result;
 	} // end of public int insertReviewByReviewMap(HashMap<String, String> reviewMap)
-	
 	// === 2019.01.29 ==== //
+	
+	// === 2019.01.30 ==== //
+	// *** 예약코드로 리뷰 보기 *** //
+	@Override
+	public HashMap<String, String> selectMyReviewByReservationUID(int fk_reservation_UID) {
+		HashMap<String, String> reviewMap = dao.selectMyReviewByReservationUID(fk_reservation_UID);
+		
+		return reviewMap;
+	} // end of public HashMap<String, String> selectMyReviewByReservationUID(int fk_reservation_UID)
+	
+	// *** 리뷰번호로 리뷰 수정하기 *** //
+	@Override
+	public int updateReviewByReviewUID(HashMap<String, String> paraMap) {
+		int result = dao.updateReviewByReviewUID(paraMap);
+		
+		return result;
+	} // end of public int updateReviewByReviewUID(HashMap<String, String> paraMap)
+
+	// *** 리뷰번호로 리뷰 삭제하기 *** //
+	@Override
+	public int updateReviewStatusByReviewUID(int review_UID) {
+		int result = dao.updateReviewStatusByReviewUID(review_UID);
+		
+		return result;
+	} // end of public int updateReviewStatusByReviewUID(String review_UID)
+	// === 2019.01.30 ==== //
 }
