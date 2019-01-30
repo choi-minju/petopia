@@ -11,6 +11,10 @@ public interface InterChatService {
 
 	String viewcode(String code) throws Throwable; // 채팅 뷰
 
-	int chatend(HashMap<String, String> map) throws Throwable; // 채팅 종료
+	String viewidx(String usercode) throws Throwable; // idx 알아오기
+
+	int insertall(HashMap<String, String> returnMap) throws Throwable; //  정보 insert
+
+	String selectend(String idx); // idx에 따라 회원정보 가져오기 
 
 }

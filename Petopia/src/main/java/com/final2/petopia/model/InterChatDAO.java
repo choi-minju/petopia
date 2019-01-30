@@ -11,6 +11,10 @@ public interface InterChatDAO {
 
 	String viewcode(String code);
 
-	String selectend(HashMap<String, String> map); // 화상상담종료시 ID에해당하는값 select
+	String viewidx(String usercode); // idx값 알아오기
+
+	int insertall(HashMap<String, String> returnMap); // videochat DB에 insert
+
+	String selectend(String idx); // idx에 따라 회원정보 가져오기 
 
 }

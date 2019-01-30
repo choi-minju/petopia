@@ -95,6 +95,10 @@ public interface InterReservationDAO {
 	int insertDepositPlus(HashMap<String, String> paraMap);
 //	4) 일정변경된 내용 알람보내기
 	int insertNoteForReservation(HashMap<String, String> noteMap);
+	
+//	[190130]
+//	#예약 상세 페이지
+	HashMap<String, String> selectRvDetailByPUID(String payment_UID);
 
 
 }

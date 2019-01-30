@@ -91,9 +91,11 @@
 		</span>
 		
 		<button type="button" class="btn2" data-toggle="modal" data-target="#videochat" data-dismiss="modal" >상담하기</button>
+		<c:if test="${MemberType == 1}">
 	  	<button type="button" class="btn2" onClick="createcode(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담코드 생성</button>
-	  	
+	  	</c:if>
 	  </div>  
+	  
 	</div>
 	
 	<div class="modal fade" id="videochat" role="dialog">

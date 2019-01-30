@@ -78,11 +78,20 @@ import org.springframework.stereotype.Repository;
 				int n = sqlsession.insert("chart.insertChart",cvo);
 				return n;
 			}
-			//병원페이지에서 처방전 입력하기 0128
+			//병원페이지에서 처방전 입력하기 0128 0130
 			@Override
-			public int insertPre(ChartVO cvo) {
-				int n = sqlsession.insert("chart.insertPre",cvo);
-				return n;
+			public int insertPre(List<HashMap<String, String>> mlist) {
+				int result = 0;
+				for(HashMap<String, String> map:mlist) {
+					int n =sqlsession.insert("chart.insertPre",map);
+					if(n==0) {
+						result=0;
+						return result;
+					}else {
+						result=1;
+					}
+				}
+				return result;
 			}
             //처방전 인서트 완료후 예약스테이터스 변경하기 
 			@Override
@@ -98,8 +107,8 @@ import org.springframework.stereotype.Repository;
 			}
 			//차트번호 가져오기 
 			@Override
-			public String getChartuid(String ruid) {
-				String cuid=sqlsession.selectOne("chart.getChartuid",ruid);
+			public String getChartuid() {
+				String cuid=sqlsession.selectOne("chart.getChartuid");
 				return cuid;
 			}
 			//처방전 번호 알아오기 
