@@ -139,8 +139,133 @@ public class ReviewController {
 		req.setAttribute("loc", loc);
 		
 		return "msg";
-	} //  end of 
+	} //  end of public String requireLogin_addReview(HttpServletRequest req, HttpServletResponse res)
 	// === 2019.01.29 ==== //
 	
+	// === 2019.01.30 ==== //
+	// *** 나의 병원리뷰에서 예약코드로 리뷰 보기 *** //
+	@RequestMapping(value="/selectMyReview.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public HashMap<String, String> requireLogin_selectMyReview(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_fk_reservation_UID = req.getParameter("fk_reservation_UID");
+		int fk_reservation_UID = 0;
+		
+		try {
+			fk_reservation_UID = Integer.parseInt(str_fk_reservation_UID);
+		} catch (NumberFormatException e) {
+			fk_reservation_UID = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> reviewMap = service.selectMyReviewByReservationUID(fk_reservation_UID);
+		
+		return reviewMap;
+	} // end of public String requireLogin_selectMyReview(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 나의 병원리뷰에서 리뷰번호로 리뷰 수정하기 *** //
+	@RequestMapping(value="/updateMyReview.pet", method={RequestMethod.POST})
+	public String requireLogin_updateMyReview(HttpServletRequest req, HttpServletResponse res) {
+		
+		String startpoint = req.getParameter("startpoint");
+		String review_uid = req.getParameter("review_uid");
+		String rv_contents = req.getParameter("rv_contents");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("STARTPOINT", startpoint);
+		paraMap.put("REVIEW_UID", review_uid);
+		paraMap.put("RV_CONTENTS", rv_contents);
+		
+		int result = service.updateReviewByReviewUID(paraMap);
+		
+		String msg = "";
+		String loc = "";
+		if(result == 0) {
+			msg = "리뷰 수정이 실패되었습니다.";
+			loc = "javascript:histroy.back();";
+		} else {
+			msg = "리뷰 수정되었습니다.";
+			loc = req.getContextPath()+"/myReviewList.pet";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} // end of public String requireLogin_updateMyReview(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 나의 병원리뷰에서 리뷰 삭제하기 *** //
+	@RequestMapping(value="/updateReviewStatus.pet", method={RequestMethod.POST})
+	public String requireLogin_updateReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_review_UID = req.getParameter("review_UID");
+		
+		int review_UID = 0;
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		}
+		
+		int result = service.updateReviewStatusByReviewUID(review_UID);
+		
+		String msg = "";
+		String loc = "";
+		if(result == 0) {
+			msg = "리뷰 삭제가 실패되었습니다.";
+			loc = "javascript:histroy.back();";
+		} else {
+			msg = "리뷰 삭제되었습니다.";
+			loc = req.getContextPath()+"/myReviewList.pet";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} // end of public String requireLogin_updateReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 나의 병원리뷰에서 더보기를 위한 전체 갯수 가져오기 *** //
+	@RequestMapping(value="/selectMyReviewTotalCount.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int requireLogin_selectMyReviewTotalCount(HttpServletRequest req, HttpServletResponse res) {
+		
+		int cnt = 0;
+		
+		String str_period = req.getParameter("period");
+		
+		int period = 0;
+		
+		if(str_period == null || "".equals(str_period)) {
+			str_period = "0";
+		}
+		
+		try {
+			period = Integer.parseInt(str_period);
+			
+			if(period != 0 || period != 1 || period != 3 || period != 6) {
+				period = 0;
+			}
+		} catch (NumberFormatException e) {
+			period = 0;
+		} // end of try~catch
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("PERIOD", period);
+		paraMap.put("IDX", loginuser.getIdx());
+		
+		if(period == 0) {
+			cnt = service.selectTotalCount(paraMap);
+		} else {
+			cnt = service.selectTotalCountByPeriod(paraMap);
+		} // end of if~else
+		
+		return cnt;
+	} // end of public int requireLogin_selectMyReviewTotalCount(HttpServletRequest req, HttpServletResponse res)
+	
+	// === 2019.01.30 ==== //
 	
 }
