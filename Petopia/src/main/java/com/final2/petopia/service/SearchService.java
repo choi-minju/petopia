@@ -52,4 +52,21 @@ public class SearchService implements InterSearchService {
 		return bizMemList;
 	}
 
+	// 맞춤추천 : 로그인 유저의 idx를 기준으로 biz_member 정보 리스트 불러오기 
+	@Override
+	public List<Biz_MemberVO> getBizmemListByidx(int loginuser_idx, String orderbyNo) {
+		List<Biz_MemberVO> bizmemList = dao.getBizmemListByidx(loginuser_idx, orderbyNo);
+		return bizmemList;
+	}
+
+	// 맞춤추천 : 병원/약국 수 보내기
+	@Override
+	public int getCntForRecomm(int loginuser_idx) {
+		int cnt = dao.getCntForRecomm(loginuser_idx);
+		return cnt;
+	}
+
+
+	
+
 }
