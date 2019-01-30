@@ -6,7 +6,7 @@
 <!-- idx에 따라 알람테이블에 code 삽입 -->
  <insert id="addcode" parameterType="HashMap">
 	insert into notification (not_UID, fk_idx, not_type, not_message, not_date, not_readcheck, not_remindstatus, not_time, not_URL)
-	values(seq_notification_UID.nextval, #{idx}, 5, #{code}, sysdate, default, default, default, 'http://localhost:9090/petopia/chat.pet')
+	values(seq_notification_UID.nextval, 90, 5, #{code}, sysdate, default, default, default, 'http://localhost:9090/petopia/chat.pet')
 </insert>
 
 <!-- code에 따라 접속  -->
@@ -15,24 +15,37 @@
 	from notification
 	where DBMS_LOB.INSTR(not_message, #{code})>0
  </select>
+
+ 
+<!-- idx 값 가져오기 -->
+ <select id="viewidx" parameterType="String" resultType="String">
+    select substr(ltrim(not_message, '1234567890'),2) AS not_message
+	from notification
+	where fk_idx = 90
+ </select>
  
 <!-- idx에 따라 회원정보 가져오기 -->
- <!-- <select id="selectend" parameterType="HashMap" resultType="String">
- 	select biz_name, bizidx, docname, memberidx, not_message, userid
+  <select id="selectend" parameterType="String" resultType="String">
+ 	select userid, biz_name, docname 
 	from
 	(
-	    select b.name as biz_name, idx as bizidx, docname
+	    select b.name as biz_name, docname
 	    from member b join doctors D
 	    on b.idx = d.fk_idx_biz
-	    where b.idx=3
+	    where b.idx= 90
 	)
 	join
 	(
-	    select m.idx as memberidx, m.userid as userid, not_message
-	    from member m join notification c
-	    on m.idx = c.fk_idx
-	    where m.idx=#{memberidx}
+	    select userid
+	    from member
+	    where idx= {idx}
 	)
 	on 1=1;
- </select> -->
+ </select>
+
+ <!-- <insert id="insertall" parameterType="HashMap">
+ 	insert into video_advice(va_UID, fk_idx, fk_idx_biz, chatcode, fk_userid, fk_name_biz, fk_docname, Time)
+	values(seq_video_advice_UID.nextval, #{idx}, 90, #{code}, #{fk_userid}, #{fk_name_biz}, #{fk_docname}, sysdate)
+ </insert> --> 
+ 
 </mapper>

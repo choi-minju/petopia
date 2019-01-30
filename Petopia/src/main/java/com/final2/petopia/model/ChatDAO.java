@@ -32,9 +32,27 @@ public class ChatDAO implements InterChatDAO {
 
 
 	@Override
-	public String selectend(HashMap<String, String> map) {
+	public String viewidx(String usercode) {
 		
-		String n = sqlsession.selectOne("chat.selectend", map);
+		String n = sqlsession.selectOne("chat.viewidx", usercode);
+		
+		return n;
+	}
+
+
+	@Override
+	public int insertall(HashMap<String, String> returnMap) {
+		
+		int n = sqlsession.insert("chat.insertall", returnMap);
+		
+		return n;
+	}
+
+
+	@Override
+	public String selectend(String idx) {
+		
+		String n = sqlsession.selectOne("chat.selectend", idx);
 		
 		return n;
 	}

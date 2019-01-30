@@ -77,4 +77,28 @@ public class SearchDAO implements InterSearchDAO {
 	}
 
 
+	// 맞춤추천 : 로그인 유저의 idx를 기준으로 biz_member 정보 리스트 불러오기 
+	@Override
+	public List<Biz_MemberVO> getBizmemListByidx(int loginuser_idx, String orderbyNo) {
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("LOGINUSER_IDX", loginuser_idx);
+		map.put("ORDERBYNO", orderbyNo);
+		
+		List<Biz_MemberVO> bizmemList = sqlsession.selectList("search.getBizmemListByidx", map);
+		return bizmemList;
+		
+	}
+
+
+	@Override
+	public int getCntForRecomm(int loginuser_idx) {
+		int cnt = sqlsession.selectOne("search.recommCount", loginuser_idx);
+		return cnt;
+	}
+
+
+
+
 }
