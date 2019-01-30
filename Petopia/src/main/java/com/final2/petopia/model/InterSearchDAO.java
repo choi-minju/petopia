@@ -17,5 +17,11 @@ public interface InterSearchDAO {
 
    // 검색어를 기준으로 biz_member 정보 리스트 불러오기
    List<Biz_MemberVO> getBizmemListBySearchWord(HashMap<String, Object> map);
+
+   // 맞춤추천 : 로그인 유저의 idx를 기준으로 biz_member 정보 리스트 불러오기 
+   List<Biz_MemberVO> getBizmemListByidx(int loginuser_idx, String orderbyNo);
+
+   // 맞춤추천 : 병원/약국 수 보내기
+   int getCntForRecomm(int loginuser_idx);
    
 }

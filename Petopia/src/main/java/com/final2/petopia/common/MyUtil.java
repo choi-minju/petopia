@@ -171,7 +171,7 @@ public class MyUtil {
 			str_pageNo = "";
 		}
 		else {
-			str_pageNo = "&nbsp;<a href=\""+url+"?currentShowPageNo="+(pageNo-1)+"&sizePerPage="+sizePerPage+"\" >"+"[이전]</a>&nbsp;"; 
+			str_pageNo = "&nbsp;<a href=\""+url+"?currentShowPageNo="+(pageNo-1)+"&sizePerPage="+sizePerPage+"\" >"+"&laquo;</a>&nbsp;";	// [190130] 이전, 다음 대체
 		}
 		
 		pageBar += str_pageNo;
@@ -179,7 +179,7 @@ public class MyUtil {
 		while(!(pageNo > totalPage || loop > blockSize)){
 			
 			if (pageNo == currentShowPageNo)
-				str_pageNo = "&nbsp;<span style=\"color:red; font-size:13pt; font-weight:bold; text-decoration:underline;\">"+pageNo+ "</span>&nbsp;";
+				str_pageNo = "&nbsp;<a class='active_p'>"+pageNo+ "</a>&nbsp;";	// [190130] 클래스 부여
 			else
 				str_pageNo = "&nbsp;<a href=\""+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"\" >"+pageNo+"</a>" + "&nbsp;";
 			
@@ -193,7 +193,7 @@ public class MyUtil {
 			str_pageNo = "";
 		}
 		else {
-			str_pageNo = "&nbsp;<a href=\""+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"\" >"+"[다음]</a>&nbsp;"; 
+			str_pageNo = "&nbsp;<a href=\""+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"\" >"+"&raquo;</a>&nbsp;"; 
 		}
 		
 		pageBar += str_pageNo;	

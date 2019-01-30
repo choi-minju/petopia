@@ -4,7 +4,7 @@ package com.final2.petopia.model;
 
 public class ChartVO {
 
-String reservation_UID;      //예약코드 
+String fk_reservation_UID;      //예약코드 
 int chart_UID;               // 차트코드
 int fk_pet_UID;     	     // 반려동물코드
 int fk_idx;      		     // 회원고유번호
@@ -22,20 +22,18 @@ int totalpay;          // 진료비총액
 
 //처방전 
 int  rx_UID;     	       // 처방코드
-String rx_name;           // 처방약
-String dose_number;        // 복용횟수
-String dosage;            // 복용용량
 String rx_notice;         // 처방안내
 String rx_cautions;       // 처방주의사항
 String rx_regName;        // 등록한사람
 
 public ChartVO() {}
-public ChartVO(String reservation_UID, int chart_UID, int fk_pet_UID, int fk_idx, String chart_type, String biz_name,
+
+public ChartVO(String fk_reservation_UID, int chart_UID, int fk_pet_UID, int fk_idx, String chart_type, String biz_name,
 		String bookingdate, String reservation_DATE, String doc_name, String cautions, String chart_contents,
-		int payment_pay, int payment_point, int addpay, int totalpay, int rx_UID, String rx_name, String dose_number,
-		String dosage, String rx_notice, String rx_cautions, String rx_regName) {
+		int payment_pay, int payment_point, int addpay, int totalpay, int rx_UID, String rx_notice, String rx_cautions,
+		String rx_regName) {
 	super();
-	this.reservation_UID = reservation_UID;
+	this.fk_reservation_UID = fk_reservation_UID;
 	this.chart_UID = chart_UID;
 	this.fk_pet_UID = fk_pet_UID;
 	this.fk_idx = fk_idx;
@@ -51,14 +49,18 @@ public ChartVO(String reservation_UID, int chart_UID, int fk_pet_UID, int fk_idx
 	this.addpay = addpay;
 	this.totalpay = totalpay;
 	this.rx_UID = rx_UID;
-	this.rx_name = rx_name;
-	this.dose_number = dose_number;
-	this.dosage = dosage;
 	this.rx_notice = rx_notice;
 	this.rx_cautions = rx_cautions;
 	this.rx_regName = rx_regName;
 }
 
+public String getFk_reservation_UID() {
+	return fk_reservation_UID;
+}
+
+public void setFk_reservation_UID(String fk_reservation_UID) {
+	this.fk_reservation_UID = fk_reservation_UID;
+}
 
 public int getChart_UID() {
 	return chart_UID;
@@ -180,30 +182,6 @@ public void setRx_UID(int rx_UID) {
 	this.rx_UID = rx_UID;
 }
 
-public String getRx_name() {
-	return rx_name;
-}
-
-public void setRx_name(String rx_name) {
-	this.rx_name = rx_name;
-}
-
-public String getDose_number() {
-	return dose_number;
-}
-
-public void setDose_number(String dose_number) {
-	this.dose_number = dose_number;
-}
-
-public String getDosage() {
-	return dosage;
-}
-
-public void setDosage(String dosage) {
-	this.dosage = dosage;
-}
-
 public String getRx_notice() {
 	return rx_notice;
 }
@@ -228,13 +206,8 @@ public void setRx_regName(String rx_regName) {
 	this.rx_regName = rx_regName;
 }
 
-public String getReservation_UID() {
-	return reservation_UID;
-}
 
-public void setReservation_UID(String reservation_UID) {
-	this.reservation_UID = reservation_UID;
-}
+
 
 
 }

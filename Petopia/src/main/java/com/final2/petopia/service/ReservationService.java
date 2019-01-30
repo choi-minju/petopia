@@ -439,5 +439,12 @@ public class ReservationService implements InterReservationService{
 		}
 		return result;
 	}
+//	[190130]
+//	#예약 상세 페이지
+	@Override
+	public HashMap<String, String> selectRvDetailByPUID(String payment_UID) {
+		HashMap<String, String> resultMap = dao.selectRvDetailByPUID(payment_UID);
+		return resultMap;
+	}
 
 }
