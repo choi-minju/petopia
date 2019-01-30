@@ -37,10 +37,11 @@
   font-size: 20px;
   height: 13px; 
   border-bottom: 1px solid #A6A6A6;
-} 
+}
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
+		$(".collapsible").click();	// [190130] 아코디언 펼치기 클릭액션 추가
 		
 		$('#tooltipbox').hide();
 		$("#popOver").click(function() {
@@ -133,7 +134,7 @@
          </p>
          <p>
          	<label class="label label-info">진료타입</label>&nbsp;
-         	<span class="noneBorderText">${returnMap.reservation_type}</span>
+         	<span class="noneBorderText">${returnMap.rv_type}</span> <%-- [190130] rv_type으로 변경 --%>
          </p>
          <p>
          	<label class="label label-info">반려동물</label>&nbsp;
