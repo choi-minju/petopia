@@ -192,6 +192,30 @@ public class ConsultService implements InterConsultService {
 		return totalCount;
 	}
 
+	// [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
+	@Override
+	public int selectAdminTotalCountWithSearch(HashMap<String, String> paraMap) {
+		int n = dao.selectTotalCountWithSearch(paraMap);
+		return n;
+	}
+
+	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
+	@Override
+	public int selectAdminTotalCountNoSearch() {
+		int n = dao.selectTotalCountNoSearch();
+		return n;
+	}
+
+	// 관리자 -------------------------------------------------------------------------------------
+	
+	// - [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select
+	@Override
+	public List<ConsultVO> selectAdminConsultListPaging(HashMap<String, String> paraMap) {
+		List<ConsultVO> AdminConsultList = dao.selectAdminConsultListPaging(paraMap);
+		return AdminConsultList;
+	}
+	
+
 	
 
 	

@@ -28,16 +28,18 @@
 			frm.submit();
 		});
 		
-		$("#btnplus").click(function(){
+		   $("#btnplus").click(function(){
 			var payment_pay =$("#payment_pay").val();
 			var payment_point=$("#payment_point").val();
-	
 			var addpay=$("#addpay").val();
 			
 			var sum = addpay*1+payment_point*1+payment_pay*1;
+			
 			$("#paytotal").text(sum);
 			$("#totalpay").val(sum);
-		});  // 합계버튼 
+			
+		});  // 합계버튼  
+	
 		//0130 스피너  추가복용약 
 		$("#spinnerOqty1").spinner({
 	  	      spin: function( event, ui ) {
@@ -112,7 +114,7 @@
    
 	<hr style="width:100%; height:3%; color:white;"></hr>
 	<div class="span col-md-8 ">13.사용한 예치금 : <span id="pament_pay"> ${chartmap.payment_pay}원 </span></div>
-	<div class="span col-md-8 ">14.사용한 포인트 : <span id="payment_point">${chartmap.payment_point} POINT</span></div>
+	<div class="span col-md-8 ">14.사용한 포인트 : <span id="">${chartmap.payment_point} POINT</span></div>
 	<div class="span col-md-8 ">15.본인 부담금 :   <span> <input type="number"  id="addpay" name="addpay"/>원</span>
 	 <button type="button" id="btnplus">총합</button></div>
 	<div class="span col-md-8 ">16.총     합 : <span id="paytotal"></span>원</div>
@@ -125,7 +127,7 @@
 <input type="text" name="fk_pet_UID" value="${chartmap.fk_pet_UID}"/>
 <input type="text" name="fk_idx" value="${chartmap.fk_idx}"/>
 <input type="text" name="fk_idx_biz" value="${chartmap.fk_idx_biz}"/>
-<input type="text" name="chart_UID" value="${chart_UID}"/>
+<input type="text" name="chart_UID" value="${chartmap.chart_UID}"/>
 <input type="text" name="chart_type" value="${chartmap.reservation_type}"/>
 <input type="text" name="bookingdate" value="${chartmap.bookingdate}"/>
 <input type="text" name="reservation_DATE" value="${chartmap.reservation_DATE}"/>

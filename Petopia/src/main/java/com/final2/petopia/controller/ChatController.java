@@ -1,9 +1,6 @@
 package com.final2.petopia.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.final2.petopia.model.ChatVO;
@@ -90,7 +86,7 @@ public class ChatController extends TextWebSocketHandler{
 	// code에 따라 접속 
 	@RequestMapping(value="/viewcode.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, String> viewcode(HttpServletRequest req, HttpServletResponse res) throws Throwable {
+	public HashMap<String, Object> viewcode(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
 		HttpSession session = req.getSession();
 		
@@ -101,9 +97,9 @@ public class ChatController extends TextWebSocketHandler{
 			/*String idx_biz = String.valueOf(loginuser.getIdx());*/
 			String idx = service.viewidx(usercode);
 			String code = service.viewcode(usercode);
-			String fk_userid = service.selectend(idx);
-			String fk_name_biz = service.selectend(idx);
-			String fk_docname = service.selectend(idx);
+			String fk_userid = service.viewuserid(idx);
+			String fk_name_biz = service.viewname_biz(idx);
+			String fk_docname = service.viewdocname(idx);
 			
 			System.out.println(idx);
 			System.out.println(code);
@@ -112,7 +108,7 @@ public class ChatController extends TextWebSocketHandler{
 			System.out.println(fk_docname);
 			
 			
-			HashMap<String, String> returnMap = new HashMap<String, String>();
+			HashMap<String, Object> returnMap = new HashMap<String, Object>();
 		
 			returnMap.put("idx", idx);
 			returnMap.put("code", code);
@@ -132,7 +128,7 @@ public class ChatController extends TextWebSocketHandler{
 		
 			String code = service.viewcode(usercode);
 			
-			HashMap<String, String> returnMap = new HashMap<String, String>();
+			HashMap<String, Object> returnMap = new HashMap<String, Object>();
 			
 			returnMap.put("code", code);
 			

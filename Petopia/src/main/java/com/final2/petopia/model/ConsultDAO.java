@@ -153,10 +153,15 @@ public class ConsultDAO implements InterConsultDAO {
 	}
 
 	
-
 	
-
+	// 관리자 -------------------------------------------------------------------------------------
 	
+	// - [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select
+	@Override
+	public List<ConsultVO> selectAdminConsultListPaging(HashMap<String, String> paraMap) {
+		List<ConsultVO> AdminConsultList = sqlsession.selectList("consult.selectAdminConsultListPaging", paraMap);
+		return AdminConsultList;
+	}
 	
 	
 

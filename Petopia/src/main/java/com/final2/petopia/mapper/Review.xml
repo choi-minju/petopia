@@ -4,17 +4,20 @@
 <mapper namespace="review">
 	<!-- === 2019.01.28 ==== 리스트 하는 중... -->
 	<!-- 병원 리스트 카운트 - 기간이 없는 -->
+	<!-- === 2019.01.31 === -->
 	<select id="selectTotalCount" parameterType="HashMap" resultType="int">
 		select count(*) from chart
-		where fk_idx = #{IDX}
+		where fk_idx = #{IDX} and fk_reservation_UID is not null
 	</select>
 	
 	<!-- 병원 리스트 카운트 - 기간이 있는 -->
 	<select id="selectTotalCountByPeriod" parameterType="HashMap" resultType="int">
 		select count(*)
 		from chart
-		where fk_idx = #{IDX} and trunc(months_between(sysdate, reservation_DATE)) <![CDATA[<]]> #{PERIOD}
+		where fk_idx = #{IDX} and fk_reservation_UID is not null
+			and trunc(months_between(sysdate, reservation_DATE)) <![CDATA[<]]> #{PERIOD}
 	</select>
+	<!-- === 2019.01.31 === -->
 	
 	<!-- === 2019.01.29 === -->
 	<!-- 병원 리스트를 담는 HashMap -->
@@ -137,4 +140,34 @@
 		where review_UID = #{review_UID}
 	</update>
 	<!-- === 2019.01.30 ==== 끝 -->
+	
+	<!-- === 2019.01.31 ==== -->
+	<!-- *** 전체 리뷰 목록 보기 *** -->
+	<resultMap type="HashMap" id="reviewListMap">
+		<result property="REVIEW_UID"			column="review_UID"			javaType="String"/>
+		<result property="FK_NICKNAME"			column="fk_nickname"		javaType="String"/>
+		<result property="NAME"					column="name"				javaType="String"/>
+		<result property="FK_USERID"			column="fk_userid"			javaType="String"/>
+		<result property="STARTPOINT"			column="startpoint"			javaType="String"/>
+		<result property="RV_WRITEDATE"			column="rv_writedate"		javaType="String"/>
+	</resultMap>
+	
+	<!-- 기간X검색X -->
+	<select id="selectReviewList" parameterType="HashMap" resultMap="reviewListMap">
+		select review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		from
+		(
+		    select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		    from
+		    (
+		        select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, a.rv_writedate
+		        from review a JOIN member b
+		        ON a.fk_idx_biz = b.idx
+		        where rv_status = 1
+		        order by rv_writedate desc
+		    ) V
+		)
+		where rno between #{STARTRNO} and #{ENDRNO}
+	</select>
+	<!-- === 2019.01.31 ==== -->
 </mapper>
