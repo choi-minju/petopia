@@ -16,6 +16,7 @@ show user;
 -- [190128] 양방향 메세지, 시간 삭제;; 호환
 -- [190129] 1; 예약 리스트에 필요한 view; 수미
 -- [190129] 2; chart 테이블에 fk_reservation_UID 추가; 혜원
+-- [190130] 오라클DB; notification 테이블 not_URL 컬럼 default값 변경;지민
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -690,6 +691,9 @@ add not_time DATE default sysdate NOT NULL; -- 예약알림 예정시간
 alter table notification
 add not_URL VARCHAR2(200) default 'http://localhost:9090/petopia/alarm.pet' NOT NULL; -- 이동url
 
+-- 190130
+alter table notification
+modify not_URL 'http://localhost:9090/petopia/notificationList.pet';
 
 create sequence seq_notification_UID --알람
 start with 1
