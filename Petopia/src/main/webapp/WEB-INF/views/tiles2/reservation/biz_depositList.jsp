@@ -25,7 +25,6 @@
   cursor: default;
 }
 
-
 /* [190131] 모달 css 추가 */
 /* The Modal (background) */
 .modal {
@@ -111,7 +110,6 @@
 	font-weight: bold;
 }
 </style>
-<%-- [190126] 일반회원 예치금 목록 --%>
 <script type="text/javascript">
 	$(document).ready(function(){
 		all("1");
@@ -125,7 +123,7 @@
 		});
 		
 		$("#used").click(function(){
-			used("1");	// [190129] 함수 수정
+			used("1");
 		});
 		
 	});
@@ -149,21 +147,15 @@
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"+
-							"<td>"+entry.showDepositStatus+"</td>"+
-							"<td>";
 					if(entry.deposit_status=="1"){
-						html += "<button type='button' class='btn btn-danger' onClick='goCancleDeposit("+entry.deposit_UID+");'>충전취소</button>";
+						html += "<td>입금</td>"+
+								"<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button></td>";
 					}
-					else if(entry.deposit_status=="3"){ // [190129] 상태 숫자 변경
-						html += "<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button>";
+					else if(entry.deposit_status=="4"){
+						html += "<td>출금완료</td><td><button type='button' class='btn btn-default' onClick='goWithdrawDetail("+entry.fk_payment_UID+");'>출금내역</button></td>";
+								
 					}
-					else if(entry.deposit_status=="2"){	// [190129] 상태 숫자 변경
-						html += "<span style='text-align: center;'>환불완료</span>";
-					}
-					else if(entry.deposit_status=="0"){ // [190129] 상태 숫자 변경
-						html += "<span style='text-align: center;'>출금완료</span>";
-					}
-					html += "</td></tr>";		
+					html += "</tr>";		
 				}); // end of each
 				$("#allContents").empty().html(html);
 				makePageBar(currentShowPageNo, "-1");
@@ -193,17 +185,10 @@
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"+
-							"<td>";
 					if(entry.deposit_status=="1"){
-						html += "<button type='button' class='btn btn-danger' onClick='goCancleDeposit("+entry.deposit_UID+");'>충전취소</button>";
+						html += "<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button></td>";
 					}
-					else if(entry.deposit_status=="3"){
-						html += "<span style='text-align: center;'>환불완료</span>";
-					}
-					else if(entry.deposit_status=="4"){
-						html += "<span style='text-align: center;'>출금완료</span>";
-					}
-					html += "</td></tr>";		
+					html += "</tr>";	
 				}); // end of each
 				$("#chargedContents").empty().html(html);
 				makePageBar(currentShowPageNo, "1");
@@ -220,7 +205,7 @@
 
 	function used(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "3"};	// [190129] 타입 숫자 변경
+						, "type": "3"};
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -233,9 +218,10 @@
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"+
-							"<td>"+
-							"<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+")'>예약상세</button>"+
-							"</td></tr>";		
+					if(entry.deposit_status=="4"){
+						html += "<td><button type='button' class='btn btn-default' onClick='goWithdrawDetail("+entry.fk_payment_UID+");'>출금내역</button></td>";
+					}
+					html += "</tr>";		
 				}); // end of each
 				$("#usedContents").empty().html(html);
 				makePageBar(currentShowPageNo, "2");
@@ -366,16 +352,16 @@
 			dataType: "JSON",
 			success: function(json){
 				$("#modal_reservation_UID").html(json.reservation_UID);
-				$("#modal_biz_name").html(json.biz_name);
+				$("#modal_name").html(json.name);
 				$("#modal_phone").html(json.phone);
 				$("#modal_pet_type").html(json.pet_type);
 				$("#modal_pet_name").html(json.pet_name);
 				$("#modal_rv_type").html(json.rv_type);
-				$("#modal_reservation_date").html(json.reservation_DATE);	// [190131] reservation_date -> reservation_DATE
+				$("#modal_reservation_date").html(json.reservation_DATE);
 				$("#modal_bookingdate").html(json.bookingdate);
 				$("#modal_reservation_status").html(json.reservation_status);
 				$("#modal_payment_date").html(json.payment_date);
-				$("#modal_payment_point").html(numberWithCommas(json.payment_point)+"point");	//[190131] 금액타입 콤마 찍기
+				$("#modal_payment_point").html(numberWithCommas(json.payment_point)+"point");
 				$("#modal_payment_pay").html(numberWithCommas(json.payment_pay)+"원");
 				$("#modal_payment_total").html(numberWithCommas(json.payment_total)+"원");
 			},// end of success
@@ -458,8 +444,6 @@
   </div>
 </div>
 
-<%-- [190130] 모달창, 자바스크립트 추가 --%>
-<%-- [190131] 모달창 내용 변경 --%>
 <div id="id01" class="modal">
   	<div class="modal-content">
 	    <div class="modal-header">
@@ -472,7 +456,7 @@
     		<div class="col-md-4" id="modal_reservation_UID"></div>
     	</div>
     	<div class="row tblrow">
-    		<div class="col-md-3 col1">병원명</div>
+    		<div class="col-md-3 col1">예약자명</div>
     		<div class="col-md-4" id="modal_biz_name"></div>
     	</div>
     	<div class="row tblrow">

@@ -243,7 +243,7 @@ public class ReviewController {
 		try {
 			period = Integer.parseInt(str_period);
 			
-			if(period != 0 || period != 1 || period != 3 || period != 6) {
+			if(period != 0 && period != 1 && period != 3 && period != 6) { // === 2019.01.30 === ||에서 &&로 수정//
 				period = 0;
 			}
 		} catch (NumberFormatException e) {
@@ -267,5 +267,120 @@ public class ReviewController {
 	} // end of public int requireLogin_selectMyReviewTotalCount(HttpServletRequest req, HttpServletResponse res)
 	
 	// === 2019.01.30 ==== //
+	
+	// === 2019.01.31 ==== //
+	// 전체리뷰를 보여주는 페이지
+	@RequestMapping(value="/allReviewList.pet", method={RequestMethod.GET})
+	public String allReviewList() {
+		
+		return "review/allReviewList.tiles2";
+	} // end of public String allReviewList()
+	
+	// 전체리뷰 목록 가져오는 ajax
+	@RequestMapping(value="/selectReviewList.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, String>> selectReviewList(HttpServletRequest req) {
+		
+		List<HashMap<String, String>> reviewList = new ArrayList<HashMap<String, String>>();
+		
+		String str_currentPageNo = req.getParameter("currentPageNo");
+		String str_period = req.getParameter("period");
+		String searchWhat = req.getParameter("searchWhat");
+		String search = req.getParameter("search");
+		
+		int sizePerPage = 10; // 한 페이지당 갯수
+		int totalCnt = 0;
+		
+		int currentPageNo = 0;
+		int period = 0;
+		
+		// 기간
+		if(str_period == null || "".equals(str_period)) {
+			str_period = "0";
+		}
+		
+		try {
+			period = Integer.parseInt(str_period);
+			
+			if(period != 0 && period != 1 && period != 3 && period != 6) { 
+				period = 0;
+			}
+		} catch (NumberFormatException e) {
+			period = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("PERIOD", String.valueOf(period));
+		paraMap.put("SEARCHWHAT", searchWhat);
+		paraMap.put("SEARCH", search);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		if(period == 0) {
+			// 기간이 없는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				//totalCnt = service.selectAllTotalCount(paraMap);
+			} else {
+				// 검색이 있는 경우
+				//totalCnt = service.selectAllTotalCountBySearch(paraMap);
+			}// end of if~else
+		} else {
+			// 기간이 있는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				//totalCnt = service.selectAllTotalCountByPeriod(paraMap);
+			} else {
+				// 검색이 있는 경우
+				//totalCnt = service.selectAllTotalCountByPeriodSearch(paraMap);
+			}// end of if~else
+		} // end of if~else
+		
+		// 총페이지
+		int totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		// 페이지번호 
+		if(str_currentPageNo == null || "".equals(str_currentPageNo)) {
+			str_currentPageNo = "1";
+		}
+		
+		try {
+			currentPageNo = Integer.parseInt(str_currentPageNo);
+			
+			if(currentPageNo < 1 || currentPageNo > totalPage) {
+				currentPageNo = 1;
+			}
+		} catch (NumberFormatException e) {
+			currentPageNo = 1;
+		}
+		
+		int startRno = ((currentPageNo-1) * sizePerPage) + 1;
+		int endRno = (currentPageNo * sizePerPage);
+		
+		paraMap.put("STARTRNO", String.valueOf(startRno));
+		paraMap.put("ENDRNO", String.valueOf(endRno));
+		
+		if(period == 0) {
+			// 기간이 없는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				reviewList = service.selectReviewList(paraMap);
+			} else {
+				// 검색이 있는 경우
+				//reviewList = service.selectReviewListBySearch(paraMap);
+			}// end of if~else
+		} else {
+			// 기간이 있는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				//reviewList = service.selectReviewListByPeriod(paraMap);
+			} else {
+				// 검색이 있는 경우
+				//reviewList = service.selectReviewListByPeriodSearch(paraMap);
+			}// end of if~else
+		} // end of if~else
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewList(HttpServletRequest req)
+	// === 2019.01.31 ==== //
 	
 }
