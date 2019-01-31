@@ -302,6 +302,7 @@
 	</insert>
 	
 	<!-- [190130] 예약 상세 페이지에 정보 resultMap  -->
+	<!-- [190131] biz_name -> name 변경 -->
 	<resultMap type="HashMap" id="rmap_reservationDetail">
 		<result property="reservation_UID" column="RESERVATION_UID" javaType="String"/>
 		<result property="fk_idx" column="FK_IDX" javaType="String"/>
@@ -313,7 +314,7 @@
 		<result property="reservation_status" column="RESERVATION_STATUS" javaType="String"/>
 		<result property="rv_type" column="RV_TYPE" javaType="String"/>
 		<result property="reservation_type" column="RESERVATION_TYPE" javaType="String"/>
-		<result property="biz_name" column="BIZ_NAME" javaType="String"/>
+		<result property="name" column="NAME" javaType="String"/>
 		<result property="phone" column="PHONE" javaType="String"/>
 		<result property="postcode" column="POSTCODE" javaType="String"/>
 		<result property="addr1" column="ADDR1" javaType="String"/>
@@ -325,13 +326,14 @@
 		<result property="payment_total" column="PAYMENT_TOTAL" javaType="String"/>
 		<result property="payment_date" column="PAYMENT_DATE" javaType="String"/>
 	</resultMap>
-	<!-- [190130] 예약 상세 페이지에 정보 select 하기 -->
-	<select id="selectRvDetailByPUID" parameterType="String" resultMap="rmap_reservationDetail">
+	
+	<!-- [190131] 예약 상세 페이지에 정보 select 하기 (member) -->
+	<select id="selectRvDetailByPUIDForMember" parameterType="String" resultMap="rmap_reservationDetail">
 		select r.reservation_UID, r.fk_idx, r.fk_idx_biz, r.fk_schedule_UID, r.fk_pet_UID, to_char(r.bookingdate, 'yyyy-mm-dd hh24:mi') as bookingdate
         , to_char(r.reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, r.reservation_status
         , decode(r.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as rv_type
 		, r.reservation_type
-		, m.name as biz_name, m.phone, postcode, addr1, addr2, pet_name, decode(pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
+		, m.name, m.phone, postcode, addr1, addr2, pet_name, decode(pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
         , payment_pay*-1 as payment_pay, payment_point, payment_total, to_char(payment_date, 'yyyy-mm-dd hh24:mi') as payment_date
 		from deposit d join payment p
 		on d.fk_payment_UID = p.payment_UID
@@ -343,6 +345,25 @@
 		on i.pet_UID = r.fk_pet_UID
 		join biz_info b
 		on b.idx_biz = r.fk_idx_biz
+		where d.depositcoin!=0 and p.payment_UID=#{payment_UID}
+	</select>
+	
+	<!-- [190131] 예약 상세 페이지에 정보 select 하기 (biz)-->
+	<select id="selectRvDetailByPUIDForBiz" parameterType="String" resultMap="rmap_reservationDetail">
+		select r.reservation_UID, r.fk_idx, r.fk_idx_biz, r.fk_schedule_UID, r.fk_pet_UID, to_char(r.bookingdate, 'yyyy-mm-dd hh24:mi') as bookingdate
+        , to_char(r.reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, r.reservation_status
+        , decode(r.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as rv_type
+		, r.reservation_type
+		, m.name, m.phone, pet_name, decode(pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
+        , payment_pay*-1 as payment_pay, payment_point, payment_total, to_char(payment_date, 'yyyy-mm-dd hh24:mi') as payment_date
+		from deposit d join payment p
+		on d.fk_payment_UID = p.payment_UID
+		join reservation r
+		on r.reservation_UID = p.fk_reservation_UID
+		join member m
+		on m.idx=r.fk_idx
+		join pet_info i
+		on i.pet_UID = r.fk_pet_UID
 		where d.depositcoin!=0 and p.payment_UID=#{payment_UID}
 	</select>
 </mapper>

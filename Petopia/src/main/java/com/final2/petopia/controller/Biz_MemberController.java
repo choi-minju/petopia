@@ -119,9 +119,26 @@ public class Biz_MemberController {
 	@RequestMapping(value="/bizDetail.pet", method={RequestMethod.GET})
 	public String bizDetail(HttpServletRequest req) {
 		
-		/*String idx_biz = req.getAttribute("idx_biz");*/
+		String idx_biz = req.getParameter("idx_biz");
+		req.setAttribute("idx_biz", idx_biz);
 		
-		return "join/bizDetail.tiles1";
+		// 1. 기업회원 vo 객체가져오기
+		Biz_MemberVO bizmvo = service.selectBizMemberVOByIdx_biz(idx_biz);
+		req.setAttribute("bizmvo", bizmvo);
+		
+		// 2. 태그목록가져오기
+		List<String> tagList = service.selectBizTagList(idx_biz);
+		req.setAttribute("tagList", tagList);
+		
+		// 3. 의료진가져오기
+		List<HashMap<String, String>> docList = service.selectDocList(idx_biz);
+		req.setAttribute("docList", docList);
+		
+		// 4. 기업추가이미지
+		List<String> imgList = service.selectBizImgList(idx_biz);
+		req.setAttribute("imgList", imgList);
+		
+		return "biz/bizDetail.tiles2";
 	} // end of public String bizDetail()
 
 	

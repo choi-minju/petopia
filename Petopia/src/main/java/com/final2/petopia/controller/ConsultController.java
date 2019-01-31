@@ -457,16 +457,6 @@ public class ConsultController {
 		String cscmt_contents = req.getParameter("cscmt_contents");
 		String fk_consult_UID = req.getParameter("fk_consult_UID");
 	
-		/*
-		System.out.println("fk_cmt_id : "+fk_cmt_id);
-		System.out.println("fk_idx : "+fk_idx);
-		System.out.println("str_cscmt_group : "+str_cscmt_group);
-		System.out.println("str_cscmt_g_odr : "+str_cscmt_g_odr);
-		System.out.println("str_cscmt_depth : "+str_cscmt_depth);
-		System.out.println("cscmt_nickname : "+cscmt_nickname);
-		System.out.println("cscmt_contents : "+cscmt_contents);
-		System.out.println("fk_consult_UID : "+fk_consult_UID);
-		*/
 		commentvo.setFk_cmt_id(fk_cmt_id);
 		commentvo.setFk_idx(fk_idx);
 		commentvo.setCscmt_group(Integer.parseInt(str_cscmt_group));
@@ -491,11 +481,99 @@ public class ConsultController {
 	
 	// 1:1상담 관리자 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	// 1:1상담 글쓰기 페이지 요청 -------------------------------------------------------------------------------------------
+	// 1:1상담 목록 관리자 페이지 요청 -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/adminConsultList.pet", method= {RequestMethod.GET})
-	public String requireLogin_adminConsultList(HttpServletRequest req, HttpServletResponse res) {
-		return "consult/adminConsultList.tiles2";
+	public String requireLoginAdmin_adminConsultList(HttpServletRequest req, HttpServletResponse res) {
+		
+		List<ConsultVO> AdminConsultList = null;
+		
+		String colname = req.getParameter("colname");
+		String search = req.getParameter("search");
+		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
+		
+	
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("COLNAME", colname);
+		paraMap.put("SEARCH", search);
+		
+		
+		int totalCount = 0;			// 총게시물 갯수
+		int sizePerPage = 10;		// 한 페이지당 보여줄 게시물 갯수
+		int currentShowPageNo = 0;	// 현재 보여주는 페이지번호
+		int totalPage = 0; 			// 총페이지수 (웹브라우저상에 보여줄 총 페이지 갯수)
+		
+		int startRno = 0; 			// 시작행번호
+		int endRno = 0; 			// 끝행번호
+		
+		int blockSize = 10;// '페이지바'에 보여줄 페이지의 갯수 
+		
+		// - [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
+		if(search!=null && !search.trim().equals("") && !search.trim().equals("null")) {
+			totalCount = service.selectAdminTotalCountWithSearch(paraMap);
+		}
+	 	// - [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
+		else {
+			totalCount = service.selectAdminTotalCountNoSearch();
+		}
+		
+		totalPage = (int)Math.ceil((double)totalCount/sizePerPage);
+		
+		
+		// 게시판 목록보기 첫화면 (현재페이지번호가 없을경우)
+		if(str_currentShowPageNo==null) {
+			currentShowPageNo = 1;
+		}
+		// 게시판 목록보기 특정페이지번호를 보고자 하는 경우
+		else {
+			try {
+				currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+				
+				if(currentShowPageNo<1 || currentShowPageNo>totalPage) { // 페이지가없는 번호를 칠경우
+					currentShowPageNo = 1;
+				}
+			}
+			catch (NumberFormatException e) { // 문자칠경우
+				currentShowPageNo = 1;
+			}
+		}
+		
+		startRno = ((currentShowPageNo-1)*sizePerPage) + 1;
+		endRno = startRno + sizePerPage - 1;
+		
+		paraMap.put("STARTRNO", String.valueOf(startRno));
+		paraMap.put("ENDRNO", String.valueOf(endRno));
+		
+		// - [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select
+		AdminConsultList = service.selectAdminConsultListPaging(paraMap);
+		
+		String pagebar = "<ul>";	
+		pagebar += MyUtil.getPageBarWithSearch(sizePerPage, blockSize, totalPage, currentShowPageNo, colname, search, null, "adminConsultList.pet");
+		pagebar += "</ul>";
+		
+		HttpSession session = req.getSession();
+		session.setAttribute("readCountPermission", "yes");
+		
+		req.setAttribute("AdminConsultList", AdminConsultList);
+		
+		req.setAttribute("colname", colname);
+		req.setAttribute("search", search);
+		req.setAttribute("pagebar", pagebar);
+		
+		String goBackURL = MyUtil.getCurrentURL(req);
+		//System.out.println("goBackURL : "+goBackURL);
+		
+		req.setAttribute("goBackURL", goBackURL);
+		
+		return "admin/consult/adminConsultList.tiles2";
+		
 	}
+	
+	// 1:1상담 상세보기 -----------------------------------------------------------------------------------------------------
+		@RequestMapping(value="/AdminConsultDetail.pet", method= {RequestMethod.GET})
+		public String requireLoginAdmin_AdminConsultDetail(HttpServletRequest req, HttpServletResponse res) {
+			
+			return "admin/consult/adminConsultDetail.tiles2";
+		}
 	
 	
 }

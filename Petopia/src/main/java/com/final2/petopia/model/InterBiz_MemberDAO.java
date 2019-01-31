@@ -31,6 +31,18 @@ public interface InterBiz_MemberDAO {
 	
 	// doctors 테이블 insert
 	int insertDoctor(List<HashMap<String, String>> docList);
+	
+	// 상세페이지 기업이름
+	Biz_MemberVO selectBizMemberVOByIdx_biz(String idx_biz);
+	
+	// 태그목록가져오기
+	List<String> selectBizTagList(String idx_biz);
+	
+	// 의료진가져오기
+	List<HashMap<String, String>> selectDocList(String idx_biz);
+	
+	// 기업추가이미지
+	List<String> selectBizImgList(String idx_biz);
 
 	
 

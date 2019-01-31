@@ -47,5 +47,14 @@ public interface InterChartDAO {
 
 	HashMap<String, String> selectPreinfo(HashMap<String, String> map2); //셀렉트창에서 처방전 내용가져오기 
 
+	//0131 예약번호로 차트번호 알아오기 
+	String getChartuidbyruid(String ruid);
+
+	int Updatechart(HashMap<String, String> map);//병원페이지에서 차트 수정하기
+
+	int Updatepre(HashMap<String, String> map);//0131병원페이지에서 차트 수정시 처방전 수정
+
+	List<HashMap<String, String>> selectPre(HashMap<String, String> map);//병원 차트페이지에서 처방전 부분 
+
 
 }

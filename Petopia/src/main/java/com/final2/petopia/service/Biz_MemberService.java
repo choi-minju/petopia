@@ -1,5 +1,7 @@
 package com.final2.petopia.service;
 
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.final2.petopia.common.AES256;
 import com.final2.petopia.model.Biz_MemberVO;
 import com.final2.petopia.model.InterBiz_MemberDAO;
 
@@ -18,6 +21,9 @@ public class Biz_MemberService implements InterBiz_MemberService {
 	
 	@Autowired
 	private InterBiz_MemberDAO dao;
+	
+	@Autowired
+	private AES256 aes;
 
 	@Override
 	public List<HashMap<String, String>> selectRecommendTagList() {
@@ -446,6 +452,50 @@ public class Biz_MemberService implements InterBiz_MemberService {
 		
 		return result;	
 	}
+
+	@Override
+	public Biz_MemberVO selectBizMemberVOByIdx_biz(String idx_biz) {
 		
+		Biz_MemberVO bizmvo = dao.selectBizMemberVOByIdx_biz(idx_biz);
+		
+		try {
+			bizmvo.setPhone(aes.decrypt(bizmvo.getPhone()));
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return bizmvo;
+	}
+	
+	// 태그목록가져오기
+	@Override
+	public List<String> selectBizTagList(String idx_biz) {
+		
+		List<String> tagList = dao.selectBizTagList(idx_biz);
+		
+		return tagList;
+	}
+	
+	
+	// 의료진가져오기
+	@Override
+	public List<HashMap<String, String>> selectDocList(String idx_biz) {
+		
+		List<HashMap<String, String>> docList = dao.selectDocList(idx_biz);
+		
+		return docList;
+	}
+	
+	
+	// 기업추가이미지
+	@Override
+	public List<String> selectBizImgList(String idx_biz) {
+		
+		List<String> imgList = dao.selectBizImgList(idx_biz);
+		
+		return imgList;
+	}
 	
 }

@@ -4,9 +4,6 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.final2.petopia.model.InterChatDAO;
 
@@ -51,7 +48,7 @@ public class ChatService implements InterChatService {
 	
 	// 정보 insert
 	@Override
-	public int insertall(HashMap<String, String> returnMap) throws Throwable {
+	public int insertall(HashMap<String, Object> returnMap) throws Throwable {
 		
 		int n = 0;
 		
@@ -59,17 +56,37 @@ public class ChatService implements InterChatService {
 		
 		return n;
 	}
-	
-	// idx에 따라 회원정보 가져오기 
+
 	@Override
-	public String selectend(String idx) {
+	public String viewuserid(String idx) {
 		
 		String n = "";
 		
-		n = dao.selectend(idx);
+		n = dao.viewuserid(idx);
 		
 		return n;
 	}
+
+	@Override
+	public String viewname_biz(String idx) {
+		
+		String n = "";
+		
+		n = dao.viewname_biz(idx);
+		
+		return n;
+	}
+
+	@Override
+	public String viewdocname(String idx) {
+		
+		String n = "";
+		
+		n = dao.viewdocname(idx);
+		
+		return n;
+	}
+	
 	
 	
 }

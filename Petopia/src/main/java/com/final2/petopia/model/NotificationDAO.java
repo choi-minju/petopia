@@ -15,9 +15,9 @@ public class NotificationDAO implements InterNotificationDAO{
 
 	// 회원의 고유번호를 이용한 안읽은 알림 갯수 나타내기
 	@Override
-	public String selectUnreadNotificationCount(int idx) {
+	public int selectUnreadNotificationCount(int idx) {
 		
-		String unreadNotificationCount = sqlsession.selectOne("notification.selectUnreadNotificationCount", idx);
+		int unreadNotificationCount = sqlsession.selectOne("notification.selectUnreadNotificationCount", idx);
 		
 		return unreadNotificationCount;
 	}
