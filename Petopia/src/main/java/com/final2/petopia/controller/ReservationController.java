@@ -319,7 +319,7 @@ public class ReservationController {
 		reservationList = service.selectUserReservationList(paraMap);
 
 //		#120. 페이지바 만들기(MyUtil에 있는 static메소드 사용)
-		String pageBar = "<ul>";
+		String pageBar = "<ul class='pagination'>";	// 페이지바 클래스 부여
 		pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "reservationList.pet");
 		pageBar += "</ul>";
 		
@@ -383,6 +383,7 @@ public class ReservationController {
 			map.put("deposit_date", dvo.getDeposit_date());
 			map.put("showDepositStatus", dvo.getShowDepositStatus());
 			map.put("deposit_status", dvo.getDeposit_status());
+			map.put("fk_payment_UID", dvo.getFk_payment_UID()); // [190130] fk_payment_UID 추가
 			
 			mapList.add(map);
 		}
@@ -403,7 +404,7 @@ public class ReservationController {
 			type = "-1";
 		}
 		if(sizePerPage == null || "".equals(sizePerPage)) {
-			sizePerPage = "5";
+			sizePerPage = "10"; // [190130] 페이지바 수정
 		}
 		
 		HashMap<String, String> paraMap = new HashMap<String, String>();
@@ -411,12 +412,12 @@ public class ReservationController {
 		paraMap.put("type", type);
 		paraMap.put("sizePerPage", sizePerPage);
 		int totalCount = service.selectDepositListTotalCount(paraMap);
-		
+
 //		총 페이지 수 구하기
 //		ex) 57.0(행 개수)/10(sizePerPage) => 5.7 => 6.0 => 6
 //		ex2) 57.0(행 개수)/5(sizePerPage) => 11.4 => 12.0 => 12
 		int totalPage = (int)Math.ceil((double)totalCount/Integer.parseInt(sizePerPage));
-		
+
 		returnMap.put("totalPage", totalPage);
 		returnMap.put("type", Integer.parseInt(type));
 		return returnMap;
@@ -587,5 +588,63 @@ public class ReservationController {
 		
 		return "msg";
 	}
+	
+	
+//	[190130]
+//	#일반회원 예약리스트에서 예약 취소하기
+	@RequestMapping(value="goCancleReservationMember.pet", method={RequestMethod.GET})
+	public String goCancleReservationMember(HttpServletRequest req) {
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String fk_idx = String.valueOf(loginuser.getIdx());
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		String reservation_UID = req.getParameter("reservation_UID");
+		String fk_schedule_UID = req.getParameter("fk_schedule_UID");
+		String reservation_status = req.getParameter("reservation_status");
+		String reservation_type = req.getParameter("reservation_type");
+
+		paraMap.put("reservation_UID", reservation_UID);
+		paraMap.put("fk_schedule_UID", fk_schedule_UID);
+		paraMap.put("fk_idx", fk_idx);
+		paraMap.put("reservation_status", reservation_status);
+		paraMap.put("reservation_type", reservation_type);
+		
+		int result = 0;
+		if(reservation_status.equals("2") && reservation_type.equals("3")) {
+			result = service.updateRvAndScdStatusCancleForSurgery(paraMap);
+		}
+		else {
+			result = service.updateRvAndScdStatusCancle(paraMap);
+		}
+		
+		String msg = "";
+		String loc = "";
+		if(result==1) {
+			msg="일정 취소 완료";
+			loc="javascript:location.href='"+req.getContextPath()+"/reservationList.pet'";
+		}
+		else {
+			msg="일정 취소 실패";
+			loc="javascript:history.back();";
+		}
+			
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	}
+
+//	#예약 상세 보기
+	@RequestMapping(value="reservationDetail.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public HashMap<String, String> reservationDetail(HttpServletRequest req) {	
+		String payment_UID = req.getParameter("payment_UID");
+		
+		HashMap<String, String> resultMap = service.selectRvDetailByPUID(payment_UID);
+		
+		return resultMap;
+	}
+	
 	
 }

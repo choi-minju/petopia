@@ -81,10 +81,10 @@ public class ChartService implements InterChartService {
 			int n =dao.insertChart(cvo);
 			return n;
 		}
-        //0128 병원페이지에서 처방전 인서트하기
+        //0128 0130 병원페이지에서 처방전 인서트하기
 		@Override
-		public int insertPre(ChartVO cvo) {
-			int n = dao.insertPre(cvo);
+		public int insertPre(List<HashMap<String, String>> mlist) {
+			int n = dao.insertPre(mlist);
 			return n;
 		}
         //처방전인서트 성공하면 예약스테이터스 변경하기
@@ -101,8 +101,8 @@ public class ChartService implements InterChartService {
 		}
 		//차트번호 불러오기 
 		@Override
-		public String getChartuid(String ruid) {
-			String cuid = dao.getChartuid(ruid);
+		public String getChartuid() {
+			String cuid = dao.getChartuid();
 			return cuid;
 		}
 		//처방전번호 알아오기 
@@ -125,6 +125,7 @@ public class ChartService implements InterChartService {
 			return pmap;
 		}
 
+		
 
 
 

@@ -28,14 +28,18 @@ import com.final2.petopia.service.InterChatService;
 @Component
 public class ChatController extends TextWebSocketHandler{
 	
-	private List<WebSocketSession> connectedUsers = new ArrayList<WebSocketSession>();
-	
 	@Autowired
 	private InterChatService service;
 	
 	//화상진료인트로
 	@RequestMapping(value="/chat.pet", method= {RequestMethod.GET})
 	public String requireLogin_chatview(HttpServletRequest req, HttpServletResponse res) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String MemberType = loginuser.getMembertype();
+		
+		req.setAttribute("MemberType", MemberType);
 		
 		return "chat/chatview.tiles2";
 	}
@@ -67,7 +71,7 @@ public class ChatController extends TextWebSocketHandler{
 		int idx = loginuser.getIdx();
 		
 		Random rnd = new Random();
-		String randomStr = String.valueOf(rnd.nextInt(100000));
+		String randomStr = String.valueOf(rnd.nextInt(100000))+"-"+idx;
 		
 		session.setAttribute("chatcode", randomStr);
 		chatvo.setChatcode(randomStr);
@@ -88,16 +92,52 @@ public class ChatController extends TextWebSocketHandler{
 	@ResponseBody
 	public HashMap<String, String> viewcode(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
+		HttpSession session = req.getSession();
+		
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		String usercode = req.getParameter("code");
 		
-		String code = service.viewcode(usercode);
+		if(loginuser.getMembertype().equals("2")) {
+			/*String idx_biz = String.valueOf(loginuser.getIdx());*/
+			String idx = service.viewidx(usercode);
+			String code = service.viewcode(usercode);
+			String fk_userid = service.selectend(idx);
+			String fk_name_biz = service.selectend(idx);
+			String fk_docname = service.selectend(idx);
+			
+			System.out.println(idx);
+			System.out.println(code);
+			System.out.println(fk_userid);
+			System.out.println(fk_name_biz);
+			System.out.println(fk_docname);
+			
+			
+			HashMap<String, String> returnMap = new HashMap<String, String>();
 		
-		HashMap<String, String> returnMap = new HashMap<String, String>();
+			returnMap.put("idx", idx);
+			returnMap.put("code", code);
+			returnMap.put("fk_userid", fk_userid);
+			returnMap.put("fk_name_biz", fk_name_biz);
+			returnMap.put("fk_docname", fk_docname);
+			
+			int result = service.insertall(returnMap);
+			if(result != 1) {
+				String msg = "";
+				msg = "정보 insert 실패";
+				req.setAttribute("msg", msg);
+			}
+			return returnMap;
+		}
+		else {
 		
-		returnMap.put("code", code);
-		
-		return returnMap;
-		
+			String code = service.viewcode(usercode);
+			
+			HashMap<String, String> returnMap = new HashMap<String, String>();
+			
+			returnMap.put("code", code);
+			
+			return returnMap;
+		}
 	}
 	
 	//코드 입력
@@ -111,33 +151,7 @@ public class ChatController extends TextWebSocketHandler{
 		
 		return "chat/videocode.notiles";
 	}
-	/*
-	//채팅 종료
-	@RequestMapping(value="/chatend.pet", method= {RequestMethod.GET})
-	@ResponseBody
-	public HashMap<String, String> chatend(WebSocketSession wsession, HttpServletRequest req, HttpServletResponse res) throws Throwable {
 	
-		HashMap<String, String> map = new HashMap<String, String>();
-		
-		HttpSession session = req.getSession();
-		
-		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
-		int idx = loginuser.getIdx();
-		System.out.println(idx);
-		
-		Map<String, Object> wmap = wsession.getAttributes();
-    	MemberVO wloginuser = (MemberVO)wmap.get("loginuser");
-		int widx = wloginuser.getIdx();
-    	System.out.println(widx);
-		
-		map.put("bizidx", value);
-		map.put("memberidx", String.valueOf(idx));
-		
-		int result = service.chatend(map);
-		
-		return map;
-	}
-	*/
 	
 	
 }
