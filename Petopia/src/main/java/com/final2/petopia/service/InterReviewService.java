@@ -30,4 +30,13 @@ public interface InterReviewService {
 	int updateReviewStatusByReviewUID(int review_UID);
 	// === 2019.01.30 ==== //
 	
+	// === 2019.01.31 ==== //
+	// *** 전체 리뷰 갯수 *** //
+	//int selectAllTotalCount(); // 기간X검색X 
+	
+	// *** 전체 리뷰 목록 보기 *** //
+	List<HashMap<String, String>> selectReviewList(HashMap<String, String> paraMap); // 기간X검색X
+	// === 2019.01.31 ==== //
+	
+	
 }
