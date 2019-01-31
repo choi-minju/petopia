@@ -56,6 +56,17 @@ public interface InterConsultService {
 	// 댓글 총 갯수
 	int selectCommentTotalCount(HashMap<String, String> paraMap);
 
+	// 관리자 -------------------------------------------------------------------------------------
+	
+	// [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
+	int selectAdminTotalCountWithSearch(HashMap<String, String> paraMap);
+
+	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
+	int selectAdminTotalCountNoSearch();
+
+	// - [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select
+	List<ConsultVO> selectAdminConsultListPaging(HashMap<String, String> paraMap);
+
 	
 
 	

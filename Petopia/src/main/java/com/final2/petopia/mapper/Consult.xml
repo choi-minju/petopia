@@ -203,5 +203,27 @@
 	where cscmt_del = 1 and cscmt_group = #{cscmt_group} and fk_cmt_id != #{fk_cmt_id} and cscmt_g_odr >= #{cscmt_g_odr}
 </update>
 
+<!-- 관리자 -->
+
+<!-- [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select -->
+<select id="selectAdminConsultListPaging" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultVO">
+	select consult_UID, fk_idx, name, userid, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret, commentCount
+	from 
+	(
+	    select rownum AS RNO, consult_UID, fk_idx, name, userid, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret, commentCount
+	    from
+	    (
+	        select consult_UID, fk_idx, M.name, M.userid, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret, commentCount
+			from consult C JOIN member M
+			on C.fk_idx = M.idx
+			order by consult_UID asc
+	    )
+	    where 1=1
+	    <if test='SEARCH != null and SEARCH != "" and SEARCH != "null" '>
+	    and ${COLNAME} like '%'||#{SEARCH}||'%'
+	    </if>
+	) T
+	where RNO between #{STARTRNO} and #{ENDRNO}
+</select>
 
 </mapper>
