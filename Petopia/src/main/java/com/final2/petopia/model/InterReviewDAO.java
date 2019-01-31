@@ -20,4 +20,15 @@ public interface InterReviewDAO {
 	int insertReviewByReviewMap(HashMap<String, String> reviewMap); // review 테이블에 insert
 	// === 2019.01.29 ==== //
 	
+	// === 2019.01.30 ==== //
+	// *** 예약코드로 리뷰 보기 *** //
+	HashMap<String, String> selectMyReviewByReservationUID(int fk_reservation_UID);
+	
+	// *** 리뷰번호로 리뷰 수정하기 *** //
+	int updateReviewByReviewUID(HashMap<String, String> paraMap);
+	
+	// *** 리뷰번호로 리뷰 삭제하기 *** //
+	int updateReviewStatusByReviewUID(int review_UID);
+	// === 2019.01.30 ==== //
+	
 }

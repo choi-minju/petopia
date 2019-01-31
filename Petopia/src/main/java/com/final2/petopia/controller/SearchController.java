@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,16 +168,27 @@ public class SearchController {
 	}
 	
 	@RequestMapping(value="requireLogin_search.pet", method= {RequestMethod.GET})
-	public String requireLogin_search(HttpServletRequest req) {
+	public String requireLogin_search(HttpServletRequest req, HttpServletResponse res) {
 
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
-		
 		int loginuser_idx = loginuser.getIdx();
+		System.out.println(loginuser_idx);
+		String orderbyNo = "1";
 		
+		List<Biz_MemberVO> bizmemList = service.getBizmemListByidx(loginuser_idx, orderbyNo);
+
+		int cnt = service.getCntForRecomm(loginuser_idx);
 		
+		Gson gson = new Gson();
+		String gson_bizmemList = gson.toJson(bizmemList);
 		
-		return "";
+		req.setAttribute("cnt", cnt);
+		req.setAttribute("gson_bizmemList", gson_bizmemList);
+		req.setAttribute("bizmemList", bizmemList);
+
+		return "search/index.tiles2";
+	
 	}
 
 }

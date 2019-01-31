@@ -2,6 +2,10 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>	
 
+<link rel="stylesheet" href="//mugifly.github.io/jquery-simple-datetimepicker/jquery.simple-dtpicker.css">
+<script src="//code.jquery.com/jquery.min.js"></script>
+<script src="//mugifly.github.io/jquery-simple-datetimepicker/jquery.simple-dtpicker.js"></script>
+
 <style type="text/css">
 	
 	form {
@@ -36,8 +40,12 @@
 
 <script type="text/javascript">
 
+	$(function(){
+		$('.datetimepicker').appendDtpicker({'locale':'ko'});
+	});
+
 	$(document).ready(function() {
-		
+/*		
 		$(".datepicker").datepicker({
 		      dateFormat:"yy/mm/dd",
 		      dayNamesMin:["일", "월", "화", "수", "목", "금", "토"],
@@ -48,15 +56,15 @@
 		         $(".datepicker").append(arr[1]);
 		         $(".datepicker").append(arr[2]);
 		      }
-		      });
-		
+	      });
+*/		
 		$("#caertype").val("${fk_caretype_UID}");
 		
 		getCaretype_info();
 		
 		$("#caertype").bind("change", function() {
 			getCaretype_info();
-		}); // #타입이 채운 이후 -> 주문량을 채운다.
+		});
 
 		// 등록버튼
 		$("#btnRegister").click(function() {
@@ -89,7 +97,7 @@
 				var html = "";
 
 				$.each(json, function(entryIndex, entry) {
-					html += "<div style='padding: 10px; border: 1px solid gray;'>" + entry.CARETYPE_INFO + "</div>";
+					html += "<div style='padding: 10px; border: 1px solid gray;'>" + entry.PETWEIGHT_UID + "</div>";
 				});
 
 				$("#displayCaretype_info").append(html);
@@ -180,9 +188,9 @@
 						<div class="row"> 
 							<div class="col-sm-12">
 								<div style="padding: 0px;">시작 일시</div>
-								<div class="col-sm-4" style="display: inline-block;"><input type="text" id="" class="form-control input-md short datepicker date" name="care_start" autocomplete="off" /></div>
+								<div class="col-sm-4" style="display: inline-block;"><input type="text" id="care_start" class="datetimepicker date" name="care_start" autocomplete="off" /></div>
 								<div class="col-sm-4" align="center" style="display: inline-block;"><i class="fa fa-angle-double-right" style="font-size: 30pt;"></i></div>
-								<div class="col-sm-4" style="display: inline-block;"><input type="text" id="" class="form-control input-md short datepicker date" name="care_end" autocomplete="off" /></div>	
+								<div class="col-sm-4" style="display: inline-block;"><input type="text" id="care_end" class="datetimepicker date" name="care_end" autocomplete="off" /></div>	
 							</div>
 						</div>  
 	
