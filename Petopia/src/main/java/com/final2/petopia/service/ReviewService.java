@@ -91,4 +91,15 @@ public class ReviewService implements InterReviewService {
 		return result;
 	} // end of public int updateReviewStatusByReviewUID(String review_UID)
 	// === 2019.01.30 ==== //
+
+	// === 2019.01.31 ==== //
+	// *** 전체 리뷰 목록 보기 *** //
+	// 기간X검색X
+	@Override
+	public List<HashMap<String, String>> selectReviewList(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewList(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewList(HashMap<String, String> paraMap)
+	// === 2019.01.31 ==== //
 }

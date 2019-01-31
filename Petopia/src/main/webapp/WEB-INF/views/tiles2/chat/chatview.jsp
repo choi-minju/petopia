@@ -38,12 +38,12 @@
 		
 	}); // end of document.ready
 	
-	function goChat() {
+	<%-- function goChat() {
 		var frm = document.chatFrm;
 		frm.method = "GET";
 		frm.action = "<%=request.getContextPath() %>/videochat.pet";
 		frm.submit();
-	} // end of goChat();
+	} // end of goChat(); --%>
 	
 	function createcode(idx) {
 		
@@ -58,7 +58,7 @@
 			success:function(json) {
 					alert("코드가 생성 되었습니다. \n"+json.code);
 					location.reload();
-					return;
+					/* return; */
 			},
 			error:function() {
 				alert("코드생성에 실패했습니다.");

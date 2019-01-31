@@ -4,17 +4,20 @@
 <mapper namespace="review">
 	<!-- === 2019.01.28 ==== 리스트 하는 중... -->
 	<!-- 병원 리스트 카운트 - 기간이 없는 -->
+	<!-- === 2019.01.31 === -->
 	<select id="selectTotalCount" parameterType="HashMap" resultType="int">
 		select count(*) from chart
-		where fk_idx = #{IDX}
+		where fk_idx = #{IDX} and fk_reservation_UID is not null
 	</select>
 	
 	<!-- 병원 리스트 카운트 - 기간이 있는 -->
 	<select id="selectTotalCountByPeriod" parameterType="HashMap" resultType="int">
 		select count(*)
 		from chart
-		where fk_idx = #{IDX} and trunc(months_between(sysdate, reservation_DATE)) <![CDATA[<]]> #{PERIOD}
+		where fk_idx = #{IDX} and fk_reservation_UID is not null
+			and trunc(months_between(sysdate, reservation_DATE)) <![CDATA[<]]> #{PERIOD}
 	</select>
+	<!-- === 2019.01.31 === -->
 	
 	<!-- === 2019.01.29 === -->
 	<!-- 병원 리스트를 담는 HashMap -->
@@ -32,6 +35,7 @@
 	</resultMap>
 	
 	<!-- 병원 리스트 - 기간이 없는 -->
+	<!-- === 2019.01.30 ==== 조건 수정 -->
 	<select id="selectHosList" parameterType="HashMap" resultMap="hosListMap">
 		select rno, pet_profileimg, pet_name, name, fileName, reservation_date, doc_name, fk_reservation_UID, chart_type, nvl(reviewCnt, 0) AS reviewCnt
 		from 
@@ -49,10 +53,12 @@
 		(
 		    select fk_reservation_UID as fk_reservation_UID2, count(*) AS reviewCnt
 		    from review
+		    where rv_status = 1
 		    group by fk_reservation_UID
 		) T
 		ON v.fk_reservation_UID = t.fk_reservation_UID2
 		where rno between #{START} and #{END}
+		order by reservation_date desc
 	</select>
 	
 	<!-- 병원 리스트 - 기간이 있는 -->
@@ -74,12 +80,15 @@
 		(
 		    select fk_reservation_UID as fk_reservation_UID2, count(*) AS reviewCnt
 		    from review
+		    where rv_status = 1
 		    group by fk_reservation_UID
 		) T
 		ON v.fk_reservation_UID = t.fk_reservation_UID2
 		where rno between #{START} and #{END}
+		order by reservation_date desc
 	</select>
 	<!-- === 2019.01.28 ==== -->
+	<!-- === 2019.01.30 ==== 조건 수정 -->
 	
 	<!-- *** 리뷰 쓰기 *** -->
 	<!-- 리뷰를 쓸 기업 번호 알아오기 -->
@@ -95,4 +104,70 @@
 		values(seq_review_UID.nextval, #{FK_IDX_BIZ}, #{FK_IDX}, #{FK_RESERVATION_UID}, #{STARTPOINT}, #{FK_USERID}, #{FK_NICKNAME}, #{RV_CONTENTS}, 1, 0, sysdate)
 	</insert>
 	<!-- === 2019.01.29 === -->
+	
+	<!-- === 2019.01.30 ==== 시작 -->
+	<!-- *** 예약코드로 리뷰 보기 *** -->
+	<resultMap type="HashMap" id="reviewMap">
+		<result property="REVIEW_UID"			column="review_UID"			javaType="String"/>
+		<result property="FK_IDX_BIZ"			column="fk_idx_biz"			javaType="String"/>
+		<result property="FK_IDX"				column="fk_idx"				javaType="String"/>
+		<result property="FK_RESERVATION_UID"	column="fk_reservation_UID"	javaType="String"/>
+		<result property="STARTPOINT"			column="startpoint"			javaType="String"/>
+		<result property="FK_USERID"			column="fk_userid"			javaType="String"/>
+		<result property="FK_NICKNAME"			column="fk_nickname"		javaType="String"/>
+		<result property="RV_CONTENTS"			column="rv_contents"		javaType="String"/>
+		<result property="RV_STATUS"			column="rv_status"			javaType="String"/>
+		<result property="RV_BLIND"				column="rv_blind"			javaType="String"/>
+		<result property="RV_WRITEDATE"			column="rv_writeDate"		javaType="String"/>
+	</resultMap>
+	
+	<select id="selectMyReviewByReservationUID" parameterType="int" resultMap="reviewMap">
+		select review_UID, fk_idx_biz, fk_idx, fk_reservation_UID, startpoint, fk_userid, fk_nickname
+		    	, rv_contents, rv_status, rv_blind, to_char(rv_writeDate, 'yy.mm.dd') as rv_writeDate
+		from review
+		where fk_reservation_UID = #{fk_reservation_UID} and rv_status = 1
+	</select>
+	
+	<!-- *** 리뷰번호로 리뷰 수정하기 *** -->
+	<update id="updateReviewByReviewUID" parameterType="HashMap">
+		update review set startpoint = #{STARTPOINT}, rv_contents = #{RV_CONTENTS}
+		where review_UID = #{REVIEW_UID}
+	</update>
+	
+	<!-- *** 리뷰번호로 리뷰 삭제하기 *** -->
+	<update id="updateReviewStatusByReviewUID" parameterType="int">
+		update review set rv_status = 0
+		where review_UID = #{review_UID}
+	</update>
+	<!-- === 2019.01.30 ==== 끝 -->
+	
+	<!-- === 2019.01.31 ==== -->
+	<!-- *** 전체 리뷰 목록 보기 *** -->
+	<resultMap type="HashMap" id="reviewListMap">
+		<result property="REVIEW_UID"			column="review_UID"			javaType="String"/>
+		<result property="FK_NICKNAME"			column="fk_nickname"		javaType="String"/>
+		<result property="NAME"					column="name"				javaType="String"/>
+		<result property="FK_USERID"			column="fk_userid"			javaType="String"/>
+		<result property="STARTPOINT"			column="startpoint"			javaType="String"/>
+		<result property="RV_WRITEDATE"			column="rv_writedate"		javaType="String"/>
+	</resultMap>
+	
+	<!-- 기간X검색X -->
+	<select id="selectReviewList" parameterType="HashMap" resultMap="reviewListMap">
+		select review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		from
+		(
+		    select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		    from
+		    (
+		        select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, a.rv_writedate
+		        from review a JOIN member b
+		        ON a.fk_idx_biz = b.idx
+		        where rv_status = 1
+		        order by rv_writedate desc
+		    ) V
+		)
+		where rno between #{STARTRNO} and #{ENDRNO}
+	</select>
+	<!-- === 2019.01.31 ==== -->
 </mapper>

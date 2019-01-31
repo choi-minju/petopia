@@ -641,10 +641,20 @@ public class ReservationController {
 	public HashMap<String, String> reservationDetail(HttpServletRequest req) {	
 		String payment_UID = req.getParameter("payment_UID");
 		
-		HashMap<String, String> resultMap = service.selectRvDetailByPUID(payment_UID);
+//		[190131] 세션에서 멤버타입 변수 가져오기
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String membertype = loginuser.getMembertype();
+
+		HashMap<String, String> resultMap = service.selectRvDetailByPUID(payment_UID, membertype); 
 		
 		return resultMap;
 	}
 	
+	@RequestMapping(value="bizDepositAccount.pet", method= {RequestMethod.GET})
+	public String requireLogin_biz_depositList(HttpServletRequest req, HttpServletResponse res) {
+		
+		return "reservation/biz_depositList.tiles2";
+	}
 	
 }

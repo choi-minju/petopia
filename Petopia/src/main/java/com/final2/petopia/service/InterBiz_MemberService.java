@@ -41,5 +41,17 @@ public interface InterBiz_MemberService {
 	// 태그가 없고 이미지는 있고 의사도 있는 경우 회원가입
 	int insertMemberByMvoImgDoc(Biz_MemberVO bmvo, List<HashMap<String, String>> addImgmapList, String[] doctor,
 			String[] docdog, String[] doccat, String[] docsmallani, String[] docetc);
+	
+	// 상세페이지 기업명
+	Biz_MemberVO selectBizMemberVOByIdx_biz(String idx_biz);
+	
+	//태그목록가져오기
+	List<String> selectBizTagList(String idx_biz);
+	
+	// 의료진 가죠오기
+	List<HashMap<String, String>> selectDocList(String idx_biz);
+	
+	// 기업추가이미지
+	List<String> selectBizImgList(String idx_biz);
 
 }
