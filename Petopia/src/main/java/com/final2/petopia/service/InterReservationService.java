@@ -70,5 +70,5 @@ public interface InterReservationService {
 
 //	[190130]
 //	#예약 상세 페이지
-	HashMap<String, String> selectRvDetailByPUID(String payment_UID);
+	HashMap<String, String> selectRvDetailByPUID(String payment_UID, String membertype);	// [190131] membertype 추가
 }

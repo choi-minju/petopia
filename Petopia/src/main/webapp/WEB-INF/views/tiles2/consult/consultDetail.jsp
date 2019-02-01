@@ -47,14 +47,12 @@
 		$(".move").bind("mouseout", function(event){
 			 var $target = $(event.target);
 			 $target.removeClass("moveStyle");
-		});
-	
+		});	
 		
 		if(${consultvo.commentCount > 0}) {
 			goViewComment(${totalPage});
 		}
-		
-		
+	
 	}); // end of ready()-------------------------------------------
 	
 	
@@ -105,7 +103,13 @@
     			// 댓글쓰기 할때 위로 쌓이니까 prepend
     			$("#commentView").append(html);
     			frm.cscmt_contents.value = "";
-    			goViewComment(${totalPage});
+    			if(${consultvo.commentCount > 0}) {
+    				goViewComment(${totalPage});
+    			}
+    			else {
+    				goViewComment("1");
+    				location.reload();
+    			}
     			
     		},
     		error: function(request, status, error){
@@ -116,8 +120,10 @@
 	}
 
 	
+	
 	// ===== 댓글보여주기 [Ajax로 페이징처리]  ======
 	function goViewComment(currentShowPageNo) {
+		
 		
 		var form_data = {"consult_UID":"${consultvo.consult_UID}", "currentShowPageNo":currentShowPageNo};
 			
@@ -129,6 +135,7 @@
     		success:function(json){
 
     			var resultHTML = "";
+    			var idxArr = [];
     			
     		    $.each(json, function(entryIndex, entry){
     		    	
@@ -160,7 +167,7 @@
 			    			  +"		<span class='col-xs-12 col-md-12' style='margin-right:2%; margin-bottom:3%; '>"
 			    			  +"			<input type='text' name='cscmt_contents' class='long' style='text-align:left; margin:2% 0% 2% 2%; width:80%; border-radius:5px; border:1px solid #999; height:100px;'/>"
 			    			  +"    		<input type='hidden' name='fk_consult_UID' value='"+entry.FK_CONSULT_UID+"' />"
-			    			  +"    		<button type='button'  style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentByCommentAdd(\"hide"+entryIndex+"\");' >작성</button> "
+			    			  +"    		<button type='button' id='commentByComment' style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentByCommentAdd(\"hide"+entryIndex+"\");' >작성</button> "
 			    			  +" 		</span>"
 			    			  +"	</div>"
 			    			  +"</div>"
@@ -197,7 +204,7 @@
 			    			  +"		<span class='col-xs-12 col-md-12' style='margin-right:2%; margin-bottom:3%; padding-left:"+entry.CSCMT_DEPTH*30+"px; '>"
 			    			  +"			<input type='text' name='cscmt_contents' class='long' style='text-align:left; margin:2% 0% 2% 2%; width:80%; border-radius:5px; border:1px solid #999; height:100px;'/>"
 			    			  +"    		<input type='hidden' name='fk_consult_UID' value='"+entry.FK_CONSULT_UID+"' />"
-			    			  +"    		<button type='button' style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentByCommentAdd(\"hide"+entryIndex+"\");' >작성</button> "
+			    			  +"    		<button type='button' id='commentByComment' style='margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;' onClick='goCommentByCommentAdd(\"hide"+entryIndex+"\");' >작성</button> "
 			    			  +" 		</span>"
 			    			  +"	</div>"
 			    			  +"</div>"
@@ -215,6 +222,29 @@
     		    for(var i=0; i<10; i++) {
     				$("#hide"+i).slideUp();
     			}
+    		 
+    		    
+    		    $("#commentView").find("input[name='fk_idx2']").each(function(){
+    				idxArr.push(this.value);
+    		    });
+    		    console.log(idxArr);
+    		    
+    		    $.ajax({
+                    url: "<%=request.getContextPath()%>/consultList.pet",
+                    type: "GET",
+                    data: {"idxArr":idxArr},
+                    dataType: 'JSON',
+                    success: function(response){
+                        // selecting values from response Object
+                        var idxArr = response.idxArr;
+                    },
+            		error: function(request, status, error){
+        				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+        			}
+                });
+    		    
+    		    
+    		    
     		},
     		error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -260,12 +290,15 @@
 	}
 	
 	
+	
+    
 	// 대댓글쓰기
 	function goCommentByCommentAdd(id) {
 	
 		//var queryString = $("#"+id).next().find(document.commentByCommentAddFrm).serialize(); // form의 name이 addWriteFrm인것
 		//console.log(queryString);
 
+        
 		var fk_idx2val = $("#"+id).find("input[name=fk_idx2]").val();
 		var membertypeval = $("#"+id).find("input[name=membertype]").val();
 		
@@ -433,12 +466,6 @@
 		<hr align="center" width="94%" style="border:0.5px solid #b2b3b2;">
 		
 		<div class="col-xs-12 col-md-12">
-			<%--
-			<div class="col-xs-12 col-md-12">
-				<div class="col-xs-3 col-md-2">작성자</div>
-				<div style="border: 1px solid #999;" class="col-xs-9 col-md-10"> 이지예 </div>
-			</div>
-			 --%>
 			 
 			<div class="col-xs-12 col-md-12 content">
 				<div class="col-xs-1 col-md-1 content" >글제목</div>
@@ -451,11 +478,6 @@
 				</div>
 			</div>
 			
-			<%--
-			<div class="col-xs-12 col-md-12">
-				<div class="col-xs-3 col-md-2">글내용</div>
-			</div>
-			 --%>
 			<div class="col-xs-12 col-md-12 content">
 				<div class="col-xs-12 col-md-12 content" style="background-color: #F1F1F1; word-break:break-all; border: 0px solid #999; overflow-x:auto; height:auto; padding:20px; border-radius:5px; " >${consultvo.cs_contents}</div>
 			</div>
@@ -509,34 +531,31 @@
 	
 		<br/>
 		
-		
-		<!-- 기업회원, 자신이 쓴 글 작성 가능 -->
-		<%--<c:if test="${sessionScope.loginuser.membertype==2 || (sessionScope.loginuser.membertype==1 && sessionScope.loginuser.idx==consultvo.fk_idx)}"> --%>
-			<!-- ===== 원댓글쓰기 폼 추가 ===== -->
-			<form name="commentAddFrm" >
-				<div class="col-xs-12 col-md-12 " style="background-color:#F8F8F8;">
-				<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}"  readonly />
-				<input type="hidden" name="fk_idx2" value="${consultvo.fk_idx}"  readonly />
-				<input type="hidden" name="membertype" value="${sessionScope.loginuser.membertype}"  readonly />
-				<span class="col-xs-12 col-md-12 " >
-					<span style="font-weight:bold;">작성자</span>
-					<!-- 작성자가 기업회원이라면 뒤에 수의사 붙이지 않기 -->
-					<c:if test="${sessionScope.loginuser.membertype==1}">
-						<input type="text" name="cscmt_nickname" value="${sessionScope.loginuser.nickname}" style="margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F8F8F8;" readonly/>
-					</c:if>
-					<!-- 작성자가 기업회원이라면 뒤에 수의사 붙이기 -->
-					<c:if test="${sessionScope.loginuser.membertype==2}">
-						<input type="text" name="cscmt_nickname" value="${sessionScope.loginuser.nickname} 수의사" style="margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F8F8F8;" readonly/>
-					</c:if>
-				</span>
-				<span class="col-xs-12 col-md-12 " style="margin-right:2%; margin-bottom:3%; ">상담하기
-					<input type="text" name="cscmt_contents" class="long" style="text-align:left; margin:2% 0% 2% 2%; width:70%; border-radius:5px; border:1px solid #999; height:100px;"/>
-				    <!-- 댓글에 달리는 원게시물 글번호(즉, 댓글의 부모글 글번호) -->
-				    <input type="hidden" name="fk_consult_UID" value="${consultvo.consult_UID}" />
-				    <button type="button" style="margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;" onClick="goCommentAdd();" >작성</button> 
-			    </span>
-			    </div>
-			</form>
+		<!-- ===== 원댓글쓰기 폼 추가 ===== -->
+		<form name="commentAddFrm" >
+			<div class="col-xs-12 col-md-12 " style="background-color:#F8F8F8;">
+			<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}"  readonly />
+			<input type="hidden" name="fk_idx2" value="${consultvo.fk_idx}"  readonly />
+			<input type="hidden" name="membertype" value="${sessionScope.loginuser.membertype}"  readonly />
+			<span class="col-xs-12 col-md-12 " >
+				<span style="font-weight:bold;">작성자</span>
+				<!-- 작성자가 기업회원이라면 뒤에 수의사 붙이지 않기 -->
+				<c:if test="${sessionScope.loginuser.membertype==1}">
+					<input type="text" name="cscmt_nickname" value="${sessionScope.loginuser.nickname}" style="margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F8F8F8;" readonly/>
+				</c:if>
+				<!-- 작성자가 기업회원이라면 뒤에 수의사 붙이기 -->
+				<c:if test="${sessionScope.loginuser.membertype==2}">
+					<input type="text" name="cscmt_nickname" value="${sessionScope.loginuser.nickname} 수의사" style="margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F8F8F8;" readonly/>
+				</c:if>
+			</span>
+			<span class="col-xs-12 col-md-12 " style="margin-right:2%; margin-bottom:3%; ">상담하기
+				<input type="text" name="cscmt_contents" class="long" style="text-align:left; margin:2% 0% 2% 2%; width:70%; border-radius:5px; border:1px solid #999; height:100px;"/>
+			    <!-- 댓글에 달리는 원게시물 글번호(즉, 댓글의 부모글 글번호) -->
+			    <input type="hidden" name="fk_consult_UID" value="${consultvo.consult_UID}" />
+			    <button type="button" style="margin-left:1px; width:10%; border-radius:5px; border:1px solid #999; height:100px;" onClick="goCommentAdd();" >작성</button> 
+		    </span>
+		    </div>
+		</form>
 	
 	</div>
 	

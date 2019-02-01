@@ -13,7 +13,7 @@
  <select id="viewcode" parameterType="String" resultType="String">
  	select not_message
 	from notification
-	where DBMS_LOB.INSTR(not_message, #{code})>0
+	where DBMS_LOB.INSTR(not_message, #{code})>0 and rownum = 1
  </select>
 
  
@@ -21,12 +21,12 @@
  <select id="viewidx" parameterType="String" resultType="String">
     select substr(ltrim(not_message, '1234567890'),2) AS not_message
 	from notification
-	where fk_idx = 90
+	where fk_idx = 90 and rownum = 1
  </select>
  
 <!-- idx에 따라 회원정보 가져오기 -->
-  <select id="selectend" parameterType="String" resultType="String">
- 	select userid, biz_name, docname 
+  <select id="viewuserid" parameterType="String" resultType="String">
+ 	select userid 
 	from
 	(
 	    select b.name as biz_name, docname
@@ -38,14 +38,52 @@
 	(
 	    select userid
 	    from member
-	    where idx= {idx}
+	    where idx= #{idx}
 	)
-	on 1=1;
+	on 1=1
+ </select>
+ 
+ <!-- idx에 따라 회원정보 가져오기 -->
+  <select id="viewname_biz" parameterType="String" resultType="String">
+ 	select biz_name 
+	from
+	(
+	    select b.name as biz_name, docname
+	    from member b join doctors D
+	    on b.idx = d.fk_idx_biz
+	    where b.idx= 90
+	)
+	join
+	(
+	    select userid
+	    from member
+	    where idx= #{idx}
+	)
+	on 1=1
+ </select>
+ 
+ <!-- idx에 따라 회원정보 가져오기 -->
+  <select id="viewdocname" parameterType="String" resultType="String">
+ 	select docname 
+	from
+	(
+	    select b.name as biz_name, docname
+	    from member b join doctors D
+	    on b.idx = d.fk_idx_biz
+	    where b.idx= 90
+	)
+	join
+	(
+	    select userid
+	    from member
+	    where idx= #{idx}
+	)
+	on 1=1
  </select>
 
- <!-- <insert id="insertall" parameterType="HashMap">
+ <insert id="insertall" parameterType="HashMap">
  	insert into video_advice(va_UID, fk_idx, fk_idx_biz, chatcode, fk_userid, fk_name_biz, fk_docname, Time)
 	values(seq_video_advice_UID.nextval, #{idx}, 90, #{code}, #{fk_userid}, #{fk_name_biz}, #{fk_docname}, sysdate)
- </insert> --> 
+ </insert>
  
 </mapper>

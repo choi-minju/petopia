@@ -13,8 +13,13 @@ public interface InterChatService {
 
 	String viewidx(String usercode) throws Throwable; // idx 알아오기
 
-	int insertall(HashMap<String, String> returnMap) throws Throwable; //  정보 insert
+	int insertall(HashMap<String, Object> returnMap) throws Throwable; //  정보 insert
 
-	String selectend(String idx); // idx에 따라 회원정보 가져오기 
+	String viewuserid(String idx);
+
+	String viewname_biz(String idx);
+
+	String viewdocname(String idx);
+
 
 }

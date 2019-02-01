@@ -13,8 +13,12 @@ public interface InterChatDAO {
 
 	String viewidx(String usercode); // idx값 알아오기
 
-	int insertall(HashMap<String, String> returnMap); // videochat DB에 insert
+	int insertall(HashMap<String, Object> returnMap); // videochat DB에 insert
 
-	String selectend(String idx); // idx에 따라 회원정보 가져오기 
+	String viewuserid(String idx);
+
+	String viewname_biz(String idx);
+
+	String viewdocname(String idx);
 
 }

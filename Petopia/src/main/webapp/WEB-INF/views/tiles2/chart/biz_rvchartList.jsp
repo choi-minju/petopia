@@ -92,7 +92,7 @@ th{
             <input type="hidden" name="reservation_UID" value="reservation_UID"/>
           </c:if>  
            <c:if test="${rmap.reservation_status=='3'}"> <!-- 차트처방전 기록이  있으면 셀렉트  -->
-        	<button type="button" class="btn btn-rounder btnmenu" style="color: white; background-color: rgb(255, 110, 96);" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">차트</button>
+        	<button type="button" class="btn btn-rounder btnmenu" style="color: rgb(255, 110, 96); background-color: white;" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">차트</button>
             <input type="hidden" name="reservation_UID" value="reservation_UID"/>
           </c:if>
         </td>  
