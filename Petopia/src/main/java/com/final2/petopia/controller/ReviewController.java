@@ -319,19 +319,19 @@ public class ReviewController {
 			// 기간이 없는 경우
 			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
 				// 검색이 없는 경우
-				//totalCnt = service.selectAllTotalCount(paraMap);
+				totalCnt = service.selectAllTotalCount(paraMap);
 			} else {
 				// 검색이 있는 경우
-				//totalCnt = service.selectAllTotalCountBySearch(paraMap);
+				totalCnt = service.selectAllTotalCountBySearch(paraMap);
 			}// end of if~else
 		} else {
 			// 기간이 있는 경우
 			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
 				// 검색이 없는 경우
-				//totalCnt = service.selectAllTotalCountByPeriod(paraMap);
+				totalCnt = service.selectAllTotalCountByPeriod(paraMap);
 			} else {
 				// 검색이 있는 경우
-				//totalCnt = service.selectAllTotalCountByPeriodSearch(paraMap);
+				totalCnt = service.selectAllTotalCountByPeriodSearch(paraMap);
 			}// end of if~else
 		} // end of if~else
 		
@@ -366,21 +366,90 @@ public class ReviewController {
 				reviewList = service.selectReviewList(paraMap);
 			} else {
 				// 검색이 있는 경우
-				//reviewList = service.selectReviewListBySearch(paraMap);
+				reviewList = service.selectReviewListBySearch(paraMap);
 			}// end of if~else
 		} else {
 			// 기간이 있는 경우
 			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
 				// 검색이 없는 경우
-				//reviewList = service.selectReviewListByPeriod(paraMap);
+				reviewList = service.selectReviewListByPeriod(paraMap);
 			} else {
 				// 검색이 있는 경우
-				//reviewList = service.selectReviewListByPeriodSearch(paraMap);
+				reviewList = service.selectReviewListByPeriodSearch(paraMap);
 			}// end of if~else
 		} // end of if~else
 		
 		return reviewList;
 	} // end of public List<HashMap<String, String>> selectReviewList(HttpServletRequest req)
+	
+	@RequestMapping(value="/selectReviewListTotalPage.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int selectReviewListTotalPage(HttpServletRequest req) {
+		int totalPage = 0;
+		
+		String str_period = req.getParameter("period");
+		String searchWhat = req.getParameter("searchWhat");
+		String search = req.getParameter("search");
+		
+		int sizePerPage = 10; // 한 페이지당 갯수
+		int totalCnt = 0;
+		
+		int period = 0;
+		
+		// 기간
+		if(str_period == null || "".equals(str_period)) {
+			str_period = "0";
+		}
+		
+		try {
+			period = Integer.parseInt(str_period);
+			
+			if(period != 0 && period != 1 && period != 3 && period != 6) { 
+				period = 0;
+			}
+		} catch (NumberFormatException e) {
+			period = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("PERIOD", String.valueOf(period));
+		paraMap.put("SEARCHWHAT", searchWhat);
+		paraMap.put("SEARCH", search);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		if(period == 0) {
+			// 기간이 없는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				totalCnt = service.selectAllTotalCount(paraMap);
+			} else {
+				// 검색이 있는 경우
+				totalCnt = service.selectAllTotalCountBySearch(paraMap);
+			}// end of if~else
+		} else {
+			// 기간이 있는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				totalCnt = service.selectAllTotalCountByPeriod(paraMap);
+			} else {
+				// 검색이 있는 경우
+				totalCnt = service.selectAllTotalCountByPeriodSearch(paraMap);
+			}// end of if~else
+		} // end of if~else
+		
+		// 총페이지
+		totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		return totalPage;
+	} // end of public int selectReviewListTotalPage(HttpServletRequest req)
+	
+	
+	@RequestMapping(value="/reviewDetail.pet", method={RequestMethod.GET})
+	public String reviewDetail(HttpServletRequest req) {
+		
+		return "";
+	}
+	
 	// === 2019.01.31 ==== //
 	
 }
