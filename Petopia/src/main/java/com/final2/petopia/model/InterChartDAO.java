@@ -31,13 +31,13 @@ public interface InterChartDAO {
 
 	int insertChart(ChartVO cvo);//병원페이지에서 차트 입력하기 
     //0128
-	int insertPre(ChartVO cvo);// 병원페이지에서 처방전 입력하기 
+	int insertPre(List<HashMap<String, String>> mlist);// 병원페이지에서 처방전 입력하기 
 
 	void updaterstatus(String ruid);//처방전 인서트 성공하면 예약 스테이터스 변경하기 
 
 	HashMap<String, String> selectChart(HashMap<String,String> map); //병원페이지에서 차트 내용불러오기
 
-	String getChartuid(String ruid); //차트번호가져오기 
+	String getChartuid(); //차트번호가져오기 
 
 	String getPuid(HashMap<String,String> map); //처방전 번호 알아오기 
 
@@ -46,6 +46,15 @@ public interface InterChartDAO {
 	HashMap<String, String> selectpreinfobyruid(String ruid);
 
 	HashMap<String, String> selectPreinfo(HashMap<String, String> map2); //셀렉트창에서 처방전 내용가져오기 
+
+	//0131 예약번호로 차트번호 알아오기 
+	String getChartuidbyruid(String ruid);
+
+	int Updatechart(HashMap<String, String> map);//병원페이지에서 차트 수정하기
+
+	int Updatepre(HashMap<String, String> map);//0131병원페이지에서 차트 수정시 처방전 수정
+
+	List<HashMap<String, String>> selectPre(HashMap<String, String> map);//병원 차트페이지에서 처방전 부분 
 
 
 }

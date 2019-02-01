@@ -439,5 +439,25 @@ public class ReservationService implements InterReservationService{
 		}
 		return result;
 	}
+//	[190130]
+//	#예약 상세 페이지
+	@Override
+	public HashMap<String, String> selectRvDetailByPUID(String payment_UID, String membertype) {
+		HashMap<String, String> resultMap = new HashMap<String, String>();
+		if(membertype.equals("1")) {
+			resultMap = dao.selectRvDetailByPUIDForMember(payment_UID);
+		}
+		else {
+			resultMap = dao.selectRvDetailByPUIDForBiz(payment_UID);
+		}
+		
+		// [190131] 연락처 복호화
+		try {
+			resultMap.put("phone", aes.decrypt(resultMap.get("phone")));
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}
+		return resultMap;
+	}
 
 }

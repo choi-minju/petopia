@@ -78,11 +78,20 @@ import org.springframework.stereotype.Repository;
 				int n = sqlsession.insert("chart.insertChart",cvo);
 				return n;
 			}
-			//병원페이지에서 처방전 입력하기 0128
+			//병원페이지에서 처방전 입력하기 0128 0130
 			@Override
-			public int insertPre(ChartVO cvo) {
-				int n = sqlsession.insert("chart.insertPre",cvo);
-				return n;
+			public int insertPre(List<HashMap<String, String>> mlist) {
+				int result = 0;
+				for(HashMap<String, String> map:mlist) {
+					int n =sqlsession.insert("chart.insertPre",map);
+					if(n==0) {
+						result=0;
+						return result;
+					}else {
+						result=1;
+					}
+				}
+				return result;
 			}
             //처방전 인서트 완료후 예약스테이터스 변경하기 
 			@Override
@@ -94,12 +103,13 @@ import org.springframework.stereotype.Repository;
 			@Override
 			public HashMap<String, String> selectChart(HashMap<String,String> map) {
 				HashMap<String, String> cmap = sqlsession.selectOne("chart.selectChart",map);
+				
 				return cmap;
 			}
 			//차트번호 가져오기 
 			@Override
-			public String getChartuid(String ruid) {
-				String cuid=sqlsession.selectOne("chart.getChartuid",ruid);
+			public String getChartuid() {
+				String cuid=sqlsession.selectOne("chart.getChartuid");
 				return cuid;
 			}
 			//처방전 번호 알아오기 
@@ -120,6 +130,31 @@ import org.springframework.stereotype.Repository;
 			public HashMap<String, String> selectPreinfo(HashMap<String, String> map2) {
 				HashMap<String, String> pmap = sqlsession.selectOne("chart.selectPreinfo",map2);
 				return pmap;
+			}
+
+			//0131 예약번호로 차트번호 알아오기 
+			@Override
+			public String getChartuidbyruid(String ruid) {
+				String cuid= sqlsession.selectOne("chart.getChartuidbyruid",ruid);
+				return cuid;
+			}
+			//0131병원페이지에서 차트 수정하기
+			@Override
+			public int Updatechart(HashMap<String, String> map) {
+				int n =sqlsession.update("chart.Updatechart",map);
+				return n;
+			}
+			//0131병원페이지에서 차트 수정시 처방전 수정
+			@Override
+			public int Updatepre(HashMap<String, String> map) {
+				int n =sqlsession.update("chart.Updatepre",map);
+				return n;
+			}
+			//병원 차트페이지에서 처방전 부분 
+			@Override
+			public List<HashMap<String, String>> selectPre(HashMap<String, String> map) {
+				List<HashMap<String, String>> pmap2list = sqlsession.selectList("chart.selectPre",map);
+				return pmap2list;
 			}
 			
 			

@@ -161,35 +161,45 @@ public class ChartController {
 			
 		} //진료 내역 인서트 (마이 페이지에서)
 	   
-		//01.24  기업회원 페이지에서 인서트 창띄우고 인서트 하기  
+		//01.24 0130  0131 병원 회원 페이지에서 인서트 창띄우기
 		@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
 		public String InsertChart(HttpServletRequest req) {
 			
-			String ruid=req.getParameter("reservation_UID");
+			String ruid=req.getParameter("reservation_UID"); 
+			String cuid =service.getChartuid(); // 차트번호 채번
 			
 			HashMap<String,String> chartmap =new HashMap<String,String>();
+			
 			chartmap = service.selectReserverInfo(ruid); //예약번호를 이용하여 차트에 예약자 정보 불러오기 
 			
-			req.setAttribute("chartmap", chartmap);
+			chartmap.put("fk_reservation_UID", ruid);
+			chartmap.put("chart_UID", cuid);
 			//0125
 			List<HashMap<String,String>> doclist=new ArrayList<HashMap<String,String>>();
-			doclist=service.selectDocList(ruid);
+			doclist=service.selectDocList(ruid); //의사 리스트 
 			
-		
-			
-			
+			req.setAttribute("chartmap", chartmap);
 			req.setAttribute("doclist", doclist);
+			
 			return "chart/InsertChart.tiles2"; 
 			
 		} //진료 내역 인서트 창띄우기 (기업회원페이지에서)
 		//0125~0126
+		//0130 인서트문 수정 
 		@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.POST })
 		public String InsertChartEnd(ChartVO cvo, HttpServletRequest req) {
-		 
-			///0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
+			
+			String ruid=req.getParameter("fk_reservation_UID");
+			 
+		    ///0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
 			String ctype =cvo.getChart_type();
-			String result="";
-			int n=0;
+			
+		    String rx_regName=req.getParameter("rx_regName");
+			
+		    String result="";
+			int n1=0;
+			int n2=0;
+			
 			if(ctype.equals("약국")) {
 				 result = "0";
 			}else if(ctype.equals("외래진료")) {
@@ -203,120 +213,110 @@ public class ChartController {
 			}
 			
 			cvo.setChart_type(result);
-			 n =service.insertChart(cvo);
 			
-			String msg="";
-			//String loc="";
-			if(n!=1) {
-				 msg="차트등록에 실패하였습니다.";
-				 //loc = "javascript:histroy.back();";
-				
-				 req.setAttribute("msg", msg);
-				 //req.setAttribute("loc", loc);
-			}else {
-				 msg = "차트 등록이 완료되었습니다.";
-				 //loc = req.getContextPath()+"/bizReservationList.pet";
-				 
-				 req.setAttribute("msg", msg);
-				 //req.setAttribute("loc", loc);
-			}
+			n1 =service.insertChart(cvo); //차트테이블에 인서트 
+			
+		    if(n1 ==1) {
+		    	
+		    	String cuid=req.getParameter("chart_UID"); //뷰에서 차트번호 알아오기 
+		    	
+		    	HashMap<String,String> map = new HashMap<String,String>();
+		    	map.put("chart_UID", cuid);// 맵에 넣어준다. 
+		    	map.put("rx_regName",rx_regName);
+		    	
+		    	List<HashMap<String,String>> mlist=new ArrayList<HashMap<String,String>> ();
+		    	
+		    	String[] rx_name = req.getParameterValues("rx_name");
+		    	String[] dosage =req.getParameterValues("dosage");
+		    	String[] dose_number=req.getParameterValues("dose_number");
+		    	
+		    	for(int i=0;i<rx_name.length;i++) {
+		    		map.put("rx_name", rx_name[i]);
+		    		map.put("dosage", dosage[i]);
+		    		map.put("dose_number", dose_number[i]);
+		    		
+		    		mlist.add(map);
+		    		
+		    	}
+		    	
+		    	n2 = service.insertPre(mlist); //처방전테이블에 인서트 
+		    	
+		    	if(n2==1) {
+		    		service.updaterstatus(ruid);// 스테이터스 변경
+		    	}
+		    }
 			
 			
 			return "chart/biz_rvchartList.tiles2";
 			
 		} //진료 차트  인서트 완료  (기업회원페이지에서)
-		//0126
-		
-		
-		//0128~0129
-		@RequestMapping(value = "/InsertPrescription.pet", method = { RequestMethod.GET })
-		public String InsertPrescription(HttpServletRequest req) {
-			String ruid=req.getParameter("reservation_UID");
-			
-			HashMap<String,String> premap =new HashMap<String,String>();
-			premap = service.selectpreinfobyruid(ruid); //예약자번호로 처방전 정보 불러오기 
-			
-			req.setAttribute("premap", premap);
-			
-		
-			return "chart/InsertPrescription.tiles2"; 
-			
-		} //처방전 인서트창  띄우기  (기업회원페이지에서)
-		
-		//0128~0129
-		@RequestMapping(value = "/InsertPrescriptionEnd.pet", method = { RequestMethod.POST})
-		public String InsertPrescription(ChartVO cvo,HttpServletRequest req) {
-			
-			String ruid=req.getParameter("reservation_UID");
-			int n= service.insertPre(cvo);
-			
-            if(n==1) {
-            	
-            	service.updaterstatus(ruid); //처방전까지 인서트 완료하면 예약스테이터스 변경하기 
-            	System.out.println("ruid");
-            }
-			return "chart/biz_rvchartList.tiles2";
-			
-		} //처방전 인서트완료  (기업회원페이지에서)
-	    
-		@RequestMapping(value = "/SelectChart.pet", method = { RequestMethod.GET })
 
-		public String SelectChart(ChartVO cvo,HttpServletRequest req) {
+		//0131 병원 페이지에서 차트 셀렉트 하기 
+		@RequestMapping(value = "/SelectChart.pet", method = { RequestMethod.GET })
+		public String SelectChart(HttpServletRequest req) {
 			
 			String ruid=req.getParameter("reservation_UID");
-			String cuid=service.getChartuid(ruid); //예약번호로 차트번호알아오기 
+			String cuid=service.getChartuidbyruid(ruid); // 차트번호 알아오기 
+			
+			List<HashMap<String,String>> doclist=new ArrayList<HashMap<String,String>>();
+			doclist=service.selectDocList(ruid); //의사 리스트 
 			
 			HashMap<String,String> map = new HashMap<String,String>();
-			map.put("ruid", ruid);
-			map.put("cuid", cuid);
+			map.put("ruid",ruid);
+			map.put("cuid",cuid);
 			
 			HashMap<String,String> cmap = new HashMap<String,String>();
-			cmap=service.selectChart(map);
+			cmap=service.selectChart(map); //차트 페이지에서 차트 내용 셀렉트 
 			
+			String[] rx_name = req.getParameterValues("rx_name");
+	    	String[] dosage =req.getParameterValues("dosage");
+	    	String[] dose_number=req.getParameterValues("dose_number");
+			
+	    	List<HashMap<String,String>> plist = new ArrayList<HashMap<String,String>>();
+			HashMap<String,String> pmap1 =new HashMap<String,String>();
+			
+			for(int i=0;i<plist.size();i++) {
+				pmap1.put("rx_name", rx_name[i]);
+	    		pmap1.put("dosage", dosage[i]);
+	    		pmap1.put("dose_number", dose_number[i]);
+	    		
+	    		plist.add(pmap1);
+			}
+			List<HashMap<String,String>> pmap2list =new ArrayList<HashMap<String,String>>();
+			pmap2list=service.selectPre(map); //차트 페이지에서 처방전 내용 셀렉트 
+			
+			req.setAttribute("plist", plist);
+			req.setAttribute("pmap2list", pmap2list);
 			req.setAttribute("cmap", cmap);
+			req.setAttribute("doclist", doclist);
+			
 			return "chart/SelectChart.tiles2"; 
 			
 		} //기업회원 페이지에서 차트불러오기 
 		
-		@RequestMapping(value = "/EditChart.pet", method = { RequestMethod.GET })
+		@RequestMapping(value = "/EditChart.pet", method = { RequestMethod.POST })
 
 		public String EditChart(HttpServletRequest req) {
 			
+			String ruid=req.getParameter("fk_reservation_UID");
+			String cuid=req.getParameter("chart_UID");
+			
+			HashMap<String,String> map =new HashMap<String,String>();
+			map.put("ruid",ruid);
+			map.put("cuid",cuid);
+			int n =service.Updatechart(map);
+			
+			System.out.println("n:"+n);
+			
+			if (n==1) {
+				int n2=service.updatepre(map);
+				System.out.println("n2:"+n2);
+			}
 			return "chart/SelectChart.tiles2"; 
 			
 		} //기업회원 페이지에서 차트수정하기 
+	
 		
-		@RequestMapping(value = "/SelectPrescription.pet", method = { RequestMethod.GET })
-
-		public String SelectPrescription(HttpServletRequest req) {
-			
-			String ruid=req.getParameter("reservation_UID");
-		    String cuid = service.getChartuid(ruid);
-			
-		    HashMap<String,String> map1 = new HashMap<String,String> ();
-		    map1.put("ruid",ruid );
-		    map1.put("cuid", cuid);
-		    
-		    String puid =service.getPuid(map1); //처방전 번호 불러오기 
-		    HashMap<String,String> map2 = new HashMap<String,String> ();
-		    map2.put("ruid",ruid );
-		    map2.put("cuid", cuid);
-		    map2.put("puid", puid);
-			
-			HashMap<String,String> pmap = new HashMap<String,String>();
-			pmap= service.selectPreinfo(map2);
-			
-			return "chart/SelectPrescription.tiles2"; 
-			
-		} //기업회원 페이지에서 처방전 불러오기 
-		
-		@RequestMapping(value = "/EditPrescription.pet", method = { RequestMethod.GET })
-
-		public String EditPrescription(HttpServletRequest req) {
-			
-			return "chart/SelectPrescription.tiles2"; 
-			
-		} //기업회원 페이지에서 처방전 수정하기  
 	
 		@RequestMapping(value = "/SelectReserveChart.pet", method = { RequestMethod.GET })
 
@@ -418,7 +418,7 @@ public class ChartController {
 		      rvchartList = service.selectBizReservationList(paraMap);
 
 //		      #120. 페이지바 만들기(MyUtil에 있는 static메소드 사용)
-		      String pageBar = "<ul>";
+		      String pageBar = "<ul class='pagination'>";
 		      pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "reservationList.pet");
 		      pageBar += "</ul>";
 		      

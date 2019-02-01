@@ -24,7 +24,6 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
-		var n = "${n}";
 		var chatcode = $('input#code').val();
 		
 		$("#code").keydown(function(event){
@@ -32,7 +31,7 @@
 			if(event.keyCode == 13) {
 				viewcode(chatcode);
 			}
-		});
+		}); 
 		
 		$("#join-button").click(function(){
 			viewcode(chatcode);
@@ -58,10 +57,8 @@
 	function viewcode() {
 		
 		var chatcode = $("#code").val();
-		console.log(chatcode);
 		
 		var form_data = {"code" : chatcode};
-		console.log(form_data);
 		
 		$.ajax({
 			url : "<%= request.getContextPath() %>/viewcode.pet",
@@ -70,12 +67,11 @@
 			dataType : "JSON",
 			success : function(json) {
 				var result = json.code;
-				/* var chatcode = $('input#code').val(); */
-				/* var confirmcode = $("#div_code").find("input[id=hide]").val(); */
+				 <%-- var chatcode = $('input#code').val(); 
+				 var confirmcode = $("#div_code").find("input[id=hide]").val(); --%>
 				if(chatcode == result) {
 					var frm = document.videochatFrm;
 					parent.location.href="<%= serverName %><%= ctxPath %>/videochat.pet";
-					frm.submit();
 				}
 				else{
 					alert("번호가 일치하지 않습니다 다시입력해주세요");
@@ -96,9 +92,7 @@
 	<div id="div_code" align="center">
 		<span style="color: white; font-size: 12pt;">상담을 위한 코드를 입력해주세요</span><br/>
 		<input type="text" name="code" id="code" size="15" placeholder="123456" required />
-		<c:if test="${n == 0}">
-			<span style="color: red;">번호가 맞지않습니다 다시 시도해주세요.</span>
-		</c:if>
+		<input type="text" value="zzz" style="display: none" />
 	</div>
 	<div id="div_input" align="center">
 		<button id="join-button"  onclick="viewcode();" type="button" class="btn btn-default myclose" data-dismiss="modal">확인</button>

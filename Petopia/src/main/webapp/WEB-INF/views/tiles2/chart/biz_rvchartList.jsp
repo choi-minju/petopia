@@ -28,6 +28,21 @@ th{
 	text-align: center;
 	font-size: 15px;
 }
+
+.pagination a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: background-color .3s;
+}
+
+.pagination a.active_p {
+  background-color: rgb(255, 110, 96);
+  color: white;
+  pointer-events: none;
+  cursor: default;
+}
 </style>
 <script type="text/javascript">
 	
@@ -51,7 +66,7 @@ th{
         <th>예약일시</th>
         <th>예약상태</th>
         <!-- -버튼 1: 예약완료 2결제(차트작성 처방전작성 노쇼// 예약상태업데이트) 3 진료완료(진료완료 진료기록상세보기)4:노쇼 -->
-        <th>진료작성</th>
+        <th>진료차트</th>
         <th>취소</th>
       </tr>
     </thead>
@@ -74,12 +89,10 @@ th{
         <td>
           <c:if test="${rmap.reservation_status=='2'}"> <!-- 차트처방전 기록이 없으면 클릭 인서트  -->
         	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/InsertChart.pet?reservation_UID=${rmap.reservation_UID}'">차트</button>
-        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/InsertPrescription.pet?reservation_UID=${rmap.reservation_UID}'">처방전</button>
             <input type="hidden" name="reservation_UID" value="reservation_UID"/>
           </c:if>  
            <c:if test="${rmap.reservation_status=='3'}"> <!-- 차트처방전 기록이  있으면 셀렉트  -->
-        	<button type="button" class="btn btn-rounder btnmenu" style="color: white; background-color: gray;" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">차트</button>
-        	<button type="button" class="btn btn-rounder btnmenu" style="color: white; background-color: gray;" onclick="location.href='<%=ctxPath%>/SelectPrescription.pet?reservation_UID=${rmap.reservation_UID}'">처방전</button>
+        	<button type="button" class="btn btn-rounder btnmenu" style="color: rgb(255, 110, 96); background-color: white;" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">차트</button>
             <input type="hidden" name="reservation_UID" value="reservation_UID"/>
           </c:if>
         </td>  

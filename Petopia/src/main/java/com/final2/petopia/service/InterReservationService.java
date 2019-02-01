@@ -67,4 +67,8 @@ public interface InterReservationService {
 	int updateRvAndScdStatusCancleForSurgery(HashMap<String, String> paraMap);
 //	#기업회원; 예약 일정 취소하기 - 미결제 및 수술상담제외 타입의 경우
 	int updateRvAndScdStatusCancle(HashMap<String, String> paraMap);
+
+//	[190130]
+//	#예약 상세 페이지
+	HashMap<String, String> selectRvDetailByPUID(String payment_UID, String membertype);	// [190131] membertype 추가
 }

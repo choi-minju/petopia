@@ -126,10 +126,6 @@ color:rgb(252, 118, 106);
     font-size: 14px;
   }
 
-  #top,
-  #calendar.fc-unthemed {
-    font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
-  }
 
   #top {
     background: #eee;

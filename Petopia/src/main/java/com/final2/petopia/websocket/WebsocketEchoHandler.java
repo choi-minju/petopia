@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -25,6 +28,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	            클라이언트가 웹소켓서버에 연결된 이후에 실행되는 메소드로서
 	       WebSocket 연결이 열리고 사용이 준비될 때 호출되어지는(실행되어지는) 메소드이다.
 	    */
+	    
 	    @Override
 	    public void afterConnectionEstablished(WebSocketSession wsession) 
 	    	throws Exception {
@@ -100,6 +104,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	                if (!wsession.getId().equals(webSocketSession.getId())) {  // 메시지를 자기자신을 뺀 나머지 모든 사용자들에게 메시지를 보냄.
 	                    webSocketSession.sendMessage(
 	                            new TextMessage("<span style='float:right; padding-left:10px; margin-top:3px; background:whitesmoke'>" +" [" +loginuser.getName()+ "]" + " ▶ " + messageVO.getMessage()));  
+	                    break;
 	                }
 	            } 
 	        }

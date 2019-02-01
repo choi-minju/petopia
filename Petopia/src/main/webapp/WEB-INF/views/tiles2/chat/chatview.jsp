@@ -38,12 +38,12 @@
 		
 	}); // end of document.ready
 	
-	function goChat() {
+	<%-- function goChat() {
 		var frm = document.chatFrm;
 		frm.method = "GET";
 		frm.action = "<%=request.getContextPath() %>/videochat.pet";
 		frm.submit();
-	} // end of goChat();
+	} // end of goChat(); --%>
 	
 	function createcode(idx) {
 		
@@ -58,7 +58,7 @@
 			success:function(json) {
 					alert("코드가 생성 되었습니다. \n"+json.code);
 					location.reload();
-					return;
+					/* return; */
 			},
 			error:function() {
 				alert("코드생성에 실패했습니다.");
@@ -91,9 +91,11 @@
 		</span>
 		
 		<button type="button" class="btn2" data-toggle="modal" data-target="#videochat" data-dismiss="modal" >상담하기</button>
+		<c:if test="${MemberType == 1}">
 	  	<button type="button" class="btn2" onClick="createcode(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담코드 생성</button>
-	  	
+	  	</c:if>
 	  </div>  
+	  
 	</div>
 	
 	<div class="modal fade" id="videochat" role="dialog">

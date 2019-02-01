@@ -4,9 +4,6 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.final2.petopia.model.InterChatDAO;
 
@@ -38,26 +35,58 @@ public class ChatService implements InterChatService {
 		return n;
 	}
 	
-	// 채팅 종료
+	// idx값 알아오기
 	@Override
-	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
-	public int chatend(HashMap<String, String> map) throws Throwable {
+	public String viewidx(String usercode) throws Throwable {
 		
-		int n = 0;
-		String result1 = "";
-		int result2 = 0;
+		String n = "";
 		
-		result1 = dao.selectend(map);
-		
-		if(result1 != null) {
-			result2 = dao.insertend(map);
-			
-			if(result2 > 0) {
-				n = 1;
-			}
-		}
+		n = dao.viewidx(usercode); 
 		
 		return n;
 	}
+	
+	// 정보 insert
+	@Override
+	public int insertall(HashMap<String, Object> returnMap) throws Throwable {
 		
+		int n = 0;
+		
+		n = dao.insertall(returnMap);
+		
+		return n;
+	}
+
+	@Override
+	public String viewuserid(String idx) {
+		
+		String n = "";
+		
+		n = dao.viewuserid(idx);
+		
+		return n;
+	}
+
+	@Override
+	public String viewname_biz(String idx) {
+		
+		String n = "";
+		
+		n = dao.viewname_biz(idx);
+		
+		return n;
+	}
+
+	@Override
+	public String viewdocname(String idx) {
+		
+		String n = "";
+		
+		n = dao.viewdocname(idx);
+		
+		return n;
+	}
+	
+	
+	
 }

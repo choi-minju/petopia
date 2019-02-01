@@ -81,10 +81,10 @@ public class ChartService implements InterChartService {
 			int n =dao.insertChart(cvo);
 			return n;
 		}
-        //0128 병원페이지에서 처방전 인서트하기
+        //0128 0130 병원페이지에서 처방전 인서트하기
 		@Override
-		public int insertPre(ChartVO cvo) {
-			int n = dao.insertPre(cvo);
+		public int insertPre(List<HashMap<String, String>> mlist) {
+			int n = dao.insertPre(mlist);
 			return n;
 		}
         //처방전인서트 성공하면 예약스테이터스 변경하기
@@ -97,12 +97,13 @@ public class ChartService implements InterChartService {
 		@Override
 		public HashMap<String, String> selectChart(HashMap<String,String> map) {
 			HashMap<String, String> cmap= dao.selectChart(map);
+			
 			return cmap;
 		}
 		//차트번호 불러오기 
 		@Override
-		public String getChartuid(String ruid) {
-			String cuid = dao.getChartuid(ruid);
+		public String getChartuid() {
+			String cuid = dao.getChartuid();
 			return cuid;
 		}
 		//처방전번호 알아오기 
@@ -124,7 +125,33 @@ public class ChartService implements InterChartService {
 			 HashMap<String, String> pmap =dao.selectPreinfo(map2);
 			return pmap;
 		}
+		//0131 예약번호로 차트 번호 알아오기 
+		@Override
+		public String getChartuidbyruid(String ruid) {
+			String cuid = dao.getChartuidbyruid(ruid);
+			return cuid;
+		}
+		//0131병원페이지에서 차트 수정하기
+		@Override
+		public int Updatechart(HashMap<String, String> map) {
+			int n= dao.Updatechart(map);
+			return n;
+		}
+		//병원페이지에서 차트 수정시 처방전 수정
+		@Override
+		public int updatepre(HashMap<String, String> map) {
+		    int n = dao.Updatepre(map);
+			return n;
+		}
 
+		//병원 차트페이지에서 처방전 부분 
+		@Override
+		public List<HashMap<String, String>> selectPre(HashMap<String, String> map) {
+			List<HashMap<String, String>> pmap2list =dao.selectPre(map);
+			return pmap2list;
+		}
+
+		
 
 
 

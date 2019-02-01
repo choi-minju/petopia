@@ -249,4 +249,18 @@ public class ReservationDAO implements InterReservationDAO {
 		int result = sqlsession.insert(ns+"insertNoteForReservation", noteMap);
 		return result;
 	}
+	
+//	[190130]
+//	#예약 상세 페이지
+//	[190131] 일반회원, 기업회원이 보는 예약상세 요소 분리
+	@Override
+	public HashMap<String, String> selectRvDetailByPUIDForMember(String payment_UID){
+		HashMap<String, String> resultMap = sqlsession.selectOne(ns+"selectRvDetailByPUIDForMember", payment_UID);
+		return resultMap;
+	}
+	@Override
+	public HashMap<String, String> selectRvDetailByPUIDForBiz(String payment_UID){
+		HashMap<String, String> resultMap = sqlsession.selectOne(ns+"selectRvDetailByPUIDForBiz", payment_UID);
+		return resultMap;
+	}
 }
