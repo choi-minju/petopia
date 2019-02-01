@@ -61,7 +61,6 @@
    	// pathname.lastIndexOf("/") ==> 15
     // 	alert("appCtx : " + appCtx);
     //  결과값  appCtx : /board/chatting
-    	var chatcode = $('input#hide').val();
     //	alert("chatcode : " + chatcode);
     	var root = url+appCtx;
     	
@@ -85,7 +84,7 @@
     	
 	    // === 웹소켓에 최초로 연결이 되었을 경우에 실행되어지는 콜백함수 ===
     	websocket.onopen = function() {
-    		alert("웹소켓 연결됨!!");
+    		alert("채팅 준비 완료!!");
     	
     	/*	
             messageObj = {};  // 초기화
@@ -122,11 +121,11 @@
         }
          
         
-        $("#message").keydown(function (key) {
-             if (key.keyCode == 13) {
+         $("#message").keydown(function(key) {
+             if (key.keyCode == "13") {
                 $("#sendMessage").click();
              }
-          });
+          }); 
          
         $("#sendMessage").click(function() {
             if( $("#message").val() != "") {
@@ -156,14 +155,7 @@
             }
         });
     });
-    
-    function chatend() {
-    	
-    	var frm = document.videochatFrm;
-    	frm.action="<%= ctxPath %>/chatend.pet";
-    	frm.method="GET";
-    	frm.submit();
-    }
+  
 </script>
 
 <body>
@@ -187,17 +179,17 @@
 			</div>
 			 <div style="margin-top:350px;">
 				<input type="text" id="message" size="30" placeholder="메세지 내용" style="border:0; background:whitesmoke;"/>
+				
 				<i class="fa fa-commenting-o" id="sendMessage" style="font-size: 40px;"></i>
 			 </div>
 		</div>
 	</div>
-	
+	<input type="text" id="zzz" value="zzz" style="display:none;"/>
     <div class="box" style="padding-left: 16%;">
         <img src="<%=ctxPath%>/resources/img/chat/computer-screen.png" id="startButton" style="height: 10%; width: 5%;">
         <img src="<%=ctxPath%>/resources/img/chat/phone.png" style="margin-left: 40px; height: 10%; width: 5%;" id="callButton">
         <img src="<%=ctxPath%>/resources/img/chat/phone-call.png" id="hangupButton" style="margin-left: 40px; height: 10%; width: 5%;">
-        <button type="button" class="btn2" onClick="chatend();">종료하기</button>
-        <input type="hidden" name="hide" id="hide" value="${chatcode}" />
+        <button type="button" class="btn2" onClick="javascript:location.href='<%= ctxPath %>/home.pet'">종료하기</button>
     </div>
 	
     <div class="box" style="display: none;">

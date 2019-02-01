@@ -16,11 +16,11 @@
 		order by tag_UID
 	</select>
 	
-	<!-- <select id="selectBizMemberIdIsUsed" parameterType="String" resultType="int">
+	<select id="selectBizMemberIdIsUsed" parameterType="String" resultType="int">
 		select count(*)
 		from member
 		userid = #{userid}
-	</select> -->
+	</select>
 	
 	<!-- 회원가입할 회원번호 받아오기 -->
 	<select id="selectBizMemberSeq" resultType="int">
@@ -62,6 +62,40 @@
 		insert into doctors(doc_uid, fk_idx_biz, docname, dog, cat, smallani, etc)
 		values(seq_doctors_UID.nextval, #{IDX}, #{DOCTOR}, #{DOCDOG}, #{DOCCAT}, #{DOCSMALLANI}, #{DOCETC})
 	</insert>
+	
+	<select id="selectBizMemberVOByIdx_biz" parameterType="String" resultType="com.final2.petopia.model.Biz_MemberVO">
+		select name, phone, repname, biztype, postcode, addr1, addr2, latitude, longitude, weekday, to_char(wdstart, 'hh24:mm') as wdstart, to_char(wdend, 'hh24:mm') as wdend
+, to_char(lunchstart, 'hh24:mm') as lunchstart, to_char(lunchend, 'hh24:mm') as lunchend, to_char(satstart, 'hh24:mm') as satstart, to_char(satend, 'hh24:mm') as satend, dayoff, dog, cat, smallani, etc, easyway, intro, prontimg
+		from member M join biz_info B
+		ON idx = idx_biz
+		where idx_biz = #{idx_biz}
+	</select>
+	
+	<select id="selectBizTagList" resultType="String" parameterType="String">
+		select fk_tag_name
+		from have_tag
+		where fk_idx = #{idx_biz}
+	</select>
+	
+	<resultMap type="HashMap" id="DocMap">
+		<result property="docname" column="DOCNAME" javaType="String" />
+		<result property="dog" column="DOG" javaType="String" />
+		<result property="cat" column="CAT" javaType="String" />
+		<result property="smallani" column="SMALLANI" javaType="String" />
+		<result property="etc" column="ETC" javaType="String" />
+	</resultMap>
+	<select id="selectDocList" parameterType="String" resultMap="DocMap">
+		select docname, dog, cat, smallani, etc
+		from doctors
+		where fk_idx_biz = #{idx_biz}
+	</select>
+	
+	
+	<select id="selectBizImgList" parameterType="String" resultType="String">
+		select imgfilename
+		from biz_info_img
+		where fk_idx_biz = #{idx_biz} 
+	</select>
 	
 </mapper>
 

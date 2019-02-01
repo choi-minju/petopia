@@ -61,7 +61,8 @@
 	<!-- //===== 케어 등록 ===== -->
 	<insert id="insertPetcare" parameterType="com.final2.petopia.model.CareVO">
 		insert into petcare(care_UID, fk_pet_UID, fk_caretype_UID, care_contents, care_memo, care_start, care_end, care_alarm, care_date)
-		values(seq_petcare_UID.nextval, #{fk_pet_UID}, #{fk_caretype_UID}, #{care_contents, jdbcType=VARCHAR}, #{care_memo}, #{care_start}, #{care_end}, #{care_alarm}, sysdate)
+		values(seq_petcare_UID.nextval, #{fk_pet_UID}, #{fk_caretype_UID}, #{care_contents, jdbcType=VARCHAR}, #{care_memo}, #{care_start}, #{care_end}, #{care_alarm}
+			 , to_char(to_date(#{care_end}, 'yyyy-mm-dd hh24:mi') - #{care_alarm}*1/24/60, 'yyyy-mm-dd hh24:mi'))
 	</insert>
 	
 	

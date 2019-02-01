@@ -104,6 +104,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	                if (!wsession.getId().equals(webSocketSession.getId())) {  // 메시지를 자기자신을 뺀 나머지 모든 사용자들에게 메시지를 보냄.
 	                    webSocketSession.sendMessage(
 	                            new TextMessage("<span style='float:right; padding-left:10px; margin-top:3px; background:whitesmoke'>" +" [" +loginuser.getName()+ "]" + " ▶ " + messageVO.getMessage()));  
+	                    break;
 	                }
 	            } 
 	        }
