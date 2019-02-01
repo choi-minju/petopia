@@ -569,11 +569,36 @@ public class ConsultController {
 	}
 	
 	// 1:1상담 상세보기 -----------------------------------------------------------------------------------------------------
-		@RequestMapping(value="/AdminConsultDetail.pet", method= {RequestMethod.GET})
-		public String requireLoginAdmin_AdminConsultDetail(HttpServletRequest req, HttpServletResponse res) {
-			
-			return "admin/consult/adminConsultDetail.tiles2";
-		}
+	@RequestMapping(value="/adminConsultDetail.pet", method= {RequestMethod.GET})
+	public String requireLoginAdmin_adminConsultDetail(HttpServletRequest req, HttpServletResponse res) {
+		
+		ConsultVO consultvo = null;
+
+		String consult_UID = req.getParameter("consult_UID");
+		String gobackURL = req.getParameter("gobackURL");
+		
+		// - [조회수 증가 X] 글 상세보기
+		consultvo = service.selectConsultDetailNoCount(consult_UID);
 	
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("CONSULT_UID", consult_UID);
+		int totalCount = service.selectCommentTotalCount(paraMap);
 	
+		int sizePerPage = 10;
+		
+		int totalPage = (int)Math.ceil((double)totalCount/sizePerPage);
+		
+		req.setAttribute("totalPage", totalPage);
+		req.setAttribute("consultvo", consultvo);
+		req.setAttribute("gobackURL", gobackURL);
+		
+		return "admin/consult/adminConsultDetail.tiles2";
+	}
+	
+	// 1:1상담 알림 메세지 보내기
+	// 기업회원 idx를 List<String> select 해와서
+	// notification 테이블에 insert를 for문으로
+		
+		
+		
 }

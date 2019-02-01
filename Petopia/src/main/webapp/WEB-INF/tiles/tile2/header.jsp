@@ -99,9 +99,9 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
-		if(${sessionScope.loginuser != null && sessionScope.loginuser.userid != 'admin@naver.com'}
+		if(${sessionScope.loginuser != null && sessionScope.loginuser.userid != 'admin@naver.com'}){
 			loopShowNotificationCount();
-		)
+		}
 	});
 	
 	function logOut(){ 

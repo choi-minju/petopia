@@ -301,4 +301,17 @@ where A.fk_idx_biz = #{idx}
       where c.chart_uid=#{cuid}
    </select>
    
+   <!-- 190201 chart불러오기 -->
+   <resultMap type="HashMap" id="selectMyPrescription_info">
+     <result property="chart_uid"             column="CHART_UID"             javaType="String"/>
+     <result property="reservation_date"      column="RESERVATION_DATE"      javaType="String"/>
+     <result property="chart_type"            column="chartType"            javaType="String"/>
+ 
+   </resultMap>
+   <select id="selectMyPrescription" parameterType="String" resultMap="selectMyPrescription_info">
+		select chart_uid, to_char(reservation_date, 'yyyy-mm-dd hh24:mi') as reservation_date
+		    , case chart_type when 0 then '약국' when 1 then '진료' when 2 then '예방접종' when 3 then '수술' when 4 then '호텔링' end as chartType
+		from chart
+		where fk_pet_uid = #{fk_pet_uid}
+   </select>
 </mapper>

@@ -65,7 +65,7 @@ public class ChartController {
 		    return "chart/InsertMyPrescription.tiles2"; 
 		
 		} //진료 내역 인서트 (마이 페이지에서)
-		//달력 0129
+	/*	//달력 0129
 		@RequestMapping(value = "/getCalendar.pet", method = { RequestMethod.GET })
 		@ResponseBody
 		public HashMap<String,Object> getCalendar(HttpServletRequest req) {
@@ -121,7 +121,22 @@ public class ChartController {
 			return paramap;
 			
 		}//end of /getCalendar.pet
-
+*/
+		//0201 캘린더에 넣을 정보 리스트 불러오기 
+		
+		@RequestMapping(value="/selectMyPrescription.pet", method={RequestMethod.GET})
+		@ResponseBody
+		public List<HashMap<String, String>> selectMyPrescription(HttpServletRequest req) {
+			
+			String fk_pet_uid = req.getParameter("fk_pet_uid");
+			List<HashMap<String, String>> callist = new ArrayList<HashMap<String, String>>();
+			callist=service.selectMyPrescription(fk_pet_uid);
+			
+			System.out.println("callist: "+callist.get(0).get("reservation_date"));
+			
+			return callist;
+		} //
+		
 		@RequestMapping(value = "/InsertMyChartEnd.pet", method = { RequestMethod.POST })
 		public int InsertMyChartEnd(ChartVO cvo, HttpServletRequest req) {
 

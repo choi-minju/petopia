@@ -28,7 +28,7 @@
 			frm.submit();
 		});
 		
-		   $("#btnplus").click(function(){
+		  $("#btnplus").click(function(){
 			var payment_pay =$("#payment_pay").val();
 			var payment_point=$("#payment_point").val();
 			var addpay=$("#addpay").val();
