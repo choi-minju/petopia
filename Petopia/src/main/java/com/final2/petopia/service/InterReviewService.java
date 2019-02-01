@@ -32,11 +32,20 @@ public interface InterReviewService {
 	
 	// === 2019.01.31 ==== //
 	// *** 전체 리뷰 갯수 *** //
-	//int selectAllTotalCount(); // 기간X검색X 
+	// === 2019.02.01 === //
+	int selectAllTotalCount(HashMap<String, String> paraMap); // 기간X검색X
+	int selectAllTotalCountBySearch(HashMap<String, String> paraMap); // 기간X검색O
+	int selectAllTotalCountByPeriod(HashMap<String, String> paraMap); // 기간O검색X
+	int selectAllTotalCountByPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
 	
 	// *** 전체 리뷰 목록 보기 *** //
 	List<HashMap<String, String>> selectReviewList(HashMap<String, String> paraMap); // 기간X검색X
 	// === 2019.01.31 ==== //
+	// === 2019.02.01 === //
+	List<HashMap<String, String>> selectReviewListBySearch(HashMap<String, String> paraMap); // 기간X검색O
+	List<HashMap<String, String>> selectReviewListByPeriod(HashMap<String, String> paraMap); // 기간O검색X
+	List<HashMap<String, String>> selectReviewListByPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
+	// === 2019.02.01 === //
 	
 	
 }

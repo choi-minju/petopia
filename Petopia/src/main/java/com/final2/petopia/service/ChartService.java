@@ -151,6 +151,13 @@ public class ChartService implements InterChartService {
 			return pmap2list;
 		}
 
+		//0201캘린더에 넣을 정보 가져오기 
+		@Override
+		public List<HashMap<String, String>> selectMyPrescription(String fk_pet_uid) {
+			List<HashMap<String, String>> callist=dao.selectMyPrescription(fk_pet_uid);
+			return callist;
+		}
+
 		
 
 

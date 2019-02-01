@@ -141,9 +141,45 @@
 	</update>
 	<!-- === 2019.01.30 ==== 끝 -->
 	
+	<!-- === 2019.02.01 === 시작 -->
+	<!-- *** 전체 리뷰 갯수 *** -->
+	<!-- 기간X검색X -->
+	<select id="selectAllTotalCount" parameterType="HashMap" resultType="int">
+		select count(*)
+		from review a JOIN member b
+		ON a.fk_idx_biz = b.idx
+		where rv_status = 1
+	</select>
+	
+	<!-- 기간X검색O -->
+	<select id="selectAllTotalCountBySearch" parameterType="HashMap" resultType="int">
+		select count(*)
+		from review a JOIN member b
+		ON a.fk_idx_biz = b.idx
+		where rv_status = 1 and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+	</select>
+	
+	<!-- 기간O검색X -->
+	<select id="selectAllTotalCountByPeriod" parameterType="HashMap" resultType="int">
+		select count(*) 
+		from review a JOIN member b
+		ON a.fk_idx_biz = b.idx
+		where rv_status = 1 and trunc(months_between(sysdate, rv_writedate)) <![CDATA[<]]> #{PERIOD}
+	</select>
+	
+	<!-- 기간O검색O -->
+	<select id="selectAllTotalCountByPeriodSearch" parameterType="HashMap" resultType="int">
+		select count(*)
+		from review a JOIN member b
+		ON a.fk_idx_biz = b.idx
+		where rv_status = 1 and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+			and trunc(months_between(sysdate, rv_writedate)) <![CDATA[<]]> #{PERIOD}
+	</select>
+	
 	<!-- === 2019.01.31 ==== -->
 	<!-- *** 전체 리뷰 목록 보기 *** -->
 	<resultMap type="HashMap" id="reviewListMap">
+		<result property="RNO"					column="rno"				javaType="String"/>
 		<result property="REVIEW_UID"			column="review_UID"			javaType="String"/>
 		<result property="FK_NICKNAME"			column="fk_nickname"		javaType="String"/>
 		<result property="NAME"					column="name"				javaType="String"/>
@@ -154,20 +190,96 @@
 	
 	<!-- 기간X검색X -->
 	<select id="selectReviewList" parameterType="HashMap" resultMap="reviewListMap">
-		select review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
-		from
+		select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		from 
 		(
-		    select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
 		    from
 		    (
-		        select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, a.rv_writedate
-		        from review a JOIN member b
-		        ON a.fk_idx_biz = b.idx
-		        where rv_status = 1
+		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		        from
+		        (
+		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate
+		            from review a JOIN member b
+		            ON a.fk_idx_biz = b.idx
+		            where rv_status = 1
+		            order by rv_writedate asc
+		        ) V
 		        order by rv_writedate desc
-		    ) V
-		)
-		where rno between #{STARTRNO} and #{ENDRNO}
+		    )T
+		)W
+		where orderIdx between #{STARTRNO} and #{ENDRNO}
 	</select>
 	<!-- === 2019.01.31 ==== -->
+	
+	<!-- 기간X검색O -->
+	<select id="selectReviewListBySearch" parameterType="HashMap" resultMap="reviewListMap">
+		select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		from 
+		(
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		    from
+		    (
+		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		        from
+		        (
+		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate
+		            from review a JOIN member b
+		            ON a.fk_idx_biz = b.idx
+		            where rv_status = 1 and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+		            order by rv_writedate asc
+		        ) V
+		        order by rv_writedate desc
+		    )T
+		)W
+		where orderIdx between #{STARTRNO} and #{ENDRNO}
+	</select>
+	
+	<!-- 기간O검색X -->
+	<select id="selectReviewListByPeriod" parameterType="HashMap" resultMap="reviewListMap">
+		select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		from 
+		(
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		    from
+		    (
+		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		        from
+		        (
+		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate
+		            from review a JOIN member b
+		            ON a.fk_idx_biz = b.idx
+		            where rv_status = 1 and trunc(months_between(sysdate, rv_writedate)) <![CDATA[<]]> #{PERIOD}
+		            order by rv_writedate asc
+		        ) V
+		        order by rv_writedate desc
+		    )T
+		)W
+		where orderIdx between #{STARTRNO} and #{ENDRNO}
+	</select>
+	
+	<!-- 기간O검색O -->
+	<select id="selectReviewListByPeriodSearch" parameterType="HashMap" resultMap="reviewListMap">
+	select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		from 
+		(
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		    from
+		    (
+		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate
+		        from
+		        (
+		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate
+		            from review a JOIN member b
+		            ON a.fk_idx_biz = b.idx
+		            where rv_status = 1 and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+		        		and trunc(months_between(sysdate, rv_writedate)) <![CDATA[<]]> #{PERIOD}
+		            order by rv_writedate asc
+		        ) V
+		        order by rv_writedate desc
+		    )T
+		)W
+		where orderIdx between #{STARTRNO} and #{ENDRNO}
+	</select>
+	<!-- === 2019.02.01 === -->
 </mapper>

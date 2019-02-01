@@ -107,7 +107,6 @@
 				<div class="row" style="margin-top: 5%;">
 					<label>진료/처방가능 동물</label>
 				</div>
-
 				<div class="row">
 					<button type="button" class="btn1 pettype" id="dog">강아지</button>
 					<button type="button" class="btn1 pettype" id="cat">고양이</button>
@@ -118,33 +117,31 @@
 				<hr style="height: 1px; background-color: grey; border: none; margin-bottom: 0px;">
 
 				<div class="row" style="padding-top: 20px;">
-		            <div class="col-sm-6" style="padding-left: 0%;">
+		            <div class="col-sm-6" style="padding-left: 0px;">
 		            	<label>진료시간(운영시간)</label><BR>
-		            	<div class="col-sm-4">
-		            		<span>${bizmvo.weekday}</span>
-		            	</div>
-						<div class="col-sm-4">
-							<span>${bizmvo.wdstart}-${bizmvo.wdend}</span>
-						</div>
-						<div class="col-sm-4">
-							<span>${bizmvo.satstart}-${bizmvo.satend}</span>
-						</div>
+	            		<span>${bizmvo.weekday}</span>
+						<span>${bizmvo.wdstart}-${bizmvo.wdend}</span>
 		            </div>
-               
 					<div class="col-sm-6">
 						<label>점심시간</label><BR>
-						<div class="col-sm-4">
-							<span>${bizmvo.lunchstart}-${bizmvo.lunchend}</span>
-						</div>
-						<div class="col-sm-4">
-							<span>${bizmvo.dayoff}</span>
-						</div>
+						<span>${bizmvo.lunchstart}-${bizmvo.lunchend}</span>
 					</div>
+		            <div class="col-sm-6" style="padding-left: 0px;">
+						<label>토요일</label><BR>
+						<span>${bizmvo.satstart}-${bizmvo.satend}</span>
+					</div>
+					
+					<div class="col-sm-4">
+						<label>일요일/공휴일</label><BR>
+						<span>${bizmvo.dayoff}</span>
+					</div>
+								
+               
 				</div><!-- row -->
 				
 				<div class="row" style="margin-top: 30px;">
 					<label>연락처</label>
-					<div style="margin-top: 5px;">
+					<div>
 						<span>${bizmvo.phone}</span> 
 						<span class="glyphicon glyphicon-earphone" style="margin-left: 10px;"></span>
 						<button type="button" style="background-color: #ff6e60; color: white; margin-left: 10px; border: 0; border-radius: 6px;" onClick="javascript: location.href='<%=ctxPath%>/reservation.pet?idx_biz=${idx_biz}'">예약하기</button>
@@ -174,92 +171,83 @@
 					(${bizmvo.postcode})&nbsp;${bizmvo.addr1}&nbsp;${bizmvo.addr2}
 				</div>
 				
-				<div id="map" style="width: 500px; height: 400px;"></div>
-				<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d95bf006c44a2e98551f0af770a55949"></script>
+				<div id="map" style="width:100%;height:350px;"></div>
+
+				<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d95bf006c44a2e98551f0af770a55949&libraries=services"></script>
 				<script>
-					var container = document.getElementById('map');
-					var options = {
-						center : new daum.maps.LatLng(${bizmvo.latitude},${bizmvo.longitude}),
-						level : 3
-					};
-					var map = new daum.maps.Map(container, options);
-
-					// *** 지도 컨트롤바 생성 시작 ***//
-					// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
-					var mapTypeControl = new daum.maps.MapTypeControl();
-
-					// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
-					// daum.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
-					map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+					var latitude = ${bizmvo.latitude};
+					var longitude = ${bizmvo.longitude};
 				
-					// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
-					var zoomControl = new daum.maps.ZoomControl();
-					map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
-					// *** 지도 컨트롤바 생성 끝 ***//
+					var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+					    mapOption = { 
+					        center: new daum.maps.LatLng(latitude, longitude), // 지도의 중심좌표
+					        level: 3 // 지도의 확대 레벨
+					    };
 					
-					var imageSrc = '<%= request.getContextPath() %>/resources/img/search/spotpin.png'; // 마커이미지의 주소입니다    
+					var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 					
-					 // 마커 이미지의 이미지 크기 입니다
-				    var imageSize = new daum.maps.Size(44, 49); 
-				    
-				    // 마커 이미지를 생성합니다    
-				    var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize); 
-				    
-				    // 마커를 생성합니다
-				    var marker = new daum.maps.Marker({
-				        map: map, // 마커를 표시할 지도
-				        position: new daum.maps.LatLng(${bizmvo.latitude}, ${bizmvo.longitude} ), // 마커를 표시할 위치
-				        title : ${bizmvo.name}, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-				        image : markerImage // 마커 이미지 
-				    });
-				    
-				    marker.setMap(map);
+					// 마커가 표시될 위치입니다 
+					var markerPosition  = new daum.maps.LatLng(latitude, longitude); 
+					
+					// 마커를 생성합니다
+					var marker = new daum.maps.Marker({
+					    position: markerPosition
+					});
+					
+					// 마커가 지도 위에 표시되도록 설정합니다
+					marker.setMap(map);
+					
+					var infowindow = new daum.maps.InfoWindow({
+			            content: '<div style="width:150px;text-align:center;padding:6px 0;">${bizmvo.name}</div>'
+			        });
+			        infowindow.open(map, marker);
+					
+					// 아래 코드는 지도 위의 마커를 제거하는 코드입니다
+					// marker.setMap(null);    
 				</script>
 				
-				<div>
-					<label>찾아오시는 길</label>
-					${bizmvo.easyway}
+				<div class="row" style="margin-top: 2%;">
+					<label>찾아오시는 길</label><BR>
 				</div>
+					<div class="row">${bizmvo.easyway}</div>
 				
-				
-				<div>
-					<label>의료진</label>
-					<c:forEach items="${docList}" var="doc">
-						
-						<div class="row">
-							${doc.docname}
-							<c:if test="${doc.dog == '1'}">
-								<button type="button" class="btn2 pettype">강아지</button>
-							</c:if>
-							<c:if test="${doc.dog != '1'}">
-								<button type="button" class="btn1 pettype">강아지</button>
-							</c:if>
-							
-							<c:if test="${doc.cat == '1'}">
-								<button type="button" class="btn2 pettype">고양이</button>
-							</c:if>
-							<c:if test="${doc.cat != '1'}">
-								<button type="button" class="btn1 pettype">고양이</button>
-							</c:if>
-							
-							<c:if test="${doc.smallani == '1'}">
-								<button type="button" class="btn2 pettype">소동물</button>
-							</c:if>
-							<c:if test="${doc.smallani != '1'}">
-								<button type="button" class="btn1 pettype">소동물</button>
-							</c:if>
-							
-							<c:if test="${doc.etc == '1'}">
-								<button type="button" class="btn2 pettype">기타</button>
-							</c:if>
-							<c:if test="${doc.etc != '1'}">
-								<button type="button" class="btn1 pettype">기타</button>
-							</c:if>
-							
-						</div>
-					</c:forEach>
-				</div>
-				
+				<div class="row" style="margin-top: 2%;">
+					<label>의료진</label><BR>
+					${doc.docname}
+				</div>		
+					<div class="row" style="margin-left: 1%;">
+						<c:forEach items="${docList}" var="doc">
+								<div>
+								<c:if test="${doc.dog == '1'}">
+									<button type="button" class="btn2 pettype">강아지</button>
+								</c:if>
+								<c:if test="${doc.dog != '1'}">
+									<button type="button" class="btn1 pettype">강아지</button>
+								</c:if>
+								
+								<c:if test="${doc.cat == '1'}">
+									<button type="button" class="btn2 pettype">고양이</button>
+								</c:if>
+								<c:if test="${doc.cat != '1'}">
+									<button type="button" class="btn1 pettype">고양이</button>
+								</c:if>
+								
+								<c:if test="${doc.smallani == '1'}">
+									<button type="button" class="btn2 pettype">소동물</button>
+								</c:if>
+								<c:if test="${doc.smallani != '1'}">
+									<button type="button" class="btn1 pettype">소동물</button>
+								</c:if>
+								
+								<c:if test="${doc.etc == '1'}">
+									<button type="button" class="btn2 pettype">기타</button>
+								</c:if>
+								<c:if test="${doc.etc != '1'}">
+									<button type="button" class="btn1 pettype">기타</button>
+								</c:if>
+								</div>
+						</c:forEach>
+					</div>
 			</div>
 	</div>
 </div>

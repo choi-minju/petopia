@@ -1,6 +1,5 @@
 package com.final2.petopia.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,6 +31,9 @@ public interface InterCareService {
 
 	//===== 특정 반려동물관리 진료기록(Ajax) =====
 	List<HashMap<String, String>> getChart(String pet_UID);
+
+	//===== 케어관리페이지 요청 =====
+	List<HashMap<String, String>> getPetcare(String pet_UID);
 
 	
 
