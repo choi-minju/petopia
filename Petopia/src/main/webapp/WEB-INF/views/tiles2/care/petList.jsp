@@ -4,6 +4,23 @@
 
 <style type="text/css">
 
+	.pet-title{
+      font-size:40px;
+      font-weight:545;
+      letter-spacing:-0.04em;
+      text-align:center;
+      margin-bottom:10px;
+   }
+   
+   .pet-added {
+      position: relative;
+      margin: 10px 3px;
+      padding: 4% 1% 2% 1%;
+      width: 24%;
+      border: 1px solid #dadada;
+       background: rgba(234, 234, 234, 0.3);
+   }
+
    .pet-box {
       position: relative;
       margin: 10px 3px;
@@ -125,7 +142,7 @@
                   
                      html += "<div class=\"col-sm-3 pet-box\" style=\"height:330px;text-align:center;\">"   
                           + "      <div style=\"margin-top:35%;\">"
-                          + "         <a href=\"petRegister.pet\"><i class=\"glyphicon glyphicon-plus-sign\" style=\"font-size: 15pt;\"></i></a>"
+                          + "         <a href='petRegister.pet'><img src='resources/img/care/petAdd.png' width='40px;' height='40px;'></a>"
                           + "      </div>"
                           + "      <div style=\"margin-top:5%;font-size:17px;font-weight:bold;\"> 반려동물 추가하기"
                           + "      </div>"
@@ -152,7 +169,7 @@
 </script>
 
 <div class="container" style="min-height: 800px;">
-   <h2 align="center">반려동물관리</h2>
+   <div class="pet-title">반려동물관리</div>
    
    <div class="row">
       

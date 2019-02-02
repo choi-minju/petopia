@@ -222,6 +222,41 @@ public class CareController {
 	}
 	// [19-01-30. 수정 끝_hyunjae]
 	
+	// [19-01-31. 수정 끝_hyunjae]
+	// ===== 반려동물 리스트 가져오기(Ajax) =====
+	@RequestMapping(value="/getPetcare.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, Object>> getPetcare(HttpServletRequest req) {
+	
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
+		
+		String pet_UID = req.getParameter("pet_UID");
+		
+		List<HashMap<String,String>> list = service.getPetcare(pet_UID);
+		
+		if(list != null) {
+			for(HashMap<String,String> datamap : list) {
+				HashMap<String, Object> submap = new HashMap<String, Object>(); 
+				submap.put("CARETYPE_UID", datamap.get("CARETYPE_UID"));
+				submap.put("CARETYPE_NAME", datamap.get("CARETYPE_NAME"));
+				submap.put("CARETYPE_INFO", datamap.get("CARETYPE_INFO"));
+				submap.put("CARE_UID", datamap.get("CARE_UID"));
+				submap.put("FK_PET_UID", datamap.get("FK_PET_UID"));
+				submap.put("FK_CARETYPE_UID", datamap.get("FK_CARETYPE_UID"));
+				submap.put("CARE_CONTENTS", datamap.get("CARE_CONTENTS"));
+				submap.put("CARE_MEMO", datamap.get("CARE_MEMO"));
+				submap.put("CARE_START", datamap.get("CARE_START"));
+				submap.put("CARE_END", datamap.get("CARE_END"));
+				submap.put("CARE_ALARM", datamap.get("CARE_ALARM"));
+				submap.put("CARE_DATE", datamap.get("CARE_DATE"));
+				
+				returnmapList.add(submap);
+			}
+		}
+		
+		return returnmapList;
+	}
+	
 	
 	// [19-01-24. 수정 시작_hyunjae]
 	//===== 케어관리 등록페이지 요청 =====

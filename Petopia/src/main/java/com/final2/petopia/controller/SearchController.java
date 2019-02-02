@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.HandlerMapping;
 
 import com.final2.petopia.model.Biz_MemberVO;
 import com.final2.petopia.model.MemberVO;
@@ -33,6 +34,9 @@ public class SearchController {
 		String[] numbers = req.getParameterValues("numbers");
 		String str_numbers = "";
 		String whereNo = req.getParameter("whereNo");
+		
+		String pattern = (String)req.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		// /search.pet
 		
 		if(searchWord == null || searchWord.trim().isEmpty()) {
 			searchWord = "";
@@ -73,7 +77,8 @@ public class SearchController {
 		req.setAttribute("gson_bizmemList", gson_bizmemList);
 		req.setAttribute("bizmemList", bizmemList);
 		req.setAttribute("whereNo", whereNo);
-	
+		req.setAttribute("pattern", pattern);
+		
 		return "search/index.tiles2";
 	
 	}
@@ -118,8 +123,20 @@ public class SearchController {
 		String whereNo = req.getParameter("whereNo");
 		String orderbyNo = req.getParameter("orderbyNo");
 		String searchWord = req.getParameter("searchWord");
+		String pattern = req.getParameter("pattern");
+
+		List<Biz_MemberVO> bizmemList = null;
 		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,"",orderbyNo);
+		if(pattern.equals("/requireLogin_search.pet")) {
+			HttpSession session = req.getSession();
+			MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+			int loginuser_idx = loginuser.getIdx();
+
+			bizmemList = service.getBizmemListByidx(loginuser_idx, "1", "");
+		}
+		else {
+			bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,"",orderbyNo);
+		}
 
 		Gson gson = new Gson();
 		String gson_bizmemList = gson.toJson(bizmemList);
@@ -136,31 +153,63 @@ public class SearchController {
 		String[] numbers = req.getParameterValues("numbers");
 		String searchWord = req.getParameter("searchWord");
 		String whereNo = req.getParameter("whereNo");
+		String pattern = req.getParameter("pattern");
+		
+		List<Biz_MemberVO> bizmemList = null;
+		
+		if(pattern.equals("/requireLogin_search.pet")) {
 
-		if(searchWord == null || searchWord.trim().isEmpty()) {
-			searchWord = "";
-		}
-		
-		if(whereNo == null || whereNo.trim().isEmpty()) {
-			whereNo = "1";
-		}
-		
-		String str_numbers = "";
-		for(int i=0;i<numbers.length;i++) {
-			if(numbers[i].equals("현재위치")) {
-				continue;
-			}
-			if(i == 1) {
-				str_numbers += "DECODE(idx_biz,";
+			HttpSession session = req.getSession();
+			MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+			int loginuser_idx = loginuser.getIdx();
+
+			String str_numbers = "";
+			
+			if(numbers != null && !numbers[0].trim().isEmpty()) {
+				for(int i=0;i<numbers.length;i++) {
+					if(numbers[i].equals("현재위치")) {
+						continue;
+					}
+					if(i == 1) {
+						str_numbers += "DECODE(idx_biz,";
+					}
+					
+					str_numbers += (i!=(numbers.length-1))?numbers[i]+","+i+",":numbers[i]+","+i+")";
+				}
 			}
 			
-			str_numbers += (i!=(numbers.length-1))?numbers[i]+","+i+",":numbers[i]+","+i+")";
+			
+			bizmemList = service.getBizmemListByidx(loginuser_idx, "2", str_numbers);
+			
+		}
+		else {
+
+			if(searchWord == null || searchWord.trim().isEmpty()) {
+				searchWord = "";
+			}
+			
+			if(whereNo == null || whereNo.trim().isEmpty()) {
+				whereNo = "1";
+			}
+			
+			String str_numbers = "";
+			for(int i=0;i<numbers.length;i++) {
+				if(numbers[i].equals("현재위치")) {
+					continue;
+				}
+				if(i == 1) {
+					str_numbers += "DECODE(idx_biz,";
+				}
+				
+				str_numbers += (i!=(numbers.length-1))?numbers[i]+","+i+",":numbers[i]+","+i+")";
+			}
+			
+			// System.out.println(str_numbers);
+			
+			bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,str_numbers,"2");
+
 		}
 		
-		// System.out.println(str_numbers);
-		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListBySearchWord(whereNo,searchWord,str_numbers,"2");
-
 		Gson gson = new Gson();
 		String gson_bizmemList = gson.toJson(bizmemList);
 		
@@ -172,20 +221,28 @@ public class SearchController {
 
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
-		int loginuser_idx = loginuser.getIdx();
-		System.out.println(loginuser_idx);
-		String orderbyNo = "1";
 		
-		List<Biz_MemberVO> bizmemList = service.getBizmemListByidx(loginuser_idx, orderbyNo);
+		String pattern = (String)req.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		// /requireLogin_search.pet
+		
+		if(loginuser != null) {
 
-		int cnt = service.getCntForRecomm(loginuser_idx);
-		
-		Gson gson = new Gson();
-		String gson_bizmemList = gson.toJson(bizmemList);
-		
-		req.setAttribute("cnt", cnt);
-		req.setAttribute("gson_bizmemList", gson_bizmemList);
-		req.setAttribute("bizmemList", bizmemList);
+			int loginuser_idx = loginuser.getIdx();
+			// System.out.println(loginuser_idx);
+
+			List<Biz_MemberVO> bizmemList = service.getBizmemListByidx(loginuser_idx, "1", "");
+
+			int cnt = service.getCntForRecomm(loginuser_idx);
+			
+			Gson gson = new Gson();
+			String gson_bizmemList = gson.toJson(bizmemList);
+			
+			req.setAttribute("cnt", cnt);
+			req.setAttribute("gson_bizmemList", gson_bizmemList);
+			req.setAttribute("bizmemList", bizmemList);
+			req.setAttribute("pattern", pattern);
+
+		}
 
 		return "search/index.tiles2";
 	

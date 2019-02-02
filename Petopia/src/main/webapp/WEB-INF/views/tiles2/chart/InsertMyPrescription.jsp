@@ -10,46 +10,7 @@
 
 
 <style>
-body {
-            scrollbar-face-color: #F6F6F6;
 
-             scrollbar-highlight-color: #bbbbbb;
-
-             scrollbar-3dlight-color: #FFFFFF;
-
-             scrollbar-shadow-color: #bbbbbb;
-
-             scrollbar-darkshadow-color: #FFFFFF;
-
-             scrollbar-track-color: #FFFFFF;
-
-             scrollbar-arrow-color: #bbbbbb;
-
-             margin-left:"0px"; margin-right:"0px"; margin-top:"0px"; margin-bottom:"0px";
-
-             }
-
-             td {font-family: "돋움"; font-size: 9pt; color:#595959;}
-
-             th {font-family: "돋움"; font-size: 9pt; color:#000000;}
-
-             select {font-family: "돋움"; font-size: 9pt; color:#595959;}
-
-             .divDotText {
-
-             overflow:hidden;
-
-             text-overflow:ellipsis;
-
-             }
-
-            A:link { font-size:9pt; font-family:"돋움";color:#000000; text-decoration:none; }
-
-            A:visited { font-size:9pt; font-family:"돋움";color:#000000; text-decoration:none; }
-
-            A:active { font-size:9pt; font-family:"돋움";color:red; text-decoration:none; }
-
-            A:hover { font-size:9pt; font-family:"돋움";color:red;text-decoration:none;}
 
 .divbox1{ /*전체 */
    margin-top: 3%;
@@ -65,7 +26,8 @@ margin-top:3%;
 display:inline-block;
 }
 
-.divbox3{ /* 펫정보*/
+.divbox3{ 
+/* 펫정보*/
 border: 1px solid gray; 
 witdh:80%; 
 height:20%; 
@@ -76,7 +38,8 @@ padding-bottom:3%;
 border-radius:10px;
 }
 
-.divbox4{ /* 캘린더 자리 */
+.divbox4{ 
+/* 캘린더 자리 */
  margin-top:3%;
  margin-bottom:5%;
  border: 1px solid gray;
@@ -120,51 +83,38 @@ color:rgb(252, 118, 106);
 	 
   } 
 
-  body {
-    margin: 0;
-    padding: 0;
-    font-size: 14px;
-  }
-
-
-  #top {
-    background: #eee;
-    border-bottom: 1px solid #ddd;
-    padding: 0 10px;
-    line-height: 40px;
-    font-size: 12px;
-    color: #000;
-  }
-
-  #top .selector {
-    display: inline-block;
-    margin-right: 10px;
-  }
-
-  #top select {
-    font: inherit;  /* mock what Boostrap does, don't compete  */
-  }
-
-  .left { float: left }
-  .right { float: right }
-  .clear { clear: both }
-
-  #calendar {
-    max-width: 100%;
-    
-    margin: 40px auto;
-    padding: 2% 2% 2% 2%;
-  }
-  
 </style>
+<link rel="stylesheet" href="<%=ctxPath%>/resources/css/fullcalendar.css"> 
+<link rel="stylesheet" href="<%=ctxPath%>/resources/css/fullcalendar.min.css">
 
+<script type="text/javascript" src="<%=ctxPath%>/resources/js/ko.js"></script>
 <script type="text/javascript">
     
 	$(document).ready(function(){
 		//ajaxData();
-		 $("#petimg").click(function(){
+		 $(".petimg").click(function(){
+			var classes = $(this).attr('class');
+			 //alert(classes); petimg petUid3
+			 var str_classes = String(classes); // String으로 변환
+			 var index = str_classes.indexOf('petUid'); // petUid의 자릿수
+			 //alert(index); // 7
+			 var petUid = str_classes.substring(index+6);
+			 //alert(petUid);
+			
+			 $("#petUidNo").val(petUid);
 			 
-		 });
+			// 펫정보 불러오기
+			// showPet(petUid);  --- 1
+			// 함수 showPet은 puid를 이용하여 한 마리의 반려동물 정보 불러오기 (ajax)
+
+			// 캘린더
+			
+			
+			
+		 }); // 반려동물 누르면
+		 
+		 
+		 
 		
 		 $("#register").click(function(){
 			 
@@ -173,158 +123,74 @@ color:rgb(252, 118, 106);
 			frm.method="POST";
 			frm.submit();
 		 });
+		 
+		 $('#calendar').fullCalendar({
+			 selectable: true,
+		      header: {
+		        left: 'prev,next today',
+		        center: 'title',
+		        right: 'month,agendaSevenDay,agendaDay' 
+		      },
+		      contentHeight: 600,
+		      views: {
+		    	  agendaSevenDay: {
+		    	     type: 'agenda',
+		    	     duration: { days: 7 },
+		    	     buttonText: 'week'
+		    	   }
+			  },
+			  defaultView: 'month',
+			  visibleRange: function(currentDate) {
+		          return {
+		            start: currentDate.clone().subtract(1, 'days'),
+		            end: currentDate.clone().add(7, 'days') // exclusive end, so 3
+		          };
+		      },
+		      lang: "ko",
+		      events: function(start, end, timezone, callback){
+		    	  
+		    	  var data = {"fk_pet_uid":$("#petUidNo").val()};
+		    	  
+		    	  $.ajax({
+		    		  url: "<%=request.getContextPath()%>/selectMyPrescription.pet",
+		    		  type: "GET",
+		    		  data: data,
+		    		  dataType: "JSON",
+		    		  success: function(json){
+		    			  var events=[];
+		    			  $.each(json, function(entryIndex,entry){
+		    				  
+		    				  events.push({
+		        					id: entry.chart_uid,
+		            				title: entry.chart_type, 
+		            				start: entry.reservation_date,
+		            				end: entry.reservation_date,
+		            				backgroundColor: "gray"
+		        				});
+		    			  });
+		    			  callback(events);
+		    		  },
+		    		  error: function(request, status, error){
+		        			if(request.readyState == 0 || request.status == 0) return;
+		        			//else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		        		}
+		    	  }); // end of ajax();
+		    	 
+		      }
+		      
+		  });
 	});// end of $(document).ready()----------------------
-	<!-- 0129-->
-<%-- function getNextmon(){
-
-	form_data={
-			startDay:${paramap.startDay},
-			endDay:${paramap.endDay},
-			start:${paramap.start},
-			todayCal:${paramap.todayCal},
-			startDay:${paramap.startDay},
-			sdf:${paramap.sdf},
-			intToday:${paramap.intToday},	
-			year:${paramap.year},
-			month:${paramap.month},
-			date:${paramap.date}
-	}	
-  $.ajax({
-	  url="<%=ctxPath%>/getCalendar.pet",
-	type="GET",
-	data: form_data,
-	dataType:JSON,
-	success:function(json){
-		var html1 =
-			    "<table width='100%' border='0' cellspacing='0' cellpadding='0'>"+
-	             "<tr>"+
-	             "<td height='10'>"+
-	              "</td></tr><tr>"+
-	              "<td align='center'>"+
-			      "<tr>"+
-                  "<td align='center'>"+
-                  "<a href='<c:url value=\'"+/getCalendar.pet+'/>?year='+json.year-1+'&amp;month='+json.month+'target='_self'>"+
-                  "<b>&lt;&lt;</b>"+
-                  "</a>";
-                <c:if test="json.month > 0">
-                  html1 += "<a href='<c:url value=\'"+/getCalendar.pet+'/>?year='+json.year+'&amp;month='+json.month-1+'target='_self''>"+
-                         "<b>&lt;</b>"+"</a>";<!-- 이전달 -->
-                </c:if>
-                <c:if test="json.month < 0">
-                     html1 += "<b>&lt;</b>&nbsp;&nbsp;";
-                </c:if>
-                   html1 +="<p>"+json.year+"년 </p>";
-                   html1 +="<p>"+json.month+1 +"월</p> &nbsp;&nbsp;";
-
-                <c:if test="json.month < 11">
-	                html1 += "<a href='<c:url value=\'"+/getCalendar.pet+'/>?year='+json.year+'&amp;month='+json.month+1+'target='_self'>"+
-	                         "<b>&gt;</b></a>";
-	                 
-	                 <c:if test="json.month > 11">
-	                   html1 += "<a href='<c:url value=\'"+/getCalendar.pet+'/>?year='+json.year+1+'&amp;month='+json.month+'target='_self'>"+
-	                            "<b>&gt;&gt;</b></a>";
-	                 </c:if>
-                    html1 +="</td></tr></table>";
-                 </c:if>
-              var html2 ="<TR bgcolor='#CECECE'>"+
-                   "<TD width='100px'>"+
-                   "<DIV align='center'>"+
-                   "<font color='red'>일</font></DIV></TD>"+
-                   "<TD width='100px'>"+
-                   "<DIV align='center'>월</DIV></TD>"+
-			        "<TD width='100px'>"+
-			        "<DIV align='center'>화</DIV></TD>"+
-			        "<TD width='100px'>"+
-			        "<DIV align='center'>수</DIV></TD>"+
-			        "<TD width='100px'>"+
-			        "<DIV align='center'>목</DIV></TD>"+
-			        "<TD width='100px'>"+
-			        "<DIV align='center'>금</DIV></TD>"+
-			        "<TD width='100px'>"+
-			        "<DIV align='center'><font color='#529dbc'>토</font></DIV></TD></TR>";
-            var html3="";
-			for(int json.index = 1; json.index < json.start ; json.index++ ){
-				  html3+="<TD >&nbsp;</TD>";
-				  json.newLine++;
-			     }
-			for(int json.index = 1; json.index <= json.endDay; json.index++){
-			       
-		       String color = "";
-
-		         if(json.newLine == 0){         
-		        	   color = "RED";
-                    }else if(json.newLine == 6){    
-                    	color = "#529dbc";
-                    }else{ 
-                        color = "BLACK";}
-
-		       String sUseDate = Integer.toString(json.year); 
-
-		       sUseDate += Integer.toString(json.month+1).length() == 1 ? "0" + Integer.toString(json.month+1) : Integer.toString(json.month+1);
-
-		       sUseDate += Integer.toString(json.index).length() == 1 ? "0" + Integer.toString(json.index) : Integer.toString(json.index);
-
-		       int iUseDate = Integer.parseInt(sUseDate);
-
-		       String backColor = "#EFEFEF";
-
-		       if(iUseDate ==json.intToday ) {
-
-		             backColor = "#c9c9c9";
-		       } 
-			   
-		       html3=+"<TD valign='top' align='left' height='92px' bgcolor='"+backColor+"' nowrap>";
-
-		      if(json.iUseDate == json.intToday ) {
-		        	    backColor = "#c9c9c9";
-
-		               } 
-		           html3 +="<TD valign='top' align='left' height='92px' bgcolor='"+backColor+"' nowrap>"+
-                           "<font color=json.paramap.color>"+json.index+"</font>";
-
-                    html3 +="<BR>"+
-                            "<p>"+json.iUseDate+"</p>"
-                            "<BR>";
-		               //기능 제거  
-                    html3 +="</TD>";
-
-		               json..newLine++;
-
-		               if(json.newLine == 7){
-		            	   html3 +="</TR>";
-		                 if(json.index <= json.endDay)
-		                 {
-		                	html3 +="<TR>";
-		                 }
-		                 json.newLine=0;
-
-		               }
-		        }
-
-		        //마지막 공란 LOOP
-
-		        while(json.newLine > 0 && json.newLine < 7){
-		           html3 += "<TD>&nbsp;</TD>";
-		           json.newLine++;
-		        }
-
-		     $("#months").html(html1);
-		     $("#weeks").html(html2);
-		     $("#days").html(html3);
-	},error: function(request, status, error){ 
-        alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-    }
-  });//end of ajax
-	 --%>	
-	}
+	
+	
 </script>
 <div class="container divbox1">
    <h3 class="h3_1">진료기록 관리하기</h3>
    <div class="row" >
    
-	   <c:forEach items="${petlist}" var="pvo" varStatus="status">
+	   <c:forEach items="${pmaplist}" var="pvo" varStatus="status">
 		    <div class="col-md-3" style="display:inlineblock;float:left;">
-		    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" id="petimg"  width="50%"style="border-radius: 50%;display:block;"> 
+		    <input type="hidden" value="${pvo.pet_UID}" id="imgpuid${pvo.pet_UID}">
+		    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" class="petimg petUid${pvo.pet_UID}" width="50%"style="border-radius: 50%;display:block;"> 
 		    <span style="font-weight: bold;padding-left: 10%;">[${pvo.pet_name}] 님</span>
 		    </div>
 	    </c:forEach>
@@ -333,53 +199,18 @@ color:rgb(252, 118, 106);
   
   <div class="divbox3">
 	   <div class="container" Style="width:100%;">
-		  <c:forEach items="${petlist}" var="pvo" >
-			  <p style="padding-top:1%;">생년월일: ${pvo.pet_birthday}</p>
-			  <p>성별:   ${pvo.pet_gender}</p>
-			  <p>몸무게: ${pvo.pet_weight} kg</p>
-		  </c:forEach>
+	   <input type="text" id="petUidNo" value="${minpinfo.pet_UID}">
+			  <p style="padding-top:1%;">생년월일: ${minpinfo.pet_birthday}</p>
+			  <p>성별:   ${minpinfo.pet_gender}</p>
+			  <p>몸무게: ${minpinfo.pet_weight} kg</p>
 	   </div>
   </div>
   
-<div class="divbox4" id="content" style="width:712px" >
-	
-<table width="100%" border="0" cellspacing="1" cellpadding="1">
-<!-- 버튼  -->
-<tr>
-     <td align ="right">
-
-       <input type="hidden" onclick="javascript:location.href='<c:url value='/InsertMyPrescription.pet' />'" value="오늘"/>
-
-     </td>
-</tr> 
-
-</table>
-
-<!--날짜 네비게이션  -->
-
-<table width="100%" border="0" cellspacing="1" cellpadding="1" id="KOO" bgcolor="#F3F9D7" style="border:1px solid #CED99C">
-	<tr>
-		<td height="60">
-		    <div id="months"></div>
-		</td>
-	</tr>
-</table>
-<br>
-
-<table border="0" cellspacing="1" cellpadding="1" bgcolor="#FFFFFF">
-
-<THEAD>
-<div id="weeks"></div>
-</THEAD>
-
-<TBODY>
-<TR>
-<div id="days"></div>
-</TR>
-</TBODY>
-</TABLE>
-</DIV>
-</div>  
+<div class="divbox4" id="content" style="width:100%" >
+	<div id="calendar">
+	</div>
+</div>
+ <!-- 달력칸  -->
  
 <div class="tab-content divbox5 container">
    <div class="container" Style="width:100%;">
@@ -421,7 +252,7 @@ color:rgb(252, 118, 106);
         </form>
         <button type="button" class="btn2" id="register">등록하기</button>
     </div>
-   </div>
-
+   
+</div>
 
 
