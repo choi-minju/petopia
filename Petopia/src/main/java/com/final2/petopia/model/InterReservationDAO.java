@@ -101,5 +101,9 @@ public interface InterReservationDAO {
 //	[190131] 일반회원, 기업회원이 보는 예약상세 요소 분리
 	HashMap<String, String> selectRvDetailByPUIDForMember(String payment_UID);
 	HashMap<String, String> selectRvDetailByPUIDForBiz(String payment_UID);
+	
+//	[190202]
+//	#예약VO로 예약테이블에 insert하기; 결제O
+	int insertReservationSurgeryByRvo2(ReservationVO rvo);
 
 }

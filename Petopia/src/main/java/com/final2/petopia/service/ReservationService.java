@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.tools.ant.util.SymbolicLinkUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -318,18 +319,20 @@ public class ReservationService implements InterReservationService{
 		}
 		
 		if(n1==1) {
-			reservation_UID = dao.selectReservation_Seq();	// 4. 예약테이블 시퀀스 채번
+//			reservation_UID = dao.selectReservation_Seq();	// 4. 예약테이블 시퀀스 채번
 			rvo.setFk_schedule_UID(schedule_UID);
-			rvo.setReservation_UID(reservation_UID);
+/*			rvo.setReservation_UID(reservation_UID);
+			System.out.println("reservation_UID: "+reservation_UID);*/
 			if(rvo.getReservation_type().equals("3") && rvo.getReservation_status().equals("1")) {
-				n2 = dao.insertReservationSurgeryByRvo(rvo);	// 5-1. 예약 테이블에 새로운 일정 insert
+				n2 = dao.insertReservationSurgeryByRvo2(rvo);	// 5-1. 예약 테이블에 새로운 일정 insert
+				System.out.println("reservation_UID; n2: "+n2);
 			}
 			else {
 				n2 = dao.insertReservationByRvo(rvo);	// 5-2. 예약 테이블에 새로운 일정 insert
 			}
 		}
 		
-		if(n2==1) {
+		if(n2!=0) {
 			paraMap.put("status", "0");
 			n3 = dao.updateScheduleStatusBySUID(paraMap);	// 6. 기존 스케줄 스테이터스 0으로 변경
 			
@@ -340,7 +343,8 @@ public class ReservationService implements InterReservationService{
 		
 		if(n3*n4==1) {
 			if(rvo.getReservation_type().equals("3") && rvo.getReservation_status().equals("2")) {
-				paraMap.put("n_reservation_UID", reservation_UID);
+				paraMap.put("n_reservation_UID", String.valueOf(n2));
+				System.out.println("n_reservation_UID/reservation_UID: "+paraMap.get("n_reservation_UID")+"/"+paraMap.get("reservation_UID"));
 				n5 = dao.updatePaymentReservationUID(paraMap);	// 8. 수술인 경우 payment테이블의 예약UID 변경
 				
 				if(n5==1) {

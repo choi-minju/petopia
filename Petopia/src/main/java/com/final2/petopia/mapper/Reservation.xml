@@ -366,4 +366,15 @@
 		on i.pet_UID = r.fk_pet_UID
 		where d.depositcoin!=0 and p.payment_UID=#{payment_UID}
 	</select>
+	
+	
+	
+	<!-- #예약VO로 예약테이블에 insert하기; 결제가 있는 예약 -->
+	<insert id="insertReservationSurgeryByRvo2" parameterType="com.final2.petopia.model.ReservationVO">
+		insert into reservation(reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, bookingdate, reservation_DATE, reservation_status, reservation_type)
+		values(seq_reservation_UID.nextval, #{fk_idx}, #{fk_idx_biz}, #{fk_schedule_UID}, #{fk_pet_UID}, default, to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi'), 2, #{reservation_type})
+		<selectKey keyProperty="reservation_UID" resultType="String" order="AFTER">
+			select seq_reservation_UID.currval from dual
+		</selectKey>
+	</insert>
 </mapper>

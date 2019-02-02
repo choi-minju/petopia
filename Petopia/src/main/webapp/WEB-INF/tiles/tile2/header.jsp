@@ -271,9 +271,9 @@
 					<div class="row">
 						<div class="col-md-3"></div>
 						<div class="column" id="bizMember">
-							<a href="<%= ctxPath %>/bizMemberInfo.pet'">병원정보관리</a>
-							<a href="<%= ctxPath %>/bizDepositAccount.pet'">예치금관리</a>
-							<a href="<%= ctxPath %>/bizReviewList.pet'">우리병원리뷰</a>
+							<a href="<%= ctxPath %>/bizMemberInfo.pet">병원정보관리</a>
+							<a href="<%= ctxPath %>/bizDepositAccount.pet">예치금관리</a>
+							<a href="<%= ctxPath %>/bizReviewList.pet">우리병원리뷰</a>
 						</div>
 						<div class="column" id="bizReservation">
 							<a href="<%= ctxPath %>/bizReservationList.pet">병원예약관리</a>
