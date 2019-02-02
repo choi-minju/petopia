@@ -81,6 +81,14 @@ public class CareService implements InterCareService {
 	}
 
 
+	//===== 케어관리페이지 요청 =====
+	@Override
+	public List<HashMap<String, String>> getPetcare(String pet_UID) {
+		List<HashMap<String,String>> list = dao.getPetcare(pet_UID);
+		return list;
+	}
+
+
 	
 
 }

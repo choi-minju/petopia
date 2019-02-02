@@ -20,7 +20,7 @@ public interface InterSearchService {
 	public List<Biz_MemberVO> getBizmemListBySearchWord(String whereNo, String searchWord, String numbers, String orderbyNo);
 
 	// 맞춤추천 : 로그인 유저의 idx를 기준으로 biz_member 정보 리스트 불러오기 
-	public List<Biz_MemberVO> getBizmemListByidx(int loginuser_idx, String orderbyNo);
+	public List<Biz_MemberVO> getBizmemListByidx(int loginuser_idx, String orderbyNo, String numbers);
 
 	// 맞춤추천 : 병원/약국 수 보내기
 	public int getCntForRecomm(int loginuser_idx);

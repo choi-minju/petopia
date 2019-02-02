@@ -6,6 +6,11 @@
       margin: 0 auto;
    }
    
+   textarea {
+        resize:none;
+        width:80%;
+   }
+   
    .profile label {
       display: inline-block;
       padding: 3% 4%;
@@ -52,8 +57,8 @@
    }
    
    .radius-box {
-       width: 150px;
-       height:150px;
+       width: 100%;
+       height:100%;
        object-fit: cover;
        object-position: top;
        border-radius: 50%;
@@ -86,7 +91,7 @@
       margin-top:10px;
    }
    
-   .fl ul>li{
+   .fl ul>li{ /* 클래스가 fl인 ul태그의 밑에 있는 li에 스타일을 준다. */
       display:inline;
       width:100%;
    }
@@ -162,7 +167,7 @@
                <input type="hidden" name="fk_idx" value="${loginuser.idx}" />
             
                <div class="col-sm-offset-2 preview-image" style="margin-bottom: 20px;">
-                  <div class="row">
+                  <div class="row" style="margin-bottom:20px;">
                      <div class="col-sm-3 m-10">
                         <div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
                            <label for="input-file">프로필</label> 
@@ -208,7 +213,7 @@
                   </div>
 
                   <!-- Multiple Radios (inline) -->
-                  <div class="row">
+                  <div class="row m-10">
                      <div class="col-sm-12 m-10 fl">
                         <span class="frmQ">몸무게를 입력해주세요(선택)</span>
                         <ul>
@@ -280,23 +285,21 @@
                   <div class="row">
                      <div class="m-10 col-sm-12">
                         <div class="frmQ">과거병력 / 수술력을 입력해주세요(선택)</div>
-                        <textarea id="content" name="medical_history" rows="10" cols="100" style="width: 95%; height: 212px;" placeholder="과거 병력 / 수술력을 입력해주세요."></textarea>
+                        <textarea id="content" name="medical_history" rows="10" cols="100" style="height: 212px;" placeholder="과거 병력 / 수술력을 입력해주세요."></textarea>
                      </div>
                      <div class="am-10 col-sm-12">
                         <div class="frmQ">알러지 입력해주세요(선택)</div>
-                        <textarea id="content" name="allergy" rows="10" cols="100" style="width: 95%; height: 212px;" placeholder="알려지 종류를 입력해주세요"></textarea>
-                     </div>
-                  </div>
-                  
-                  <div class="row">
-                     <div class="col-sm-12" style="text-align:center;margin-top:15px;">
-                        <button type="button" id="btnRegister">등록</button>
-                        <button type="button" onclick="javascript:history.back();">취소</button>
+                        <textarea id="content" name="allergy" rows="10" cols="100" style="height: 212px;" placeholder="알려지 종류를 입력해주세요"></textarea>
                      </div>
                   </div>
                   
                </div><!-- //preview-image -->
             </form>
+            
+             <div class="col-sm-12" style="text-align:center;margin-bottom:30px;">
+                <button type="button" id="btnRegister" class="btn btn-rounder btnmenu">등록</button>
+                <button type="button" class="btn btn-rounder btnmenu" style="color: white; background-color: gray;" onclick="javascript:history.back();">취소</button>
+             </div>
          </div>
       </div>
    </div>

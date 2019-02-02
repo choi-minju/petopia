@@ -54,8 +54,8 @@ public class SearchService implements InterSearchService {
 
 	// 맞춤추천 : 로그인 유저의 idx를 기준으로 biz_member 정보 리스트 불러오기 
 	@Override
-	public List<Biz_MemberVO> getBizmemListByidx(int loginuser_idx, String orderbyNo) {
-		List<Biz_MemberVO> bizmemList = dao.getBizmemListByidx(loginuser_idx, orderbyNo);
+	public List<Biz_MemberVO> getBizmemListByidx(int loginuser_idx, String orderbyNo, String numbers) {
+		List<Biz_MemberVO> bizmemList = dao.getBizmemListByidx(loginuser_idx, orderbyNo, numbers);
 		return bizmemList;
 	}
 

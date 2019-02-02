@@ -319,7 +319,7 @@
 	
 	function goInfo(idx) {
 
-		<%-- location.href = "<%= cxtPath%>/search.pet?searchWord="+idx; --%>
+		location.href = "<%= cxtPath%>/bizDetail.pet?idx_biz="+idx;
 		
 	}
 	
