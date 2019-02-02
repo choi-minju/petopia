@@ -2,14 +2,12 @@ package com.final2.petopia.service;
 
 import java.util.HashMap;
 import java.util.List;
-
 import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.PetVO;
 import com.final2.petopia.model.ReservationVO;
 
 public interface InterChartService {
 
-	List<PetVO> selectpetlist(int idx); // 펫정보 가져오기 
 	
 	int insertmychart(HashMap<String, String> mychartmap);
 
@@ -57,6 +55,18 @@ public interface InterChartService {
 
 	//0201 캘린더에 넣을 리스트 가져오기 
 	List<HashMap<String, String>> selectMyPrescription(String fk_pet_uid);
+
+	//0202 회원이 보유한 반려동물 수 알아오기 
+	int getPetmaribyidx(int idx);
+
+	//0202pet_uid가 가장 작은 동물의 puid 알아오기 
+	int getMinpuidbyidx(int idx);
+    
+	//0202petuid가 가장 작은 동물의 정보 가져오기 
+	HashMap<String, String> getPinfobyminpuid(int minpuid);
+
+	//0202 idx로 반려동물의 이미지와 이름 리스트 불러오기 
+	List<HashMap<String, String>> getPmapListbyidx(int idx);
 
 	
 

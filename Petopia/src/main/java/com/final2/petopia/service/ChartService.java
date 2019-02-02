@@ -17,12 +17,6 @@ public class ChartService implements InterChartService {
 	@Autowired
     private InterChartDAO dao;
 
-	//펫uid로 펫정보 가져오기 
-	@Override
-	public List<PetVO> selectpetlist(int pet_uid) {
-		List<PetVO> petlist =dao.selectpetlist(pet_uid);
-		return petlist;
-	}
 	
 	//마이페이지에서 처방전 입력하기 
 	@Override
@@ -156,6 +150,31 @@ public class ChartService implements InterChartService {
 		public List<HashMap<String, String>> selectMyPrescription(String fk_pet_uid) {
 			List<HashMap<String, String>> callist=dao.selectMyPrescription(fk_pet_uid);
 			return callist;
+		}
+		
+		//0202 회원이 보유한 펫 마리수 가져오기 
+		@Override
+		public int getPetmaribyidx(int idx) {
+			int pnum =dao.getPetmaribyidx(idx);
+			return pnum;
+		}
+		//0202 pet_uid가 가장 작은 동물의 puid 알아오기
+		@Override
+		public int getMinpuidbyidx(int idx) {
+			int minpuid = dao.getMinpuidbyidx( idx);
+			return minpuid;
+		}
+		//0202 가장 작은 petuid를 가진 동물의 정보 가져오기 
+		@Override
+		public HashMap<String, String> getPinfobyminpuid(int minpuid) {
+			HashMap<String, String> minpinfo =dao.getPinfobyminpuid(minpuid);
+			return minpinfo;
+		}
+		//0202 idx로 반려동물의 이미지와 이름 리스트 불러오기
+		@Override
+		public List<HashMap<String, String>> getPmapListbyidx(int idx) {
+			List<HashMap<String, String>> pmaplist= dao.getPmapListbyidx(idx);
+			return pmaplist;
 		}
 
 		
