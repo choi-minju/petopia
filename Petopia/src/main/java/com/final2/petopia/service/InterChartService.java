@@ -55,6 +55,9 @@ public interface InterChartService {
 
 	List<HashMap<String, String>> selectPre(HashMap<String, String> map); //병원 차트페이지에서 처방전 부분 
 
+	//0201 캘린더에 넣을 리스트 가져오기 
+	List<HashMap<String, String>> selectMyPrescription(String fk_pet_uid);
+
 	
 
 

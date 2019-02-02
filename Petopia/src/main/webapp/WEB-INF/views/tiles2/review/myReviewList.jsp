@@ -134,7 +134,7 @@
 									+'<div class="col-sm-3">'
 										+'<div class="col-offset-sm-2 col-sm-8" style="padding-top: 25px;">'
 											+'<div class="col-sm-12">'
-												+'<img class="profile" style="border-radius: 100%;" width="100%" height="" src="<%=request.getContextPath() %>/resources/img/member/profiles/'+entry.PET_PROFILEIMG+'">'
+												+'<img class="profile" style="border-radius: 100%;" width="100%" height="" src="<%=request.getContextPath() %>/resources/img/care/'+entry.PET_PROFILEIMG+'">' /* === 2019.02.01 === 수정 */
 											+'</div>'
 											+'<div class="col-sm-12" align="center" style="margin-top: 15px;">'
 												+'<span style="font-weight: bold;">'+entry.PET_NAME+'</span>님'

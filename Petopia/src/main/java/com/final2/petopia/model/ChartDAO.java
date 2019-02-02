@@ -156,6 +156,13 @@ import org.springframework.stereotype.Repository;
 				List<HashMap<String, String>> pmap2list = sqlsession.selectList("chart.selectPre",map);
 				return pmap2list;
 			}
+
+			//0201 캘린더에 넣을 정보 리스트 가벼오기 
+			@Override
+			public List<HashMap<String, String>> selectMyPrescription(String fk_pet_uid) {
+				List<HashMap<String, String>> calist =sqlsession.selectList("chart.selectMyPrescription", fk_pet_uid);
+				return calist;
+			}
 			
 			
 	}
