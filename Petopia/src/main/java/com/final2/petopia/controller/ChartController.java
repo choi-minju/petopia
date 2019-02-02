@@ -32,13 +32,14 @@ import com.final2.petopia.service.InterChartService;
 @Controller
 @Component
 public class ChartController {
+	//0202 requireLogin 
 	
 	// ===== #35. 의존 객체 주입하기 (DIL Dependency Injection) =====
 		@Autowired
 		private InterChartService service;
 		
 		@RequestMapping(value = "/SelectMyPrescription.pet", method = { RequestMethod.GET })
-		public String SelectMyChart(HttpServletRequest req) {
+		public String requireLogin_SelectMyChart(HttpServletRequest req) {
 			
 		
 		    
@@ -55,73 +56,43 @@ public class ChartController {
 			MemberVO loginuser= (MemberVO) session.getAttribute("loginuser");
 			
 			int idx = loginuser.getIdx();
-			System.out.println("idx: "+idx);
-		
-			List<PetVO> petlist = service.selectpetlist(idx); //펫 uid로 펫정보 가져오기 
-			req.setAttribute("petlist", petlist);
 
+			//0202 회원이 보유한 반려동물 수 가져오기 
+			int pnum = service.getPetmaribyidx(idx);
 		
+			String puid = req.getParameter("fk_pet_uid");
+			//0202 반려동물이  한 마리도 없을때 반려동물페이지로 이동 / 있을때 진료기록 관리페이지로 이동 
+			if(pnum==0) {
+				String loc=req.getContextPath()+"/petRegister.pet";
+				String msg="등록된 반려동물이 존재하지 않습니다. ";
+				
+				req.setAttribute("loc",loc);
+				req.setAttribute("msg",msg);
+				
+				return msg;
+			}else {
+				
+				//0202회원이 보유한 동물중  pet_UID가 가장 작은 동물의 puid  알아오기
+				int minpuid = service.getMinpuidbyidx(idx);
+				
+				//0202 pet_uid가 가장 작은 동물의 정보 불러오기 
+				HashMap<String, String> minpinfo=new HashMap<String,String>();
+				minpinfo = service.getPinfobyminpuid(minpuid);
+				
+				//0202 반려동물의 이미지와 이름을 리스트로 보여주기 
+				List<HashMap<String,String>> pmaplist =new ArrayList<HashMap<String,String>>();
+				pmaplist= service.getPmapListbyidx(idx);
+				
+				req.setAttribute("minpinfo", minpinfo);
+				req.setAttribute("minpuid", minpuid);
+                req.setAttribute("pmaplist", pmaplist);
+				return "chart/InsertMyPrescription.tiles2";
+			}
 			
-		    return "chart/InsertMyPrescription.tiles2"; 
+		    
 		
 		} //진료 내역 인서트 (마이 페이지에서)
-	/*	//달력 0129
-		@RequestMapping(value = "/getCalendar.pet", method = { RequestMethod.GET })
-		@ResponseBody
-		public HashMap<String,Object> getCalendar(HttpServletRequest req) {
-			//0129 달력 시작************************* 
-			Calendar cal = Calendar.getInstance();
-			String strYear = req.getParameter("year");
-			String strMonth = req.getParameter("month");
-			int year = cal.get(Calendar.YEAR);//2019
-			int month = cal.get(Calendar.MONTH);//0
-			int date = cal.get(Calendar.DATE); //29
-			
-			if(strYear != null){
-
-				  year = Integer.parseInt(strYear);
-				  month = Integer.parseInt(strMonth);
-
-			}else{
-
-			}
-
-			//년도/월 셋팅
-			cal.set(year, month, 1);
-			int startDay = cal.getMinimum(java.util.Calendar.DATE);//1 한 달의 첫날 
-			int endDay = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);//31
-			int start = cal.get(java.util.Calendar.DAY_OF_WEEK); //3  요일(3=화)
-			int newLine = 0;
-
-			//오늘 날짜 저장.
-			Calendar todayCal = Calendar.getInstance();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd");
-			int intToday = Integer.parseInt(sdf.format(todayCal.getTime()));  //20190129
-			 
-			//날짜 부분 
-			
-			//처음 빈공란 표시
-			
-
-
-			HashMap<String,Object> paramap = new HashMap<String,Object>();
-			
-			paramap.put("year", year);
-			paramap.put("month", month);
-			paramap.put("date", date);
-			paramap.put("startDay", startDay);
-			paramap.put("endDay", endDay);
-			paramap.put("start", start);
-			paramap.put("todayCal", todayCal);
-			paramap.put("sdf", sdf);
-			paramap.put("intToday", intToday);
-			paramap.put("newLine", newLine);
-			//달력 끝 
-			
-			return paramap;
-			
-		}//end of /getCalendar.pet
-*/
+	
 		//0201 캘린더에 넣을 정보 리스트 불러오기 
 		
 		@RequestMapping(value="/selectMyPrescription.pet", method={RequestMethod.GET})
@@ -132,7 +103,7 @@ public class ChartController {
 			List<HashMap<String, String>> callist = new ArrayList<HashMap<String, String>>();
 			callist=service.selectMyPrescription(fk_pet_uid);
 			
-			System.out.println("callist: "+callist.get(0).get("reservation_date"));
+			//System.out.println("callist: "+callist.get(0).get("reservation_date"));
 			
 			return callist;
 		} //
@@ -144,11 +115,6 @@ public class ChartController {
 			MemberVO loginuser= (MemberVO) session.getAttribute("loginuser");
 			
 			int idx = loginuser.getIdx();
-		
-		
-			
-			List<PetVO>petlist = service.selectpetlist(idx); //펫 uid로 펫정보 가져오기 
-			req.setAttribute("petlist", petlist);
 
 		
 		    
@@ -178,7 +144,7 @@ public class ChartController {
 	   
 		//01.24 0130  0131 병원 회원 페이지에서 인서트 창띄우기
 		@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
-		public String InsertChart(HttpServletRequest req) {
+		public String requireLogin_InsertChart(HttpServletRequest req) {
 			
 			String ruid=req.getParameter("reservation_UID"); 
 			String cuid =service.getChartuid(); // 차트번호 채번
@@ -268,7 +234,7 @@ public class ChartController {
 
 		//0131 병원 페이지에서 차트 셀렉트 하기 
 		@RequestMapping(value = "/SelectChart.pet", method = { RequestMethod.GET })
-		public String SelectChart(HttpServletRequest req) {
+		public String requireLogin_SelectChart(HttpServletRequest req) {
 			
 			String ruid=req.getParameter("reservation_UID");
 			String cuid=service.getChartuidbyruid(ruid); // 차트번호 알아오기 
@@ -311,7 +277,7 @@ public class ChartController {
 		
 		@RequestMapping(value = "/EditChart.pet", method = { RequestMethod.POST })
 
-		public String EditChart(HttpServletRequest req) {
+		public String requireLogin_EditChart(HttpServletRequest req) {
 			
 			String ruid=req.getParameter("fk_reservation_UID");
 			String cuid=req.getParameter("chart_UID");
@@ -344,7 +310,7 @@ public class ChartController {
 		//ajax로 캘린더에 스케줄 넣기 
 		@RequestMapping(value = "/selectReserveinfo.pet", method = { RequestMethod.GET })
 		@ResponseBody
-		public List<HashMap<String,String>> selectReserveinfo(HttpServletRequest req) {
+		public List<HashMap<String,String>> requireLogin_selectReserveinfo(HttpServletRequest req) {
 			 List<HashMap<String,String>> rlist =new ArrayList<HashMap<String,String>>();
 			HttpSession session = req.getSession();
 			MemberVO loginuser= (MemberVO) session.getAttribute("loginuser");

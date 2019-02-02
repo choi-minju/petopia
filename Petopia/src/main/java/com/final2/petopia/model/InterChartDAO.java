@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InterChartDAO {
 
-	List<PetVO> selectpetlist(int idx); //펫 uid로 펫정보 가져오기 
 	
 	int insertmychart(HashMap<String, String> mychartmap);//마이페이지에서 처방전 입력하기 
 	
@@ -58,6 +57,18 @@ public interface InterChartDAO {
 
 	//0201 캘린더에 넣을 리스트 가져오기 
 	List<HashMap<String, String>> selectMyPrescription(String fk_pet_uid);
+
+	//0202 회원이 보유한 펫 마리수 가져오기 
+	int getPetmaribyidx(int idx);
+    
+	//0202pet_uid가 가장 작은 동물의 puid 알아오기
+	int getMinpuidbyidx(int idx);
+	
+	//0202 가장 작은 petuid를 가진 동물의 정보 가져오기 
+	HashMap<String, String> getPinfobyminpuid(int minpuid);
+
+	//0202 idx로 반려동물의 이미지와 이름 리스트 불러오기
+	List<HashMap<String, String>> getPmapListbyidx(int idx);
 
 
 }

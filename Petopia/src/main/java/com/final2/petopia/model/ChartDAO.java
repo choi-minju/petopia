@@ -14,14 +14,6 @@ import org.springframework.stereotype.Repository;
 			private SqlSessionTemplate sqlsession;
 
 			
-			//펫uid로 펫정보 가져오기 
-			@Override
-			public List<PetVO> selectpetlist(int idx) {
-				List<PetVO> petinfo = sqlsession.selectList("chart.selectpetlist",idx);
-				
-				return petinfo;
-			}
-			
 			//마이페이지에서 처방전 입력하기 
 			@Override
 			public int insertmychart(HashMap<String, String> mychartmap) {
@@ -162,6 +154,30 @@ import org.springframework.stereotype.Repository;
 			public List<HashMap<String, String>> selectMyPrescription(String fk_pet_uid) {
 				List<HashMap<String, String>> calist =sqlsession.selectList("chart.selectMyPrescription", fk_pet_uid);
 				return calist;
+			}
+			//0202 회원이 보유한 펫 마리수 가져오기 
+			@Override
+			public int getPetmaribyidx(int idx) {
+				int pnum = sqlsession.selectOne("chart.getPetmaribyidx",idx);
+				return pnum;
+			}
+		   //0202pet_uid가 가장 작은 동물의 puid 알아오기
+			@Override
+			public int getMinpuidbyidx(int idx) {
+				int minpuid = sqlsession.selectOne("chart.getMinpuidbyidx",idx);
+				return minpuid;
+			}
+			//0202 가장 작은 petuid를 가진 동물의 정보 가져오기 
+			@Override
+			public HashMap<String, String> getPinfobyminpuid(int minpuid) {
+				HashMap<String, String> minpinfo = sqlsession.selectOne("chart.getPinfobyminpuid",minpuid);
+				return minpinfo;
+			}
+			//0202 idx로 반려동물의 이미지와 이름 리스트 불러오기
+			@Override
+			public List<HashMap<String, String>> getPmapListbyidx(int idx) {
+				List<HashMap<String, String>> pmaplist=sqlsession.selectList("chart.getPmapListbyidx",idx);
+				return pmaplist;
 			}
 			
 			
