@@ -263,4 +263,11 @@ public class ReservationDAO implements InterReservationDAO {
 		HashMap<String, String> resultMap = sqlsession.selectOne(ns+"selectRvDetailByPUIDForBiz", payment_UID);
 		return resultMap;
 	}
+	
+//	#예약VO로 예약테이블에 insert하기; 결제O
+	@Override
+	public int insertReservationSurgeryByRvo2(ReservationVO rvo) {
+		sqlsession.insert(ns+"insertReservationSurgeryByRvo2", rvo);
+		return Integer.parseInt(rvo.getReservation_UID());
+	}
 }
