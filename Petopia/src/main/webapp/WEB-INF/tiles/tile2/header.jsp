@@ -312,6 +312,8 @@
 						<div class="column" id="adminMember">
 							<a href="<%= ctxPath %>/adminMember.pet">일반회원</a>
 							<a href="<%= ctxPath %>/adminBiz_member.pet">병원회원</a>
+							<%-- [190203] 관리자 로그인 시  예약결제관리 추가 --%>
+							<a href="<%= ctxPath %>/adminPaymentList.pet">예약결제관리</a>
 						</div>
 						<div class="column" id="adminReview">
 						</div>
