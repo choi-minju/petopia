@@ -1,5 +1,6 @@
 package com.final2.petopia.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.final2.petopia.common.FileManager;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.service.InterReviewService;
 
@@ -24,6 +28,11 @@ public class ReviewController {
 	@Autowired
 	private InterReviewService service;
 	
+	// === 2019.02.03 === 파일 업로드를 위한 autowired //
+	@Autowired
+	private FileManager fileManager;
+	// === 2019.02.03 === 파일 업로드를 위한 autowired //
+	
 	@RequestMapping(value="/myReviewList.pet", method={RequestMethod.GET})
 	public String requireLogin_myReviewList(HttpServletRequest req, HttpServletResponse res) {
 		return "review/myReviewList.tiles2";
@@ -32,7 +41,7 @@ public class ReviewController {
 	
 	@RequestMapping(value="/selectMyReviewList.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public List<HashMap<String, String>> selectMyReviewList(HttpServletRequest req) {
+	public List<HashMap<String, String>> requireLogin_selectMyReviewList(HttpServletRequest req, HttpServletResponse res) {
 		
 		List<HashMap<String, String>> hosList = new ArrayList<HashMap<String, String>>();
 		
@@ -92,7 +101,7 @@ public class ReviewController {
 		} // end of if~else
 		
 		return hosList;
-	} // end of 
+	} // end of public List<HashMap<String, String>> requireLogin_selectMyReviewList(HttpServletRequest req, HttpServletResponse res)
 	// === 2019.01.28 ==== //
 	
 	// === 2019.01.29 ==== //
@@ -443,13 +452,61 @@ public class ReviewController {
 		return totalPage;
 	} // end of public int selectReviewListTotalPage(HttpServletRequest req)
 	
-	
+	// === 2019.02.03 === 시작 //
 	@RequestMapping(value="/reviewDetail.pet", method={RequestMethod.GET})
 	public String reviewDetail(HttpServletRequest req) {
+		String str_review_UID = req.getParameter("review_UID");
 		
-		return "";
-	}
-	
+		int review_UID = 0;
+		
+		if(str_review_UID == null || "".equals(str_review_UID)) {
+			str_review_UID = "0";
+		}
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> reviewMap = service.selectReviewByReview_UID(review_UID);
+		
+		req.setAttribute("reviewMap", reviewMap);
+		
+		return "review/reviewDetail.tiles2";
+	} // end of public String reviewDetail(HttpServletRequest req)
+	// === 2019.02.03 === 끝 //
 	// === 2019.01.31 ==== //
 	
+	// === 2019.02.03 ==== summerNote의 이미지 업로드 //
+	@RequestMapping(value="/summernoteImgUpload.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public String summernoteImgUpload(MultipartHttpServletRequest req) {
+		
+		MultipartFile uploadFile = req.getFile("uploadFile");
+		
+		String newFileName = "";
+		if(!uploadFile.isEmpty()) {
+			// 파일 경로
+			HttpSession session = req.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			String path = root+"resources"+File.separator+"img"+File.separator+"review";
+			
+			byte[] bytes = null; // 첨부파일을 WAS(톰캣)에 저장할때 사용되는 용도
+			
+			try {
+				bytes = uploadFile.getBytes(); // 첨부된 파일을 바이트 단위로 파일을 다 읽어오는 것
+				
+				newFileName = fileManager.doFileUpload(bytes, uploadFile.getOriginalFilename(), path);
+				// 첨부된 파일을 WAS(톰캣)의 디스크로 파일올리기를 하는 것
+				
+				//System.out.println(">>> 확인용 newFileName ==> "+newFileName);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} // end of try~catch
+		} // end of if
+		
+		return newFileName;
+	} // end of public String summernoteImgUpload(MultipartHttpServletRequest req)
+	// === 2019.02.03 ==== summerNote의 이미지 업로드 //
 }

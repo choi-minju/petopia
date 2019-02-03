@@ -657,4 +657,97 @@ public class ReservationController {
 		return "reservation/biz_depositList.tiles2";
 	}
 	
+//	[190203]
+//	#관리자 예약/예치금목록 페이지
+	@RequestMapping(value="adminPaymentList.pet", method= {RequestMethod.GET})
+	public String requireLogin_adminReservationList(HttpServletRequest req, HttpServletResponse res) {
+		List<HashMap<String, String>> paymentRvList = null;
+		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
+		String colname = req.getParameter("colname");
+		String search = req.getParameter("search");
+		
+		if(colname==null) {
+			colname="name";
+		}
+		if(search==null) {
+			search="";
+		}
+		HashMap<String, String> paraMap = new HashMap<String ,String>();
+		paraMap.put("colname", colname);
+		paraMap.put("search",search);
+
+//		2) 페이지 구분을 위한 변수 선언하기
+		int totalCount = 0;			// 조건에 맞는 총게시물의 개수
+		int sizePerPage = 10;		// 한 페이지당 보여줄 게시물 개수
+		int currentShowPageNo = 0;	// 현재 보여줄 페이지번호(초기치 1)
+		int totalPage = 0;			// 총 페이지 수(웹브라우저 상에서 보여줄 총 페이지의 개수)
+		
+		int startRno = 0;			// 시작행 번호
+		int endRno = 0;				// 마지막행 번호
+		
+		int blockSize = 3;			// 페이지바의 블럭(토막) 개수
+		
+//		3) 총 페이지수 구하기
+		if(search != null && !search.trim().equals("") && !search.trim().equals("null")) {
+//			a. 검색어가 있을 때(search!=null || search!="") 총 게시물 개수 구하기
+			totalCount = service.selectPaymentTotalCountWithSearch(paraMap);
+		}
+		else {
+//			b. 검색어가 없을 때(search==null || search=="") 총 게시물 개수 구하기
+			totalCount = service.selectPaymentTotalCountNoSearch();
+		}
+
+
+		totalPage=(int)Math.ceil((double)totalCount/sizePerPage);
+		
+//		4) 현재 페이지 번호 셋팅하기
+		if(str_currentShowPageNo == null) {
+//			게시판 초기 화면의 경우
+			currentShowPageNo=1;
+		}
+		else {
+//			특정 페이지를 조회한 경우
+			try {
+			currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+			if(currentShowPageNo<1 || currentShowPageNo>totalPage) {
+				currentShowPageNo = 1;
+			}
+			} catch(NumberFormatException e) {
+				currentShowPageNo = 1;
+			}
+		}
+		
+//		5) 가져올 게시글의 범위 구하기(기존 공식과 다른 버전)
+		startRno = ((currentShowPageNo-1) * sizePerPage)+1;
+		endRno = startRno+sizePerPage -1; 
+		
+//		6) DB에서 조회할 조건들을 paraMap에 넣기
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+//		7) 목록 가져오기
+		paymentRvList = service.selectPaymentRvListForAdmin(paraMap);
+
+//		#120. 페이지바 만들기(MyUtil에 있는 static메소드 사용)
+		String pageBar = "<ul>";
+		pageBar += MyUtil.getPageBarWithSearch(sizePerPage, blockSize, totalPage, currentShowPageNo, colname, search, "", "adminPaymentList.pet");
+		pageBar += "</ul>";
+		
+		HttpSession session = req.getSession();
+		session.setAttribute("readCountPermission", "yes");
+
+		req.setAttribute("paymentRvList", paymentRvList);
+		
+//		#페이지바 넘겨주기
+		req.setAttribute("pageBar", pageBar);
+		
+//		#currentURL 뷰로 보내기
+		String currentURL = MyUtil.getCurrentURL(req);
+		System.out.println(currentURL);
+		if(currentURL.substring(currentURL.length()-5).equals("?null")) {
+			currentURL = currentURL.substring(0 , currentURL.length()-5);
+		}
+		req.setAttribute("currentURL", currentURL);
+		return "reservation/adminPaymentList.tiles2";
+	}
 }
