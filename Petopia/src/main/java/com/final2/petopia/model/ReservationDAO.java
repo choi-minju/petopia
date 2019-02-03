@@ -270,4 +270,24 @@ public class ReservationDAO implements InterReservationDAO {
 		sqlsession.insert(ns+"insertReservationSurgeryByRvo2", rvo);
 		return Integer.parseInt(rvo.getReservation_UID());
 	}
+
+//	[190203]
+	@Override
+	public int selectPaymentTotalCountWithSearch(HashMap<String, String> paraMap) {
+		int totalCount = sqlsession.selectOne(ns+"selectPaymentTotalCountWithSearch", paraMap);
+		return totalCount;
+	}
+
+	@Override
+	public int selectPaymentTotalCountNoSearch() {
+		int totalCount = sqlsession.selectOne(ns+"selectPaymentTotalCountNoSearch");
+		return totalCount;
+	}
+
+//	#관리자 예약결제목록 가져오기
+	@Override
+	public List<HashMap<String, String>> selectPaymentRvListForAdmin(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> paymentRvList = sqlsession.selectList(ns+"selectPaymentRvListForAdmin", paraMap);
+		return paymentRvList;
+	}
 }

@@ -106,4 +106,11 @@ public interface InterReservationDAO {
 //	#예약VO로 예약테이블에 insert하기; 결제O
 	int insertReservationSurgeryByRvo2(ReservationVO rvo);
 
+//	[190203]
+	int selectPaymentTotalCountWithSearch(HashMap<String, String> paraMap);
+
+	int selectPaymentTotalCountNoSearch();
+
+	List<HashMap<String, String>> selectPaymentRvListForAdmin(HashMap<String, String> paraMap);
+
 }

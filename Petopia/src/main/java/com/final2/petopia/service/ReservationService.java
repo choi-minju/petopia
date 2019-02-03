@@ -464,4 +464,23 @@ public class ReservationService implements InterReservationService{
 		return resultMap;
 	}
 
+//	[190203]
+	@Override
+	public int selectPaymentTotalCountWithSearch(HashMap<String, String> paraMap) {
+		int totalCount = dao.selectPaymentTotalCountWithSearch(paraMap);
+		return totalCount;
+	}
+
+	@Override
+	public int selectPaymentTotalCountNoSearch() {
+		int totalCount = dao.selectPaymentTotalCountNoSearch();
+		return totalCount;
+	}
+
+	@Override
+	public List<HashMap<String, String>> selectPaymentRvListForAdmin(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> paymentRvList = dao.selectPaymentRvListForAdmin(paraMap);
+		return paymentRvList;
+	}
+
 }
