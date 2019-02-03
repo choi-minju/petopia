@@ -74,16 +74,16 @@
 	</select>
 	
 	<select id="getBizmemListByidx" parameterType="map" resultType="com.final2.petopia.model.Biz_MemberVO">		
-		select idx, name, latitude, longitude, prontimg, startpoint as avg_startpoint
+		select fk_idx as idx_biz, name, latitude, longitude, prontimg, startpoint as avg_startpoint
 		from
 		(
-		    select idx, name, latitude, longitude, prontimg, cnt
+		    select fk_idx, name, latitude, longitude, prontimg, cnt
 		    from
 		    (
 		        select fk_idx, count(*) as cnt
-		        from have_tag H JOIN member M
-		        on H.fk_idx = M.idx
-		        where fk_tag_uid in (select fk_tag_uid from have_tag where fk_idx = #{LOGINUSER_IDX}) and M.membertype = 2
+		        from have_tag H JOIN biz_info B
+		        on H.fk_idx = B.idx_biz
+		        where fk_tag_uid in (select fk_tag_uid from have_tag where fk_idx = #{LOGINUSER_IDX})
 		        group by fk_idx
 		        order by cnt desc
 		    ) V JOIN
@@ -103,12 +103,12 @@
 		    on M.idx = R.fk_idx_biz
 		    group by idx_biz
 		) X
-		on Y.idx = X.idx_biz
+		on Y.fk_idx = X.idx_biz
 		<if test="ORDERBYNO == 1"> <!-- 평점순 -->
 			order by cnt desc, startpoint desc
 		</if>
 		<if test="ORDERBYNO == 2"> <!-- 거리순 -->
-			order by cnt desc
+			order by ${NUMBERS}
 		</if>
 	</select>
 	
@@ -116,12 +116,12 @@
 		select count(*)
 		from
 		(
-		select fk_idx, count(*) as cnt
-		from have_tag H JOIN member M
-		on H.fk_idx = M.idx
-		where fk_tag_uid in (select fk_tag_uid from have_tag where fk_idx = #{LOGINUSER_IDX}) and M.membertype = 2
-		group by fk_idx
-		order by cnt desc
+		    select fk_idx, count(*) as cnt
+		    from have_tag H JOIN biz_info B
+		    on H.fk_idx = B.idx_biz
+		    where fk_tag_uid in (select fk_tag_uid from have_tag where fk_idx = #{LOGINUSER_IDX})
+		    group by fk_idx
+		    order by cnt desc
 		) V
 	</select>
 	
