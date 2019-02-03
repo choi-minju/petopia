@@ -87,7 +87,9 @@
 					$.each(json,function(entryIndex,entry){
 						html += '<tr>'
 									+'<td>'+entry.RNO+'</td>'
-									+'<td><a href="<%=request.getContextPath()%>/reviewDetail.pet?fk_review_UID='+entry.REVIEW_UID+'" class="Astyle">['+entry.FK_NICKNAME+'] 회원님의 ['+entry.NAME+'] 리뷰입니다.</a></td>'
+									/* === 2019.02.03 === 수정 */
+									+'<td><a href="<%=request.getContextPath()%>/reviewDetail.pet?review_UID='+entry.REVIEW_UID+'" class="Astyle">['+entry.FK_NICKNAME+'] 회원님의 ['+entry.NAME+'] 리뷰입니다.</a></td>'
+									/* === 2019.02.03 === 수정 */
 									+'<td>'+entry.FK_USERID+'</td>'
 									+'<td style="text-align: center;">';
 									for(var i=0; i<entry.STARTPOINT; i++) {
