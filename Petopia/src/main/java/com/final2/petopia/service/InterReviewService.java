@@ -47,5 +47,8 @@ public interface InterReviewService {
 	List<HashMap<String, String>> selectReviewListByPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
 	// === 2019.02.01 === //
 	
-	
+	// === 2019.02.03 === //
+	// *** 리뷰 디테일 *** //
+	HashMap<String, String> selectReviewByReview_UID(int review_UID);
+	// === 2019.02.03 === //
 }

@@ -56,6 +56,13 @@
 		// === 2019.01.29 === //
 		$(document).on('click', '.btn', function() {
 			$('.summernote').summernote({
+				// === 2019.02.03 === summernote수정 //
+				callbacks: { // 콜백을 사용
+                        // 이미지를 업로드할 경우 이벤트를 발생
+					    onImageUpload: function(files, editor, welEditable) {
+						    sendFile(files[0], this, welEditable);
+						}
+				},// === 2019.02.03 === summernote수정 //
 				placeholder: '병원,약국에 대한 리뷰를 작성해주세요.',
 		        tabsize: 2,
 		        height: 300,
@@ -202,6 +209,27 @@
 			}
 		}); // end of ajax
 	} // end of function hospitalListAppend(start)
+	
+	// === 2019.02.03 === summernote 이미지 업로드 //
+	/* summernote에서 이미지 업로드시 실행할 함수 */
+ 	function sendFile(file, editor, welEditable) {
+        // 파일 전송을 위한 폼생성
+ 		data = new FormData();
+ 	    data.append("uploadFile", file);
+ 	    $.ajax({ // ajax를 통해 파일 업로드 처리
+ 	        data : data,
+ 	        type : "POST",
+ 	        url : "<%=request.getContextPath()%>/summernoteImgUpload.pet",
+ 	        cache : false,
+ 	        contentType : false,
+ 	        processData : false,
+ 	        success : function(data) { // 처리가 성공할 경우
+ 	        	//이미지 경로
+                $('.summernote').summernote('insertImage', "<%=request.getContextPath()%>/resources/img/review/"+data);
+ 	        }
+ 	    });
+ 	} // end of function sendFile(file, editor, welEditable)
+	// === 2019.02.03 === summernote 이미지 업로드 //
 	
 	// 리뷰 작성 또는 리뷰 닫기
 	function showAddReview(index) {
@@ -360,11 +388,20 @@
 				
 				$("#reviewShow"+index).html(html);
 				
+				// === 2019.02.03 === summernote수정 //
 				$('.summernote').summernote({
+					callbacks: { // 콜백을 사용
+	                    // 이미지를 업로드할 경우 이벤트를 발생
+					    onImageUpload: function(files, editor, welEditable) {
+						    sendFile(files[0], this, welEditable);
+						}
+					},
 					placeholder: '병원,약국에 대한 리뷰를 작성해주세요.',
 			        tabsize: 2,
-			        height: 300
+			        height: 300,
+			        focus: true
 				});
+				// === 2019.02.03 === summernote수정 //
 			},
 			error: function(request, status, error){ 
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -417,10 +454,12 @@
 	// === 2019.01.30 === 끝 //
 
 	// === 2019.01.31 === 시작 //
+	// === 2019.02.03 === 시작 //
 	// 더보기 ==> 해당리뷰의 디테일 페이지로...
 	function goDetail(fk_review_UID) {
-		location.href = "<%=request.getContextPath()%>/reviewDetail.pet?fk_review_UID="+fk_review_UID;
+		location.href = "<%=request.getContextPath()%>/reviewDetail.pet?review_UID="+fk_review_UID;
 	} // end of function goDetail(fk_review_UID)
+	// === 2019.02.03 === 시작 //
 	// === 2019.01.31 === 끝 //
 </script>
 
