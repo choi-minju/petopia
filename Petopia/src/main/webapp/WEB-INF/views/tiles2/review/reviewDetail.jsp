@@ -61,10 +61,40 @@
 				</c:if>
 			</div>
 		</div>
-	</div>
 	
-	<form name="delReviewFrm">
-		<input type="hidden" name="review_UID"/>
-	</form>	
+		<form name="delReviewFrm">
+			<input type="hidden" name="review_UID"/>
+		</form>
+		
+		<%-- === 댓글 쓰기 === 예시 --%>
+		<div class="row">
+			<div class="col-sm-offset-1 col-sm-10">
+				<div class="col-sm-12" style="border: 1px solid #bfbfbf; border-radius: 10px;">
+					<div class="row">
+						<textarea class="form-control" id="rc_content" rows="5" placeholder="주제와 무관한 댓글, 악플은 삭제될 수 있습니다." style="border: none;resize: none;"></textarea>
+					</div>
+					<div class="row" align="right" style="border-top: 1px solid #bfbfbf;">
+						<div class="col-sm-offset-11 col-sm-1">
+							<button type="button" class="btn" style="margin-top: 2px; background-color: rgb(252, 118, 106); color: white; font-weight: bold; color: white;">등록</button>
+						</div>
+					</div>
+				</div>
+			
+				<div class="col-sm-12">
+					<span style="font-weight: bold;">댓글 <span>N</span>개</span>
+					<button type="button" class="btn" style="background-color: white;"><span class="glyphicon glyphicon-repeat"></span></button>
+				</div>
+			
+				<div class="col-sm-12" id="commentsResult" style="background-color: #f2f2f2;">
+					<div class="col-sm-12">
+						<span style="font-weight: bold;">000000@naver.com</span>
+					</div>
+					<div class="col-sm-12">
+						댓글댓글
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 <!-- ==== 2019.02.04 ==== -->
