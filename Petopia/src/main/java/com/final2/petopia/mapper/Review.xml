@@ -307,7 +307,7 @@
 		from 
 		(
 		    select review_UID, fk_idx_biz, fk_idx, fk_reservation_UID, startpoint, fk_userid, fk_nickname
-		            , rv_contents, rv_status, rv_blind, to_char(rv_writeDate, 'yy.mm.dd') as rv_writeDate
+		            , rv_contents, rv_status, rv_blind, to_char(rv_writeDate, 'yy.mm.dd hh24:mi:ss') as rv_writeDate
 		            , b.name as hosName
 		    from review a JOIN member b
 		    ON a.fk_idx_biz = b.idx
