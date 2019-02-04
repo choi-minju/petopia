@@ -290,4 +290,17 @@ public class ReservationDAO implements InterReservationDAO {
 		List<HashMap<String, String>> paymentRvList = sqlsession.selectList(ns+"selectPaymentRvListForAdmin", paraMap);
 		return paymentRvList;
 	}
+
+//	[190204]
+	@Override
+	public List<HashMap<String, String>> selectAdminPaymentRvListAll() {
+		List<HashMap<String, String>> returnList = sqlsession.selectList(ns+"selectAdminPaymentRvListAll");
+		return returnList;
+	}
+
+	@Override
+	public List<HashMap<String, String>> selectInfiniteScrollDownPaymentRvList(int rnoToStart) {
+		List<HashMap<String, String>> returnList = sqlsession.selectList(ns+"selectInfiniteScrollDownPaymentRvList", rnoToStart);
+		return returnList;
+	}
 }

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -659,7 +660,7 @@ public class ReservationController {
 	
 //	[190203]
 //	#관리자 예약/예치금목록 페이지
-	@RequestMapping(value="adminPaymentList.pet", method= {RequestMethod.GET})
+//	@RequestMapping(value="adminPaymentList.pet", method= {RequestMethod.GET})
 	public String requireLogin_adminReservationList(HttpServletRequest req, HttpServletResponse res) {
 		List<HashMap<String, String>> paymentRvList = null;
 		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
@@ -743,11 +744,43 @@ public class ReservationController {
 		
 //		#currentURL 뷰로 보내기
 		String currentURL = MyUtil.getCurrentURL(req);
-		System.out.println(currentURL);
 		if(currentURL.substring(currentURL.length()-5).equals("?null")) {
 			currentURL = currentURL.substring(0 , currentURL.length()-5);
 		}
 		req.setAttribute("currentURL", currentURL);
 		return "reservation/adminPaymentList.tiles2";
 	}
+
+//	[190204]
+	@RequestMapping(value="adminPaymentList.pet", method= {RequestMethod.GET})
+	public String requireLogin_adminPaymentRvListAll(HttpServletRequest req, HttpServletResponse res) {
+		List<HashMap<String, String>> returnList = service.selectAdminPaymentRvListAll();
+		req.setAttribute("paymentRvList", returnList);
+		return "reservation/adminPaymentList.tiles2";
+	}
+	
+	@RequestMapping(value="adminPaymentRvList_InfiniteScrollDown.pet", method= {RequestMethod.POST})
+	public @ResponseBody List<HashMap<String, String>> 
+		adminPaymentRvList_InfiniteScrollDown(HttpServletRequest req) {
+		
+		int rno = Integer.parseInt(req.getParameter("rno"));
+		int rnoToStart = rno-1;
+		
+		List<HashMap<String, String>> returnList = service.selectInfiniteScrollDownPaymentRvList(rnoToStart);
+	
+		return returnList;
+	}
+	@RequestMapping(value="adminPaymentRvList_InfiniteScrollUp.pet", method= {RequestMethod.POST})
+	public @ResponseBody List<HashMap<String, String>> 
+		adminPaymentRvList_InfiniteScrollUp(HttpServletRequest req) {
+		
+		int rno = Integer.parseInt(req.getParameter("rno"));
+		int rnoToStart = rno-1;
+		
+		List<HashMap<String, String>> returnList = service.selectInfiniteScrollDownPaymentRvList(rnoToStart);
+	
+		return returnList;
+	}
+	
+	
 }
