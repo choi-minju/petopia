@@ -282,4 +282,38 @@
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
 	</select>
 	<!-- === 2019.02.01 === -->
+	
+	<!-- === 2019.02.03 === -->
+	<!-- *** 리뷰 디테일 *** -->
+	<resultMap type="HashMap" id="reviewDetailMap">
+		<result property="REVIEW_UID"			column="review_UID"			javaType="String"/>
+		<result property="FK_IDX_BIZ"			column="fk_idx_biz"			javaType="String"/>
+		<result property="FK_IDX"				column="fk_idx"				javaType="String"/>
+		<result property="FK_RESERVATION_UID"	column="fk_reservation_UID"	javaType="String"/>
+		<result property="STARTPOINT"			column="startpoint"			javaType="String"/>
+		<result property="FK_USERID"			column="fk_userid"			javaType="String"/>
+		<result property="FK_NICKNAME"			column="fk_nickname"		javaType="String"/>
+		<result property="RV_CONTENTS"			column="rv_contents"		javaType="String"/>
+		<result property="RV_STATUS"			column="rv_status"			javaType="String"/>
+		<result property="RV_BLIND"				column="rv_blind"			javaType="String"/>
+		<result property="RV_WRITEDATE"			column="rv_writeDate"		javaType="String"/>
+		<result property="HOSNAME"				column="hosName"			javaType="String"/>
+		<result property="FILENAME"				column="fileName"			javaType="String"/>
+	</resultMap>
+	
+	<select id="selectReviewByReview_UID" parameterType="int" resultMap="reviewDetailMap">
+		select review_UID, fk_idx_biz, fk_idx, fk_reservation_UID, startpoint, fk_userid, fk_nickname
+		    , rv_contents, rv_status, rv_blind,rv_writeDate, hosName, c.fileName
+		from 
+		(
+		    select review_UID, fk_idx_biz, fk_idx, fk_reservation_UID, startpoint, fk_userid, fk_nickname
+		            , rv_contents, rv_status, rv_blind, to_char(rv_writeDate, 'yy.mm.dd') as rv_writeDate
+		            , b.name as hosName
+		    from review a JOIN member b
+		    ON a.fk_idx_biz = b.idx
+		    where rv_status = 1 and review_UID = #{review_UID}
+		) V JOIN member c
+		ON V.fk_idx_biz = c.idx		
+	</select>
+	<!-- === 2019.02.03 === -->
 </mapper>

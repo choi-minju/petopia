@@ -203,8 +203,8 @@ public class ReviewController {
 	} // end of public String requireLogin_updateMyReview(HttpServletRequest req, HttpServletResponse res)
 	
 	// *** 나의 병원리뷰에서 리뷰 삭제하기 *** //
-	@RequestMapping(value="/updateReviewStatus.pet", method={RequestMethod.POST})
-	public String requireLogin_updateReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res) {
+	@RequestMapping(value="/updateMyReviewStatus.pet", method={RequestMethod.POST}) // === 2019.02.04 === value 수정 //
+	public String requireLogin_updateMyReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res) { // === 2019.02.04 === 이름 수정 //
 		
 		String str_review_UID = req.getParameter("review_UID");
 		
@@ -232,7 +232,7 @@ public class ReviewController {
 		req.setAttribute("loc", loc);
 		
 		return "msg";
-	} // end of public String requireLogin_updateReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res)
+	} // end of public String requireLogin_updateMyReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res)
 	
 	// *** 나의 병원리뷰에서 더보기를 위한 전체 갯수 가져오기 *** //
 	@RequestMapping(value="/selectMyReviewTotalCount.pet", method={RequestMethod.GET})
@@ -509,4 +509,118 @@ public class ReviewController {
 		return newFileName;
 	} // end of public String summernoteImgUpload(MultipartHttpServletRequest req)
 	// === 2019.02.03 ==== summerNote의 이미지 업로드 //
+	
+	// === 2019.02.04 ==== //
+	// *** 리뷰 수정하는 페이지 보기 *** //
+	@RequestMapping(value="/editReview.pet", method={RequestMethod.GET})
+	public String requireLogin_editReview(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_review_UID = req.getParameter("review_UID");
+		
+		int review_UID = 0;
+		if(str_review_UID == null || "".equals(str_review_UID)) {
+			str_review_UID = "0";
+		}
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> reviewMap = service.selectReviewByReview_UID(review_UID);
+		
+		req.setAttribute("reviewMap", reviewMap);
+		
+		return "review/reviewEdit.tiles2";
+	} // end of public String requireLogin_editReview(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 리뷰 수정하기 *** //
+	@RequestMapping(value="/updateReview.pet", method={RequestMethod.POST})
+	public String requireLogin_updateReview(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_review_UID = req.getParameter("review_UID");
+		String str_startpoint = req.getParameter("startpoint");
+		String rv_contents = req.getParameter("rv_contents");
+	
+		// 번호
+		int review_UID = 0;
+		if(str_review_UID == null || "".equals(str_review_UID)) {
+			str_review_UID = "0";
+		}
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		} // end of try~catch
+		
+		// 별점
+		int startpoint = 0;
+		if(str_startpoint == null || "".equals(str_startpoint)) {
+			str_startpoint = "0";
+		}
+		
+		try {
+			startpoint = Integer.parseInt(str_startpoint);
+		} catch (NumberFormatException e) {
+			startpoint = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("STARTPOINT", String.valueOf(startpoint));
+		paraMap.put("REVIEW_UID", String.valueOf(review_UID));
+		paraMap.put("RV_CONTENTS", rv_contents);
+		
+		int result = service.updateReviewByReviewUID(paraMap);
+		
+		String msg = "";
+		String loc = "";
+		if(result == 0) {
+			msg = "리뷰 수정이 실패되었습니다.";
+			loc = "javascript:histroy.back();";
+		} else {
+			msg = "리뷰 수정되었습니다.";
+			loc = req.getContextPath()+"/reviewDetail.pet?review_UID="+review_UID;
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} // end of public String requireLogin_updateReview(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 리뷰 삭제하기 *** //
+	@RequestMapping(value="/updateReviewStatus.pet", method={RequestMethod.POST})
+	public String requireLogin_updateReviewStatus(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_review_UID = req.getParameter("review_UID");
+		
+		int review_UID = 0;
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		}
+		
+		int result = service.updateReviewStatusByReviewUID(review_UID);
+		
+		String msg = "";
+		String loc = "";
+		if(result == 0) {
+			msg = "리뷰 삭제가 실패되었습니다.";
+			loc = "javascript:histroy.back();";
+		} else {
+			msg = "리뷰 삭제되었습니다.";
+			loc = req.getContextPath()+"/allReviewList.pet";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} // end of public String requireLogin_updateReviewStatus(HttpServletRequest req, HttpServletResponse res)
+	
+	// === 2019.02.04 ==== //
 }

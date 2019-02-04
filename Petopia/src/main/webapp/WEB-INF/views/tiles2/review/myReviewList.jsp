@@ -429,7 +429,7 @@
 		var frm = document.delReviewFrm;
 		frm.review_UID.value = review_UID;
 		
-		frm.action = "<%=request.getContextPath()%>/updateReviewStatus.pet";
+		frm.action = "<%=request.getContextPath()%>/updateMyReviewStatus.pet"; /* === 2019.02.04 === action경로 수정 */
 		frm.method = "POST";
 		frm.submit();
 	} // end of function delReview(review_UID)
