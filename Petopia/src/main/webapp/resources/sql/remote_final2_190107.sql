@@ -689,6 +689,7 @@ CREATE TABLE notification (
 		check(not_readcheck in(0,1))
 );
 
+
 alter table notification drop constraint CK_not_type;
 
 alter table notification

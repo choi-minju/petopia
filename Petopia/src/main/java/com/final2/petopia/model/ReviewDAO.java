@@ -93,6 +93,40 @@ public class ReviewDAO implements InterReviewDAO {
 	} // end of public int updateReviewStatusByReviewUID(int review_UID)
 	// === 2019.01.30 ==== //
 
+	// === 2019.02.01 === //
+	// *** 전체 리뷰 갯수 *** //
+	// 기간X검색X
+	@Override
+	public int selectAllTotalCount(HashMap<String, String> paraMap) {
+		int totalCnt = sqlsession.selectOne("review.selectAllTotalCount", paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCount(HashMap<String, String> paraMap)
+
+	// 기간X검색o
+	@Override
+	public int selectAllTotalCountBySearch(HashMap<String, String> paraMap) {
+		int totalCnt = sqlsession.selectOne("review.selectAllTotalCountBySearch", paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountBySearch(HashMap<String, String> paraMap)
+
+	// 기간O검색X
+	@Override
+	public int selectAllTotalCountByPeriod(HashMap<String, String> paraMap) {
+		int totalCnt = sqlsession.selectOne("review.selectAllTotalCountByPeriod", paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountByPeriod(HashMap<String, String> paraMap)
+
+	// 기간O검색O
+	@Override
+	public int selectAllTotalCountByPeriodSearch(HashMap<String, String> paraMap) {
+		int totalCnt = sqlsession.selectOne("review.selectAllTotalCountByPeriodSearch", paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountByPeriodSearch(HashMap<String, String> paraMap)
+	
 	// === 2019.01.31 ==== //
 	// *** 전체 리뷰 목록 보기 *** //
 	// 기간X검색X
@@ -103,5 +137,41 @@ public class ReviewDAO implements InterReviewDAO {
 		return reviewList;
 	} // end of public List<HashMap<String, String>> selectReviewList(HashMap<String, String> paraMap)
 	// === 2019.01.31 ==== //
+
+	// === 2019.02.01 === //
+	// 기간X검색O
+	@Override
+	public List<HashMap<String, String>> selectReviewListBySearch(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = sqlsession.selectList("review.selectReviewListBySearch", paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListBySearch(HashMap<String, String> paraMap)
+
+	// 기간O검색X
+	@Override
+	public List<HashMap<String, String>> selectReviewListByPeriod(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = sqlsession.selectList("review.selectReviewListByPeriod", paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListByPeriod(HashMap<String, String> paraMap)
+
+	// 기간O검색O
+	@Override
+	public List<HashMap<String, String>> selectReviewListByPeriodSearch(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = sqlsession.selectList("review.selectReviewListByPeriodSearch", paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListByPeriodSearch(HashMap<String, String> paraMap)
+	// === 2019.02.01 === //
+	
+	// === 2019.02.03 === //
+	// *** 리뷰 디테일 *** //
+	@Override
+	public HashMap<String, String> selectReviewByReview_UID(int review_UID) {
+		HashMap<String, String> reviewMap = sqlsession.selectOne("review.selectReviewByReview_UID", review_UID);
+		
+		return reviewMap;
+	} // end of public HashMap<String, String> selectReviewByReview_UID(int review_UID)
+	// === 2019.02.03 === //
 }
 

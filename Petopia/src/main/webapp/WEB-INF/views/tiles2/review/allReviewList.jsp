@@ -23,22 +23,57 @@
 <script type="text/javascript">
 
 	$(document).ready(function(){
-		//showReviewList("1");
+		showReviewList("1");
 		// 기간 버튼 클릭하면
 		$(".periodBtn").click(function(){
 			$(".periodBtn").removeClass("addColor");
 			$(this).addClass("addColor");
 			
 			$("#period").val($(this).val());
+			showReviewList("1");
 		}); // end of $(".periodBtn").click();
+		
+		// 검색 버튼을 클릭하면
+		$("#searchBtn").click(function(){
+			if($("#searchWhat").val() == "") {
+				alert("검색 조건을 선택해주세요.");
+				
+				return;
+			} else if($("#searchContext").val() == "") {
+				alert("검색 내용을 입력해주세요.");
+				
+				return;
+			}
+			
+			showReviewList("1");
+		}); // end of $("#searchBtn").click();
+		
+		// 검색 enter
+		$("#search").keydown(function(event){
+			if($("#searchWhat").val() == "") {
+				alert("검색 조건을 선택해주세요.");
+				
+				return;
+			} else if($("#searchContext").val() == "") {
+				alert("검색 내용을 입력해주세요.");
+				
+				return;
+			}
+			
+			if(event.keyCode == 13) {
+				showReviewList("1");
+			}
+		});
 	}); // end of $(document).ready();
 	
+	// === 2019.02.01 === 시작 //
 	function showReviewList(currentPageNo) {
 		
 		var data = {"currentPageNo":currentPageNo,
 					"period":$("#period").val(),
 					"searchWhat":$("#searchWhat").val(),
-					"search":$("#search").val()};
+					"search":$("#searchContext").val()
+					};
 		
 		$.ajax({
 			url: "<%=request.getContextPath()%>/selectReviewList.pet",
@@ -46,15 +81,93 @@
 			data: data,
 			dataType: "JSON",
 			success: function(json){
-				alert(json.length);
+				
+				var html = "";
+				if(json.length > 0) {
+					$.each(json,function(entryIndex,entry){
+						html += '<tr>'
+									+'<td>'+entry.RNO+'</td>'
+									/* === 2019.02.03 === 수정 */
+									+'<td><a href="<%=request.getContextPath()%>/reviewDetail.pet?review_UID='+entry.REVIEW_UID+'" class="Astyle">['+entry.FK_NICKNAME+'] 회원님의 ['+entry.NAME+'] 리뷰입니다.</a></td>'
+									/* === 2019.02.03 === 수정 */
+									+'<td>'+entry.FK_USERID+'</td>'
+									+'<td style="text-align: center;">';
+									for(var i=0; i<entry.STARTPOINT; i++) {
+										html += '<img class="addStar" width="10px" height="10px" src="<%=request.getContextPath()%>/resources/img/review/star.png">';
+									} // 별 추가
+									
+									for(var i=0; i<5-entry.STARTPOINT; i++) {
+										html += '<img class="addStar" width="10px" height="10px" src="<%=request.getContextPath()%>/resources/img/review/star empty.png">';
+									} // 반별 추가
+
+									//html += '<span style="font-size: 10pt;">'+entry.STARTPOINT+'</span>';
+								html += '</td>'
+									+'<td style="text-align: center;">'+entry.RV_WRITEDATE+'</td>'
+								+'</tr>';
+					});
+				} else {
+					html += '<tr><td colspan="5" style="text-align: center;">해당하는 리뷰가 없습니다.</td></tr>';
+				}
+				
+				$("#result").html(html);
+				showPageBar(currentPageNo);
+			},
+			error: function(request, status, error){ 
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // end of ajax
+	} // end of function showReviewList(currentPageNo)
+	
+	function showPageBar(currentPageNo) {
+		var data = {"currentPageNo":currentPageNo,
+					"period":$("#period").val(),
+					"searchWhat":$("#searchWhat").val(),
+					"search":$("#searchContext").val()};
+		$.ajax({
+			url: "<%=request.getContextPath()%>/selectReviewListTotalPage.pet",
+			type: "GET",
+			data: data,
+			datatype: "JSON",
+			success: function(json){
+				var html = "";
+				
+				var totalPage = json;
+				var blockSize = 5;
+				var loop = 1;
+				
+				var pageNo = Math.floor((currentPageNo - 1)/blockSize) * blockSize + 1;
+				
+				if(pageNo != 1) {
+					html += "<li><a href=\"javascript:showReviewList("+(pageNo-1)+")\">이전</a></li>";
+				} // end of if
+				
+				while(!(loop > blockSize || pageNo > totalPage)) {
+					
+					if(pageNo == currentPageNo) {
+						html += "<li><a style='color:black;'>"+pageNo+"</a></li>";
+					} else {
+						html += "<li><a href=\"javascript:showReviewList("+pageNo+")\">"+pageNo+"</a></li>";
+					} // end of if~else
+						
+					pageNo++;
+					loop++;
+					
+				} // end of while
+					
+				if(!(pageNo > totalPage)) {
+					html += "<li><a href=\"javascript:showMemberList("+(pageNo+1)+")\">다음</a></li>";
+				} // end of if
+				
+				$("#pageBar").empty().html(html);
 			},
 			error: function(request, status, error){ 
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		}); // end of ajax
 		
-		
-	} // end of function showReviewList(currentPageNo)
+	} // end of function showPageBar()
+	
+	// === 2019.02.01 === 끝 //
 
 </script>
 
@@ -75,13 +188,15 @@
 						<div class="custom-select" style="width:20%; float: left;">
 	  						<select name="searchWhat" id="searchWhat" class="form-control">
 								<option value="">검색</option>
-								<option value="userid">아이디</option>
-								<option value="name">이름</option>
-								<option value="nickname">닉네임</option>
+								<%-- === 2019.02.01 === 수정 --%>
+								<option value="fk_userid">아이디</option>
+								<option value="fk_nickname">닉네임</option>
+								<option value="name">병원</option>
+								<%-- === 2019.02.01 === 수정 --%>
 							</select>
 						</div>
-						<input type="text" name="search" id="search" class="form-control" placeholder="Search.." style="width: 60%; float: left;">
-						<button type="button" class="btn addColor" id="searchBtn" style="width: 20%; height: 34px"><i class="fa fa-search"></i></button>
+						<input type="text" id="searchContext" class="form-control" placeholder="Search.." style="width: 60%; float: left;">
+						<button type="button" class="btn" id="searchBtn" style="width: 20%; height: 34px;background-color: rgb(252, 118, 106); color: white; font-weight: bold;"><i class="fa fa-search"></i></button>
 					</div>
 				</div>
 			</form>
@@ -97,26 +212,12 @@
 							<th width="7%" style="text-align: center;">번호</th>
 							<th width="50%" style="text-align: center;">제목</th>
 							<th width="20%" style="text-align: center;">아이디</th>
-							<th width="13%" style="text-align: center;">평점</th>
-							<th width="10%" style="text-align: center;">날짜</th>
+							<th width="10%" style="text-align: center;">평점</th>
+							<th width="13%" style="text-align: center;">날짜</th>
 						</tr>
 					</thead>
 					
-					<tbody id="result">
-						<tr>
-							<td>1</td>
-							<td><a href="<%=request.getContextPath()%>/reviewDetail.pet?fk_review_UID=1" class="Astyle">[민주] 회원님의 [ㅇㅇ동물병원] 리뷰입니다.</a></td>
-							<td>minju3667@naver.com</td>
-							<td>
-								<img class="addStar" width="10px" height="10px" src="<%=request.getContextPath()%>/resources/img/review/star.png">
-								<img class="addStar" width="10px" height="10px" src="<%=request.getContextPath()%>/resources/img/review/star.png">
-								<img class="addStar" width="10px" height="10px" src="<%=request.getContextPath()%>/resources/img/review/star.png">
-								<img class="addStar" width="10px" height="10px" src="<%=request.getContextPath()%>/resources/img/review/star empty.png">
-								<img class="addStar" width="10px" height="10px" src="<%=request.getContextPath()%>/resources/img/review/star empty.png">
-								<span style="font-size: 10pt;">3</span>
-							</td>
-							<td>2019.01.31</td>
-						</tr>
+					<tbody id="result"><%-- === 2019.02.01 === 임시 내용 삭제 --%>
 					</tbody>
 				</table>
 			</div>

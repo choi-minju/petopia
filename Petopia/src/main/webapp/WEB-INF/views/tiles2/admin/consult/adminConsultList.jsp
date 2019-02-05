@@ -26,9 +26,13 @@
 		searchKeep();
 		
 		$('.checkAll').click(function(){
-	          $('.checkSelect').prop('checked',this.checked);
-	      });
+	          $('.checkSelectAll').prop('checked',this.checked);
+	    });
 	  
+		$('.checkNoCount').click(function(){
+	          $('.checkSelectNoCount').prop('checked',this.checked);
+	    });
+		
 	}); // $(document).ready(function(){});
 	
 	// 뷰단에서 검색시 검색어 그대로 있도록
@@ -52,10 +56,12 @@
 		var frm = document.goDetailFrm;
 		frm.consult_UID.value = consult_UID;
 		frm.gobackURL.value = goBackURL;
-		frm.action = "AdminConsultDetail.pet";
+		frm.action = "adminConsultDetail.pet";
 		frm.method = "GET";
 		frm.submit();
 	}
+	
+	// 체크된 값들이 1개 이상일 경우 기업회원한테 알림메세지 보내기
 	
 	/*
 	var flag = false;
@@ -85,7 +91,8 @@
   <div class="row">
 	 <div class="col-xs-12 col-md-4" style="background-color: #ffffff;">
 		<form name="myConsultFrm" >
-		<button type="button" class="btn btnmenu btn-rounder"  style="border: 1px solid #fc766b; border-radius:50px; width:40%; height:4%; font-size:12px;" >
+		<input  type="checkbox" class="checkNoCount" id="noCount"><label for="noCount">&nbsp;미답변 선택&nbsp;&nbsp;</label>
+		<button type="button" class="btn btnmenu btn-rounder"  style="border: 1px solid #fc766b; border-radius:50px; width:40%; height:4%; font-size:12px;" onClick="goNotification();">
 		답변요청 알림보내기
 		</button>
 		</form>
@@ -109,7 +116,7 @@
  
     
     <div class="col-xs-12 col-md-12 row" style=" background-color:#f2f2f2; border-top: 1px solid #999; border-bottom: 1px solid #999; padding:1% 0% 1% 0%;">
-	    <div class="col-xs-2 col-md-2" ><input type="checkbox" class="checkAll"/>&nbsp;전체선택</div>
+	    <div class="col-xs-2 col-md-2" ><input type="checkbox" class="checkAll" id="all"/><label for="all">&nbsp;전체선택</label></div>
 	    <div class="col-xs-3 col-md-3" align="left">1:1상담제목</div>
 	    <div class="col-xs-3 col-md-3" align="center">작성자ID</div>
 	    <div class="col-xs-2 col-md-2" align="center">작성일자</div>
@@ -119,7 +126,15 @@
   
  	<c:forEach var="adminConsultvo" items="${AdminConsultList}">
 	    <div class="col-xs-12 col-md-12 row" style="padding:1% 0% 1% 0%;; border-bottom: 1px solid #999;" >
-	    	<div class="col-xs-2 col-md-2" ><input type="checkbox" class="checkSelect"/>&nbsp;${adminConsultvo.consult_UID}</div>
+	    	<div class="col-xs-2 col-md-2" >
+		    	<c:if test="${adminConsultvo.commentCount > 0 }">
+		    		<input type="checkbox" class="checkSelectAll" id="check${adminConsultvo.consult_UID}"/><label for="check${adminConsultvo.consult_UID}">&nbsp;${adminConsultvo.consult_UID}</label>
+		    	</c:if>
+		    	<c:if test="${adminConsultvo.commentCount == 0 }">
+		    		<input type="checkbox" class="checkSelectAll checkSelectNoCount" id="check${adminConsultvo.consult_UID}"/><label for="check${adminConsultvo.consult_UID}">&nbsp;${adminConsultvo.consult_UID}</label>
+		    	</c:if>
+	    	</div>
+	    	
 			<div class="col-xs-3 col-md-3 subject" align="left" onClick="goDetail('${adminConsultvo.consult_UID}', '${goBackURL}');">${adminConsultvo.cs_title}</div>
 			<div class="col-xs-3 col-md-3" align="center" >${adminConsultvo.userid}</div>
 			<div class="col-xs-2 col-md-2" align="center" >${adminConsultvo.cs_writeday}</div>

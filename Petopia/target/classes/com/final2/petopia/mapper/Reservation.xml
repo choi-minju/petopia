@@ -366,4 +366,174 @@
 		on i.pet_UID = r.fk_pet_UID
 		where d.depositcoin!=0 and p.payment_UID=#{payment_UID}
 	</select>
+	
+	
+	
+	<!-- #예약VO로 예약테이블에 insert하기; 결제가 있는 예약 -->
+	<insert id="insertReservationSurgeryByRvo2" parameterType="com.final2.petopia.model.ReservationVO">
+		insert into reservation(reservation_UID, fk_idx, fk_idx_biz, fk_schedule_UID, fk_pet_UID, bookingdate, reservation_DATE, reservation_status, reservation_type)
+		values(seq_reservation_UID.nextval, #{fk_idx}, #{fk_idx_biz}, #{fk_schedule_UID}, #{fk_pet_UID}, default, to_date(#{reservation_DATE}, 'yyyy-mm-dd hh24:mi'), 2, #{reservation_type})
+		<selectKey keyProperty="reservation_UID" resultType="String" order="AFTER">
+			select seq_reservation_UID.currval from dual
+		</selectKey>
+	</insert>
+	
+	
+	<!-- [190203] -->
+	<select id="selectPaymentTotalCountWithSearch" parameterType="HashMap" resultType="int">
+		select count(*)
+		from payment P join reservation R
+		on fk_reservation_UID = reservation_UID
+		join member M
+		on R.fk_idx = idx
+		join pet_info E
+		on E.pet_UID = R.fk_pet_UID
+		join biz_info B
+		on R.fk_idx_biz = B.idx_biz
+		join member T
+		on T.idx = B.idx_biz
+		where ${colname} like '%'||#{search}||'%'
+	</select>
+	
+	<select id="selectPaymentTotalCountNoSearch" parameterType="HashMap" resultType="int">
+		select count(*)
+		from payment P join reservation R
+		on fk_reservation_UID = reservation_UID
+		join member M
+		on R.fk_idx = idx
+		join pet_info E
+		on E.pet_UID = R.fk_pet_UID
+		join biz_info B
+		on R.fk_idx_biz = B.idx_biz
+		join member T
+		on T.idx = B.idx_biz
+	</select>
+	
+	<resultMap type="HashMap" id="rmap_adminPaymentRvList">
+		<result property="rno" column="rno" javaType="String"/>
+		<result property="payment_UID" column="payment_UID" javaType="String"/>
+		<result property="reservation_UID" column="reservation_UID" javaType="String"/>
+		<result property="payment_total" column="payment_total" javaType="String"/>
+		<result property="payment_point" column="payment_point" javaType="String"/>
+		<result property="payment_pay" column="payment_pay" javaType="String"/>
+		<result property="payment_date" column="payment_date" javaType="String"/>
+		<result property="payment_status" column="payment_status" javaType="String"/>
+		<result property="bookingdate" column="bookingdate" javaType="String"/>
+		<result property="reservation_date" column="reservation_date" javaType="String"/>
+		<result property="reservation_status" column="reservation_status" javaType="String"/>
+		<result property="reservation_type" column="reservation_type" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="phone" column="phone" javaType="String"/>
+		<result property="biz_name" column="biz_name" javaType="String"/>
+		<result property="biz_phone" column="biz_phone" javaType="String"/>
+		<result property="pet_name" column="pet_name" javaType="String"/>
+		<result property="pet_type" column="pet_type" javaType="String"/>
+	</resultMap>
+	
+	<select id="selectPaymentRvListForAdmin" parameterType="HashMap" resultMap="rmap_adminPaymentRvList">
+		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+		        , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+		        , name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		(
+		select rownum as rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+	        , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+	        , name, phone, biz_name, biz_phone, pet_name, pet_type
+	    from
+			(
+			select payment_UID, reservation_UID, payment_total, payment_point, payment_pay*-1 as payment_pay, to_char(payment_date, 'yyyy-mm-dd hh24:mi:ss') as payment_date
+		        , payment_status, to_char(bookingdate, 'yyyy-mm-dd hh24:mi:ss') as bookingdate
+		        , to_char(reservation_date, 'yyyy-mm-dd hh24:mi:ss') as reservation_date, reservation_status, reservation_type
+		        , M.name as name, M.phone as phone, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
+			from payment P join reservation R
+			on fk_reservation_UID = reservation_UID
+			join member M
+			on R.fk_idx = idx
+			join pet_info E
+			on E.pet_UID = R.fk_pet_UID
+			join biz_info B
+			on R.fk_idx_biz = B.idx_biz
+			join member T
+			on T.idx = B.idx_biz
+			where status = 1
+			<if test="search != '' and search != null and search !='null' ">
+			and ${colname} like '%'||#{search}||'%'
+			</if>
+			order by payment_UID desc
+			) V
+		) N
+		where rno between #{startRno} and #{endRno}
+		order by rno asc
+	</select>
+	
+	<!-- [190204] -->
+	<select id="selectAdminPaymentRvListAll" resultMap="rmap_adminPaymentRvList">
+	<![CDATA[ 
+		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+       		 	, payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+        		, name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		(
+		select rownum as rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+		    , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+		    , name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		    (
+		    select payment_UID, reservation_UID, payment_total, payment_point, payment_pay*-1 as payment_pay, to_char(payment_date, 'yyyy-mm-dd hh24:mi:ss') as payment_date
+		        , payment_status, to_char(bookingdate, 'yyyy-mm-dd hh24:mi:ss') as bookingdate
+		        , to_char(reservation_date, 'yyyy-mm-dd hh24:mi:ss') as reservation_date, reservation_status, reservation_type
+		        , M.name as name, M.phone as phone, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
+		    from payment P join reservation R
+		    on fk_reservation_UID = reservation_UID
+		    join member M
+		    on R.fk_idx = idx
+		    join pet_info E
+		    on E.pet_UID = R.fk_pet_UID
+		    join biz_info B
+		    on R.fk_idx_biz = B.idx_biz
+		    join member T
+		    on T.idx = B.idx_biz
+		    order by payment_UID desc
+		    ) V
+		) N
+		where rno<=10
+		order by rno asc
+	]]>
+	</select>
+	
+	<select id="selectInfiniteScrollDownPaymentRvList" resultMap="rmap_adminPaymentRvList" parameterType="int">
+	<![CDATA[ 
+		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+       		 	, payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+        		, name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		(
+		select rownum as rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+		    , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+		    , name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		    (
+		    select payment_UID, reservation_UID, payment_total, payment_point, payment_pay*-1 as payment_pay, to_char(payment_date, 'yyyy-mm-dd hh24:mi:ss') as payment_date
+		        , payment_status, to_char(bookingdate, 'yyyy-mm-dd hh24:mi:ss') as bookingdate
+		        , to_char(reservation_date, 'yyyy-mm-dd hh24:mi:ss') as reservation_date, reservation_status, reservation_type
+		        , M.name as name, M.phone as phone, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
+		    from payment P join reservation R
+		    on fk_reservation_UID = reservation_UID
+		    join member M
+		    on R.fk_idx = idx
+		    join pet_info E
+		    on E.pet_UID = R.fk_pet_UID
+		    join biz_info B
+		    on R.fk_idx_biz = B.idx_biz
+		    join member T
+		    on T.idx = B.idx_biz
+		    order by payment_UID desc
+		    ) V
+		) N
+		where rno<=#{rnoToStart}
+		and rno > #{rnoToStart}-10
+		order by rno asc
+	]]>
+	</select>
+	
 </mapper>
