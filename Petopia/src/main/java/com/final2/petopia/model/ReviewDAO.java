@@ -173,5 +173,42 @@ public class ReviewDAO implements InterReviewDAO {
 		return reviewMap;
 	} // end of public HashMap<String, String> selectReviewByReview_UID(int review_UID)
 	// === 2019.02.03 === //
+
+	// === 2019.02.05 === //
+	// *** 댓글 쓰기 *** //
+	// 댓글 insert
+	@Override
+	public int insertReviewComments(HashMap<String, String> paraMap) {
+		int result = sqlsession.insert("review.insertReviewComments", paraMap);
+		
+		return result;
+	} // end of public int insertReviewComments(HashMap<String, String> paraMap)
+
+	// 알림 insert
+	@Override
+	public int insertReviewNotification(HashMap<String, String> paraMap) {
+		int result = sqlsession.insert("review.insertReviewNotification", paraMap);;
+		
+		return result;
+	} // end of public int insertReviewNotification(HashMap<String, String> paraMap)
+	
+	// *** 댓글 목록 *** //
+	// 댓글 전체 갯수
+	@Override
+	public int selectReviewCommentsTotalCount(HashMap<String, Integer> paraMap) {
+		int totalCnt = sqlsession.selectOne("review.selectReviewCommentsTotalCount", paraMap);
+		
+		return totalCnt;
+	} // end of public int selectReviewCommentsTotalCount(HashMap<String, Integer> paraMap)
+
+	// 댓글 전체 리스트
+	@Override
+	public List<HashMap<String, String>> selectReviewCommentsListByReviewUID(HashMap<String, Integer> paraMap) {
+		List<HashMap<String, String>> reviewCommentsList = sqlsession.selectList("review.selectReviewCommentsListByReviewUID", paraMap);
+		
+		return reviewCommentsList;
+	} // end of public List<HashMap<String, String>> selectReviewCommentsListByReviewUID(HashMap<String, Integer> paraMap)
+	// === 2019.02.05 === //
+
 }
 
