@@ -44,10 +44,10 @@
 		$("#spinnerOqty1").spinner({
 	  	      spin: function( event, ui ) {
 	  	        if( ui.value > 10 ) {
-	  	          $( this ).spinner( "value", 0 ); 
+	  	          $( this ).spinner( "value", 1 ); 
 	  	          return false;
 	  	        } 
-	  	        else if ( ui.value < 0 ) {
+	  	        else if ( ui.value < 1 ) {
 	  	          $( this ).spinner( "value", 10 );
 	  	          return false;
 	  	        }
@@ -56,21 +56,23 @@
 		
 		$("#spinnerOqty1").bind("spinstop", function(){
 			
-			var html = "<div class='span col-md-8'>추가 처방 약 정보</div>";
-			
+			//var html = "<div class='span col-md-8'>추가 처방 정보</div>";
+			var html ="";
 			var spinnerOqtyVal = $("#spinnerOqty1").val();
 			
-			if(spinnerOqtyVal == "0") {
+			if(spinnerOqtyVal == "1") {
 				$("#textbox1").empty();
 				return;
 			}
 			else
 			{
 				for(var i=0; i<parseInt(spinnerOqtyVal); i++) {
-					html +='<div style="margin-bottom:3%;"> <div class="span col-md-6">-처방 약 이름 : <input type="text" name="rx_name"/></div>'+    
-					   '<div class="span col-md-12">-투약 량 : <input type="text" name="dosage"/></div>'+
-					   '<div  class="span col-md-12">-하루 복용 횟수 :<input type="text" name="dose_number"/></div></div>';
-					  
+				
+					  html +=    '<tr>'+
+						         '<td><input type="text" name="rx_name"/></td>'+
+				                 '<td><input type="text" name="dosage"/></td>'+
+				                 '<td><input type="text" name="dose_number"/></td>'+'</tr>';
+				                 
 				}
 				
 				$("#textbox1").empty();
@@ -100,46 +102,59 @@
    <div class="span col-md-12">5.진료 동물 종류: <span>${chartmap.pet_type}</span></div>
    <div class="span col-md-12">6.진료 동물 이름: <span>${chartmap.pet_name}</span></div>
    <div class="span col-md-12">7.진료종류: <span>${chartmap.reservation_type}</span></div>
-   <div class="span col-md-6">8.처방 약 이름 : <input type="text" name="rx_name"/></div>    
-   <div class="span col-md-3" >
-    <input id="spinnerOqty1" value="0" style="width: 30px; height: 20px; padding-top: 5%;">
+  <div class="span col-md-12"><span>8.처방 정보</span>
+    <input id="spinnerOqty1" value="1" style="width: 30px; height: 20px; padding-top: 5%;">
+   <table style="border:1px black solid;">
+	   <thead style="text-align: center;">
+	    <tr>
+	      <th>처방약</th>
+	      <th>투약 량</th>
+	      <th>하루 복용횟수</th>
+	    </tr>
+	   </thead>
+	   <tbody id="textbox1">
+	    <tr>
+	      <td><input type="text" name="rx_name"/></td>
+	      <td><input type="text" name="dosage"/></td>
+	      <td><input type="text" name="dose_number"/></td>
+	    </tr>
+	   </tbody>
+   </table>
    </div>
-   <div class="span col-md-12">9.투약 량 : <input type="text" name="dosage"/></div>
-   <div  class="span col-md-12">10.하루 복용 횟수 :<input type="text" name="dose_number"/></div> 
-   <div id="textbox1"></div>
-   <div class="span col-md-12">11.주의 사항: </div>
+   
+   <div class="span col-md-12">9.주의 사항: </div>
    <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;"></textarea></div>
-   <div class="span col-md-12">12.노트 : </div>
+   <div class="span col-md-12">10.노트 : </div>
    <div class="span col-md-12"><textarea  name="chart_contents" style="width:50%; height:15%;"></textarea></div>
    
 	<hr style="width:100%; height:3%; color:white;"></hr>
-	<div class="span col-md-8 ">13.사용한 예치금 : <span id="pament_pay"> ${chartmap.payment_pay}원 </span></div>
-	<div class="span col-md-8 ">14.사용한 포인트 : <span id="">${chartmap.payment_point} POINT</span></div>
-	<div class="span col-md-8 ">15.본인 부담금 :   <span> <input type="number"  id="addpay" name="addpay"/>원</span>
+	<div class="span col-md-8 ">11.사용한 예치금 : <span id="pament_pay"> ${chartmap.payment_pay}원 </span></div>
+	<div class="span col-md-8 ">12.사용한 포인트 : <span id="">${chartmap.payment_point} POINT</span></div>
+	<div class="span col-md-8 ">13.본인 부담금 :   <span> <input type="number"  id="addpay" name="addpay"/>원</span>
 	 <button type="button" id="btnplus">총합</button></div>
-	<div class="span col-md-8 ">16.총     합 : <span id="paytotal"></span>원</div>
+	<div class="span col-md-8 ">14.총     합 : <span id="paytotal"></span>원</div>
    
    </div>
     <button type="button" id="register" class="btn1" style="margin-left: 42%; margin-top: 4%;margin-bottom:2%;
        background-color:rgb(252, 118, 106);color:white;width:20%;height:5%;border-radius:4px;">등록하기</button> 
 </div>
-<input type="text" name="fk_reservation_UID" value="${chartmap.fk_reservation_UID}"/>
-<input type="text" name="fk_pet_UID" value="${chartmap.fk_pet_UID}"/>
-<input type="text" name="fk_idx" value="${chartmap.fk_idx}"/>
-<input type="text" name="fk_idx_biz" value="${chartmap.fk_idx_biz}"/>
-<input type="text" name="chart_UID" value="${chartmap.chart_UID}"/>
-<input type="text" name="chart_type" value="${chartmap.reservation_type}"/>
-<input type="text" name="bookingdate" value="${chartmap.bookingdate}"/>
-<input type="text" name="reservation_DATE" value="${chartmap.reservation_DATE}"/>
-<input type="text" name="biz_name" value="${sessionScope.loginuser.name}"/>
-<input type="text" name="name" value="${chartmap.name}"/>
-<input type="text" name="pet_type" value="${chartmap.pet_type}"/>
-<input type="text" name="pet_name" value="${chartmap.pet_name}"/>
-<input type="text" name="reservation_type" value="${chartmap.reservation_type}"/>
-<input type="text" name="payment_pay" id="payment_pay"    value="${chartmap.payment_pay}"/>
-<input type="text" name="payment_point" id="payment_point"  value="${chartmap.payment_point}"/>
-<input type="text" name="totalpay" id="totalpay" value=""/>
-<input type="text" name="rx_regName" value="${sessionScope.loginuser.name}"/> 
+<input type="hidden" name="fk_reservation_UID" value="${chartmap.fk_reservation_UID}"/>
+<input type="hidden" name="fk_pet_UID" value="${chartmap.fk_pet_UID}"/>
+<input type="hidden" name="fk_idx" value="${chartmap.fk_idx}"/>
+<input type="hidden" name="fk_idx_biz" value="${chartmap.fk_idx_biz}"/>
+<input type="hidden" name="chart_UID" value="${chartmap.chart_UID}"/>
+<input type="hidden" name="chart_type" value="${chartmap.reservation_type}"/>
+<input type="hidden" name="bookingdate" value="${chartmap.bookingdate}"/>
+<input type="hidden" name="reservation_DATE" value="${chartmap.reservation_DATE}"/>
+<input type="hidden" name="biz_name" value="${sessionScope.loginuser.name}"/>
+<input type="hidden" name="name" value="${chartmap.name}"/>
+<input type="hidden" name="pet_type" value="${chartmap.pet_type}"/>
+<input type="hidden" name="pet_name" value="${chartmap.pet_name}"/>
+<input type="hidden" name="reservation_type" value="${chartmap.reservation_type}"/>
+<input type="hidden" name="payment_pay" id="payment_pay"    value="${chartmap.payment_pay}"/>
+<input type="hidden" name="payment_point" id="payment_point"  value="${chartmap.payment_point}"/>
+<input type="hidden" name="totalpay" id="totalpay" value=""/>
+<input type="hidden" name="rx_regName" value="${sessionScope.loginuser.name}"/> 
 
 
 </Form>
