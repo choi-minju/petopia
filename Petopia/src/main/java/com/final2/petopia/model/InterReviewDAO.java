@@ -31,4 +31,36 @@ public interface InterReviewDAO {
 	int updateReviewStatusByReviewUID(int review_UID);
 	// === 2019.01.30 ==== //
 	
+	// *** 전체 리뷰 갯수 *** //
+	// === 2019.02.01 === //
+	int selectAllTotalCount(HashMap<String, String> paraMap); // 기간X검색X
+	int selectAllTotalCountBySearch(HashMap<String, String> paraMap); // 기간X검색O
+	int selectAllTotalCountByPeriod(HashMap<String, String> paraMap); // 기간O검색X
+	int selectAllTotalCountByPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
+	// === 2019.02.01 === //
+	
+	// === 2019.01.31 ==== //
+	// *** 전체 리뷰 목록 보기 *** //
+	List<HashMap<String, String>> selectReviewList(HashMap<String, String> paraMap); // 기간X검색X
+	// === 2019.01.31 ==== //
+	// === 2019.02.01 === //
+	List<HashMap<String, String>> selectReviewListBySearch(HashMap<String, String> paraMap); // 기간X검색O
+	List<HashMap<String, String>> selectReviewListByPeriod(HashMap<String, String> paraMap); // 기간O검색X
+	List<HashMap<String, String>> selectReviewListByPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
+	// === 2019.02.01 === //
+	
+	// === 2019.02.03 === //
+	// *** 리뷰 디테일 *** //
+	HashMap<String, String> selectReviewByReview_UID(int review_UID);
+	// === 2019.02.03 === //
+	
+	// === 2019.02.05 === //
+	// *** 댓글 쓰기 *** //
+	int insertReviewComments(HashMap<String, String> paraMap); // 댓글 insert
+	int insertReviewNotification(HashMap<String, String> paraMap); // 알림 insert
+	
+	// *** 댓글 목록 *** //
+	int selectReviewCommentsTotalCount(HashMap<String, Integer> paraMap); // 댓글 전체 갯수
+	List<HashMap<String, String>> selectReviewCommentsListByReviewUID(HashMap<String, Integer> paraMap); // 댓글 전체 리스트
+	// === 2019.02.05 === //
 }

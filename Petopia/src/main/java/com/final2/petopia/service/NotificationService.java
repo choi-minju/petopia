@@ -20,9 +20,9 @@ public class NotificationService implements InterNotificationService {
 	
 	// 회원의 고유번호를 이용한 안읽은 알림 갯수 나타내기
 	@Override
-	public String selectUnreadNotificationCount(int idx) {
+	public int selectUnreadNotificationCount(int idx) {
 		
-		String unreadNotificationCount = dao.selectUnreadNotificationCount(idx);
+		int unreadNotificationCount = dao.selectUnreadNotificationCount(idx);
 		
 		return unreadNotificationCount;
 	}

@@ -109,6 +109,43 @@ public class Biz_MemberDAO implements InterBiz_MemberDAO {
 		return result;
 	}
 
+	@Override
+	public Biz_MemberVO selectBizMemberVOByIdx_biz(String idx_biz) {
+		Biz_MemberVO bizmvo = sqlsession.selectOne("biz_member.selectBizMemberVOByIdx_biz", idx_biz);
+		return bizmvo;
+	}
+	
+	
+	// 태그목록가져오기
+	@Override
+	public List<String> selectBizTagList(String idx_biz) {
+		
+		
+		List<String> tagList = sqlsession.selectList("biz_member.selectBizTagList", idx_biz);
+		
+		return tagList;
+	}
+	
+	
+	// 의료진가져오기
+	@Override
+	public List<HashMap<String, String>> selectDocList(String idx_biz) {
+		
+		List<HashMap<String, String>> docList =  sqlsession.selectList("biz_member.selectDocList", idx_biz);
+		
+		return docList;
+	}
+	
+	
+	// 기업추가이미지
+	@Override
+	public List<String> selectBizImgList(String idx_biz) {
+		
+		List<String> imgList = sqlsession.selectList("biz_member.selectBizImgList", idx_biz);
+		
+		return imgList;
+	}
+
 
 	
 

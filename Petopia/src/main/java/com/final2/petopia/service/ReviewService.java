@@ -91,4 +91,123 @@ public class ReviewService implements InterReviewService {
 		return result;
 	} // end of public int updateReviewStatusByReviewUID(String review_UID)
 	// === 2019.01.30 ==== //
+
+	// === 2019.02.01 === //
+	// *** 전체 리뷰 갯수 *** //
+	// 기간X검색X
+	@Override
+	public int selectAllTotalCount(HashMap<String, String> paraMap) {
+		int totalCnt = dao.selectAllTotalCount(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCount(HashMap<String, String> paraMap)
+	
+	// 기간X검색O
+	@Override
+	public int selectAllTotalCountBySearch(HashMap<String, String> paraMap) {
+		int totalCnt = dao.selectAllTotalCountBySearch(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountBySearch(HashMap<String, String> paraMap)
+
+	// 기간O검색X
+	@Override
+	public int selectAllTotalCountByPeriod(HashMap<String, String> paraMap) {
+		int totalCnt = dao.selectAllTotalCountByPeriod(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountByPeriod(HashMap<String, String> paraMap)
+
+	// 기간O검색O
+	@Override
+	public int selectAllTotalCountByPeriodSearch(HashMap<String, String> paraMap) {
+		int totalCnt = dao.selectAllTotalCountByPeriodSearch(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountByPeriodSearch(HashMap<String, String> paraMap)
+	
+	// === 2019.01.31 ==== //
+	// *** 전체 리뷰 목록 보기 *** //
+	// 기간X검색X
+	@Override
+	public List<HashMap<String, String>> selectReviewList(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewList(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewList(HashMap<String, String> paraMap)
+	// === 2019.01.31 ==== //
+
+	// === 2019.02.01 === //
+	// 기간X검색O
+	@Override
+	public List<HashMap<String, String>> selectReviewListBySearch(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewListBySearch(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListBySearch(HashMap<String, String> paraMap)
+
+	// 기간O검색X
+	@Override
+	public List<HashMap<String, String>> selectReviewListByPeriod(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewListByPeriod(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListByPeriod(HashMap<String, String> paraMap)
+
+	// 기간O검색O
+	@Override
+	public List<HashMap<String, String>> selectReviewListByPeriodSearch(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewListByPeriodSearch(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListByPeriodSearch(HashMap<String, String> paraMap)
+	// === 2019.02.01 === //
+
+	// === 2019.02.03 === //
+	// *** 리뷰 디테일 *** //
+	@Override
+	public HashMap<String, String> selectReviewByReview_UID(int review_UID) {
+		HashMap<String, String> reviewMap = dao.selectReviewByReview_UID(review_UID);
+		
+		return reviewMap;
+	} // end of public HashMap<String, String> selectReviewByReview_UID(int review_UID)
+	// === 2019.02.03 === //
+
+	// === 2019.02.05 === //
+	// *** 댓글 쓰기 *** //
+	// 댓글 insert
+	@Override
+	public int insertReviewComments(HashMap<String, String> paraMap) {
+		int result = dao.insertReviewComments(paraMap);
+		
+		return result;
+	} // end of public int insertReviewComments(HashMap<String, String> paraMap)
+
+	// 댓글 insert + 알림 insert
+	@Override
+	public int insertReviewCommentsNotification(HashMap<String, String> paraMap) {
+		int result = dao.insertReviewNotification(paraMap);
+		
+		return result;
+	} // end of public int insertReviewCommentsNotification(HashMap<String, String> paraMap)
+	
+	// *** 댓글 목록 *** //
+	// 댓글 전체 갯수
+	@Override
+	public int selectReviewCommentsTotalCount(HashMap<String, Integer> paraMap) {
+		int totalCnt = dao.selectReviewCommentsTotalCount(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectReviewCommentsTotalCount(HashMap<String, Integer> paraMap)
+
+	// 댓글 전체 리스트
+	@Override
+	public List<HashMap<String, String>> selectReviewCommentsListByReviewUID(HashMap<String, Integer> paraMap) {
+		List<HashMap<String, String>> reveiewCommentsList = dao.selectReviewCommentsListByReviewUID(paraMap);
+		
+		return reveiewCommentsList;
+	} // end of public List<HashMap<String, String>> selectReviewCommentsListByReviewUID(HashMap<String, Integer> paraMap)
+	
+	// === 2019.02.05 === //
+
 }

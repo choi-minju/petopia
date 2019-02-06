@@ -1,4 +1,4 @@
-show user;
+﻿show user;
 -- #업데이트 내역
 -- [190106] 계정관련 쿼리문, 예약결제환불 관련 테이블 및 시퀀스
 -- [190107] 1; 팀별 쿼리 병합
@@ -16,6 +16,9 @@ show user;
 -- [190128] 양방향 메세지, 시간 삭제;; 호환
 -- [190129] 1; 예약 리스트에 필요한 view; 수미
 -- [190129] 2; chart 테이블에 fk_reservation_UID 추가; 혜원
+-- [190130] 오라클DB; notification 테이블 not_URL 컬럼 default값 변경;지민
+-- [190131] 오라클DB; 반려동물체중 테이블, 시퀀스 추가 및 반려동물케어 컬럼 수정
+-- [190205] review_comment 테이블 default 추가; 민주
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -320,6 +323,16 @@ CREATE TABLE review_comment (
 		check(rc_blind in(0,1,2,3,4)) 
 );
 
+-- [190205] review_comment 테이블 default 추가; 민주
+alter table review_comment
+modify rc_group default 0;
+
+alter table review_comment
+modify rc_g_odr default 0;
+
+alter table review_comment
+modify rc_depth default 0;
+
 -- 리뷰 댓글 시퀀스
 create sequence seq_rc_UID
 start with 1
@@ -397,48 +410,118 @@ nocache;
 alter table reservation add fk_idx_biz NUMBER not null;
 alter table reservation add constraint fk_reservation_idx_biz FOREIGN KEY (fk_idx_biz) REFERENCES biz_info(idx_biz);
                 
--- 반려동물정보
+-- *** 반려동물정보
+-- drop table pet_info purge;
 CREATE TABLE pet_info (
-	pet_UID         NUMBER        NOT NULL,          -- 반려동물코드
-	fk_idx          NUMBER        NOT NULL,          -- 회원고유번호
-	pet_name        VARCHAR2(100) NOT NULL,          -- 반려동물이름
-	pet_type        VARCHAR2(50)  NOT NULL,          -- 종류 dog/cat/smallani/etc
-	pet_birthday    VARCHAR2(100) NULL,              -- 반려동물생일
+pet_UID          NUMBER        NOT NULL                     -- 반려동물코드
+,fk_idx          NUMBER        NOT NULL                     -- 회원고유번호
+,pet_name        VARCHAR2(100) NOT NULL                     -- 반려동물이름
+,pet_type        VARCHAR2(50)  NOT NULL                     -- 종류 dog/cat/smallani/etc
+,pet_birthday    VARCHAR2(100) NULL                         -- 반려동물생일  
+,pet_size        VARCHAR2(1)   NOT NULL                     -- 사이즈 L/M/S
+,pet_weight      NUMBER        NOT NULL                     -- 몸무게  
 /*	
-    [19-01-22] 인서트 오류로 수정 -->   
-    pet_size        VARCHAR2(2)   NULL,              -- 사이즈 L/M/S
-    pet_weight      NUMBER        NULL,              -- 몸무게
-*/  
-	pet_size        VARCHAR2(1)   NOT NULL,          -- 사이즈 L/M/S
-    pet_weight      NUMBER        NOT NULL,          -- 몸무게  
-	pet_gender      NUMBER(1)     NULL,              -- 성별 1 남 2 여
-	pet_neutral     NUMBER(1)     NULL,              -- 중성화여부  0 안함 / 1 함 / 2 모름
-	medical_history CLOB          NULL,              -- 과거병력기재
-	allergy         CLOB          NULL,              -- 알러지내역
-	pet_profileimg  VARCHAR2(255) NULL,              -- 반려동물프로필사진
-    /*	[19-01-22] 반려동물상태 컬럼 추가 */
-    pet_status      VARCHAR2(1)   DEFAULT 1 NOT NULL -- 반려동물상태 0 무지개다리 / 1 생존 / 2 입원
-    ,CONSTRAINT PK_pet_info -- 반려동물정보 기본키
-		PRIMARY KEY (pet_UID)
-    ,CONSTRAINT ck_petinfo_gender -- 반려동물성별 체크제약
-		check(pet_gender in(1,2))
-    ,CONSTRAINT ck_petinfo_neutral -- 중성화여부 체크제약
-		check(pet_neutral in(0,1,2))  
-);
+    [19-01-22] from NULL to NOT NULL -->   
+    ,pet_size        VARCHAR2(2)   NULL
+    ,pet_weight      NUMBER        NULL
+*/    
+,pet_gender      VARCHAR2(1)   NULL                         -- 성별 1 남 2 여
+,pet_neutral     VARCHAR2(1)   NULL                         -- 중성화여부  0 안함 / 1 함 / 2 모름
+,medical_history CLOB          NULL                         -- 과거병력기재
+,allergy         CLOB          NULL                         -- 알러지내역
+,pet_profileimg  VARCHAR2(255) NULL                         -- 반려동물프로필사진
 /*	[19-01-22] 반려동물상태 컬럼 추가 */
-alter table pet_info
-add pet_status VARCHAR2(1) DEFAULT 1 NOT NULL;
+,pet_status      VARCHAR2(1)   DEFAULT 1 NOT NULL           -- 반려동물상태 0 무지개다리 / 1 생존 / 2 입원
+,CONSTRAINT PK_pet_info PRIMARY KEY (pet_UID)               -- 반려동물정보 기본키
+,CONSTRAINT FK_member_TO_pet_info FOREIGN KEY (fk_idx)      -- 회원 -> 반려동물정보
+                                    REFERENCES member (idx)
+,CONSTRAINT ck_petinfo_gender check(pet_gender in(1,2))     -- 반려동물성별 체크제약
+,CONSTRAINT ck_petinfo_neutral check(pet_neutral in(0,1,2)) -- 중성화여부 체크제약	 
+);
+/*	
+    [19-01-22] 반려동물상태 컬럼 추가 
+    alter table pet_info
+    add pet_status VARCHAR2(1) DEFAULT 1 NOT NULL;
+*/
 
-select *
-from member;
-
-create sequence seq_pet_info_UID --반려동물정보
+-- drop sequence seq_pet_info_UID;
+create sequence seq_pet_info_UID 
 start with 1
 increment by 1
 nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+-- *** 케어타입
+-- drop table caretype purge;
+CREATE TABLE caretype (
+caretype_UID   NUMBER        NOT NULL             -- 케어타입코드
+,caretype_name VARCHAR2(100) NOT NULL             -- 케어타입명
+,caretype_info CLOB          NOT NULL             -- 케어타입별설명
+,CONSTRAINT PK_caretype PRIMARY KEY(caretype_UID) -- 케어타입 기본키
+);
+
+-- drop sequence seq_caretype_UID
+create sequence seq_caretype_UID 
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+-- *** 반려동물케어
+-- drop table petcare purge;
+CREATE TABLE petcare (
+care_UID         NUMBER         NOT NULL -- 케어코드
+,fk_pet_UID      NUMBER         NOT NULL -- 반려동물코드
+,fk_caretype_UID NUMBER         NOT NULL -- 케어타입코드
+,care_contents   CLOB           NOT NULL -- 내용
+,care_memo       CLOB           NULL     -- 메모
+,care_start      varchar2(100)  NOT NULL -- 시작일시
+,care_end        varchar2(100)  NOT NULL -- 종료일시
+,care_alarm      NUMBER(10)     NULL     -- 알림여부 없음 0/5분전 5/10분전 10/하루전 1440 (분 단위 환산)
+,care_date       varchar2(100)  NOT NULL -- 케어등록 일자
+,CONSTRAINT PK_petcare PRIMARY KEY (care_UID) -- 반려동물케어 기본키
+,CONSTRAINT FK_pet_info_TO_petcare FOREIGN KEY (fk_pet_UID) 
+                                    REFERENCES pet_info (pet_UID) -- 반려동물정보 -> 반려동물케어
+,CONSTRAINT FK_caretype_TO_petcare FOREIGN KEY (fk_caretype_UID) 
+                                    REFERENCES caretype (caretype_UID) -- 반려동물케어 -> 케어타입
+);
+/*	
+    [19-01-31] 반려동물케어 컬럼 수정 
+    ALTER TABLE petcare MODIFY(care_start varchar2(100));
+    ALTER TABLE petcare MODIFY(care_end varchar2(100));
+    ALTER TABLE petcare MODIFY(care_date varchar2(100));
+*/
+ 
+-- drop sequence seq_petcare_UID
+create sequence seq_petcare_UID  --펫케어
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+/*	[19-01-31] 반려동물체중 테이블, 시퀀스 추가 */
+-- *** 반려동물체중
+-- drop table petweight purge;
+create table petweight
+(petweight_UID  NUMBER  NOT NULL    -- 반려동물 몸무게 코드
+,fk_pet_UID     NUMBER  NOT NULL    -- 반려동물코드
+,petweight_past NUMBER  NOT NULL    -- 반려동물 몸무게
+,petweight_date DATE    NOT NULL    -- 등록일자
+)
+
+-- drop sequence seq_petweight_UID
+create sequence seq_petweight_UID 
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle;
 
 -- 백신
 CREATE TABLE vaccine (
@@ -482,62 +565,6 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
-
--- 반려동물목록
-CREATE TABLE pet_list (
-	petlist_UID NUMBER   NOT NULL, -- 목록번호
-	fk_idx      NUMBER   NOT NULL, -- 회원고유번호
-	fk_pet_UID  NUMBER   NOT NULL, -- 반려동물코드
-	fk_pet_name VARCHAR2(100) NOT NULL  -- 반려동물명
-    ,CONSTRAINT PK_pet_list -- 반려동물목록 기본키
-		PRIMARY KEY (petlist_UID)
-);
-
-
--- 반려동물케어
-CREATE TABLE petcare (
-	care_UID        NUMBER NOT NULL, -- 케어코드
-	fk_pet_UID      NUMBER NOT NULL, -- 반려동물코드
-	fk_caretype_UID NUMBER NOT NULL, -- 케어타입코드
-	care_contents   CLOB   NOT NULL, -- 내용
-	care_memo       CLOB   NULL,     -- 메모
-	care_start      DATE   NOT NULL, -- 시작일시
-	care_end        DATE   NOT NULL, -- 종료일시
-	care_alarm      NUMBER(10) NULL,     -- 알림여부 없음 0/5분전 5/10분전 10/하루전 1440 (분 단위 환산)
-	care_date       DATE   NOT NULL  -- 케어등록 일자
-    ,CONSTRAINT PK_petcare -- 반려동물케어 기본키
-		PRIMARY KEY (care_UID)
-);
-
--- drop sequence seq_petcare_UID
-create sequence seq_petcare_UID  --펫케어
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache;
-
--- 케어타입
-CREATE TABLE caretype (
-	caretype_UID  NUMBER   NOT NULL, -- 케어타입코드
-	caretype_name VARCHAR2(100) NOT NULL, -- 케어타입명
-	caretype_info CLOB     NOT NULL  -- 케어타입별설명
-    ,CONSTRAINT PK_caretype -- 케어타입 기본키
-		PRIMARY KEY (caretype_UID)
-);
-
--- drop sequence seq_caretype_UID
-create sequence seq_caretype_UID --케어 타입
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache;
-
-select *
-from member;
 
 select fk_idx_biz from reservation group by fk_idx_biz;
 
@@ -655,7 +682,7 @@ nocycle
 nocache; 
 
 select *
-from notification
+from notification;
 
 -- 알림
 CREATE TABLE notification (
@@ -690,6 +717,9 @@ add not_time DATE default sysdate NOT NULL; -- 예약알림 예정시간
 alter table notification
 add not_URL VARCHAR2(200) default 'http://localhost:9090/petopia/alarm.pet' NOT NULL; -- 이동url
 
+-- 190130
+alter table notification
+modify not_URL 'http://localhost:9090/petopia/notificationList.pet';
 
 create sequence seq_notification_UID --알람
 start with 1

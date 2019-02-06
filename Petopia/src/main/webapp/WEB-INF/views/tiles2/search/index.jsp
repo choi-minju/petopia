@@ -8,6 +8,7 @@
 	if(whereNo == null || whereNo.trim().isEmpty()) {
 		whereNo = "1";
 	}
+
 %>
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -117,11 +118,64 @@
 	.distanceInfo .label {display:inline-block;width:50px;color:black;font-size:8pt;}
 	.distanceInfo:after {content:none;}
 
+	table {
+	  border-collapse: collapse;
+	  border-spacing: 0;
+	  width: 100%;
+	  border: 1px solid #ddd;
+	}
+	
+	th, td {
+	  text-align: left;
+	  padding: 16px;
+	}
+	
+	tr:nth-child(even) {
+	  background-color: #f2f2f2
+	}
+	
+	
+	/* Style tab links */
+	.tablink {
+	  background-color: #555;
+	  color: white;
+	  float: left;
+	  border: none;
+	  outline: none;
+	  cursor: pointer;
+	  padding: 14px 16px;
+	  font-size: 17px;
+	  width: 25%;
+	}
+	
+	.tablink:hover {
+	  background-color: #777;
+	}
+	
+	/* Style the tab content (and add height:100% for full page content) */
+	.tabcontent {
+	  color: white;
+	  display: none;
+	  padding: 100px 20px;
+	  height: 100%;
+	}
+	
+	#Pharmacy {background-color: green;}
+	#Hospital {background-color: blue;}
+	
 </style>
 
 
 <script type="text/javascript">
-
+	
+	$(document).on("click",".card-img-top",function() {
+		location.href="<%= ctxPath%>/bizDetail.pet?idx_biz="+$(this).parent().find(".idx_biz").val();
+	});
+	
+	$(document).on("click",".card-title",function() {
+		var idx_biz = $(this).parent().parent().find(".idx_biz").val();
+		location.href="<%= ctxPath%>/bizDetail.pet?idx_biz="+idx_biz;
+	});
 	
 	$(document).ready(function(){
 
@@ -154,10 +208,8 @@
 	        }
 	    } */
 	    
-	    if(event.keyCode == 13) {
-	    	
+	    if(event.keyCode == 13) {	
 	    	searchEnd();
-	    	
 	    }
 	    
 	}
@@ -174,11 +226,12 @@
 		var whereNo = $("#selectWhere option:selected").val();
 		var orderbyNo = $(event.target).val();
 		var searchWord = $("#myInput").val();
+		var pattern = "${pattern}";
 		
 		if(orderbyNo == 1) {
 			// 평점순이라면
 
-			$.getJSON("<%= ctxPath%>/selectOrderbyNo.pet?orderbyNo="+orderbyNo+"&searchWord="+searchWord+"&whereNo="+whereNo, 
+			$.getJSON("<%= ctxPath%>/selectOrderbyNo.pet?orderbyNo="+orderbyNo+"&searchWord="+searchWord+"&whereNo="+whereNo+"&pattern="+pattern, 
 					  function(json){
 				
 							var html = "";
@@ -186,7 +239,8 @@
 							$.each(json, function(entryIndex, entry){
 							
 								// 데이터넣고
-								html += "<div class='card text-left border-secondary' value="+entry.idx_biz+">";
+								html += "<div class='card text-left border-secondary' >";
+								html += "  <input type='hidden' class='idx_biz' value='"+entry.idx_biz+"'/>";
 								html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
 								html += "  	<div class='card-body'>";
 								html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
@@ -197,7 +251,7 @@
 								}
 								
 								
-								html += "</p><a href='#' class='btn btn-primary'>예약하기</a>";
+								html += "</p><a href='<%= ctxPath %>/reservation.pet?idx_biz="+entry.idx_biz+"' class='btn btn-primary'>예약하기</a>";
 								html += "</div></div>";
 								
 							});
@@ -222,6 +276,31 @@
 		}
 	}
 
+	function openPage(pageName, elmnt, color) {
+		  // Hide all elements with class="tabcontent" by default */
+		  var i, tabcontent, tablinks;
+		  tabcontent = document.getElementsByClassName("tabcontent");
+		  for (i = 0; i < tabcontent.length; i++) {
+		    tabcontent[i].style.display = "none";
+		  }
+
+		  // Remove the background color of all tablinks/buttons
+		  tablinks = document.getElementsByClassName("tablink");
+		  for (i = 0; i < tablinks.length; i++) {
+		    tablinks[i].style.backgroundColor = "";
+		  }
+
+		  // Show the specific tab content
+		  document.getElementById(pageName).style.display = "block";
+
+		  // Add the specific color to the button used to open the tab content
+		  elmnt.style.backgroundColor = color;
+	}
+
+	// Get the element with id="defaultOpen" and click on it
+	document.getElementById("defaultOpen").click();
+	
+	
 </script>
 
 
@@ -395,7 +474,7 @@
 							    	var polyline = new daum.maps.Polyline({
 							    	    path: linePath, // 선을 구성하는 좌표배열 입니다
 							    	    strokeWeight: 3, // 선의 두께 입니다
-							    	    strokeColor: '#ff9900', // 선의 색깔입니다
+							    	    strokeColor: '#fc766a', // 선의 색깔입니다
 							    	    strokeOpacity: 0.7, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
 							    	    strokeStyle: 'solid' // 선의 스타일입니다
 							    	});
@@ -403,11 +482,15 @@
 							    	// 지도에 선을 표시합니다 
 							    	polyline.setMap(map);  
 							    	
+							    	// console.log(polyline.getLength());
+							    	
 							    	// 거리를 계산해서 배열에 입력합니다.
-							    	positions_array[i].distance = polyline.getLength();
+							    	positions_array[i].distance = Math.ceil(polyline.getLength());
 									
 							    }
 
+						    	// console.log(positions_array);
+						    	
 							    // 배열을 거리를 기준으로 하여 오름차순으로 정렬 
 							    positions_array.sort(function(a, b) {
 							        return parseFloat(a.distance) - parseFloat(b.distance);
@@ -419,11 +502,11 @@
 								    numbers.push(positions_array[i].idx);
 								}
 								
-								console.log(numbers);
+								// console.log(numbers);
 								
 								$.ajax({
 									url:'selectOrderbydistance.pet',
-									data:{'numbers' : numbers, 'searchWord': $("#myInput").val(), 'whereNo': $("#selectWhere option:selected").val()},
+									data:{'numbers' : numbers, 'searchWord': $("#myInput").val(), 'whereNo': $("#selectWhere option:selected").val(), 'pattern': "${pattern}"},
 									type:'GET',
 									dataType:'JSON',
 									traditional : true,
@@ -435,8 +518,9 @@
 											var html = "";
 											
 											$.each(data, function(entryIndex, entry){
-											
-												html += "<div class='card text-left border-secondary' value="+entry.idx_biz+">";
+												
+												html += "<div class='card text-left border-secondary' >";
+												html += "  <input type='hidden' class='idx_biz' value='"+entry.idx_biz+"'/>";
 												html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
 												html += "  	<div class='card-body'>";
 												html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
@@ -447,7 +531,7 @@
 												}
 												
 												
-												html += "</p><a href='#' class='btn btn-primary'>예약하기</a>";
+												html += "</p><a href='<%= ctxPath %>/reservation.pet?idx_biz="+entry.idx_biz+"' class='btn btn-primary'>예약하기</a>";
 												html += "</div></div>";
 												
 											});
@@ -768,6 +852,8 @@
 						}
 						
 					}
+				
+					
 					
 	
 					
@@ -803,6 +889,7 @@
 					  	 --%>
 				  		<c:forEach items="${ bizmemList }" var="biz_mem">
 				  			<div class="card text-left">
+				  			  <input type="hidden" class="idx_biz" value="${biz_mem.idx_biz }"/>
 							  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/${biz_mem.prontimg}" alt="Card image cap" onclick="javascript:location.href='<%= ctxPath%>/bizDetail.pet?idx_biz=${biz_mem.idx_biz}'" />
 							  	<div class="card-body">
 								    <h5 class="card-title" onclick="javascript:location.href='<%= ctxPath%>/bizDetail.pet?idx_biz=${biz_mem.idx_biz}'">${biz_mem.name }</h5>
@@ -831,8 +918,67 @@
 
 
 
-<div class="container" style="margin: 10%;">
-
+<div class="container" style="margin-top: 10%; margin-bottom: 10%;">
+	<div class="row">
+		<div class="col-sm-12">	
+			<button class="tablink" onclick="openPage('Hospital', this, 'blue')">동물병원</button>
+			<button class="tablink" onclick="openPage('Pharmacy', this, 'green')" id="defaultOpen">동물약국</button>
+			
+			<div id="Hospital" class="tabcontent">
+			  <h3>Home</h3>
+			  <p>Home is where the heart is..</p>
+				<table>
+				  <tr>
+				    <th>동물병원</th>
+				    <th>Last Name</th>
+				    <th>Points</th>
+				  </tr>
+				  <tr>
+				    <td>Jill</td>
+				    <td>Smith</td>
+				    <td>50</td>
+				  </tr>
+				  <tr>
+				    <td>Eve</td>
+				    <td>Jackson</td>
+				    <td>94</td>
+				  </tr>
+				  <tr>
+				    <td>Adam</td>
+				    <td>Johnson</td>
+				    <td>67</td>
+				  </tr>
+				</table>	
+			</div>
+			
+			<div id="Pharmacy" class="tabcontent">
+			  <h3>News</h3>
+			  <p>Some news this fine day!</p> 
+			 	 <table>
+				  <tr>
+				    <th>동물약국</th>
+				    <th>Last Name</th>
+				    <th>Points</th>
+				  </tr>
+				  <tr>
+				    <td>Jill</td>
+				    <td>Smith</td>
+				    <td>50</td>
+				  </tr>
+				  <tr>
+				    <td>Eve</td>
+				    <td>Jackson</td>
+				    <td>94</td>
+				  </tr>
+				  <tr>
+				    <td>Adam</td>
+				    <td>Johnson</td>
+				    <td>67</td>
+				  </tr>
+				</table>	
+			</div>
+		</div>
+	</div>
 </div>
 
 

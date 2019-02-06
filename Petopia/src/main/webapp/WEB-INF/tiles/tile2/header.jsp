@@ -99,6 +99,9 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
+		if(${sessionScope.loginuser != null && sessionScope.loginuser.userid != 'admin@naver.com'}){
+			loopShowNotificationCount();
+		}
 	});
 	
 	function logOut(){ 
@@ -106,6 +109,43 @@
 		Kakao.init('b5a80832c3cb255d6b0092b12fa51f95');
 		Kakao.Auth.getAccessToken();
 	} // end of logOut
+	
+	function showNotificationCount(){
+		
+		$.ajax({
+			url:"<%=ctxPath%>/unreadNotificationCount.pet", 
+			type:"GET",
+			//data:form_data,
+			dataType:"JSON",
+			success:function(json){
+				if(json.UNREADNOTIFICATIONCOUNT > 0) {
+					
+					$("#badge").show();
+					
+					var unreadnotificationcount = json.UNREADNOTIFICATIONCOUNT;
+    		    	$("#badge").empty().html(unreadnotificationcount);
+				}
+				else {
+					$("#badge").hide();
+				}
+			},
+			error: function(request, status, error){
+			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+	}
+	
+	function loopShowNotificationCount(){
+				
+		showNotificationCount();
+		
+		var timeCycle = 1000;   // 1초 마다 자동 갱신
+		
+		setTimeout(function() {
+			loopShowNotificationCount();	
+			}, timeCycle);
+
+	}
 	
 </script>
 
@@ -124,30 +164,34 @@
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
-						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span>
 					</button>
 					<a class="navbar-brand logo" href="<%= ctxPath %>/home.pet" style="font-size: 18px; font-weight: bold;padding: 15px 15px;">PETOPIA</a>
 				</div>
 				<div class="collapse navbar-collapse" id="myNavbar">
 					<ul class="nav navbar-nav navbar-right">
 						<c:if test="${sessionScope.loginuser == null }">
-							<li><a href="<%= ctxPath %>/join.pet">회원가입</a></li>
-							<li><a href="<%= ctxPath %>/login.pet" >로그인</a></li>
+							<li><a style="color: #ffffff;" href="<%= ctxPath %>/join.pet">회원가입</a></li>
+							<li><a style="color: #ffffff;" href="<%= ctxPath %>/login.pet" >로그인</a></li>
 						</c:if>
 						<c:if test="${sessionScope.loginuser != null }">
-						<li class="notdropdown">
-							<span class="notdropbtn">
-								<img src="<%=request.getContextPath() %>/resources/img/notification/icon.png" style="margin-left: 50%; margin-top: 20%; width: 40%;" />
-								<span id="badge" class="badge">5</span>
-							</span>
-								<div class="notdropdown-content">
-									<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">게시판에 새 댓글이 있습니다.</a>
-									<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">화상상담 코드가 도착했습니다.</a>
-									<hr align="center" width="100%" style="border:0.5px solid #fc766b; margin-top: 35%;">
-									<a class="notmassage" style="color: #fc766b; border: 0px solid; margin-top: -5%; margin-left: 35%;" href="<%= ctxPath %>/alarmList.pet">더보기</a>
-									
-								</div>
-						</li>
+							<c:if test="${sessionScope.loginuser.userid != 'admin@naver.com'}">
+								<li class="notdropdown">
+									<span class="notdropbtn">
+										<img src="<%=request.getContextPath() %>/resources/img/notification/icon.png" style="margin-left: 50%; margin-top: 20%; width: 40%;" />
+										<%-- <c:if test=""> --%>
+											<span id="badge" class="badge"></span>
+										<%-- </c:if> --%>
+									</span>
+										<div class="notdropdown-content">
+											<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">게시판에 새 댓글이 있습니다.</a>
+											<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">화상상담 코드가 도착했습니다.</a>
+											<hr align="center" width="100%" style="border:0.5px solid #fc766b; margin-top: 35%;">
+											<a class="notmassage" style="color: #fc766b; border: 0px solid; margin-top: -5%; margin-left: 35%;" href="<%= ctxPath %>/notificationList.pet">더보기</a>
+											
+										</div>
+								</li>
+							</c:if>
 						
 							<li><a onclick="logOut();" style="color: #ffffff;" href="<%= ctxPath %>/logout.pet">[${sessionScope.loginuser.nickname }] 로그아웃</a></li>
 							<c:if test="${sessionScope.loginuser != null && sessionScope.loginuser.membertype == 1 }"><%-- 관리자일 경우 없애기 --%>
@@ -227,9 +271,9 @@
 					<div class="row">
 						<div class="col-md-3"></div>
 						<div class="column" id="bizMember">
-							<a href="<%= ctxPath %>/bizMemberInfo.pet'">병원정보관리</a>
-							<a href="<%= ctxPath %>/bizDepositAccount.pet'">예치금관리</a>
-							<a href="<%= ctxPath %>/bizReviewList.pet'">우리병원리뷰</a>
+							<a href="<%= ctxPath %>/bizMemberInfo.pet">병원정보관리</a>
+							<a href="<%= ctxPath %>/bizDepositAccount.pet">예치금관리</a>
+							<a href="<%= ctxPath %>/bizReviewList.pet">우리병원리뷰</a>
 						</div>
 						<div class="column" id="bizReservation">
 							<a href="<%= ctxPath %>/bizReservationList.pet">병원예약관리</a>
@@ -268,6 +312,8 @@
 						<div class="column" id="adminMember">
 							<a href="<%= ctxPath %>/adminMember.pet">일반회원</a>
 							<a href="<%= ctxPath %>/adminBiz_member.pet">병원회원</a>
+							<%-- [190203] 관리자 로그인 시  예약결제관리 추가 --%>
+							<a href="<%= ctxPath %>/adminPaymentList.pet">예약결제관리</a>
 						</div>
 						<div class="column" id="adminReview">
 						</div>

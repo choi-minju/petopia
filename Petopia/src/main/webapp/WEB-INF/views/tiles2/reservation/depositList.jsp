@@ -24,11 +24,15 @@
   pointer-events: none;
   cursor: default;
 }
+
+
+/* [190131] 모달 css 추가 */
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -36,58 +40,75 @@
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  padding-top: 60px;
 }
 
-/* Modal Content/Box */
+/* Modal Content */
 .modal-content {
+  position: relative;
   background-color: #fefefe;
-  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  margin: auto;
+  padding: 0;
   border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 40%;
+  height: 70%;
+  overflow: auto;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s
 }
 
-/* The Close Button (x) */
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {top:-300px; opacity:0} 
+  to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
+
+/* The Close Button */
 .close {
-  position: absolute;
-  right: 25px;
-  top: 0;
-  color: #000;
-  font-size: 35px;
+  color: white;
+  float: right;
+  font-size: 28px;
   font-weight: bold;
 }
 
 .close:hover,
 .close:focus {
-  color: red;
+  color: #000;
+  text-decoration: none;
   cursor: pointer;
 }
 
-/* Add Zoom Animation */
-.animate {
-  -webkit-animation: animatezoom 0.6s;
-  animation: animatezoom 0.6s
+.modal-header {
+  padding: 2px 16px;
+  background-color: #ff6e60;
+  color: white;
 }
 
-@-webkit-keyframes animatezoom {
-  from {-webkit-transform: scale(0)} 
-  to {-webkit-transform: scale(1)}
-}
-  
-@keyframes animatezoom {
-  from {transform: scale(0)} 
-  to {transform: scale(1)}
+.modal-body {
+	padding: 3% 10% 3% 10%;
 }
 
-/* Change styles for span and cancel button on extra small screens */
-@media screen and (max-width: 300px) {
-  span.psw {
-     display: block;
-     float: none;
-  }
-  .cancelbtn {
-     width: 100%;
-  }
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #ff6e60;
+  color: white;
+}
+
+.tblrow {
+	border-bottom: 1px solid gray;
+	padding-top: 3%;
+	padding-bottom: 3%;
+}
+.col1 {
+	border-right: 1px solid gray;
+	font-weight: bold;
 }
 </style>
 <%-- [190126] 일반회원 예치금 목록 --%>
@@ -350,13 +371,13 @@
 				$("#modal_pet_type").html(json.pet_type);
 				$("#modal_pet_name").html(json.pet_name);
 				$("#modal_rv_type").html(json.rv_type);
-				$("#modal_reservation_date").html(json.reservation_date);
+				$("#modal_reservation_date").html(json.reservation_DATE);	// [190131] reservation_date -> reservation_DATE
 				$("#modal_bookingdate").html(json.bookingdate);
 				$("#modal_reservation_status").html(json.reservation_status);
 				$("#modal_payment_date").html(json.payment_date);
-				$("#modal_payment_point").html(json.payment_point);
-				$("#modal_payment_pay").html(json.payment_pay);
-				$("#modal_payment_total").html(json.payment_total);
+				$("#modal_payment_point").html(numberWithCommas(json.payment_point)+"point");	//[190131] 금액타입 콤마 찍기
+				$("#modal_payment_pay").html(numberWithCommas(json.payment_pay)+"원");
+				$("#modal_payment_total").html(numberWithCommas(json.payment_total)+"원");
 			},// end of success
 			error: function(request, status, error){
 				if(request.readyState == 0 || request.status == 0) return;
@@ -438,69 +459,71 @@
 </div>
 
 <%-- [190130] 모달창, 자바스크립트 추가 --%>
+<%-- [190131] 모달창 내용 변경 --%>
 <div id="id01" class="modal">
-  
-    <div class="imgcontainer">
-      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+  	<div class="modal-content">
+	    <div class="modal-header">
+	      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+	      <h2>예약 상세</h2>
+	    </div>
+    <div class="modal-body">
+      	<div class="row tblrow">
+    		<div class="col-md-3 col1">예약번호</div>
+    		<div class="col-md-4" id="modal_reservation_UID"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">병원명</div>
+    		<div class="col-md-4" id="modal_biz_name"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">연락처</div>
+    		<div class="col-md-4" id="modal_phone"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">진료과</div>
+    		<div class="col-md-4" id="modal_pet_type"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">반려동물명</div>
+    		<div class="col-md-4" id="modal_pet_name"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">진료타입</div>
+    		<div class="col-md-4" id="modal_rv_type"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">진료일시</div>
+    		<div class="col-md-4" id="modal_reservation_date"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">예약일시</div>
+    		<div class="col-md-4" id="modal_bookingdate"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">예약상태</div>
+    		<div class="col-md-4" id="modal_reservation_status"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">결제일시</div>
+    		<div class="col-md-4" id="modal_payment_date"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">결제포인트</div>
+    		<div class="col-md-4" id="modal_payment_point"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">실 결제금액</div>
+    		<div class="col-md-4" id="modal_payment_pay"></div>
+    	</div>
+    	<div class="row tblrow" style="border-bottom: 0px solid gray;">
+    		<div class="col-md-3 col1">총 결제금액</div>
+    		<div class="col-md-4" id="modal_payment_total"></div>
+    	</div>
     </div>
-
-    <div class="container">
-    	<div class="row">
-    		<div class="col-md-3">예약번호</div>
-    		<div class="col-md-3" id="modal_reservation_UID"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">병원명</div>
-    		<div class="col-md-3" id="modal_biz_name"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">연락처</div>
-    		<div class="col-md-3" id="modal_phone"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">진료과</div>
-    		<div class="col-md-3" id="modal_pet_type"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">반려동물명</div>
-    		<div class="col-md-3" id="modal_pet_name"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">진료타입</div>
-    		<div class="col-md-3" id="modal_rv_type"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">진료일시</div>
-    		<div class="col-md-3" id="modal_reservation_date"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">예약일시</div>
-    		<div class="col-md-3" id="modal_bookingdate"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">예약상태</div>
-    		<div class="col-md-3" id="modal_reservation_status"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">결제일시</div>
-    		<div class="col-md-3" id="modal_payment_date"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">결제포인트</div>
-    		<div class="col-md-3" id="modal_payment_point"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">실 예치금결제 금액</div>
-    		<div class="col-md-3" id="modal_payment_pay"></div>
-    	</div>
-    	<div class="row">
-    		<div class="col-md-3">총 결제금액</div>
-    		<div class="col-md-3" id="modal_payment_total"></div>
-    	</div>
+    <div class="modal-footer">
+    	<span onclick="document.getElementById('id01').style.display='none'" class="btn">close</span>
     </div>
-
-    <div class="container" style="background-color:#f1f1f1">
-    </div>
+  </div>
 </div>
 
 <script>

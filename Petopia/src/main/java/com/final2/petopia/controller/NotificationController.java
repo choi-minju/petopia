@@ -1,5 +1,7 @@
 package com.final2.petopia.controller;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -25,22 +27,42 @@ public class NotificationController {
 	// 안읽은 알림 배지 생성(AJAX) ------------------------------------------------------------------------------------
 	@RequestMapping(value="/unreadNotificationCount.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public String unreadNotificationCount(HttpServletRequest req) throws Throwable {
+	public HashMap<String, Integer> unreadNotificationCount(HttpServletRequest req) throws Throwable {
+		
+		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
 		
 		HttpSession session = req.getSession();
-		
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
-		
 		int idx = loginuser.getIdx();
 		
 		// 회원의 고유번호를 이용한 안읽은 알림 갯수 나타내기
-		String unreadNotificationCount = service.selectUnreadNotificationCount(idx);
+		int unreadNotificationCount = service.selectUnreadNotificationCount(idx);
 		
-		return unreadNotificationCount;
+		returnMap.put("UNREADNOTIFICATIONCOUNT", unreadNotificationCount);
+		
+		return returnMap;
 	}
 	
+	// 알림 아이콘 클릭 시 상위 알림 3개 생성(AJAX) -------------------------------------------------------------------------
+	// (안읽은 알림 우선순위 / 그 후 알림 최신순)
+	@RequestMapping(value="/notificationSimpleList.pet", method= {RequestMethod.GET})
+	@ResponseBody
+	public HashMap<String, Object> notificationSimpleList(HttpServletRequest req) throws Throwable {
+		
+		HashMap<String, Object> returnMap = new HashMap<String, Object>();
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		
+		// 회원의 고유번호를 이용한 알림정보 가져오기
+		
+		
+		
+		return returnMap;
+	}
 	
-	// 알림 페이지 요청 ----------------------------------------------------------------------------------------------
+	// 알림 페이지 요청 -----------------------------------------------------------------------------------------------
 	@RequestMapping(value="/notificationList.pet", method= {RequestMethod.GET})
 	public String requireLogin_notificationList(HttpServletRequest req, HttpServletResponse res) {
 		return "notification/notificationList.tiles2";
