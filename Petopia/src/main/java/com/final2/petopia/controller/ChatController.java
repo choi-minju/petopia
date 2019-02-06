@@ -150,7 +150,7 @@ public class ChatController extends TextWebSocketHandler{
 			return returnMap;
 		}
 	}
-	
+	/*.*/
 	//코드 입력
 	@RequestMapping(value="/videocode.pet", method= {RequestMethod.GET})
 	public String videocode(HttpServletRequest req, HttpServletResponse res) {
