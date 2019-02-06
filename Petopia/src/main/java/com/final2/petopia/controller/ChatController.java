@@ -1,6 +1,8 @@
 package com.final2.petopia.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,19 @@ public class ChatController extends TextWebSocketHandler{
 		req.setAttribute("MemberType", MemberType);
 		
 		return "chat/chatview.tiles2";
+	}
+	
+	// (관리자)상담내역 뷰 
+	@RequestMapping(value="/viewlog.pet", method= {RequestMethod.GET})
+	public String requireLogin_viewlog(HttpServletRequest req, HttpServletResponse res) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String MemberType = loginuser.getMembertype();
+		
+		req.setAttribute("MemberType", MemberType);
+		
+		return "chat/viewlog.tiles2";
 	}
 	
 	//화상진료페이지
@@ -146,6 +161,41 @@ public class ChatController extends TextWebSocketHandler{
 		req.setAttribute("chatcode", chatcode);
 		
 		return "chat/videocode.notiles";
+	}
+	
+	//정보출력
+	@RequestMapping(value="/log.pet", method= {RequestMethod.GET})
+	public List<HashMap<String, Object>> viewlog(HttpServletRequest req, HttpServletResponse res) {
+		
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>();
+		
+		String fk_idx = req.getParameter("idx");
+		
+		System.out.println(fk_idx);
+		
+		List<HashMap<String,Object>> list = service.log(Integer.parseInt(fk_idx));
+		
+		if(list != null) {
+			for(HashMap<String, Object> datamap : list) {
+				HashMap<String, Object> submap = new HashMap<String, Object>();
+				
+				submap.put("time", datamap.get("time"));
+				submap.put("fk_userid", datamap.get("fk_userid"));
+				submap.put("chatcode", datamap.get("chatcode"));
+				submap.put("fk_name_biz", datamap.get("fk_name_biz"));
+				submap.put("fk_docname", datamap.get("fk_docname"));
+				
+				System.out.println(submap.get("time"));
+				System.out.println(submap.get("fk_userid"));
+				System.out.println(submap.get("chatcode"));
+				System.out.println(submap.get("fk_name_biz"));
+				System.out.println(submap.get("fk_docname"));
+				
+				returnmapList.add(submap);
+			}
+		}
+		
+		return returnmapList;
 	}
 	
 	

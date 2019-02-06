@@ -467,8 +467,8 @@
 	</select>
 	
 	<!-- [190204] -->
+	<!-- [190206] 수정; 비교식 between으로 변경 후 CDATA 삭제, where절 비교계산식 변경  -->
 	<select id="selectAdminPaymentRvListAll" resultMap="rmap_adminPaymentRvList">
-	<![CDATA[ 
 		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
        		 	, payment_status, bookingdate, reservation_date, reservation_status, reservation_type
         		, name, phone, biz_name, biz_phone, pet_name, pet_type
@@ -496,13 +496,11 @@
 		    order by payment_UID desc
 		    ) V
 		) N
-		where rno<=10
+		where rno between 1 and 20
 		order by rno asc
-	]]>
 	</select>
 	
 	<select id="selectInfiniteScrollDownPaymentRvList" resultMap="rmap_adminPaymentRvList" parameterType="int">
-	<![CDATA[ 
 		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
        		 	, payment_status, bookingdate, reservation_date, reservation_status, reservation_type
         		, name, phone, biz_name, biz_phone, pet_name, pet_type
@@ -530,10 +528,8 @@
 		    order by payment_UID desc
 		    ) V
 		) N
-		where rno<=#{rnoToStart}
-		and rno > #{rnoToStart}-10
+		where rno between #{rnoToStart}+1 and #{rnoToStart}+20
 		order by rno asc
-	]]>
 	</select>
-	
+	<!-- 190206 끝 -->
 </mapper>
