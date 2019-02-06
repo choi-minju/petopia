@@ -356,6 +356,7 @@
 		<result property="FILENAME"			column="filename"		javaType="String"/>
 	</resultMap>
 	
+	<!-- === 2019.02.06 === -->
 	<select id="selectReviewCommentsListByReviewUID" parameterType="HashMap" resultMap="reviewCommentsMap">
 		select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content, rc_writedate
 		    ,fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, filename
@@ -367,7 +368,7 @@
 		    (
 		        select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content
 		            , to_char(rc_writedate, 'yyyy-mm-dd hh24:mi:ss') as rc_writedate
-		            , fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, c.filename
+		            , fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, b.filename
 		        from review_comment a JOIN member b
         		ON a.fk_idx = b.idx
 		        where fk_review_UID = #{REVIEW_UID}
@@ -378,5 +379,6 @@
 		) T
 		where rno between #{STARTRNO} and #{ENDRNO}
 	</select>
+	<!-- === 2019.02.06 === -->
 	<!-- === 2019.02.05 === -->
 </mapper>
