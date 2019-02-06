@@ -1,6 +1,7 @@
 package com.final2.petopia.service;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,8 @@ public class ChatService implements InterChatService {
 		
 		return n;
 	}
-
+	
+	// 병원idx 가져오기
 	@Override
 	public String viewuserid(String idx) {
 		
@@ -67,6 +69,7 @@ public class ChatService implements InterChatService {
 		return n;
 	}
 
+	// 병원이름 가져오기
 	@Override
 	public String viewname_biz(String idx) {
 		
@@ -76,7 +79,8 @@ public class ChatService implements InterChatService {
 		
 		return n;
 	}
-
+	
+	// 의사이름 가져오기
 	@Override
 	public String viewdocname(String idx) {
 		
@@ -85,6 +89,15 @@ public class ChatService implements InterChatService {
 		n = dao.viewdocname(idx);
 		
 		return n;
+	}
+	
+	// 정보가져와서 리스트로 출력
+	@Override
+	public List<HashMap<String, Object>> log(int fk_idx) {
+		
+		List<HashMap<String, Object>> list = dao.getloglist(fk_idx);
+		
+		return list;
 	}
 	
 	
