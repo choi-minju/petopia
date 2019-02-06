@@ -316,4 +316,67 @@
 		ON V.fk_idx_biz = c.idx		
 	</select>
 	<!-- === 2019.02.03 === -->
+	
+	<!-- === 2019.02.05 === -->
+	<!-- *** 댓글 쓰기 *** -->
+	<!-- 댓글 insert -->
+	<insert id="insertReviewComments" parameterType="HashMap">
+		insert into review_comment(rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content, rc_writedate, fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status)
+		values(seq_rc_UID.nextval, #{FK_REVIEW_UID}, #{FK_IDX}, #{RC_NICKNAME}, #{RC_CONTENT}, sysdate, 0, seq_rc_UID.nextval, default, default, 0, 1)
+	</insert>
+	
+	<!-- 알림 insert -->
+	<insert id="insertReviewNotification" parameterType="HashMap">
+		insert into notification(not_UID, fk_idx, not_type, not_message, not_URL, not_date, not_time, not_readcheck, not_remindstatus)
+		values(seq_notification_UID.nextval, #{FK_IDX}, 4, #{NOT_MESSAGE}, #{NOT_URL}, sysdate, default, default, default)
+	</insert>
+	
+	<!-- *** 댓글 목록 *** -->
+	<!-- 댓글 전체 갯수 -->
+	<select id="selectReviewCommentsTotalCount" parameterType="HashMap" resultType="int">
+		select count(*)
+		from review_comment
+		where fk_review_UID = #{REVIEW_UID}
+	</select>
+	
+	<!-- 댓글 전체 리스트 -->
+	<resultMap type="HashMap" id="reviewCommentsMap">
+		<result property="RC_ID"			column="rc_id"			javaType="String"/>
+		<result property="FK_REVIEW_UID"	column="fk_review_UID"	javaType="String"/>
+		<result property="FK_IDX"			column="fk_idx"			javaType="String"/>
+		<result property="RC_NICKNAME"		column="rc_nickname"	javaType="String"/>
+		<result property="RC_CONTENT"		column="rc_content"		javaType="String"/>
+		<result property="RC_WRITEDATE"		column="rc_writedate"	javaType="String"/>
+		<result property="FK_RC_ID"			column="fk_rc_id"		javaType="String"/>
+		<result property="RC_GROUP"			column="RC_GROUP"		javaType="String"/>
+		<result property="RC_G_ODR"			column="rc_g_odr"		javaType="String"/>
+		<result property="RC_DEPTH"			column="rc_depth"		javaType="String"/>
+		<result property="RC_BLIND"			column="rc_blind"		javaType="String"/>
+		<result property="RC_STATUS"		column="rc_status"		javaType="String"/>
+		<result property="FILENAME"			column="filename"		javaType="String"/>
+	</resultMap>
+	
+	<select id="selectReviewCommentsListByReviewUID" parameterType="HashMap" resultMap="reviewCommentsMap">
+		select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content, rc_writedate
+		    ,fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, filename
+		from
+		(
+		    select rownum as rno, rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content, rc_writedate
+		        ,fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, filename
+		    from
+		    (
+		        select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content
+		            , to_char(rc_writedate, 'yyyy-mm-dd hh24:mi:ss') as rc_writedate
+		            , fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, c.filename
+		        from review_comment a JOIN member b
+        		ON a.fk_idx = b.idx
+		        where fk_review_UID = #{REVIEW_UID}
+		        start with fk_rc_id = 0
+		        connect by prior rc_id = fk_rc_id
+		        order siblings by rc_g_odr asc, rc_id asc
+		    ) V
+		) T
+		where rno between #{STARTRNO} and #{ENDRNO}
+	</select>
+	<!-- === 2019.02.05 === -->
 </mapper>
