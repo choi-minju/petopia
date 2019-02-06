@@ -7,7 +7,7 @@
 <script type="text/javascript">
 	
 	$(document).ready(function(){
-		//showComments("1");
+		showComments("1"); /* === 2019.02.06 === */
 	}); // end of $(document).ready()
 	
 	function goDel(review_UID) {
@@ -34,6 +34,8 @@
 			dataType: "JSON",
 			success: function(json){
 				$("#rc_content").val("");
+				
+				showComments("1");/* === 2019.02.06 === */
 			},
 			error: function(request, status, error){ 
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -42,6 +44,8 @@
 		
 	} // end of function addComments()
 	
+	/* === 2019.02.06 === */
+	// 댓글 리스트 보기
 	function showComments(currentPageNo) {
 		
 		var data = {"currentPageNo":currentPageNo,
@@ -53,26 +57,112 @@
 			data: data,
 			dataType: "JSON",
 			success: function(json){
-				alert(json.length);
 				var html = "";
 				
 				if(json.length > 0) {
 					$.each(json, function(entryIndex,entry){
-						html += "";
+						if(entry.FK_RC_ID == "0") {
+							html += '<div class="row" style="padding: 10px;">'
+										+'<div class="col-sm-12">'
+											+'<div class="row">'
+												+'<img src="<%=request.getContextPath() %>/resources/img/member/profiles/'+entry.FILENAME+'" width="20px" height="20px" style="border-radius: 10px;">'
+												+'&nbsp;<span style="font-weight: bold;">'+entry.RC_NICKNAME+'</span>'
+											+'</div>'
+											+'<div class="row" style="margin-top: 5px;">'
+												+entry.RC_CONTENT
+											+'</div>'
+											+'<div class="row" style="margin-top: 5px; color: gray;">'
+												+'<span>'+entry.RC_WRITEDATE+'</span>'
+											+'</div>'
+											+'<div class="row" style="margin-top: 5px;">'
+												+'<button class="btn" style="font-size: 8pt; border: none; padding: 7px;">답글</button>'
+											+'</div>'
+										+'</div>'
+									+'</div>';
+						} else {
+							html += '<div class="row" style="padding: 10px 10px 10px 15px; background-color: #f2f2f2;">'
+										+'<div class="col-sm-1" align="right">'
+											+'<span class="glyphicon glyphicon-menu-right"></span>'
+										+'</div>'
+										+'<div class="col-sm-11">'
+											+'<div class="row">'
+												+'<img src="<%=request.getContextPath() %>/resources/img/member/profiles/${entry.FILENAME}" width="20px" height="20px" style="border-radius: 10px;">'
+												+'&nbsp;<span style="font-weight: bold;">'+entry.RC_NICKNAME+'</span>'
+											+'</div>'
+											+'<div class="row" style="margin-top: 5px;">'
+												+entry.RC_CONTENT
+											+'</div>'
+											+'<div class="row" style="margin-top: 5px; color: gray;">'
+												+'<span>'+entry.RC_WRITEDATE+'</span>'
+											+'</div>'
+											+'<div class="row" style="margin-top: 5px;">'
+												+'<button class="btn" style="font-size: 8pt; border: none; padding: 7px;">답글</button>'
+											+'</div>'
+										+'</div>'
+									+'</div>';
+						} // end of if~else
+						
 					}); // end of each
 				} else {
-					
+					html = "";
 				} // end of if~else
 					
 				$("#commentsResult").html(html);
+				showPageBar(currentPageNo);
 			},
 			error: function(request, status, error){ 
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		}); // end of ajax
 		
-	} // end of 
+	} // end of function showComments(currentPageNo)
+	/* === 2019.02.06 === */
 	// === 2019.02.05 ==== //
+	
+	// 댓글 페이지바 만들기
+	function showPageBar(currentPageNo) {
+		var data = {"review_uid":$("#review_uid").val()};
+		
+		$.ajax({
+			url: "<%=request.getContextPath()%>/selectReviewCommentsTotalPage.pet",
+			type: "GET",
+			data: data,
+			dataType: "JSON",
+			success: function(json){
+				var html = "";
+				
+				var totalPage = json;
+				var blockSize = 5;
+				var loop = 1;
+				
+				var pageNo = Math.floor((currentPageNo - 1)/blockSize) * blockSize + 1;
+				
+				if(pageNo != 1) {
+					html += "<li><a href=\"javascript:showComments("+(pageNo-1)+")\">이전</a></li>";
+				}
+				
+				while(!(loop > blockSize || pageNo > totalPage)) {
+					if(pageNo == currentPageNo) {
+						html += "<li><a style='color:black;'>"+pageNo+"</a></li>";
+					} else {
+						html += "<li><a href=\"javascript:showComments("+pageNo+")\">"+pageNo+"</a></li>";
+					} // end of if~else
+						
+					pageNo++;
+					loop++;
+				} // end of while
+					
+				if(!(pageNo > totalPage)) {
+					html += "<li><a href=\"javascript:showComments("+(pageNo+1)+")\">다음</a></li>";
+				} // end of if
+				
+				$("#pageBar").empty().html(html);
+			},
+			error: function(request, status, error){ 
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});// end of ajax
+	} // end of function showPageBar(currentPageNo)
 	
 </script>
 
@@ -141,20 +231,22 @@
 					</div>
 				</div>
 				<%-- ==== 2019.02.05 ==== --%>
-				<div class="col-sm-12">
-					<span style="font-weight: bold;">댓글 <span>N</span>개</span>
-					<button type="button" class="btn" style="background-color: white;"><span class="glyphicon glyphicon-repeat"></span></button>
+				<%-- ==== 2019.02.06 ==== --%>
+				<div class="col-sm-12" style="margin-top: 10px;">
+					<span style="font-weight: bold;">댓글 <span>${totalCnt}</span>개</span>
+					<button type="button" onclick="showComments('1')" class="btn" style="background-color: white;"><span class="glyphicon glyphicon-repeat"></span></button>
 				</div>
-			
-				<div class="col-sm-12" id="commentsResult" style="background-color: #f2f2f2;">
+				
+				<div class="col-sm-12" id="commentsResult">
+				</div>
+				
+				<div class="col-sm-12" align="center">
 					<div class="col-sm-12">
-						<div class="row">
-							<img src="<%=request.getContextPath() %>/resources/img/member/profiles/${reviewMap.FILENAME}" width="20px" height="20px" style="border-radius: 10px;">
-							&nbsp;<span style="font-weight: bold;">000000@naver.com</span>
-						</div>
-						댓글댓글
-					</div>
-				</div><!--  -->
+						<ul class="pagination pagination-sm" id="pageBar">
+					  	</ul>
+				  	</div>
+				</div>
+				<%-- ==== 2019.02.06 ==== --%>
 			</div>
 		</div>
 	</div>

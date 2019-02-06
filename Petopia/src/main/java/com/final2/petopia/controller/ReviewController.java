@@ -473,6 +473,16 @@ public class ReviewController {
 		
 		req.setAttribute("reviewMap", reviewMap);
 		
+		// === 2019.02.06 ==== //
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("REVIEW_UID", review_UID);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		int totalCnt = service.selectReviewCommentsTotalCount(paraMap);
+		
+		req.setAttribute("totalCnt", totalCnt);
+		// === 2019.02.06 ==== //
+		
 		return "review/reviewDetail.tiles2";
 	} // end of public String reviewDetail(HttpServletRequest req)
 	// === 2019.02.03 === 끝 //
@@ -724,4 +734,41 @@ public class ReviewController {
 		return reviewCommentsList;
 	} // end of public List<HashMap<String, String>> selectReviewCommentsList(HttpServletRequest req)
 	// === 2019.02.05 ==== //
+	
+	// === 2019.02.06 ==== //
+	// 페이지바를 만들기 위한 페이지 갯수 알아오기
+	@RequestMapping(value="/selectReviewCommentsTotalPage.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int selectReviewCommentsTotalPage(HttpServletRequest req) {
+		int totalPage = 0;
+		
+		String str_review_uid = req.getParameter("review_uid");
+		
+		int review_uid = 0;
+		int sizePerPage = 10;
+		
+		// review_uid
+		if(str_review_uid == null || "".equals(str_review_uid)) {
+			str_review_uid = "0";
+		}
+		
+		try {
+			review_uid = Integer.parseInt(str_review_uid);
+		} catch (NumberFormatException e) {
+			review_uid = 0;
+		} // end of try~catch
+		
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("REVIEW_UID", review_uid);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		int totalCnt = service.selectReviewCommentsTotalCount(paraMap);
+		
+		// 총페이지
+		totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		return totalPage;
+	} // end of public int selectReviewCommentsTotalPage(HttpServletRequest req)
+	
+	// === 2019.02.06 ==== //
 }
