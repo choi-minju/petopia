@@ -1,4 +1,4 @@
-show user;
+﻿show user;
 -- #업데이트 내역
 -- [190106] 계정관련 쿼리문, 예약결제환불 관련 테이블 및 시퀀스
 -- [190107] 1; 팀별 쿼리 병합
@@ -18,6 +18,7 @@ show user;
 -- [190129] 2; chart 테이블에 fk_reservation_UID 추가; 혜원
 -- [190130] 오라클DB; notification 테이블 not_URL 컬럼 default값 변경;지민
 -- [190131] 오라클DB; 반려동물체중 테이블, 시퀀스 추가 및 반려동물케어 컬럼 수정
+-- [190205] review_comment 테이블 default 추가; 민주
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -321,6 +322,16 @@ CREATE TABLE review_comment (
     ,CONSTRAINT ck_rc_blind -- 블라인드처리이유 체크제약
 		check(rc_blind in(0,1,2,3,4)) 
 );
+
+-- [190205] review_comment 테이블 default 추가; 민주
+alter table review_comment
+modify rc_group default 0;
+
+alter table review_comment
+modify rc_g_odr default 0;
+
+alter table review_comment
+modify rc_depth default 0;
 
 -- 리뷰 댓글 시퀀스
 create sequence seq_rc_UID
@@ -688,7 +699,6 @@ CREATE TABLE notification (
     ,CONSTRAINT CK_not_readcheck -- 확인여부 체크제약
 		check(not_readcheck in(0,1))
 );
-
 
 alter table notification drop constraint CK_not_type;
 
