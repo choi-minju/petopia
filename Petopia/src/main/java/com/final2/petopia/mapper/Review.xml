@@ -318,18 +318,42 @@
 	<!-- === 2019.02.03 === -->
 	
 	<!-- === 2019.02.05 === -->
+	<!-- === 2019.02.07 === 수정 -->
 	<!-- *** 댓글 쓰기 *** -->
 	<!-- 댓글 insert -->
 	<insert id="insertReviewComments" parameterType="HashMap">
-		insert into review_comment(rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content, rc_writedate, fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status)
-		values(seq_rc_UID.nextval, #{FK_REVIEW_UID}, #{FK_IDX}, #{RC_NICKNAME}, #{RC_CONTENT}, sysdate, 0, seq_rc_UID.nextval, default, default, 0, 1)
+		insert into review_comment(rc_id, fk_review_UID, fk_idx, rc_nickname, rc_userid, rc_content, rc_writedate, fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status)
+		values(seq_rc_UID.nextval, #{FK_REVIEW_UID}, #{FK_IDX}, #{RC_NICKNAME}, #{RC_USERID}, #{RC_CONTENT}, sysdate, 0, seq_rc_UID.nextval, default, default, 0, 1)
 	</insert>
+	<!-- === 2019.02.07 === 수정 -->
 	
 	<!-- 알림 insert -->
 	<insert id="insertReviewNotification" parameterType="HashMap">
 		insert into notification(not_UID, fk_idx, not_type, not_message, not_URL, not_date, not_time, not_readcheck, not_remindstatus)
 		values(seq_notification_UID.nextval, #{FK_IDX}, 4, #{NOT_MESSAGE}, #{NOT_URL}, sysdate, default, default, default)
 	</insert>
+	
+	<!-- === 2019.02.07 === 시작 -->
+	<!-- *** 대댓글 쓰기 *** -->
+	<!-- FK_RC_ID, RC_GROUP, RC_G_ODR가 같은 값이 있는지 없는지 알아보기 -->
+	<select id="selectDupilcationByRc_groupRc_idRc_g_odr" parameterType="HashMap" resultType="int">
+		select count(*)
+		from review_comment
+		where rc_status = 1 and fk_rc_id = #{RC_ID} and rc_group = #{RC_GROUP} and rc_g_odr = #{RC_G_ODR}
+	</select>
+	
+	<!-- 위의 값(selectDupilcationByRc_groupRc_idRc_g_odr)이 있는 경우, RC_G_ODR의 값이 그 값보다 크거가 같은 값은 RC_G_ODR+1 -->
+	<update id="updateRc_g_odgUp" parameterType="HashMap">
+		update review_comment set rc_g_odr = rc_g_odr + 1
+		where rc_status = 1 and rc_group = #{RC_GROUP} and rc_g_odr <![CDATA[>=]]> #{RC_G_ODR}
+	</update>
+	
+	<!-- 대댓글 insert -->
+	<insert id="insertReviewCommentsByRc_id" parameterType="HashMap">
+		insert into review_comment(rc_id, fk_review_UID, fk_idx, rc_nickname, rc_userid, rc_content, rc_writedate, fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status)
+		values(seq_rc_UID.nextval, #{FK_REVIEW_UID}, #{FK_IDX}, #{RC_NICKNAME}, #{RC_USERID}, #{RC_CONTENT}, sysdate, #{RC_ID}, #{RC_GROUP}, #{RC_G_ODR}, #{RC_DEPTH}, 0, 1)
+	</insert>
+	<!-- === 2019.02.07 === 끝 -->
 	
 	<!-- *** 댓글 목록 *** -->
 	<!-- 댓글 전체 갯수 -->
@@ -339,12 +363,14 @@
 		where fk_review_UID = #{REVIEW_UID}
 	</select>
 	
+	<!-- === 2019.02.07 === 수정 -->
 	<!-- 댓글 전체 리스트 -->
 	<resultMap type="HashMap" id="reviewCommentsMap">
 		<result property="RC_ID"			column="rc_id"			javaType="String"/>
 		<result property="FK_REVIEW_UID"	column="fk_review_UID"	javaType="String"/>
 		<result property="FK_IDX"			column="fk_idx"			javaType="String"/>
 		<result property="RC_NICKNAME"		column="rc_nickname"	javaType="String"/>
+		<result property="RC_USERID"		column="rc_userid"		javaType="String"/>
 		<result property="RC_CONTENT"		column="rc_content"		javaType="String"/>
 		<result property="RC_WRITEDATE"		column="rc_writedate"	javaType="String"/>
 		<result property="FK_RC_ID"			column="fk_rc_id"		javaType="String"/>
@@ -358,15 +384,15 @@
 	
 	<!-- === 2019.02.06 === -->
 	<select id="selectReviewCommentsListByReviewUID" parameterType="HashMap" resultMap="reviewCommentsMap">
-		select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content, rc_writedate
+		select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_userid, rc_content, rc_writedate
 		    ,fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, filename
 		from
 		(
-		    select rownum as rno, rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content, rc_writedate
+		    select rownum as rno, rc_id, fk_review_UID, fk_idx, rc_nickname, rc_userid, rc_content, rc_writedate
 		        ,fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, filename
 		    from
 		    (
-		        select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content
+		        select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_userid, rc_content
 		            , to_char(rc_writedate, 'yyyy-mm-dd hh24:mi:ss') as rc_writedate
 		            , fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, b.filename
 		        from review_comment a JOIN member b
@@ -379,6 +405,197 @@
 		) T
 		where rno between #{STARTRNO} and #{ENDRNO}
 	</select>
+	<!-- === 2019.02.07 === 수정 -->
 	<!-- === 2019.02.06 === -->
 	<!-- === 2019.02.05 === -->
+	
+	<!-- === 2019.02.07 === 시작 -->
+	<!-- *** 댓글 수정하기 *** -->
+	<!-- 수정할 댓글 정보 가져오기 -->
+	<select id="selectReviewCommentsOne" parameterType="int" resultMap="reviewCommentsMap">
+		select rc_id, fk_review_UID, fk_idx, rc_nickname, rc_content
+		    , to_char(rc_writedate, 'yyyy-mm-dd hh24:mi:ss') as rc_writedate
+		    , fk_rc_id, rc_group, rc_g_odr, rc_depth, rc_blind, rc_status, b.filename
+		from review_comment a JOIN member b
+		ON a.fk_idx = b.idx
+		where rc_id = #{rc_id} and rc_blind = 0 and rc_status = 1
+	</select>
+	
+	<!-- 댓글 수정하기 -->
+	<update id="updateReviewCommentsByRc_id" parameterType="HashMap">
+		update review_comment set rc_content = #{RC_CONTENT}
+		where rc_id = #{RC_ID} and rc_blind = 0 and rc_status = 1
+	</update>
+	
+	<!-- *** 댓글 삭제하기 *** -->
+	<update id="updateReviewCommentsStatusByRc_id" parameterType="int">
+		update review_comment set rc_status = 0
+		where rc_id = #{RC_ID} and rc_blind = 0 and rc_status = 1
+	</update>
+	
+	<!-- *** 병원 관계자 페이지 *** -->
+	<!-- *** 병원 리뷰 리스트 *** -->
+	<!-- *** 병원 리뷰 갯수 *** -->
+	<!-- 기간X검색X -->
+	<select id="selectAllTotalCountByBiz_id" parameterType="HashMap" resultType="int">
+		select count(*)
+		from review a JOIN member b
+		ON a.fk_idx_biz = b.idx
+		where rv_status = 1 and b.idx = #{IDX}
+	</select>
+	
+	<!-- 기간X검색O -->
+	<select id="selectAllTotalCountByBiz_idSearch" parameterType="HashMap" resultType="int">
+		select count(*)
+		from review a JOIN member b
+		ON a.fk_idx_biz = b.idx
+		where rv_status = 1 and b.idx = #{IDX} and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+	</select>
+	
+	<!-- 기간O검색X -->
+	<select id="selectAllTotalCountByBiz_idPeriod" parameterType="HashMap" resultType="int">
+		select count(*) 
+		from review a JOIN member b
+		ON a.fk_idx_biz = b.idx
+		where rv_status = 1 and b.idx = #{IDX} and trunc(months_between(sysdate, rv_writedate)) <![CDATA[<]]> #{PERIOD}
+	</select>
+	
+	<!-- 기간O검색O -->
+	<select id="selectAllTotalCountByBiz_idPeriodSearch" parameterType="HashMap" resultType="int">
+		select count(*)
+		from review a JOIN member b
+		ON a.fk_idx_biz = b.idx
+		where rv_status = 1 and b.idx = #{IDX} 
+			and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+			and trunc(months_between(sysdate, rv_writedate)) <![CDATA[<]]> #{PERIOD}
+	</select>
+	
+	<!-- *** 병원 리뷰 리스트 *** -->
+	<resultMap type="HashMap" id="bizReviewListMap">
+		<result property="RNO"					column="rno"				javaType="String"/>
+		<result property="REVIEW_UID"			column="review_UID"			javaType="String"/>
+		<result property="FK_NICKNAME"			column="fk_nickname"		javaType="String"/>
+		<result property="NAME"					column="name"				javaType="String"/>
+		<result property="FK_USERID"			column="fk_userid"			javaType="String"/>
+		<result property="STARTPOINT"			column="startpoint"			javaType="String"/>
+		<result property="RV_WRITEDATE"			column="rv_writedate"		javaType="String"/>
+		<result property="RV_STATUS"			column="rv_status"			javaType="String"/>
+		<result property="RV_BLIND"				column="rv_blind"			javaType="String"/>
+	</resultMap>
+	
+	<!-- 기간X검색X -->
+	<select id="selectReviewListByBiz_id" parameterType="HashMap" resultMap="bizReviewListMap">
+		select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		from 
+		(
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		    from
+		    (
+		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		        from
+		        (
+		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate, rv_status, rv_blind
+		            from review a JOIN member b
+		            ON a.fk_idx_biz = b.idx
+		            where rv_status = 1 and b.idx = #{IDX} 
+		            order by rv_writedate asc
+		        ) V
+		        order by rv_writedate desc
+		    )T
+		)W
+		where orderIdx between #{STARTRNO} and #{ENDRNO}
+	</select>
+	
+	<!-- 기간X검색O -->
+	<select id="selectReviewListByBiz_idSearch" parameterType="HashMap" resultMap="bizReviewListMap">
+		select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		from 
+		(
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		    from
+		    (
+		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		        from
+		        (
+		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate, rv_status, rv_blind
+		            from review a JOIN member b
+		            ON a.fk_idx_biz = b.idx
+		            where rv_status = 1 and b.idx = #{IDX} and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+		            order by rv_writedate asc
+		        ) V
+		        order by rv_writedate desc
+		    )T
+		)W
+		where orderIdx between #{STARTRNO} and #{ENDRNO}
+	</select>
+	
+	<!-- 기간O검색X -->
+	<select id="selectReviewListByBiz_idPeriod" parameterType="HashMap" resultMap="bizReviewListMap">
+		select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		from 
+		(
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		    from
+		    (
+		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		        from
+		        (
+		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate, rv_status, rv_blind
+		            from review a JOIN member b
+		            ON a.fk_idx_biz = b.idx
+		            where rv_status = 1 and b.idx = #{IDX} and trunc(months_between(sysdate, rv_writedate)) <![CDATA[<]]> #{PERIOD}
+		            order by rv_writedate asc
+		        ) V
+		        order by rv_writedate desc
+		    )T
+		)W
+		where orderIdx between #{STARTRNO} and #{ENDRNO}
+	</select>
+	
+	<!-- 기간O검색O -->
+	<select id="selectReviewListByBiz_idPeriodSearch" parameterType="HashMap" resultMap="bizReviewListMap">
+	select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		from 
+		(
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		    from
+		    (
+		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		        from
+		        (
+		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate, rv_status, rv_blind
+		            from review a JOIN member b
+		            ON a.fk_idx_biz = b.idx
+		            where b.idx = #{IDX} and ${SEARCHWHAT} like '%'|| #{SEARCH} ||'%'
+		        		and trunc(months_between(sysdate, rv_writedate)) <![CDATA[<]]> #{PERIOD}
+		            order by rv_writedate asc
+		        ) V
+		        order by rv_writedate desc
+		    )T
+		)W
+		where orderIdx between #{STARTRNO} and #{ENDRNO}
+	</select>
+	
+	<!-- *** 기업 회원이 블라인드 처리 요청 *** -->
+	<update id="updateReviewBlindByReview_uid" parameterType="HashMap">
+		update review set rv_blind = #{RV_BLIND}
+		where review_uid = #{REVIEW_UID}
+	</update>
+	
+	<!-- *** 병원 리뷰 디테일 *** -->
+	<select id="selectReviewByBiz_idReview_UID" parameterType="HashMap" resultMap="reviewDetailMap">
+		select review_UID, fk_idx_biz, fk_idx, fk_reservation_UID, startpoint, fk_userid, fk_nickname
+		    , rv_contents, rv_status, rv_blind,rv_writeDate, hosName, c.fileName
+		from 
+		(
+		    select review_UID, fk_idx_biz, fk_idx, fk_reservation_UID, startpoint, fk_userid, fk_nickname
+		            , rv_contents, rv_status, rv_blind, to_char(rv_writeDate, 'yy.mm.dd hh24:mi:ss') as rv_writeDate
+		            , b.name as hosName
+		    from review a JOIN member b
+		    ON a.fk_idx_biz = b.idx
+		    where rv_status = 1 and fk_idx_biz = #{FK_IDX_BIZ} and review_UID = #{REVIEW_UID}
+		) V JOIN member c
+		ON V.fk_idx_biz = c.idx
+	</select>
+	<!-- === 2019.02.07 === 끝 -->
 </mapper>

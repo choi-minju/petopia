@@ -146,10 +146,10 @@
 				$.each(json, function(entryIndex, entry){
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
-							"<td>"+entry.deposit_date+"</td>"+
+							"<td>"+entry.deposit_date+"</td>"; // [190207] 오류 수정
 					if(entry.deposit_status=="1"){
 						html += "<td>입금</td>"+
-								"<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button></td>";
+								"<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세"+entry.fk_payment_UID+"</button></td>";
 					}
 					else if(entry.deposit_status=="4"){
 						html += "<td>출금완료</td><td><button type='button' class='btn btn-default' onClick='goWithdrawDetail("+entry.fk_payment_UID+");'>출금내역</button></td>";
@@ -184,7 +184,7 @@
 				$.each(json, function(entryIndex, entry){
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
-							"<td>"+entry.deposit_date+"</td>"+
+							"<td>"+entry.deposit_date+"</td>"; // [190207] 오류 수정
 					if(entry.deposit_status=="1"){
 						html += "<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button></td>";
 					}
@@ -217,7 +217,7 @@
 				$.each(json, function(entryIndex, entry){
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
-							"<td>"+entry.deposit_date+"</td>"+
+							"<td>"+entry.deposit_date+"</td>"; // [190207] 오류 수정
 					if(entry.deposit_status=="4"){
 						html += "<td><button type='button' class='btn btn-default' onClick='goWithdrawDetail("+entry.fk_payment_UID+");'>출금내역</button></td>";
 					}
@@ -343,6 +343,7 @@
 	} // end of makeCommentPageBar
 	
 	function goRvDetail(payment_UID){
+		console.log("payment_UID: "+payment_UID);
 		var form_data = {"payment_UID": payment_UID};
 		
 		$.ajax({

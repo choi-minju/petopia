@@ -81,13 +81,31 @@ public class SearchDAO implements InterSearchDAO {
 	@Override
 	public List<Biz_MemberVO> getBizmemListByidx(int loginuser_idx, String orderbyNo, String numbers) {
 		
+		List<Biz_MemberVO> bizmemList = null;
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		
+
 		map.put("LOGINUSER_IDX", loginuser_idx);
 		map.put("ORDERBYNO", orderbyNo);
 		map.put("NUMBERS", numbers);
 		
-		List<Biz_MemberVO> bizmemList = sqlsession.selectList("search.getBizmemListByidx", map);
+		// 예약기록이 있는 회원 : user based collaborative filtering 사용
+		//				     1)제일 많이 다녀온 병원 1개를 뽑아 2)그 병원을 예약했던 회원 리스트를 기준으로 3)그 회원들이 다녀온 다른 병원 리스트를 뽑아 가장 많이 나오는 순서대로 출력한다.
+		
+		// 예약기록이 없는 회원 : contents based Recommendation 사용
+		//				     회원가입시 선택한 태그 5개를 기준으로 가장 많이 태그를 보유한 병원 순서대로 출력한다.
+		
+		// 예약기록이 있는지 없는지 확인 
+		int cnt = sqlsession.selectOne("search.getCountReservRecord",loginuser_idx);
+		
+		if(cnt == 0) {
+			// 예약기록이 없다면
+			bizmemList = sqlsession.selectList("search.getBizmemListByidx", map);
+		}
+		else {
+			// 예약기록이 있다면
+			bizmemList = sqlsession.selectList("search.getBizmemListByRecord", map);
+		}
+		
 		return bizmemList;
 		
 	}
@@ -95,7 +113,20 @@ public class SearchDAO implements InterSearchDAO {
 
 	@Override
 	public int getCntForRecomm(int loginuser_idx) {
-		int cnt = sqlsession.selectOne("search.recommCount", loginuser_idx);
+		
+		int cnt = 0;
+
+		// 예약기록이 있는지 없는지 확인 
+		int recCnt = sqlsession.selectOne("search.getCountReservRecord",loginuser_idx);
+		
+		if(recCnt == 0) {
+			// 예약기록이 없다면
+			cnt = sqlsession.selectOne("search.recommCount", loginuser_idx);
+		}
+		else {
+			// 예약기록이 있다면
+			cnt = sqlsession.selectOne("search.RecordCount", loginuser_idx);
+		}
 		return cnt;
 	}
 

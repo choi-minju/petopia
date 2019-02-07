@@ -84,6 +84,10 @@ public interface InterReservationService {
 
 	List<HashMap<String, String>> selectInfiniteScrollDownPaymentRvList(int rnoToStart);
 
+//	[190207]
+//	#관리자 예약결제관리 목록에서 진료기록을 입력한 기업회원에게 예치금 정산하기 
+	HashMap<String, String> insertDepositToBiz(HashMap<String, String> paraMap);
+
 	
 
 }

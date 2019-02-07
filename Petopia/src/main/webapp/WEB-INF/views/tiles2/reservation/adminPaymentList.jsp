@@ -66,6 +66,34 @@ th{
 		$("#colname").val("${colname}");
 	}
 
+	function payForDepositToBiz(reservation_UID, payment_UID, idx_biz){
+		console.log(reservation_UID+", "+payment_UID+", "+idx_biz);
+		var form_data = {"reservation_UID":reservation_UID,
+						"payment_UID":payment_UID,
+						"idx_biz":idx_biz};
+			
+		$.ajax({
+			url: "payForDepositToBiz.pet",
+			type: "GET",
+			data: form_data,
+			dataType: "JSON",
+			success: function(json){
+				if(json.result=="1"){
+					alert(json.biz_name+"님의 예치금통장으로 "+json.depositcoin+"원을 정산하였습니다.(수수료 10% 차감)");
+				}
+				else {
+					alert("정산 실패!");
+				}
+				
+				location.reload();
+	
+			},// end of success
+			error: function(request, status, error){
+				if(request.readyState == 0 || request.status == 0) return;
+				else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});// end of $.ajax
+	}
 
 </script>
 <div class="container">
@@ -116,8 +144,11 @@ th{
         <c:if test="${rmap.reservation_status=='2'}">
         	<span style="color: #F8B500; font-weight: bold;">결제완료</span>
         </c:if>
-        <c:if test="${rmap.reservation_status=='3'}">
-        	<button type="button" class="btn btn-default" onClick="payForDepositToBiz(${rmap.payment_UID});">정산승인</button>
+        <c:if test="${rmap.reservation_status=='3' && rmap.payment_status=='1'}">
+        	<button type="button" class="btn btn-rounder btnmenu" onClick="payForDepositToBiz(${rmap.reservation_UID},${rmap.payment_UID}, ${rmap.idx_biz});">정산승인</button>
+        </c:if>
+        <c:if test="${rmap.reservation_status=='3' && rmap.payment_status=='0'}">
+        	<span style="color: #ff6e60; font-weight: bold;">정산완료</span>
         </c:if>
         <c:if test="${rmap.reservation_status=='4'}">
         	<span style="color: gray">취소완료</span>
@@ -164,8 +195,8 @@ $(window).scroll(function(){ // ① 스크롤 이벤트 최초 발생
     
          
         // 2. 현재 스크롤의 top 좌표가  > (게시글을 불러온 화면 height - 윈도우창의 height) 되는 순간
-        if ($(window).scrollTop() >= $(document).height() - $(window).height()){ //② 현재스크롤의 위치가 화면의 보이는 위치보다 크다면
-             
+//        if ($(window).scrollTop() >= $(document).height() - $(window).height()){ // 현재스크롤의 위치가 화면의 보이는 위치보다 크다면
+         if($(window).scrollTop() + $(window).height() + 30 > $(document).height()){    
             // 3. class가 scrolling인 것의 요소 중 마지막인 요소를 선택한 다음 그것의 data-bno속성 값을 받아온다.
             //      즉, 현재 뿌려진 게시글의 마지막 bno값을 읽어오는 것이다.( 이 다음의 게시글들을 가져오기 위해 필요한 데이터이다.)
             var lastrno = $(".scrolling:last").attr("data-rno");
@@ -214,8 +245,11 @@ $(window).scroll(function(){ // ① 스크롤 이벤트 최초 발생
                                 else if(entry.reservation_status=='2'){
                                 	str+='<span style="color: #F8B500; font-weight: bold;">결제완료</span>';
                                 }
-                                else if(entry.reservation_status=='3'){
-                                	str+='<button type="button" class="btn btn-default" onClick="payForDepositToBiz(${rmap.payment_UID});">정산승인</button>';
+                                else if(entry.reservation_status=='3' && entry.payment_status=='1'){
+                                	str+='<button type="button" class="btn btn-rounder btnmenu" onClick="payForDepositToBiz('+entry.reservation_UID+','+entry.payment_UID+','+entry.idx_biz+');">정산승인</button>';
+                                }
+                                else if(entry.reservation_status=='3' && entry.payment_status=='0'){
+                                	str+='<span style="color: #ff6e60; font-weight: bold;">정산완료</span>';
                                 }
                                 else if(entry.reservation_status=='4'){
                                 	str+='<span style="color: gray">취소완료</span>';
@@ -334,7 +368,7 @@ $(window).scroll(function(){ // ① 스크롤 이벤트 최초 발생
         lastScrollTop = currentScrollTop;
     }// else : 업 스크롤인 상태 
       */
-});// scroll event
+}); // scroll event
 // [190204] 끝
 // [190206] 끝
 </script>

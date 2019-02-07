@@ -1,11 +1,8 @@
 package com.final2.petopia.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,8 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.final2.petopia.common.MyUtil;
 import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.MemberVO;
-import com.final2.petopia.model.PetVO;
-import com.final2.petopia.model.ReservationVO;
+
 
 import com.final2.petopia.service.InterChartService;
 
@@ -136,7 +132,7 @@ public class ChartController {
 
 		String ruid = req.getParameter("reservation_UID");
 		String cuid = service.getChartuid(); // 차트번호 채번
-
+		
 		HashMap<String, String> chartmap = new HashMap<String, String>();
 
 		chartmap = service.selectReserverInfo(ruid); // 예약번호를 이용하여 차트에 예약자 정보 불러오기
@@ -155,9 +151,9 @@ public class ChartController {
 	} // 진료 내역 인서트 창띄우기 (기업회원페이지에서)
 		// 0125~0126
 		// 0130 인서트문 수정
-
+       //0207 인서트 수정중 
 	@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.POST })
-	public String InsertChartEnd(ChartVO cvo, HttpServletRequest req) {
+	public String InsertChartEnd(ChartVO cvo, HttpServletRequest req) throws Throwable {
 
 		String ruid = req.getParameter("fk_reservation_UID");
 
@@ -167,9 +163,8 @@ public class ChartController {
 		String rx_regName = req.getParameter("rx_regName");
 
 		String result = "";
-		int n1 = 0;
-		int n2 = 0;
 
+		int n = 0;
 		if (ctype.equals("약국")) {
 			result = "0";
 		} else if (ctype.equals("외래진료")) {
@@ -182,41 +177,47 @@ public class ChartController {
 			result = "4";
 		}
 
-		cvo.setChart_type(result);
+	   cvo.setChart_type(result);
+	
+		String cuid = req.getParameter("chart_UID"); // 뷰에서 차트번호 알아오기
 
-		n1 = service.insertChart(cvo); // 차트테이블에 인서트
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("chart_UID", cuid);// 맵에 넣어준다.
+		map.put("rx_regName", rx_regName);
+		map.put("ruid", ruid);
+		
+		List<HashMap<String, String>> mlist = new ArrayList<HashMap<String, String>>();
 
-		if (n1 == 1) {
+		String[] rx_name = req.getParameterValues("rx_name");
+		String[] dosage = req.getParameterValues("dosage");
+		String[] dose_number = req.getParameterValues("dose_number");
 
-			String cuid = req.getParameter("chart_UID"); // 뷰에서 차트번호 알아오기
+		for (int i = 0; i < rx_name.length; i++) {
+			map.put("rx_name", rx_name[i]);
+			map.put("dosage", dosage[i]);
+			map.put("dose_number", dose_number[i]);
 
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("chart_UID", cuid);// 맵에 넣어준다.
-			map.put("rx_regName", rx_regName);
-
-			List<HashMap<String, String>> mlist = new ArrayList<HashMap<String, String>>();
-
-			String[] rx_name = req.getParameterValues("rx_name");
-			String[] dosage = req.getParameterValues("dosage");
-			String[] dose_number = req.getParameterValues("dose_number");
-
-			for (int i = 0; i < rx_name.length; i++) {
-				map.put("rx_name", rx_name[i]);
-				map.put("dosage", dosage[i]);
-				map.put("dose_number", dose_number[i]);
-
-				mlist.add(map);
-
-			}
-
-			n2 = service.insertPre(mlist); // 처방전테이블에 인서트
-
-			if (n2 == 1) {
-				service.updaterstatus(ruid);// 스테이터스 변경
-			}
+			mlist.add(map);
 		}
 
-		return "chart/biz_rvchartList.tiles2";
+		n = service.insertChart(cvo,mlist,map);// 차트테이블에 인서트
+			
+			
+		String msg = "";
+		String loc = "";
+		if(n==1) {
+			msg="차트등록 성공";
+			loc="javascript:location.href='"+req.getContextPath()+"/bizReservationList.pet'";
+		}else {
+			msg="차트 등록 실패";
+			loc="javascript:history.back();";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+		
 
 	} // 진료 차트 인서트 완료 (기업회원페이지에서)
 
