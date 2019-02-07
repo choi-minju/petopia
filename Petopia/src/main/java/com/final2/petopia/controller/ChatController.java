@@ -165,13 +165,12 @@ public class ChatController extends TextWebSocketHandler{
 	
 	//정보출력
 	@RequestMapping(value="/log.pet", method= {RequestMethod.GET})
+	@ResponseBody
 	public List<HashMap<String, Object>> viewlog(HttpServletRequest req, HttpServletResponse res) {
 		
 		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>();
 		
 		String fk_idx = req.getParameter("idx");
-		
-		System.out.println(fk_idx);
 		
 		List<HashMap<String,Object>> list = service.log(Integer.parseInt(fk_idx));
 		
@@ -185,19 +184,15 @@ public class ChatController extends TextWebSocketHandler{
 				submap.put("fk_name_biz", datamap.get("fk_name_biz"));
 				submap.put("fk_docname", datamap.get("fk_docname"));
 				
-				System.out.println(submap.get("time"));
-				System.out.println(submap.get("fk_userid"));
-				System.out.println(submap.get("chatcode"));
-				System.out.println(submap.get("fk_name_biz"));
-				System.out.println(submap.get("fk_docname"));
-				
 				returnmapList.add(submap);
+				
+				req.setAttribute("returnmapList", returnmapList);
+			
 			}
+		
 		}
 		
 		return returnmapList;
-	}
-	
-	
+	} // end of viewlog
 	
 }
