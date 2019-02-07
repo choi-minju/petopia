@@ -344,7 +344,13 @@ public class ReservationController {
 	
 	@RequestMapping(value="/deposit.pet", method={RequestMethod.GET})
 	public String requireLogin_depositList(HttpServletRequest req, HttpServletResponse res) {
-		
+		// [190206] 예치금합계 추가하기
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String idx = String.valueOf(loginuser.getIdx());
+		int sumDeposit = service.selectSumDepositByIdx(idx);
+		req.setAttribute("sumDeposit", sumDeposit);
+		// 190206 끝
 		return "reservation/depositList.tiles2";
 	}
 	
@@ -759,28 +765,26 @@ public class ReservationController {
 		return "reservation/adminPaymentList.tiles2";
 	}
 	
+// [190206] 수정; ResponseBody 형식 변경, 리턴값 변수명 변경
 	@RequestMapping(value="adminPaymentRvList_InfiniteScrollDown.pet", method= {RequestMethod.POST})
-	public @ResponseBody List<HashMap<String, String>> 
-		adminPaymentRvList_InfiniteScrollDown(HttpServletRequest req) {
+	@ResponseBody 
+	public List<HashMap<String, String>> adminPaymentRvList_InfiniteScrollDown(HttpServletRequest req) {
+		List<HashMap<String, String>> paymentRvList = new ArrayList<HashMap<String, String>>();
 		
-		int rno = Integer.parseInt(req.getParameter("rno"));
-		int rnoToStart = rno-1;
-		
-		List<HashMap<String, String>> returnList = service.selectInfiniteScrollDownPaymentRvList(rnoToStart);
-	
-		return returnList;
+		int rnoToStart = Integer.parseInt(req.getParameter("rno"));
+		paymentRvList = service.selectInfiniteScrollDownPaymentRvList(rnoToStart);
+
+		return paymentRvList;
 	}
 	@RequestMapping(value="adminPaymentRvList_InfiniteScrollUp.pet", method= {RequestMethod.POST})
-	public @ResponseBody List<HashMap<String, String>> 
-		adminPaymentRvList_InfiniteScrollUp(HttpServletRequest req) {
+	@ResponseBody 
+	public List<HashMap<String, String>> adminPaymentRvList_InfiniteScrollUp(HttpServletRequest req) {
 		
-		int rno = Integer.parseInt(req.getParameter("rno"));
-		int rnoToStart = rno-1;
-		
-		List<HashMap<String, String>> returnList = service.selectInfiniteScrollDownPaymentRvList(rnoToStart);
+		int rnoToStart = Integer.parseInt(req.getParameter("rno"));
+		List<HashMap<String, String>> paymentRvList = service.selectInfiniteScrollDownPaymentRvList(rnoToStart);
 	
-		return returnList;
+		return paymentRvList;
 	}
-	
+// [190206] 끝
 	
 }

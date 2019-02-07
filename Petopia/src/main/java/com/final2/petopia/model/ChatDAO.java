@@ -1,6 +1,7 @@
 package com.final2.petopia.model;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,15 @@ public class ChatDAO implements InterChatDAO {
 		String n = sqlsession.selectOne("chat.viewdocname", idx);
 		
 		return n;
+	}
+
+
+	@Override
+	public List<HashMap<String, Object>> getloglist(int fk_idx) {
+		
+		List<HashMap<String, Object>> list = sqlsession.selectList("chat.getloglist", fk_idx);
+		
+		return list;
 	}
 
 }

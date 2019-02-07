@@ -1,6 +1,7 @@
 package com.final2.petopia.service;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,15 @@ public interface InterChatService {
 
 	String viewidx(String usercode) throws Throwable; // idx 알아오기
 
-	int insertall(HashMap<String, String> returnMap) throws Throwable; //  정보 insert
+	int insertall(HashMap<String, Object> returnMap) throws Throwable; //  정보 insert
 
-	String selectend(String idx); // idx에 따라 회원정보 가져오기 
+	String viewuserid(String idx); // 병원idx 가져오기
+
+	String viewname_biz(String idx); // 병원이름 가져오기
+
+	String viewdocname(String idx); // 의사이름 가져오기
+
+	List<HashMap<String, Object>> log(int parseInt); // 정보가져와서 리스트로 출력
+
 
 }
