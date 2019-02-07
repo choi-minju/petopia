@@ -57,11 +57,42 @@ public interface InterReviewService {
 	int insertReviewComments(HashMap<String, String> paraMap); // 댓글 insert
 	int insertReviewCommentsNotification(HashMap<String, String> paraMap); // 댓글 insert + 알림 insert
 	
+	// === 2019.02.07 === 시작 //
+	// *** 대댓글 쓰기 *** //
+	int insertReviewCommentsByRc_id(HashMap<String, String> paraMap); // 대댓글 insert
+	int insertReviewCommentsNotificationByRc_id(HashMap<String, String> paraMap); // 대댓글 insert + 알림 insert
+	// === 2019.02.07 === 끝 //
+	
 	// *** 댓글 목록 *** //
 	int selectReviewCommentsTotalCount(HashMap<String, Integer> paraMap); // 댓글 전체 갯수
 	List<HashMap<String, String>> selectReviewCommentsListByReviewUID(HashMap<String, Integer> paraMap); // 댓글 전체 리스트
 	// === 2019.02.05 === //
 	
+	// === 2019.02.07 === 시작 //
+	// *** 댓글 수정하기 *** //
+	HashMap<String, String> selectReviewCommentsOne(int rc_id); // 수정할 댓글 정보 가져오기
+	int updateReviewCommentsByRc_id(HashMap<String, String> paraMap); // 댓글 수정하기
 	
+	// *** 댓글 삭제하기 *** //
+	int updateReviewCommentsStatusByRc_id(int rc_id);
 	
+	// *** 병원 관리자 페이지 *** //
+	// *** 병원 리뷰 리스트 갯수 *** //
+	int selectAllTotalCountByBiz_id(HashMap<String, String> paraMap); // 기간X검색X
+	int selectAllTotalCountByBiz_idSearch(HashMap<String, String> paraMap); // 기간X검색O
+	int selectAllTotalCountByBiz_idPeriod(HashMap<String, String> paraMap); // 기간O검색X
+	int selectAllTotalCountByBiz_idPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
+	
+	// *** 병원 리뷰 리스트 *** //
+	List<HashMap<String, String>> selectReviewListByBiz_id(HashMap<String, String> paraMap); // 기간X검색X
+	List<HashMap<String, String>> selectReviewListByBiz_idSearch(HashMap<String, String> paraMap); // 기간X검색O
+	List<HashMap<String, String>> selectReviewListByBiz_idPeriod(HashMap<String, String> paraMap); // 기간O검색X
+	List<HashMap<String, String>> selectReviewListByBiz_idPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
+	
+	// *** 기업 회원이 블라인드 처리 요청 *** //
+	int updateReviewBlindByReview_uid(HashMap<String, Integer> paraMap);
+	
+	// *** 병원 리뷰 디테일 *** //
+	HashMap<String, String> selectReviewByBiz_idReview_UID(HashMap<String, Integer> paraMap); // 병원 리뷰 정보
+	// === 2019.02.07 === 끝 //
 }

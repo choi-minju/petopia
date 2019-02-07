@@ -69,6 +69,12 @@ public interface InterConsultDAO {
 	
 	// - [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select
 	List<ConsultVO> selectAdminConsultListPaging(HashMap<String, String> paraMap);
+	
+	// - 기업회원 idx 목록 member:select
+	List<String> selectBizMemberList();
+
+	// - 알림 테이블에 board로 notification:insert
+	int insertConsultNotification(String idx);
 
 
 	

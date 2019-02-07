@@ -7,8 +7,30 @@
 <select id="selectUnreadNotificationCount" parameterType="int" resultType="int">
 	select count(*)
 	from notification
-	where fk_idx = #{idx} and not_readcheck = 0
+	where fk_idx = #{idx}
+	and not_readcheck = 0
+	and to_char(not_time, 'yyyy-mm-dd hh24:mi:ss') <![CDATA[<=]]> to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss')
 </select>
+
+<!-- 회원의 고유번호를 이용한 심플 알림정보 가져오기(알림타입과 그 갯수) -->
+<resultMap type="HashMap" id="selectNotificatioSimplenListMap">
+	<result property="NOT_TYPE" column="not_type" javaType="String" />
+	<result property="COUNT" column="count" javaType="String" />
+</resultMap>
+
+<select id="selectNotificatioSimplenList" parameterType="int" resultMap="selectNotificatioSimplenListMap">
+	select not_type, count(not_type) as count
+	from notification
+	where fk_idx = #{idx}
+	and not_readcheck = 0
+	and to_char(not_time, 'yyyy-mm-dd hh24:mi:ss') <![CDATA[<=]]> to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss')
+	group by not_type
+</select>
+
+
+
+
+
 
 
 </mapper>
