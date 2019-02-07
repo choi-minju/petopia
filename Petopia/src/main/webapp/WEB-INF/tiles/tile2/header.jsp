@@ -286,7 +286,7 @@
 						<div class="column" id="bizBoard">
 							<a href="#">공지사항</a>
 							<a href="#">이벤트</a>
-							<a href="<%= ctxPath %>/allReviewList.pet">전체리뷰</a>
+							<a href="<%= ctxPath %>/bizReviewList.pet">전체리뷰</a> <!-- === 2019.02.07 === 수정 -->
 							<a href="#">자유게시판</a>
 						</div>
 					</div>
