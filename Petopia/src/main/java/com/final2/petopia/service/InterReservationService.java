@@ -79,6 +79,11 @@ public interface InterReservationService {
 
 	List<HashMap<String, String>> selectPaymentRvListForAdmin(HashMap<String, String> paraMap);
 
+//	[190204]
+	List<HashMap<String, String>> selectAdminPaymentRvListAll();
 
+	List<HashMap<String, String>> selectInfiniteScrollDownPaymentRvList(int rnoToStart);
+
+	
 
 }

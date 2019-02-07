@@ -410,6 +410,7 @@
 	</select>
 	
 	<resultMap type="HashMap" id="rmap_adminPaymentRvList">
+		<result property="rno" column="rno" javaType="String"/>
 		<result property="payment_UID" column="payment_UID" javaType="String"/>
 		<result property="reservation_UID" column="reservation_UID" javaType="String"/>
 		<result property="payment_total" column="payment_total" javaType="String"/>
@@ -428,6 +429,7 @@
 		<result property="pet_name" column="pet_name" javaType="String"/>
 		<result property="pet_type" column="pet_type" javaType="String"/>
 	</resultMap>
+	
 	<select id="selectPaymentRvListForAdmin" parameterType="HashMap" resultMap="rmap_adminPaymentRvList">
 		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
 		        , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
@@ -463,4 +465,71 @@
 		where rno between #{startRno} and #{endRno}
 		order by rno asc
 	</select>
+	
+	<!-- [190204] -->
+	<!-- [190206] 수정; 비교식 between으로 변경 후 CDATA 삭제, where절 비교계산식 변경  -->
+	<select id="selectAdminPaymentRvListAll" resultMap="rmap_adminPaymentRvList">
+		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+       		 	, payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+        		, name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		(
+		select rownum as rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+		    , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+		    , name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		    (
+		    select payment_UID, reservation_UID, payment_total, payment_point, payment_pay*-1 as payment_pay, to_char(payment_date, 'yyyy-mm-dd hh24:mi:ss') as payment_date
+		        , payment_status, to_char(bookingdate, 'yyyy-mm-dd hh24:mi:ss') as bookingdate
+		        , to_char(reservation_date, 'yyyy-mm-dd hh24:mi:ss') as reservation_date, reservation_status, reservation_type
+		        , M.name as name, M.phone as phone, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
+		    from payment P join reservation R
+		    on fk_reservation_UID = reservation_UID
+		    join member M
+		    on R.fk_idx = idx
+		    join pet_info E
+		    on E.pet_UID = R.fk_pet_UID
+		    join biz_info B
+		    on R.fk_idx_biz = B.idx_biz
+		    join member T
+		    on T.idx = B.idx_biz
+		    order by payment_UID desc
+		    ) V
+		) N
+		where rno between 1 and 20
+		order by rno asc
+	</select>
+	
+	<select id="selectInfiniteScrollDownPaymentRvList" resultMap="rmap_adminPaymentRvList" parameterType="int">
+		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+       		 	, payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+        		, name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		(
+		select rownum as rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
+		    , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
+		    , name, phone, biz_name, biz_phone, pet_name, pet_type
+		from
+		    (
+		    select payment_UID, reservation_UID, payment_total, payment_point, payment_pay*-1 as payment_pay, to_char(payment_date, 'yyyy-mm-dd hh24:mi:ss') as payment_date
+		        , payment_status, to_char(bookingdate, 'yyyy-mm-dd hh24:mi:ss') as bookingdate
+		        , to_char(reservation_date, 'yyyy-mm-dd hh24:mi:ss') as reservation_date, reservation_status, reservation_type
+		        , M.name as name, M.phone as phone, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
+		    from payment P join reservation R
+		    on fk_reservation_UID = reservation_UID
+		    join member M
+		    on R.fk_idx = idx
+		    join pet_info E
+		    on E.pet_UID = R.fk_pet_UID
+		    join biz_info B
+		    on R.fk_idx_biz = B.idx_biz
+		    join member T
+		    on T.idx = B.idx_biz
+		    order by payment_UID desc
+		    ) V
+		) N
+		where rno between #{rnoToStart}+1 and #{rnoToStart}+20
+		order by rno asc
+	</select>
+	<!-- 190206 끝 -->
 </mapper>

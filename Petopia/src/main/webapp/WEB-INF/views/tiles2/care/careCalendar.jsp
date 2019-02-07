@@ -12,7 +12,7 @@
 	.pet-box {
 		display: inline-block;
 	}
-	
+	 
 	.petname {
 		display: inline-block;
 		margin-left:auto;

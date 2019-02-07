@@ -53,4 +53,14 @@ public interface InterReviewDAO {
 	// *** 리뷰 디테일 *** //
 	HashMap<String, String> selectReviewByReview_UID(int review_UID);
 	// === 2019.02.03 === //
+	
+	// === 2019.02.05 === //
+	// *** 댓글 쓰기 *** //
+	int insertReviewComments(HashMap<String, String> paraMap); // 댓글 insert
+	int insertReviewNotification(HashMap<String, String> paraMap); // 알림 insert
+	
+	// *** 댓글 목록 *** //
+	int selectReviewCommentsTotalCount(HashMap<String, Integer> paraMap); // 댓글 전체 갯수
+	List<HashMap<String, String>> selectReviewCommentsListByReviewUID(HashMap<String, Integer> paraMap); // 댓글 전체 리스트
+	// === 2019.02.05 === //
 }

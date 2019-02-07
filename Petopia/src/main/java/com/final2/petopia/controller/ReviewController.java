@@ -203,8 +203,8 @@ public class ReviewController {
 	} // end of public String requireLogin_updateMyReview(HttpServletRequest req, HttpServletResponse res)
 	
 	// *** 나의 병원리뷰에서 리뷰 삭제하기 *** //
-	@RequestMapping(value="/updateReviewStatus.pet", method={RequestMethod.POST})
-	public String requireLogin_updateReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res) {
+	@RequestMapping(value="/updateMyReviewStatus.pet", method={RequestMethod.POST}) // === 2019.02.04 === value 수정 //
+	public String requireLogin_updateMyReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res) { // === 2019.02.04 === 이름 수정 //
 		
 		String str_review_UID = req.getParameter("review_UID");
 		
@@ -232,7 +232,7 @@ public class ReviewController {
 		req.setAttribute("loc", loc);
 		
 		return "msg";
-	} // end of public String requireLogin_updateReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res)
+	} // end of public String requireLogin_updateMyReviewStatusByReviewUID(HttpServletRequest req, HttpServletResponse res)
 	
 	// *** 나의 병원리뷰에서 더보기를 위한 전체 갯수 가져오기 *** //
 	@RequestMapping(value="/selectMyReviewTotalCount.pet", method={RequestMethod.GET})
@@ -473,6 +473,16 @@ public class ReviewController {
 		
 		req.setAttribute("reviewMap", reviewMap);
 		
+		// === 2019.02.06 ==== //
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("REVIEW_UID", review_UID);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		int totalCnt = service.selectReviewCommentsTotalCount(paraMap);
+		
+		req.setAttribute("totalCnt", totalCnt);
+		// === 2019.02.06 ==== //
+		
 		return "review/reviewDetail.tiles2";
 	} // end of public String reviewDetail(HttpServletRequest req)
 	// === 2019.02.03 === 끝 //
@@ -509,4 +519,256 @@ public class ReviewController {
 		return newFileName;
 	} // end of public String summernoteImgUpload(MultipartHttpServletRequest req)
 	// === 2019.02.03 ==== summerNote의 이미지 업로드 //
+	
+	// === 2019.02.04 ==== //
+	// *** 리뷰 수정하는 페이지 보기 *** //
+	@RequestMapping(value="/editReview.pet", method={RequestMethod.GET})
+	public String requireLogin_editReview(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_review_UID = req.getParameter("review_UID");
+		
+		int review_UID = 0;
+		if(str_review_UID == null || "".equals(str_review_UID)) {
+			str_review_UID = "0";
+		}
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> reviewMap = service.selectReviewByReview_UID(review_UID);
+		
+		req.setAttribute("reviewMap", reviewMap);
+		
+		return "review/reviewEdit.tiles2";
+	} // end of public String requireLogin_editReview(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 리뷰 수정하기 *** //
+	@RequestMapping(value="/updateReview.pet", method={RequestMethod.POST})
+	public String requireLogin_updateReview(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_review_UID = req.getParameter("review_UID");
+		String str_startpoint = req.getParameter("startpoint");
+		String rv_contents = req.getParameter("rv_contents");
+	
+		// 번호
+		int review_UID = 0;
+		if(str_review_UID == null || "".equals(str_review_UID)) {
+			str_review_UID = "0";
+		}
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		} // end of try~catch
+		
+		// 별점
+		int startpoint = 0;
+		if(str_startpoint == null || "".equals(str_startpoint)) {
+			str_startpoint = "0";
+		}
+		
+		try {
+			startpoint = Integer.parseInt(str_startpoint);
+		} catch (NumberFormatException e) {
+			startpoint = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("STARTPOINT", String.valueOf(startpoint));
+		paraMap.put("REVIEW_UID", String.valueOf(review_UID));
+		paraMap.put("RV_CONTENTS", rv_contents);
+		
+		int result = service.updateReviewByReviewUID(paraMap);
+		
+		String msg = "";
+		String loc = "";
+		if(result == 0) {
+			msg = "리뷰 수정이 실패되었습니다.";
+			loc = "javascript:histroy.back();";
+		} else {
+			msg = "리뷰 수정되었습니다.";
+			loc = req.getContextPath()+"/reviewDetail.pet?review_UID="+review_UID;
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} // end of public String requireLogin_updateReview(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 리뷰 삭제하기 *** //
+	@RequestMapping(value="/updateReviewStatus.pet", method={RequestMethod.POST})
+	public String requireLogin_updateReviewStatus(HttpServletRequest req, HttpServletResponse res) {
+		
+		String str_review_UID = req.getParameter("review_UID");
+		
+		int review_UID = 0;
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		}
+		
+		int result = service.updateReviewStatusByReviewUID(review_UID);
+		
+		String msg = "";
+		String loc = "";
+		if(result == 0) {
+			msg = "리뷰 삭제가 실패되었습니다.";
+			loc = "javascript:histroy.back();";
+		} else {
+			msg = "리뷰 삭제되었습니다.";
+			loc = req.getContextPath()+"/allReviewList.pet";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	} // end of public String requireLogin_updateReviewStatus(HttpServletRequest req, HttpServletResponse res)
+	// === 2019.02.04 ==== //
+	
+	// === 2019.02.05 ==== //
+	// 댓글 쓰기
+	@RequestMapping(value="/addComments.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLogin_addComments(HttpServletRequest req, HttpServletResponse res) {
+		
+		int result = 0;
+		
+		String str_review_uid = req.getParameter("review_uid");
+		String rc_content = req.getParameter("rc_content");
+		String fk_userid = req.getParameter("fk_userid");
+		
+		int review_UID = 0;
+		try {
+			review_UID = Integer.parseInt(str_review_uid);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		} // end of try~catch
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("FK_REVIEW_UID", String.valueOf(review_UID));
+		paraMap.put("RC_CONTENT", rc_content);
+		paraMap.put("FK_IDX", String.valueOf(loginuser.getIdx()));
+		paraMap.put("RC_NICKNAME", loginuser.getNickname());
+		paraMap.put("RC_CONTENT", rc_content);
+		
+		if((loginuser.getUserid()).equals(fk_userid)) {
+			// 로그인한 아이디와 작성자가 같다면 댓글 insert
+			result = service.insertReviewComments(paraMap);
+		} else {
+			// 로그인한 아이디와 작성자가 같지 않다면 댓글 insert+알림 insert
+			paraMap.put("NOT_MESSAGE", "리뷰댓글이 추가되었습니다.");
+			paraMap.put("NOT_URL", req.getContextPath()+"/reviewDetail.pet?review_UID="+review_UID);
+			
+			result = service.insertReviewCommentsNotification(paraMap);
+		} // end of if~else
+		
+		return result;
+	} // end of public int requireLogin_addComments(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 댓글 목록 보기 *** //
+	@RequestMapping(value="/selectReviewCommentsList.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, String>> selectReviewCommentsList(HttpServletRequest req) {
+		
+		String str_currentPageNo = req.getParameter("currentPageNo");
+		String str_review_uid = req.getParameter("review_uid");
+		
+		int currentPageNo = 0;
+		int review_uid = 0;
+		int sizePerPage = 10;
+		
+		// review_uid
+		if(str_review_uid == null || "".equals(str_review_uid)) {
+			str_review_uid = "0";
+		}
+		
+		try {
+			review_uid = Integer.parseInt(str_review_uid);
+		} catch (NumberFormatException e) {
+			review_uid = 0;
+		} // end of try~catch
+		
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("REVIEW_UID", review_uid);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		int totalCnt = service.selectReviewCommentsTotalCount(paraMap);
+		
+		// 총페이지
+		int totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		// 페이지번호 
+		if(str_currentPageNo == null || "".equals(str_currentPageNo)) {
+			str_currentPageNo = "1";
+		}
+		
+		try {
+			currentPageNo = Integer.parseInt(str_currentPageNo);
+			
+			if(currentPageNo < 1 || currentPageNo > totalPage) {
+				currentPageNo = 1;
+			}
+		} catch (NumberFormatException e) {
+			currentPageNo = 1;
+		}
+		
+		int startRno = ((currentPageNo-1) * sizePerPage) + 1;
+		int endRno = (currentPageNo * sizePerPage);
+		
+		paraMap.put("STARTRNO", startRno);
+		paraMap.put("ENDRNO", endRno);
+		
+		List<HashMap<String, String>> reviewCommentsList = service.selectReviewCommentsListByReviewUID(paraMap);
+		
+		return reviewCommentsList;
+	} // end of public List<HashMap<String, String>> selectReviewCommentsList(HttpServletRequest req)
+	// === 2019.02.05 ==== //
+	
+	// === 2019.02.06 ==== //
+	// 페이지바를 만들기 위한 페이지 갯수 알아오기
+	@RequestMapping(value="/selectReviewCommentsTotalPage.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int selectReviewCommentsTotalPage(HttpServletRequest req) {
+		int totalPage = 0;
+		
+		String str_review_uid = req.getParameter("review_uid");
+		
+		int review_uid = 0;
+		int sizePerPage = 10;
+		
+		// review_uid
+		if(str_review_uid == null || "".equals(str_review_uid)) {
+			str_review_uid = "0";
+		}
+		
+		try {
+			review_uid = Integer.parseInt(str_review_uid);
+		} catch (NumberFormatException e) {
+			review_uid = 0;
+		} // end of try~catch
+		
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("REVIEW_UID", review_uid);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		int totalCnt = service.selectReviewCommentsTotalCount(paraMap);
+		
+		// 총페이지
+		totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		return totalPage;
+	} // end of public int selectReviewCommentsTotalPage(HttpServletRequest req)
+	
+	// === 2019.02.06 ==== //
 }

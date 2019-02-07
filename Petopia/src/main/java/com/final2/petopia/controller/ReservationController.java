@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -343,7 +344,13 @@ public class ReservationController {
 	
 	@RequestMapping(value="/deposit.pet", method={RequestMethod.GET})
 	public String requireLogin_depositList(HttpServletRequest req, HttpServletResponse res) {
-		
+		// [190206] 예치금합계 추가하기
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String idx = String.valueOf(loginuser.getIdx());
+		int sumDeposit = service.selectSumDepositByIdx(idx);
+		req.setAttribute("sumDeposit", sumDeposit);
+		// 190206 끝
 		return "reservation/depositList.tiles2";
 	}
 	
@@ -659,7 +666,7 @@ public class ReservationController {
 	
 //	[190203]
 //	#관리자 예약/예치금목록 페이지
-	@RequestMapping(value="adminPaymentList.pet", method= {RequestMethod.GET})
+//	@RequestMapping(value="adminPaymentList.pet", method= {RequestMethod.GET})
 	public String requireLogin_adminReservationList(HttpServletRequest req, HttpServletResponse res) {
 		List<HashMap<String, String>> paymentRvList = null;
 		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
@@ -743,11 +750,41 @@ public class ReservationController {
 		
 //		#currentURL 뷰로 보내기
 		String currentURL = MyUtil.getCurrentURL(req);
-		System.out.println(currentURL);
 		if(currentURL.substring(currentURL.length()-5).equals("?null")) {
 			currentURL = currentURL.substring(0 , currentURL.length()-5);
 		}
 		req.setAttribute("currentURL", currentURL);
 		return "reservation/adminPaymentList.tiles2";
 	}
+
+//	[190204]
+	@RequestMapping(value="adminPaymentList.pet", method= {RequestMethod.GET})
+	public String requireLogin_adminPaymentRvListAll(HttpServletRequest req, HttpServletResponse res) {
+		List<HashMap<String, String>> returnList = service.selectAdminPaymentRvListAll();
+		req.setAttribute("paymentRvList", returnList);
+		return "reservation/adminPaymentList.tiles2";
+	}
+	
+// [190206] 수정; ResponseBody 형식 변경, 리턴값 변수명 변경
+	@RequestMapping(value="adminPaymentRvList_InfiniteScrollDown.pet", method= {RequestMethod.POST})
+	@ResponseBody 
+	public List<HashMap<String, String>> adminPaymentRvList_InfiniteScrollDown(HttpServletRequest req) {
+		List<HashMap<String, String>> paymentRvList = new ArrayList<HashMap<String, String>>();
+		
+		int rnoToStart = Integer.parseInt(req.getParameter("rno"));
+		paymentRvList = service.selectInfiniteScrollDownPaymentRvList(rnoToStart);
+
+		return paymentRvList;
+	}
+	@RequestMapping(value="adminPaymentRvList_InfiniteScrollUp.pet", method= {RequestMethod.POST})
+	@ResponseBody 
+	public List<HashMap<String, String>> adminPaymentRvList_InfiniteScrollUp(HttpServletRequest req) {
+		
+		int rnoToStart = Integer.parseInt(req.getParameter("rno"));
+		List<HashMap<String, String>> paymentRvList = service.selectInfiniteScrollDownPaymentRvList(rnoToStart);
+	
+		return paymentRvList;
+	}
+// [190206] 끝
+	
 }
