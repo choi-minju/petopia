@@ -86,4 +86,19 @@
 	values(seq_video_advice_UID.nextval, #{idx}, 90, #{code}, #{fk_userid}, #{fk_name_biz}, #{fk_docname}, sysdate)
  </insert>
  
+ <resultMap type="java.util.HashMap" id="getloglist"> 
+		<result property="time" 	     column="time" 			javaType="String" />
+		<result property="fk_userid" 	 column="fk_userid" 	javaType="String" />
+		<result property="chatcode" 	 column="chatcode" 		javaType="String" />
+		<result property="fk_name_biz" 	 column="fk_name_biz" 	javaType="String" />
+		<result property="fk_docname"    column="fk_docname" 	javaType="String" />
+ </resultMap>
+ 
+ <select id="getloglist" resultMap="getloglist" parameterType="int">	
+		select time, fk_userid, chatcode, fk_name_biz, fk_docname
+		from video_advice
+		where fk_idx_biz = #{fk_idx}
+		order by va_UID
+ </select>
+ 
 </mapper>

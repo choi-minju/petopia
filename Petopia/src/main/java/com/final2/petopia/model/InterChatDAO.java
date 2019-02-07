@@ -1,6 +1,7 @@
 package com.final2.petopia.model;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
@@ -20,5 +21,7 @@ public interface InterChatDAO {
 	String viewname_biz(String idx);
 
 	String viewdocname(String idx);
+
+	List<HashMap<String, Object>> getloglist(int fk_idx);
 
 }

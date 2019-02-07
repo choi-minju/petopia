@@ -114,6 +114,7 @@
 <%-- [190126] 일반회원 예치금 목록 --%>
 <script type="text/javascript">
 	$(document).ready(function(){
+		$("#sumDeposit").text(numberWithCommas(${sumDeposit}));
 		all("1");
 		
 		$("#all").click(function(){
@@ -389,10 +390,17 @@
 	}
 </script>	    
 <div class="container" style="margin-bottom: 8%;">
-	<div  style="margin-top: 8%;">
-  		<h2>Deposit History</h2>
-  		<p>예치금 사용내역을 확인할 수 있습니다.</p>
+<%-- [190206] 예치금 잔액 추가 --%>
+	<div class="row" style="margin-top: 8%;">
+		<div class="col-md-3">
+	  		<h2>Deposit History</h2>
+	  		<p>예치금 사용내역을 확인할 수 있습니다.</p>
+		</div>
+		<div class="col-md-9 text-right" style="margin-top: 5%;">
+			<span style="font-weight: bold; font-size: 15px;">예치금 잔액: <span id="sumDeposit"></span>원</span>
+		</div>
 	</div>
+<%-- 190206 끝 --%>
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" id="all" href="#home">전체</a></li>
     <li><a data-toggle="tab" id="charged" href="#menu1">충전내역</a></li>

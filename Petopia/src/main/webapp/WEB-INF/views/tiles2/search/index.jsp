@@ -130,6 +130,10 @@
 	  padding: 16px;
 	}
 	
+	tr {
+	  background-color: #fff;
+	}
+	
 	tr:nth-child(even) {
 	  background-color: #f2f2f2
 	}
@@ -145,7 +149,7 @@
 	  cursor: pointer;
 	  padding: 14px 16px;
 	  font-size: 17px;
-	  width: 25%;
+	  width: 50%;
 	}
 	
 	.tablink:hover {
@@ -160,8 +164,7 @@
 	  height: 100%;
 	}
 	
-	#Pharmacy {background-color: green;}
-	#Hospital {background-color: blue;}
+	#Pharmacy, #Hospital {background-color: #f9ecf2;}
 	
 </style>
 
@@ -187,8 +190,67 @@
 			setBounds();
 		}
 		
+		var whereNo = <%= whereNo%>;
+		
+		if(whereNo == 1) {
+			showHospital("${searchWord}");
+			showPharmacy("${searchWord}");
+		}
+		
 	});
 
+	document.addEventListener("DOMContentLoaded", function(event) { 
+	    document.getElementById("defaultOpen").click();
+	});
+	
+	function showHospital(searchWord) {
+
+		console.log(searchWord);
+		
+		$.ajax({
+			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/vtrHospitalInfo/1/5/",
+			success: function(xml){
+				
+				console.log(xml);
+				
+								
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+
+		});
+
+		
+	};
+	
+	
+	function showPharmacy(searchWord) {
+		
+
+		console.log(searchWord);
+		
+		$.ajax({
+			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/animalPharmacyInfo/1/5/",
+			type:"GET",
+			dataType: "XML",
+			success: function(xml){
+				
+				console.log(xml);
+				
+				
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+
+		});
+
+		
+		
+	};
+	
+	
 	function searchEnter(event) {
 		
 		/* $("#myUL").show();
@@ -297,9 +359,6 @@
 		  elmnt.style.backgroundColor = color;
 	}
 
-	// Get the element with id="defaultOpen" and click on it
-	document.getElementById("defaultOpen").click();
-	
 	
 </script>
 
@@ -917,68 +976,68 @@
 
 
 
-
 <div class="container" style="margin-top: 10%; margin-bottom: 10%;">
-	<div class="row">
-		<div class="col-sm-12">	
-			<button class="tablink" onclick="openPage('Hospital', this, 'blue')">동물병원</button>
-			<button class="tablink" onclick="openPage('Pharmacy', this, 'green')" id="defaultOpen">동물약국</button>
-			
-			<div id="Hospital" class="tabcontent">
-			  <h3>Home</h3>
-			  <p>Home is where the heart is..</p>
-				<table>
-				  <tr>
-				    <th>동물병원</th>
-				    <th>Last Name</th>
-				    <th>Points</th>
-				  </tr>
-				  <tr>
-				    <td>Jill</td>
-				    <td>Smith</td>
-				    <td>50</td>
-				  </tr>
-				  <tr>
-				    <td>Eve</td>
-				    <td>Jackson</td>
-				    <td>94</td>
-				  </tr>
-				  <tr>
-				    <td>Adam</td>
-				    <td>Johnson</td>
-				    <td>67</td>
-				  </tr>
-				</table>	
+		<c:if test="${whereNo == 1 }">
+			<div class="row">
+				<div class="col-sm-12">	
+					<button class="tablink" id="defaultOpen" onclick="openPage('Hospital', this, 'rgb(252, 118, 106)')">동물병원</button>
+					<button class="tablink" onclick="openPage('Pharmacy', this, 'rgb(252, 118, 106)')">동물약국</button>
+					
+					<div id="Hospital" class="tabcontent" style="display: block;">
+					  <h3 style="color: black;">공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3>
+					  <p style="color: black;">※ 바로예약 서비스는 제공되지 않습니다. 내방 전 전화로 먼저 확인하시기 바랍니다. </p>
+						<table>
+						  <tr>
+						    <th>동물병원</th>
+						    <th>주소</th>
+						    <th>전화번호</th>
+						  </tr>
+						  <tr>
+						    <td>Jill</td>
+						    <td>Smith</td>
+						    <td>50</td>
+						  </tr>
+						  <tr>
+						    <td>Eve</td>
+						    <td>Jackson</td>
+						    <td>94</td>
+						  </tr>
+						  <tr>
+						    <td>Adam</td>
+						    <td>Johnson</td>
+						    <td>67</td>
+						  </tr>
+						</table>	
+					</div>
+					
+					<div id="Pharmacy" class="tabcontent" style="display: none;">
+					  <h3 style="color: black;">공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3><br/>
+					 	 <table>
+						  <tr>
+						    <th>동물약국</th>
+						    <th>주소</th>
+						    <th>전화번호</th>
+						  </tr>
+						  <tr>
+						    <td>Jill</td>
+						    <td>Smith</td>
+						    <td>50</td>
+						  </tr>
+						  <tr>
+						    <td>Eve</td>
+						    <td>Jackson</td>
+						    <td>94</td>
+						  </tr>
+						  <tr>
+						    <td>Adam</td>
+						    <td>Johnson</td>
+						    <td>67</td>
+						  </tr>
+						</table>	
+					</div>
+				</div>
 			</div>
-			
-			<div id="Pharmacy" class="tabcontent">
-			  <h3>News</h3>
-			  <p>Some news this fine day!</p> 
-			 	 <table>
-				  <tr>
-				    <th>동물약국</th>
-				    <th>Last Name</th>
-				    <th>Points</th>
-				  </tr>
-				  <tr>
-				    <td>Jill</td>
-				    <td>Smith</td>
-				    <td>50</td>
-				  </tr>
-				  <tr>
-				    <td>Eve</td>
-				    <td>Jackson</td>
-				    <td>94</td>
-				  </tr>
-				  <tr>
-				    <td>Adam</td>
-				    <td>Johnson</td>
-				    <td>67</td>
-				  </tr>
-				</table>	
-			</div>
-		</div>
-	</div>
+	</c:if>
 </div>
 
 

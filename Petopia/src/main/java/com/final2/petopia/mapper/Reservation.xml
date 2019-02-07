@@ -289,10 +289,11 @@
 	<update id="updatePaymentStatusTo3ByFK_rvUID" parameterType="String">
 		update payment set payment_status=3 where fk_reservation_UID=#{reservation_UID}
 	</update>
-	<!-- 3) 예치금 테이블에 충전 또는 환불받은 값 인서트하기 -->
+	<!-- 3) 예치금 테이블에 충전 또는 환불받은 값 인서트하기
+	[190207] payment_UID 수정 -->
 	<insert id="insertDepositPlus" parameterType="HashMap">
 		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID)
-		values(seq_deposit_UID.nextval, #{fk_idx}, to_number(#{depositcoin}), #{deposit_status}, #{deposit_type}, sysdate, default)
+		values(seq_deposit_UID.nextval, #{fk_idx}, to_number(#{depositcoin}), #{deposit_status}, #{deposit_type}, sysdate, #{payment_UID})
 	</insert>
 	
 	<!-- #notification 테이블에 insert -->
@@ -364,7 +365,7 @@
 		on m.idx=r.fk_idx
 		join pet_info i
 		on i.pet_UID = r.fk_pet_UID
-		where d.depositcoin!=0 and p.payment_UID=#{payment_UID}
+		where p.payment_UID=#{payment_UID}
 	</select>
 	
 	
@@ -422,8 +423,10 @@
 		<result property="reservation_date" column="reservation_date" javaType="String"/>
 		<result property="reservation_status" column="reservation_status" javaType="String"/>
 		<result property="reservation_type" column="reservation_type" javaType="String"/>
+		<result property="idx" column="idx" javaType="String"/>
 		<result property="name" column="name" javaType="String"/>
 		<result property="phone" column="phone" javaType="String"/>
+		<result property="idx_biz" column="idx_biz" javaType="String"/>
 		<result property="biz_name" column="biz_name" javaType="String"/>
 		<result property="biz_phone" column="biz_phone" javaType="String"/>
 		<result property="pet_name" column="pet_name" javaType="String"/>
@@ -433,18 +436,18 @@
 	<select id="selectPaymentRvListForAdmin" parameterType="HashMap" resultMap="rmap_adminPaymentRvList">
 		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
 		        , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
-		        , name, phone, biz_name, biz_phone, pet_name, pet_type
+		        , idx, name, phone, idx_biz, biz_name, biz_phone, pet_name, pet_type
 		from
 		(
 		select rownum as rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
 	        , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
-	        , name, phone, biz_name, biz_phone, pet_name, pet_type
+	        , idx, name, phone, idx_biz, biz_name, biz_phone, pet_name, pet_type
 	    from
 			(
 			select payment_UID, reservation_UID, payment_total, payment_point, payment_pay*-1 as payment_pay, to_char(payment_date, 'yyyy-mm-dd hh24:mi:ss') as payment_date
 		        , payment_status, to_char(bookingdate, 'yyyy-mm-dd hh24:mi:ss') as bookingdate
 		        , to_char(reservation_date, 'yyyy-mm-dd hh24:mi:ss') as reservation_date, reservation_status, reservation_type
-		        , M.name as name, M.phone as phone, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
+		        , M.idx, M.name as name, M.phone as phone, B.idx_biz, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
 			from payment P join reservation R
 			on fk_reservation_UID = reservation_UID
 			join member M
@@ -467,22 +470,22 @@
 	</select>
 	
 	<!-- [190204] -->
+	<!-- [190206] 수정; 비교식 between으로 변경 후 CDATA 삭제, where절 비교계산식 변경  -->
 	<select id="selectAdminPaymentRvListAll" resultMap="rmap_adminPaymentRvList">
-	<![CDATA[ 
 		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
        		 	, payment_status, bookingdate, reservation_date, reservation_status, reservation_type
-        		, name, phone, biz_name, biz_phone, pet_name, pet_type
+        		, idx, name, phone, idx_biz, biz_name, biz_phone, pet_name, pet_type
 		from
 		(
 		select rownum as rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
 		    , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
-		    , name, phone, biz_name, biz_phone, pet_name, pet_type
+		    , idx, name, phone, idx_biz, biz_name, biz_phone, pet_name, pet_type
 		from
 		    (
 		    select payment_UID, reservation_UID, payment_total, payment_point, payment_pay*-1 as payment_pay, to_char(payment_date, 'yyyy-mm-dd hh24:mi:ss') as payment_date
 		        , payment_status, to_char(bookingdate, 'yyyy-mm-dd hh24:mi:ss') as bookingdate
 		        , to_char(reservation_date, 'yyyy-mm-dd hh24:mi:ss') as reservation_date, reservation_status, reservation_type
-		        , M.name as name, M.phone as phone, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
+		        , M.idx, M.name as name, M.phone as phone, B.idx_biz, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
 		    from payment P join reservation R
 		    on fk_reservation_UID = reservation_UID
 		    join member M
@@ -496,27 +499,25 @@
 		    order by payment_UID desc
 		    ) V
 		) N
-		where rno<=10
+		where rno between 1 and 20
 		order by rno asc
-	]]>
 	</select>
 	
 	<select id="selectInfiniteScrollDownPaymentRvList" resultMap="rmap_adminPaymentRvList" parameterType="int">
-	<![CDATA[ 
 		select rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
        		 	, payment_status, bookingdate, reservation_date, reservation_status, reservation_type
-        		, name, phone, biz_name, biz_phone, pet_name, pet_type
+        		, idx, name, phone, idx_biz, biz_name, biz_phone, pet_name, pet_type
 		from
 		(
 		select rownum as rno, payment_UID, reservation_UID, payment_total, payment_point, payment_pay, payment_date
 		    , payment_status, bookingdate, reservation_date, reservation_status, reservation_type
-		    , name, phone, biz_name, biz_phone, pet_name, pet_type
+		    , idx, name, phone, idx_biz, biz_name, biz_phone, pet_name, pet_type
 		from
 		    (
 		    select payment_UID, reservation_UID, payment_total, payment_point, payment_pay*-1 as payment_pay, to_char(payment_date, 'yyyy-mm-dd hh24:mi:ss') as payment_date
 		        , payment_status, to_char(bookingdate, 'yyyy-mm-dd hh24:mi:ss') as bookingdate
 		        , to_char(reservation_date, 'yyyy-mm-dd hh24:mi:ss') as reservation_date, reservation_status, reservation_type
-		        , M.name as name, M.phone as phone, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
+		        , M.idx, M.name as name, M.phone as phone, B.idx_biz, T.name as biz_name, T.phone as biz_phone, E.pet_name, E.pet_type
 		    from payment P join reservation R
 		    on fk_reservation_UID = reservation_UID
 		    join member M
@@ -530,10 +531,21 @@
 		    order by payment_UID desc
 		    ) V
 		) N
-		where rno<=#{rnoToStart}
-		and rno > #{rnoToStart}-10
+		where rno between #{rnoToStart}+1 and #{rnoToStart}+5
 		order by rno asc
-	]]>
+	</select>
+	<!-- 190206 끝 -->
+	
+	<!-- [190207] -->
+	<!-- #예약번호로 ChartVO 가져오기 -->
+	<select id="selectChartVOByFk_RUID" parameterType="String" resultType="com.final2.petopia.model.ChartVO">
+		select chart_UID, fk_idx, chart_type, biz_name, doc_name, payment_pay, payment_point, addpay, totalpay, fk_reservation_UID
+		from chart
+		where fk_reservation_UID = #{fk_reservation_UID}
 	</select>
 	
+	<!-- #정산 완료 후 payment status 0으로 변경하기 -->
+	<update id="updatePaymentStatusTo0" parameterType="HashMap">
+		update payment set payment_status = 0 where payment_UID = #{payment_UID}
+	</update>
 </mapper>

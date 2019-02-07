@@ -67,8 +67,6 @@
 			dataType : "JSON",
 			success : function(json) {
 				var result = json.code;
-				 <%-- var chatcode = $('input#code').val(); 
-				 var confirmcode = $("#div_code").find("input[id=hide]").val(); --%>
 				if(chatcode == result) {
 					var frm = document.videochatFrm;
 					parent.location.href="<%= serverName %><%= ctxPath %>/videochat.pet";

@@ -118,4 +118,14 @@ public interface InterReservationDAO {
 
 	List<HashMap<String, String>> selectInfiniteScrollDownPaymentRvList(int rnoToStart);
 
+//	[190207]
+//	#관리자 예약결제관리 목록에서 진료기록을 입력한 기업회원에게 예치금 정산하기
+//	#예약번호로 차트 VO 객체 가져오기
+	ChartVO selectChartVOByFk_RUID(String fk_reservation_UID);
+
+//	#정산 후 payment status를 0으로 변경하기
+	int updatePaymentStatusTo0(HashMap<String, String> paraMap);
+
+	
+
 }
