@@ -172,7 +172,7 @@ color:rgb(252, 118, 106);
 		    		  },
 		    		  error: function(request, status, error){
 		        			if(request.readyState == 0 || request.status == 0) return;
-		        			else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		        			//else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		        		}
 		    	  }); // end of ajax();
 		    	 
@@ -187,7 +187,7 @@ color:rgb(252, 118, 106);
    <h3 class="h3_1">진료기록 관리하기</h3>
    <div class="row" >
    
-	   <c:forEach items="${petlist}" var="pvo" varStatus="status">
+	   <c:forEach items="${pmaplist}" var="pvo" varStatus="status">
 		    <div class="col-md-3" style="display:inlineblock;float:left;">
 		    <input type="hidden" value="${pvo.pet_UID}" id="imgpuid${pvo.pet_UID}">
 		    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" class="petimg petUid${pvo.pet_UID}" width="50%"style="border-radius: 50%;display:block;"> 
@@ -199,14 +199,10 @@ color:rgb(252, 118, 106);
   
   <div class="divbox3">
 	   <div class="container" Style="width:100%;">
-	   <input type="text" id="petUidNo" value="${petlist[0].pet_UID}">
-		  <c:forEach items="${petlist}" var="pvo" >
-		     <%-- <c:if  test="${pvo.pet_UID== }">  --%>
-			  <p style="padding-top:1%;">생년월일: ${pvo.pet_birthday}</p>
-			  <p>성별:   ${pvo.pet_gender}</p>
-			  <p>몸무게: ${pvo.pet_weight} kg</p>
-			<%-- </c:if> --%>
-		  </c:forEach>
+	   <input type="text" id="petUidNo" value="${minpinfo.pet_UID}">
+			  <p style="padding-top:1%;">생년월일: ${minpinfo.pet_birthday}</p>
+			  <p>성별:   ${minpinfo.pet_gender}</p>
+			  <p>몸무게: ${minpinfo.pet_weight} kg</p>
 	   </div>
   </div>
   

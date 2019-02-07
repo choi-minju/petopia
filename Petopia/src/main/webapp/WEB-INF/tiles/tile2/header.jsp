@@ -271,9 +271,9 @@
 					<div class="row">
 						<div class="col-md-3"></div>
 						<div class="column" id="bizMember">
-							<a href="<%= ctxPath %>/bizMemberInfo.pet'">병원정보관리</a>
-							<a href="<%= ctxPath %>/bizDepositAccount.pet'">예치금관리</a>
-							<a href="<%= ctxPath %>/bizReviewList.pet'">우리병원리뷰</a>
+							<a href="<%= ctxPath %>/bizMemberInfo.pet">병원정보관리</a>
+							<a href="<%= ctxPath %>/bizDepositAccount.pet">예치금관리</a>
+							<a href="<%= ctxPath %>/bizReviewList.pet">우리병원리뷰</a>
 						</div>
 						<div class="column" id="bizReservation">
 							<a href="<%= ctxPath %>/bizReservationList.pet">병원예약관리</a>
@@ -312,6 +312,8 @@
 						<div class="column" id="adminMember">
 							<a href="<%= ctxPath %>/adminMember.pet">일반회원</a>
 							<a href="<%= ctxPath %>/adminBiz_member.pet">병원회원</a>
+							<%-- [190203] 관리자 로그인 시  예약결제관리 추가 --%>
+							<a href="<%= ctxPath %>/adminPaymentList.pet">예약결제관리</a>
 						</div>
 						<div class="column" id="adminReview">
 						</div>
