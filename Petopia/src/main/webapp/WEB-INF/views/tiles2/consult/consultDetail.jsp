@@ -64,10 +64,10 @@
 		
 		var membertypeval = frm.membertype.value.trim();
 		var fk_idxval = frm.fk_idx.value.trim();
-		var fk_idx2val = frm.fk_idx2.value.trim();
+		var consult_fk_idxval = frm.consult_fk_idx.value.trim();
 		var cscmt_contentsval = frm.cscmt_contents.value.trim();
 		
-		if( !(membertypeval==2 || (membertypeval==1 && fk_idxval==fk_idx2val)) ) {
+		if( !(membertypeval==2 || (membertypeval==1 && fk_idxval==consult_fk_idxval)) ) {
 			alert("다른회원의 글에 댓글을 작성할 수 없습니다.");
 			return;
 		}
@@ -154,7 +154,7 @@
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
 			    			  +"		<input type='hidden' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
-			    			  +"		<input type='hidden' name='fk_idx2' value='"+entry.FK_IDX+"' />"
+			    			  +"		<input type='hidden' name='consult_fk_idx' value='"+entry.FK_IDX+"' />"
 			    			  +"		<input type='hidden' name='membertype' value='${sessionScope.loginuser.membertype}' />"
 			    			  +"		<input type='hidden' name='cmt_id' value='"+entry.CMT_ID+"' />"
 			    			  +"		<input type='hidden' name='cscmt_group' value='"+entry.CSCMT_GROUP+"' />"
@@ -191,7 +191,7 @@
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
 			    			  +"		<input type='hidden' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
-			    			  +"		<input type='hidden' name='fk_idx2' value='"+entry.FK_IDX+"' />"
+			    			  +"		<input type='hidden' name='consult_fk_idx' value='"+entry.FK_IDX+"' />"
 			    			  +"		<input type='hidden' name='membertype' value='${sessionScope.loginuser.membertype}' />"
 			    			  +"		<input type='hidden' name='cmt_id' value='"+entry.CMT_ID+"' />"
 			    			  +"		<input type='hidden' name='cscmt_group' value='"+entry.CSCMT_GROUP+"' />"
@@ -276,7 +276,7 @@
 		//console.log(queryString);
 
         
-		var fk_idx2val = $("#"+id).find("input[name=fk_idx2]").val();
+		var consult_fk_idxval = $("#"+id).find("input[name=consult_fk_idx]").val();
 		var membertypeval = $("#"+id).find("input[name=membertype]").val();
 		
 		var cmt_idval = $("#"+id).find("input[name=cmt_id]").val();
@@ -306,7 +306,7 @@
 		frm.submit();
 		--%>
 		
-		if( !(membertypeval==2 || (membertypeval==1 && fk_idxval==fk_idx2val)) ) {
+		if( !(membertypeval==2 || (membertypeval==1 && fk_idxval==consult_fk_idxval)) ) {
 			alert("다른회원의 글에 댓글을 작성할 수 없습니다.");
 			return;
 		}
@@ -512,7 +512,7 @@
 		<form name="commentAddFrm" >
 			<div class="col-xs-12 col-md-12 " style="background-color:#F8F8F8;">
 			<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}"  readonly />
-			<input type="hidden" name="fk_idx2" value="${consultvo.fk_idx}"  readonly />
+			<input type="hidden" name="consult_fk_idx" value="${consultvo.fk_idx}"  readonly />
 			<input type="hidden" name="membertype" value="${sessionScope.loginuser.membertype}"  readonly />
 			<span class="col-xs-12 col-md-12 " >
 				<span style="font-weight:bold;">작성자</span>

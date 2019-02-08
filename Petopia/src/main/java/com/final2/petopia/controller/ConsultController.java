@@ -385,7 +385,7 @@ public class ConsultController {
 	
 		HashMap<String, String> returnMap = new HashMap<String, String>();
 			
-		int n = service.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1증가 update
+		int n = service.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1증가 update + [notification] 댓글작성 알림 insert
 		
 		if(n==1) {
 			// 댓글쓰기insert 및 원글의댓글갯수update 성공시
