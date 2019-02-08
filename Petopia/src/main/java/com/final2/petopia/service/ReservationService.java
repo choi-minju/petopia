@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.final2.petopia.common.AES256;
 import com.final2.petopia.model.Biz_MemberVO;
+import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.InterReservationDAO;
 import com.final2.petopia.model.PaymentVO;
@@ -391,6 +392,7 @@ public class ReservationService implements InterReservationService{
 			paraMap.put("depositcoin", String.valueOf(payment_pay));
 			paraMap.put("deposit_status", "2");
 			paraMap.put("deposit_type", "예약취소환불");
+			paraMap.put("payment_UID", "0");		// 190207 fk_payment_UID 추가
 			n4 = dao.insertDepositPlus(paraMap);
 		}
 		if(n4==1) {
@@ -448,6 +450,7 @@ public class ReservationService implements InterReservationService{
 	@Override
 	public HashMap<String, String> selectRvDetailByPUID(String payment_UID, String membertype) {
 		HashMap<String, String> resultMap = new HashMap<String, String>();
+		
 		if(membertype.equals("1")) {
 			resultMap = dao.selectRvDetailByPUIDForMember(payment_UID);
 		}
@@ -510,6 +513,77 @@ public class ReservationService implements InterReservationService{
 			}
 		}
 		return returnList;
+	}
+	
+//	[190207]
+//	#관리자 예약결제관리 목록에서 진료기록을 입력한 기업회원에게 예치금 정산하기 
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public HashMap<String, String> insertDepositToBiz(HashMap<String, String> paraMap) {
+		HashMap<String, String> returnMap = new HashMap<String, String>();
+		HashMap<String, Integer> intParaMap = new HashMap<String, Integer>();
+		
+		String fk_reservation_UID = paraMap.get("reservation_UID");
+		ChartVO cvo = dao.selectChartVOByFk_RUID(fk_reservation_UID);
+		
+		int depositcoin = 0;
+		int addpay = cvo.getAddpay();
+		int totalpay = cvo.getTotalpay();
+		int point = cvo.getPayment_point();
+		
+		int n1, n2, n3, n4, n5, n6 = 0;
+		
+		if( addpay < 0 && totalpay< 100000) {	// 10만원 이하로 정산된 경우
+			// 일반회원에게 차액 환불
+			if(point!=0) {
+				if(addpay*-1>=point) {
+					intParaMap.put("fk_idx", cvo.getFk_idx());
+					intParaMap.put("point", point);
+					n1 = dao.updatePointMember(intParaMap);
+					if(addpay*-1!=point) {
+						paraMap.put("fk_idx", String.valueOf(cvo.getFk_idx()));
+						paraMap.put("depositcoin", String.valueOf(addpay*-1-point));
+						paraMap.put("deposit_status", "1");
+						paraMap.put("deposit_type", "refund");
+						n2 = dao.insertDepositPlus(paraMap);
+					}
+				}
+				else {
+					intParaMap.put("fk_idx", cvo.getFk_idx());
+					intParaMap.put("point", addpay*-1);
+					n1 = dao.updatePointMember(intParaMap);
+				}
+			}
+			else if(point==0){
+				paraMap.put("fk_idx", String.valueOf(cvo.getFk_idx()));
+				paraMap.put("depositcoin", String.valueOf(addpay*-1));
+				paraMap.put("deposit_status", "1");
+				paraMap.put("deposit_type", "refund");
+				n1 = dao.insertDepositPlus(paraMap);
+			}
+			depositcoin = totalpay-(totalpay*1/10);
+		}
+		else {
+			depositcoin = 100000 - (100000 * 1/10);
+		}
+		paraMap.put("fk_idx", paraMap.get("idx_biz"));
+		paraMap.put("depositcoin", String.valueOf(depositcoin));
+		paraMap.put("deposit_status", "1");
+		paraMap.put("deposit_type", "income");
+		
+		n3 = dao.insertDepositPlus(paraMap);
+		n4 = dao.updatePaymentStatusTo0(paraMap);
+		String biz_name = cvo.getBiz_name();
+		
+		if(n3*n4== 1) {
+			returnMap.put("result", "1");
+			returnMap.put("depositcoin", String.valueOf(depositcoin));
+			returnMap.put("biz_name", biz_name);
+		}
+		else {
+			returnMap.put("result", "0");
+		}
+		return returnMap;
 	}
 
 }

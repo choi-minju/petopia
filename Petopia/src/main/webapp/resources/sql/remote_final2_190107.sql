@@ -1,4 +1,4 @@
-﻿show user;
+show user;
 -- #업데이트 내역
 -- [190106] 계정관련 쿼리문, 예약결제환불 관련 테이블 및 시퀀스
 -- [190107] 1; 팀별 쿼리 병합
@@ -19,6 +19,8 @@
 -- [190130] 오라클DB; notification 테이블 not_URL 컬럼 default값 변경;지민
 -- [190131] 오라클DB; 반려동물체중 테이블, 시퀀스 추가 및 반려동물케어 컬럼 수정
 -- [190205] review_comment 테이블 default 추가; 민주
+-- [190206] review_comment 테이블 컬럼 추가; 민주
+-- [190207] 맞춤추천에 필요한 function 생성; 고은
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -332,6 +334,13 @@ modify rc_g_odr default 0;
 
 alter table review_comment
 modify rc_depth default 0;
+
+-- [190206] review_comment 테이블 컬럼 추가; 민주
+alter table review_comment
+add rc_userid varchar2(255) not null;
+
+alter table review_comment
+add rc_nickname varchar2(100) not null;
 
 -- 리뷰 댓글 시퀀스
 create sequence seq_rc_UID
@@ -1748,3 +1757,28 @@ create or replace view view_biz_memberinfo as
 select idx_biz, name as biz_name, phone, postcode, addr1, addr2
 from member join biz_info
 on idx = idx_biz;
+
+-- [190207] 맞춤추천에 필요한 function
+create or replace function func_BestHospital
+(p_idx IN member.idx%TYPE)
+return member.idx%TYPE
+is
+    v_result    varchar2(4);
+begin                    
+    select fk_idx_biz INTO v_result
+    from
+    (
+        select rownum as rno, fk_idx_biz, cnt
+        from 
+        (
+            select fk_idx_biz, count(*) as cnt
+            from reservation
+            where fk_idx = p_idx and reservation_status = 3
+            group by fk_idx_biz
+            order by cnt desc
+        )
+    )
+    where rno = 1;
+    
+    return v_result;
+end;

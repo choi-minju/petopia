@@ -303,4 +303,19 @@ public class ReservationDAO implements InterReservationDAO {
 		List<HashMap<String, String>> returnList = sqlsession.selectList(ns+"selectInfiniteScrollDownPaymentRvList", rnoToStart);
 		return returnList;
 	}
+	
+//	[190207]
+//	#관리자 예약결제관리 목록에서 진료기록을 입력한 기업회원에게 예치금 정산하기 
+	@Override
+	public ChartVO selectChartVOByFk_RUID(String fk_reservation_UID) {
+		ChartVO cvo = sqlsession.selectOne(ns+"selectChartVOByFk_RUID", fk_reservation_UID);
+		return cvo;
+	}
+
+	@Override
+	public int updatePaymentStatusTo0(HashMap<String, String> paraMap) {
+		int result = sqlsession.update(ns+"updatePaymentStatusTo0", paraMap);
+		return result;
+	}
+
 }

@@ -162,6 +162,20 @@ public class ConsultDAO implements InterConsultDAO {
 		List<ConsultVO> AdminConsultList = sqlsession.selectList("consult.selectAdminConsultListPaging", paraMap);
 		return AdminConsultList;
 	}
+
+	// - 기업회원 idx 목록 member:select
+	@Override
+	public List<String> selectBizMemberList() {
+		List<String> bizMemberList = sqlsession.selectList("consult.selectBizMemberList");
+		return bizMemberList;
+	}
+
+	// - 알림 테이블에 board로 notification:insert
+	@Override
+	public int insertConsultNotification(String idx) {
+		int n = sqlsession.insert("consult.insertConsultNotification", idx);
+		return n;
+	}
 	
 	
 
