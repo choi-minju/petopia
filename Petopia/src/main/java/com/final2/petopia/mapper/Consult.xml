@@ -150,6 +150,12 @@
 	where consult_UID = #{fk_consult_UID}
 </update>
 
+<!-- [notification] 댓글작성 알림 insert -->
+<insert id="insertCommentNotification" parameterType="com.final2.petopia.model.ConsultCommentVO">
+	insert into notification(not_UID, fk_idx, not_type, not_message, not_date, not_readcheck, not_remindstatus, not_time, not_URL)
+	values (seq_notification_UID.nextval, #{consult_fk_idx}, 4, #{cscmt_contents}, default, default, default, default, 'http://localhost:9090/petopia/consultDetail.pet?consult_UID='||#{fk_consult_UID}||'&amp;gobackURL=consultList.pet?null')
+</insert>
+
 <!-- 댓글리스트 select -->
 <select id="selectCommentList" parameterType="HashMap" resultType="com.final2.petopia.model.ConsultCommentVO">
 	select cmt_id, fk_consult_UID, fk_idx, cscmt_nickname, cscmt_contents, cscmt_writeday, fk_cmt_id, cscmt_group, cscmt_g_odr, cscmt_depth, cscmt_del
@@ -167,7 +173,6 @@
 	    ) V
 	) T
 	where rno between #{RNO1} and #{RNO2}
-
 </select>
 
 <!-- 댓글 총 갯수 select -->
