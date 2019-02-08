@@ -409,5 +409,101 @@ public class ReviewService implements InterReviewService {
 		return reviewMap;
 	} // end of public HashMap<String, String> selectReviewByBiz_idReview_UID(HashMap<String, Integer> paraMap)
 	// === 2019.02.07 === 끝 //
+	
+	// === 2019.02.08 === 시작 //
+	// *** 총관리자 페이지 *** //
+	// *** 모든 리뷰 보기 *** //
+	// 전체 갯수 알아오기
+	// 기간X검색X
+	@Override
+	public int selectAllTotalCountByAdmin(HashMap<String, String> paraMap) {
+		int totalCnt = dao.selectAllTotalCountByAdmin(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountByAdmin(HashMap<String, String> paraMap)
+	
+	// 기간X검색O
+	@Override
+	public int selectAllTotalCountByAdminSearch(HashMap<String, String> paraMap) {
+		int totalCnt = dao.selectAllTotalCountByAdminSearch(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountByAdminSearch(HashMap<String, String> paraMap)
+
+	// 기간O검색X
+	@Override
+	public int selectAllTotalCountByAdminPeriod(HashMap<String, String> paraMap) {
+		int totalCnt = dao.selectAllTotalCountByAdminPeriod(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountByAdminPeriod(HashMap<String, String> paraMap)
+
+	// 기간O검색O
+	@Override
+	public int selectAllTotalCountByAdminPeriodSearch(HashMap<String, String> paraMap) {
+		int totalCnt = dao.selectAllTotalCountByAdminPeriodSearch(paraMap);
+		
+		return totalCnt;
+	} // end of public int selectAllTotalCountByAdminPeriodSearch(HashMap<String, String> paraMap)
+	
+	// *** 병원 리뷰 리스트 *** //
+	// 기간X검색X
+	@Override
+	public List<HashMap<String, String>> selectReviewListByAdmin(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewListByAdmin(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListByAdmin(HashMap<String, String> paraMap)
+
+	// 기간X검색O
+	@Override
+	public List<HashMap<String, String>> selectReviewListByAdminSearch(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewListByAdminSearch(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListByAdminSearch(HashMap<String, String> paraMap)
+
+	// 기간O검색X
+	@Override
+	public List<HashMap<String, String>> selectReviewListByAdminPeriod(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewListByAdminPeriod(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListByAdminPeriod(HashMap<String, String> paraMap)
+
+	// 기간O검색O
+	@Override
+	public List<HashMap<String, String>> selectReviewListByAdminPeriodSearch(HashMap<String, String> paraMap) {
+		List<HashMap<String, String>> reviewList = dao.selectReviewListByAdminPeriodSearch(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> selectReviewListByAdminPeriodSearch(HashMap<String, String> paraMap)
+
+	// *** 블라인드 처리 *** //
+	// 블라인드 처리
+	@Override
+	public int updateReviewBlindStatusByReview_uid(HashMap<String, Integer> paraMap) {
+		int result = dao.updateReviewBlindStatusByReview_uid(paraMap);
+		
+		return result;
+	} // end of public int updateReviewBlindStatusByReview_uid(HashMap<String, Integer> paraMap)
+
+	// 블라인드 처리 취소
+	@Override
+	public int updateReviewBlindCancleByReview_uid(int review_uid) {
+		int result = dao.updateReviewBlindCancleByReview_uid(review_uid);
+		
+		return result;
+	} // end of public int updateReviewBlindCancleByReview_uid(int review_uid)
+
+	// *** 리뷰 디테일 페이지 정보 가져오기 *** //
+	@Override
+	public HashMap<String, String> selectReviewByAdminReview_UID(int review_UID) {
+		HashMap<String, String> reviewMap = dao.selectReviewByAdminReview_UID(review_UID);
+		
+		return reviewMap;
+	} // end of public HashMap<String, String> selectReviewByAdminReview_UID(int review_UID)
+	
+	// === 2019.02.08 === 끝 //
 
 }
