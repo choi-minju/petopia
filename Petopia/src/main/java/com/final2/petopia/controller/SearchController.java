@@ -216,6 +216,7 @@ public class SearchController {
 		return gson_bizmemList;
 	}
 	
+	// 맞춤추천_로그인필요
 	@RequestMapping(value="requireLogin_search.pet", method= {RequestMethod.GET})
 	public String requireLogin_search(HttpServletRequest req, HttpServletResponse res) {
 
@@ -247,5 +248,5 @@ public class SearchController {
 		return "search/index.tiles2";
 	
 	}
-
+	
 }

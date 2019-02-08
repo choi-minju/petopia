@@ -3,6 +3,14 @@
 
 <mapper namespace="search">
 	
+	<!-- ====== >>>> 중요 <<<< ===== 
+	     HashMap 타입으로 매개변수를 받아온 것을 꺼내서 사용할때
+	     1. 데이터로 사용할때는 #{key명} 이고,
+	     2. myBatis 에서 제공하는 if 엘리먼트 안에서 사용할때는
+	              그냥 그대로 <if test="key명"> 이렇게 사용한다.
+	        if test="key명" 인데 key명은 HashMap의 키이다.
+	     3. 식별자(테이블명, 컬럼명)로 사용할때는 ${key명} 이다.         
+	--> 
 	<select id="addrCount" parameterType="String" resultType="int">
 		select count(*) as addrCnt
 		from biz_info
@@ -123,6 +131,75 @@
 		    group by fk_idx
 		    order by cnt desc
 		) V
+	</select>
+	
+	<select id="getBizmemListByRecord" parameterType="map" resultType="com.final2.petopia.model.Biz_MemberVO">
+	    select fk_idx_biz as idx_biz, name, latitude, longitude, prontimg, startpoint as avg_startpoint
+	    from
+	        (
+	            select fk_idx_biz, name, latitude, longitude, prontimg, cnt
+	            from 
+	            (
+	                select fk_idx_biz, count(*) as cnt 
+	                from reservation 
+	                where fk_idx in (select distinct fk_idx 
+	                				 from reservation 
+	                				 where fk_idx_biz = (select func_bestHospital(#{LOGINUSER_IDX}) 
+	                									 from dual) 
+	                				 and fk_idx != #{LOGINUSER_IDX}
+	                				 and reservation_status = 3) 
+	               	and fk_idx_biz != (select func_bestHospital(#{LOGINUSER_IDX}) from dual)
+	                and reservation_status = 3
+	                group by fk_idx_biz
+	                order by cnt desc
+	            ) V JOIN
+	            (
+	                select idx, name, latitude, longitude, prontimg
+	                from member M JOIN biz_info B
+	                on M.idx = B.idx_biz
+	            ) T
+	            on V.fk_idx_biz = T.idx
+			) Y JOIN
+			(
+			    select idx_biz, nvl(round(avg(startpoint)), 0) as startpoint
+			    from biz_info B JOIN member M
+			    on B.idx_biz = M.idx
+			    FULL JOIN review R
+			    on M.idx = R.fk_idx_biz
+			    group by idx_biz
+			) X
+			on Y.fk_idx_biz = X.idx_biz
+			<if test="ORDERBYNO == 1"> <!-- 평점순 -->
+				order by cnt desc, startpoint desc
+			</if>
+			<if test="ORDERBYNO == 2"> <!-- 거리순 -->
+				order by ${NUMBERS}
+			</if>
+	</select>
+	
+	<select id="RecordCount" parameterType="int" resultType="int">
+		select count(*)
+        from 
+        (
+            select fk_idx_biz, count(*) as cnt 
+            from reservation 
+            where fk_idx in (select distinct fk_idx 
+            				 from reservation 
+            				 where fk_idx_biz = (select func_bestHospital(#{LOGINUSER_IDX}) 
+            									 from dual) 
+            				 and fk_idx != #{LOGINUSER_IDX}
+            				 and reservation_status = 3) 
+           	and fk_idx_biz != (select func_bestHospital(#{LOGINUSER_IDX}) from dual)
+           	and reservation_status = 3
+            group by fk_idx_biz
+            order by cnt desc
+        )
+	</select>
+	
+	<select id="getCountReservRecord" parameterType="int" resultType="int">
+	    select count(*) 
+	    from reservation
+	    where fk_idx = #{LOGINUSER_IDX}
 	</select>
 	
 </mapper>

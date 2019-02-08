@@ -222,29 +222,6 @@
     		    for(var i=0; i<10; i++) {
     				$("#hide"+i).slideUp();
     			}
-    		 
-    		    
-    		    $("#commentView").find("input[name='fk_idx2']").each(function(){
-    				idxArr.push(this.value);
-    		    });
-    		    console.log(idxArr);
-    		    
-    		    $.ajax({
-                    url: "<%=request.getContextPath()%>/consultList.pet",
-                    type: "GET",
-                    data: {"idxArr":idxArr},
-                    dataType: 'JSON',
-                    success: function(response){
-                        // selecting values from response Object
-                        var idxArr = response.idxArr;
-                    },
-            		error: function(request, status, error){
-        				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-        			}
-                });
-    		    
-    		    
-    		    
     		},
     		error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);

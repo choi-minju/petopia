@@ -362,6 +362,7 @@ public class ReservationController {
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		int idx = loginuser.getIdx();
+		System.out.println("idx: "+ idx);
 		
 		String currentShowPageNo = req.getParameter("currentShowPageNo");
 		if(currentShowPageNo == null || "".equals(currentShowPageNo)) {
@@ -391,7 +392,7 @@ public class ReservationController {
 			map.put("showDepositStatus", dvo.getShowDepositStatus());
 			map.put("deposit_status", dvo.getDeposit_status());
 			map.put("fk_payment_UID", dvo.getFk_payment_UID()); // [190130] fk_payment_UID 추가
-			
+			System.out.println("dvo.getFk_payment_UID(): "+dvo.getFk_payment_UID());
 			mapList.add(map);
 		}
 		
@@ -786,5 +787,24 @@ public class ReservationController {
 		return paymentRvList;
 	}
 // [190206] 끝
+	
+//	[190207]
+//	#관리자 예약결제관리 목록에서 진료기록을 입력한 기업회원에게 예치금 정산하기 
+	@RequestMapping(value="payForDepositToBiz.pet", method= {RequestMethod.GET})
+	@ResponseBody 
+	public HashMap<String, String> payForDepositToBiz(HttpServletRequest req) {
+		String reservation_UID = req.getParameter("reservation_UID");
+		String payment_UID = req.getParameter("payment_UID");
+		String idx_biz = req.getParameter("idx_biz");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("reservation_UID", reservation_UID);
+		paraMap.put("payment_UID", payment_UID);
+		paraMap.put("idx_biz", idx_biz);
+		
+		HashMap<String, String> returnMap = service.insertDepositToBiz(paraMap);
+		
+		return returnMap;
+	}
 	
 }

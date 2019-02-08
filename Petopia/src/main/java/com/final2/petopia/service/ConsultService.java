@@ -214,6 +214,20 @@ public class ConsultService implements InterConsultService {
 		List<ConsultVO> AdminConsultList = dao.selectAdminConsultListPaging(paraMap);
 		return AdminConsultList;
 	}
+
+	// - 기업회원 idx 목록 member:select
+	@Override
+	public List<String> selectBizMemberList() {
+		List<String> bizMemberList = dao.selectBizMemberList();
+		return bizMemberList;
+	}
+
+	// - 알림 테이블에 board로 notification:insert
+	@Override
+	public int insertConsultNotification(String idx) {
+		int n = dao.insertConsultNotification(idx);
+		return n;
+	}
 	
 
 	

@@ -72,7 +72,42 @@ where fk_idx = #{idx} and reservation_date = #{rdate}
       where fk_idx = #{idx_biz}
    </select>
    
-   <!--  인서트 창의 기본정보 불러오기 -->
+   <!-- 0207 예약 타입 불러오기  -->
+   <select id="selectrtype" parameterType="String" resultType="int">
+     select reservation_type
+     from reservation 
+     where reservation_UID = #{ruid}
+   </select>
+   
+   <!-- 0207  결제 정보가 없을때 기본 정보 불러오기 -->
+   <resultMap type="HashMap" id="reserverInfoNopay">
+    <result property="reservation_UID"    column="RESERVATION_UID"    javaType="String"/>
+    <result property="fk_idx"             column="FK_IDX"             javaType="String"/>
+    <result property="fk_idx_biz"         column="FK_IDX_BIZ"         javaType="String"/>
+    <result property="fk_pet_UID"         column="FK_PET_UID"         javaType="String"/>
+    <result property="bookingdate"        column="BOOKINGDATE"        javaType="String"/>
+    <result property="reservation_DATE"   column="RESERVATION_DATE"   javaType="String"/>
+    <result property="reservation_status" column="RESERVATION_STATUS" javaType="String"/>
+    <result property="reservation_type"   column="RESERVATION_TYPE"   javaType="String"/>
+    <result property="name"               column="NAME"               javaType="String"/>
+    <result property="pet_name"           column="PET_NAME"           javaType="String"/>
+    <result property="pet_type"           column="PET_TYPE"           javaType="String"/>
+   </resultMap>
+   <select id="selectReserverInfoNopay" parameterType="String" resultMap="reserverInfoNopay">
+   select A.reservation_UID, A.fk_idx, A.fk_idx_biz,  A.fk_pet_UID
+					, to_char(A.reservation_DATE, 'yyyy-mm-dd') as reservation_DATE
+					, to_char(A.bookingdate, 'yyyy-mm-dd') as bookingdate
+					,reservation_status, 
+	                decode(A.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as reservation_type
+					, B.name, C.pet_name, decode(C.pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
+	from reservation A join member B
+	on A.fk_idx = B.idx
+	join pet_info C
+	on A.fk_pet_UID = C.pet_UID
+	where A.reservation_UID =#{ruid}
+   </select>
+   
+   <!-- 0207 결제 정보가 있을 때 인서트 창의 기본정보 불러오기 -->
    <resultMap type="HashMap" id="reserverInfo">
     <result property="reservation_UID"    column="RESERVATION_UID"    javaType="String"/>
     <result property="fk_idx"             column="FK_IDX"             javaType="String"/>
@@ -97,7 +132,7 @@ where fk_idx = #{idx} and reservation_date = #{rdate}
 					,reservation_status, 
 	                decode(A.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as reservation_type
 					, B.name, C.pet_name, decode(C.pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
-	                ,p.payment_total,p.payment_point,p.payment_pay
+	                ,p.payment_total,p.payment_point,p.payment_pay*-1 as payment_pay
 	from reservation A join member B
 	on A.fk_idx = B.idx
 	join pet_info C
@@ -106,6 +141,8 @@ where fk_idx = #{idx} and reservation_date = #{rdate}
 	on A.reservation_UID =P.fk_reservation_UID
 	where A.reservation_UID =#{ruid}
    </select>
+   
+   
    
    <!--0125  의사 리스트 불러오기-->
    <select id="selectDocList" parameterType="String" resultType="HashMap" >

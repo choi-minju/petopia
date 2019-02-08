@@ -71,13 +71,13 @@
 							<!-- Wrapper for slides -->
 							<div class="carousel-inner">
 								<div class="item active">
-									<img src="<%=request.getContextPath()%>/resources/img/hospitalimg/${bizmvo.prontimg}" style="width: 100%;">
+									<img src="<%=request.getContextPath()%>/resources/img/member/prontimg/${bizmvo.prontimg}" style="width: 100%;">
 								</div>
 								
 								<c:if test="${imgList != null}">
 									<c:forEach items="${imgList}" var="img">
 										<div class="item">
-											<img src="<%=request.getContextPath()%>/resources/img/hospitalimg/${img}" style="width: 100%;">
+											<img src="<%=request.getContextPath()%>/resources/img/member/addimg/${img}" style="width: 100%;">
 										</div>
 									</c:forEach>
 								</c:if>
@@ -213,11 +213,13 @@
 				
 				<div class="row" style="margin-top: 2%;">
 					<label>의료진</label><BR>
-					${doc.docname}
-				</div>		
+					
+				</div>
+				<c:forEach items="${docList}" var="doc">	
 					<div class="row" style="margin-left: 1%;">
-						<c:forEach items="${docList}" var="doc">
-								<div>
+						<div style="margin: 1%;">
+								${doc.docname}
+								
 								<c:if test="${doc.dog == '1'}">
 									<button type="button" class="btn2 pettype">강아지</button>
 								</c:if>
@@ -246,8 +248,9 @@
 									<button type="button" class="btn1 pettype">기타</button>
 								</c:if>
 								</div>
-						</c:forEach>
+						
 					</div>
+					</c:forEach>
 			</div>
 	</div>
 </div>
