@@ -49,7 +49,7 @@ public interface InterChartService {
 
 	int Updatechart(HashMap<String, String> map); // 병원페이지에서 차트 수정하기
 
-	int updatepre(HashMap<String, String> map); // 병원페이지에서 차트 수정시 처방전 수정
+	//int updatepre(HashMap<String, String> map); // 병원페이지에서 차트 수정시 처방전 수정
 
 	List<HashMap<String, String>> selectPre(HashMap<String, String> map); // 병원 차트페이지에서 처방전 부분
 
@@ -67,6 +67,9 @@ public interface InterChartService {
 
 	// 0202 idx로 반려동물의 이미지와 이름 리스트 불러오기
 	List<HashMap<String, String>> getPmapListbyidx(int idx);
+
+	//0208 타입 받아오기 
+	int selectrtype(String ruid);
 
 	
 
