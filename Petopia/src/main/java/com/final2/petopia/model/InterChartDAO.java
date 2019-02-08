@@ -75,4 +75,7 @@ public interface InterChartDAO {
 	//0207 결제정보가 없는 차트입력창에서 예약자 정보 가져오기 
 	HashMap<String, String> selectReserverInfoNopay(String ruid);
 
+	//0208 결제정보가 없는 차트 인서트 
+	int insertChartNopay(ChartVO cvo);
+
 }

@@ -586,4 +586,12 @@ public class ReservationService implements InterReservationService{
 		return returnMap;
 	}
 
+//	[190208]
+//	#충전 후 예치금테이블에 기록하기
+	@Override
+	public int insertChargeDeposit(HashMap<String, String> paraMap) {
+		int n = dao.insertDepositPlus(paraMap);
+		return n;
+	}
+
 }

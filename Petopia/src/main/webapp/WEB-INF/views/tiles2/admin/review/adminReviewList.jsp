@@ -1,10 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<%-- === 2019.02.07 === 시작 --%>
+<%-- === 2019.02.08 === 시작 --%>
 <style>
 	.addColor {
 		background-color: rgb(252, 118, 106); 
+		color: white; 
+		font-weight: bold;
+	}
+	
+	.addColor2 {
+		background-color: #C46376; 
 		color: white; 
 		font-weight: bold;
 	}
@@ -24,6 +30,7 @@
 
 	$(document).ready(function(){
 		showReviewList("1");
+		
 		// 기간 버튼 클릭하면
 		$(".periodBtn").click(function(){
 			$(".periodBtn").removeClass("addColor");
@@ -63,7 +70,23 @@
 			if(event.keyCode == 13) {
 				showReviewList("1");
 			}
-		});
+		}); // end of $("#search").keydown();
+		
+		// 블라인드 처리 모달에서 OK를 누르면
+		$("#blindModalOK").click(function(){
+			
+			var frm = document.blindModalFrm;
+			
+			var review_uid = frm.review_uid.value;
+			var currentPageNo = frm.currentPageNo.value;
+			var blindNo = frm.blindNo.value;
+			
+			//alert("review_uid: "+review_uid+", currentPageNo: "+currentPageNo+", blindNo: "+blindNo);
+			
+			reviewBlind(review_uid, blindNo, currentPageNo);
+			
+			$('[type=radio]').prop('checked', false);
+		}); // end of $("#blindModalOK").click();
 	}); // end of $(document).ready();
 	
 	function showReviewList(currentPageNo) {
@@ -71,12 +94,11 @@
 		var data = {"currentPageNo":currentPageNo,
 					"period":$("#period").val(),
 					"searchWhat":$("#searchWhat").val(),
-					"search":$("#searchContext").val(),
-					"idx":"${sessionScope.loginuser.idx}"
+					"search":$("#searchContext").val()
 					};
 		
 		$.ajax({
-			url: "<%=request.getContextPath()%>/selectBizReviewList.pet",
+			url: "<%=request.getContextPath()%>/selectAdminReviewList.pet",
 			type: "GET",
 			data: data,
 			dataType: "JSON",
@@ -87,7 +109,7 @@
 					$.each(json,function(entryIndex,entry){
 						html += '<tr>'
 									+'<td>'+entry.RNO+'</td>'
-									+'<td><a href="<%=request.getContextPath()%>/bizReviewDetail.pet?review_UID='+entry.REVIEW_UID+'" class="Astyle">['+entry.FK_NICKNAME+'] 회원님의 리뷰입니다.</a></td>'
+									+'<td><a href="<%=request.getContextPath()%>/adminReviewDetail.pet?review_UID='+entry.REVIEW_UID+'" class="Astyle">['+entry.FK_NICKNAME+'] 회원님의 ['+entry.NAME+'] 리뷰입니다.</a></td>'
 									+'<td>'+entry.FK_USERID+'</td>'
 									+'<td style="text-align: center;">';
 									for(var i=0; i<entry.STARTPOINT; i++) {
@@ -96,15 +118,17 @@
 									
 									for(var i=0; i<5-entry.STARTPOINT; i++) {
 										html += '<img class="addStar" width="10px" height="10px" src="<%=request.getContextPath()%>/resources/img/review/star empty.png">';
-									} // 반별 추가
+									} // 빈별 추가
 
 								html += '</td>'
 									+'<td style="text-align: center;">'+entry.RV_WRITEDATE+'</td>'
 									+'<td style="text-align: center;">';
-								if(entry.RV_BLIND == "0") {
-									html += '<button type="button" onclick="reviewBlind('+entry.REVIEW_UID+', '+currentPageNo+');" class="btn addColor">블라인드요청</button>';
-								} else if(entry.RV_BLIND == "2") { // === 2019.02.08 === 수정 //
-									html += '<button type="button" onclick="reviewBlindCancle('+entry.REVIEW_UID+', '+currentPageNo+');" class="btn">블라인드요청취소</button>';
+								if(entry.RV_STATUS == "1" && entry.RV_BLIND == "0") {
+									html += '<button type="button" class="btn btn-xs addColor" onclick="setBlind('+entry.REVIEW_UID+', '+currentPageNo+');" data-toggle="modal" data-target="#showBlind">블라인드처리</button>';
+								} else if(entry.RV_STATUS == "0" && entry.RV_BLIND != "0") {
+									html += '<button type="button" class="btn btn-xs" onclick="reviewBlindCancle('+entry.REVIEW_UID+', '+currentPageNo+')">블라인드처리취소</button>';
+								} else if(entry.RV_STATUS == "1" && entry.RV_BLIND == "2") {
+									html += '<button type="button" class="btn btn-xs addColor2" onclick="reviewBlind('+entry.REVIEW_UID+', 2, '+currentPageNo+')">기업블라인드요청</button>';
 								}
 									html += '</td>'
 								+'</tr>';
@@ -126,10 +150,9 @@
 		var data = {"currentPageNo":currentPageNo,
 					"period":$("#period").val(),
 					"searchWhat":$("#searchWhat").val(),
-					"search":$("#searchContext").val(),
-					"idx":"${sessionScope.loginuser.idx}"};
+					"search":$("#searchContext").val()};
 		$.ajax({
-			url: "<%=request.getContextPath()%>/selectBizReviewListTotalPage.pet",
+			url: "<%=request.getContextPath()%>/selectAdminReviewListTotalPage.pet",
 			type: "GET",
 			data: data,
 			datatype: "JSON",
@@ -171,26 +194,27 @@
 		}); // end of ajax
 	} // end of function showPageBar()
 	
-	function reviewBlind(review_uid, currentPageNo) {
+	// 리뷰 블라인드
+	function reviewBlind(review_uid, blindNo, currentPageNo) {
 		
-		var bool = confirm("해당 리뷰를 블라인드 요청하시겠습니까?");
+		var bool = confirm("해당 리뷰를 블라인드 처리하시겠습니까?");
 		
 		if(bool == true) {
 			
 			var data = {"review_uid":review_uid,
-						"rv_blind":2}; // === 2019.02.08 === 수정 //
+						"rv_blind":blindNo};
 			
 			$.ajax({
-				url: "<%=request.getContextPath()%>/reviewBlindByReview_uid.pet",
+				url: "<%=request.getContextPath()%>/updateReviewBlindStatusByReview_uid.pet",
 				type: "POST",
 				data: data,
 				dataType: "JSON",
 				success: function(json){
 					
 					if(json == 0) {
-						alert("블라인드 요청 실패하였습니다.");
+						alert("블라인드 처리 실패하였습니다.");
 					} else {
-						alert("블라인드 요청되었습니다.");
+						alert("블라인드 처리되었습니다.");
 					}
 					showReviewList(currentPageNo);
 				},
@@ -206,26 +230,26 @@
 		} // end of if~else
 	} // end of function setBlindReviewUID(review_uid, currentPageNo)
 	
+	// 리뷰 블라인드 취소
 	function reviewBlindCancle(review_uid, currentPageNo) {
 		
 		var bool = confirm("해당 리뷰를 블라인드 요청을 취소하시겠습니까?");
 		
 		if(bool == true) {
 			
-			var data = {"review_uid":review_uid,
-						"rv_blind":0};
+			var data = {"review_uid":review_uid};
 			
 			$.ajax({
-				url: "<%=request.getContextPath()%>/reviewBlindByReview_uid.pet",
+				url: "<%=request.getContextPath()%>/updateReviewBlindCancleByReview_uid.pet",
 				type: "POST",
 				data: data,
 				dataType: "JSON",
 				success: function(json){
 					
 					if(json == 0) {
-						alert("블라인드 요청 실패하였습니다.");
+						alert("블라인드 취소가 실패하였습니다.");
 					} else {
-						alert("블라인드 요청되었습니다.");
+						alert("블라인드 취소되었습니다.");
 					}
 					showReviewList(currentPageNo);
 				},
@@ -240,6 +264,14 @@
 			return;
 		} // end of if~else
 	} // end of function reviewBlindCancle(review_uid, currentPageNo)
+	
+	// 블라인드 버튼 누르면 해당 정보 넘기기
+	function setBlind(review_uid, currentPageNo) {
+		
+		$("#modalReview_uid").val(review_uid);
+		$("#modalCurrentPageNo").val(currentPageNo);
+		
+	} // end of function setBlind(review_uid, currentPageNo)
 	
 </script>
 
@@ -279,11 +311,11 @@
 					<thead style="background-color: #f2f2f2;">
 						<tr>
 							<th width="7%" style="text-align: center;">번호</th>
-							<th width="30%" style="text-align: center;">제목</th>
+							<th width="40%" style="text-align: center;">제목</th>
 							<th width="20%" style="text-align: center;">아이디</th>
 							<th width="10%" style="text-align: center;">평점</th>
 							<th width="13%" style="text-align: center;">날짜</th>
-							<th width="20%" style="text-align: center;">블라인드요청</th>
+							<th width="10%" style="text-align: center;">블라인드</th>
 						</tr>
 					</thead>
 					
@@ -302,4 +334,37 @@
 	</div>
 </div>
 
-<%-- === 2019.02.07 === 끝 --%>
+<!-- Modal -->
+<div id="showBlind" class="modal fade" role="dialog" style="margin-top: 50px;">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">블라인드 처리</h4>
+			</div>
+			
+			<div class="modal-body">
+				<p>블라인드 처리를 하시겠습니까?</p>
+				<p style="font-weight: bold; margin-top: 10px;">블라인드 사유</p>
+				<form name="blindModalFrm">
+					<input type="hidden" name="review_uid" id="modalReview_uid" />
+					<input type="hidden" name="currentPageNo" id="modalCurrentPageNo" />
+					
+					<label for="blind1"><input type="radio" name="blindNo" id="blind1" value="1"/> 욕설/비방</label><br>
+					<label for="blind2"><input type="radio" name="blindNo" id="blind2" value="2"/> 기업회원의 요청</label><br>
+					<label for="blind3"><input type="radio" name="blindNo" id="blind3" value="3"/> 신고 누적</label><br>
+					<label for="blind4"><input type="radio" name="blindNo" id="blind4" value="4"/> 기타</label>
+				</form>
+			</div>
+			
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-default addColor" data-dismiss="modal" id="blindModalOK">OK</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%-- === 2019.02.08 === 끝 --%>

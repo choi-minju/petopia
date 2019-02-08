@@ -210,4 +210,11 @@ public class ChartDAO implements InterChartDAO {
 		return chartmap;
 	}
 
+	//0208 결제정보가 없는 차트 인서트 
+	@Override
+	public int insertChartNopay(ChartVO cvo) {
+		int n = sqlsession.insert("chart.insertChartNopay", cvo);
+		return n;
+	}
+
 }

@@ -8,6 +8,7 @@ public class ConsultCommentVO {
 	private String nickname;			// 닉네임
 	private String fk_consult_UID;		// 상담코드
 	private String fk_idx;				// 댓글회원고유번호
+	private String consult_fk_idx;		// 상담글 회원고유번호 
 	private String cscmt_nickname;		// 댓글작성자
 	private String cscmt_contents;		// 댓글내용
 	private String cscmt_writeday;		// 댓글작성일시
@@ -20,7 +21,7 @@ public class ConsultCommentVO {
 	
 	public ConsultCommentVO() { }
 	
-	public ConsultCommentVO(String cmt_id, String name, String userid, String nickname, String fk_consult_UID, String fk_idx, String cscmt_nickname, String cscmt_contents,
+	public ConsultCommentVO(String cmt_id, String name, String userid, String nickname, String fk_consult_UID, String fk_idx, String consult_fk_idx, String cscmt_nickname, String cscmt_contents,
 			String cscmt_writeday, String fk_cmt_id, int cscmt_group, int cscmt_g_odr, int cscmt_depth, int cscmt_del) {
 		this.cmt_id = cmt_id;
 		this.name = name;
@@ -28,6 +29,7 @@ public class ConsultCommentVO {
 		this.nickname = nickname;
 		this.fk_consult_UID = fk_consult_UID;
 		this.fk_idx = fk_idx;
+		this.consult_fk_idx = consult_fk_idx;
 		this.cscmt_nickname = cscmt_nickname;
 		this.cscmt_contents = cscmt_contents;
 		this.cscmt_writeday = cscmt_writeday;
@@ -78,6 +80,13 @@ public class ConsultCommentVO {
 	}
 	public void setFk_idx(String fk_idx) {
 		this.fk_idx = fk_idx;
+	}
+	
+	public String getConsult_fk_idx() {
+		return consult_fk_idx;
+	}
+	public void setConsult_fk_idx(String consult_fk_idx) {
+		this.consult_fk_idx = consult_fk_idx;
 	}
 
 	public String getCscmt_nickname() {
