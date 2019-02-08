@@ -182,14 +182,22 @@
 		var data = {"review_uid":$("#review_uid").val()};
 		
 		$.ajax({
-			url: "<%=request.getContextPath()%>/selectReviewCommentsTotalPage.pet",
+			url: "<%=request.getContextPath()%>/selectReviewCommentsTotalCnt.pet",  /* === 2019.02.06 === */
 			type: "GET",
 			data: data,
 			dataType: "JSON",
 			success: function(json){
 				var html = "";
 				
-				var totalPage = json;
+				/* === 2019.02.08 === 수정 */
+				var totalCnt = json;
+				var sizePerPage = 10;
+				
+				var totalPage = parseInt(Math.ceil(parseFloat(totalCnt/sizePerPage)));
+				
+				$("#totalPageSpan").html(totalCnt);
+				/* === 2019.02.08 === 수정 */
+				
 				$("#totalPage").val(totalPage);/* === 2019.02.06 === 추가 */
 				
 				var blockSize = 5;
@@ -440,7 +448,7 @@
 				<%-- ==== 2019.02.06 ==== --%>
 				<div class="col-sm-12" style="margin-top: 10px;">
 					<input type="hidden" id="totalPage" /><%-- ==== 2019.02.07 ==== --%>
-					<span style="font-weight: bold;">댓글 <span>${totalCnt}</span>개</span>
+					<span style="font-weight: bold;">댓글 <span id="totalPageSpan"></span>개</span> <%-- === 2019.02.08 === 수정 --%>
 					<button type="button" onclick="showComments('1')" class="btn" style="background-color: white;"><span class="glyphicon glyphicon-repeat"></span></button>
 				</div>
 				
