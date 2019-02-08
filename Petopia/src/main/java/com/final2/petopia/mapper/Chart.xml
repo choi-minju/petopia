@@ -163,6 +163,16 @@ where fk_idx = #{idx} and reservation_date = #{rdate}
 		     #{doc_name},#{cautions},#{chart_contents},#{payment_pay},#{payment_point},#{addpay},#{totalpay},#{fk_reservation_UID}) 
       
    </insert>
+   <!-- 0208 결제 정보가 없는 차트 인서트  -->
+     <!--  차트 인서트  -->
+   <insert id="insertChartNopay" parameterType="com.final2.petopia.model.ChartVO">
+     insert into chart(chart_UID,fk_pet_UID,fk_idx,chart_type,biz_name,bookingdate
+	                   ,reservation_DATE,doc_name,cautions,chart_contents
+	                  ,fk_reservation_UID)  
+     values(#{chart_UID},#{fk_pet_UID},#{fk_idx},#{chart_type}, 
+		     #{biz_name},#{bookingdate},#{reservation_DATE},
+		     #{doc_name},#{cautions},#{chart_contents},#{fk_reservation_UID}) 
+   </insert>
    
    <!-- 0128 0130 차트 인서트안의 처방전 부분 인서트 -->
     <insert id="insertPre" parameterType="HashMap">

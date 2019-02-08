@@ -127,21 +127,25 @@ public class ConsultService implements InterConsultService {
 		return n;
 	}
 
-	// [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1 update
+	// [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1 update + [notification] 댓글작성 알림 insert
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
 	public int insertComment(ConsultCommentVO commentvo) throws Throwable {
 		
 		int result1 = 0;
 		int result2 = 0;
+		int result3 = 0;
 		
 		result1 = dao.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert
 		
 		if(result1==1) {
 			result2 = dao.updateConsultCommentCount(commentvo.getFk_consult_UID()); // - [consult]commentCount 원글의 댓글갯수 1 update
 		}
+		if(result2==1) {
+			result3 = dao.insertCommentNotification(commentvo); // - [notification] 댓글작성 알림 insert
+		}
 		
-		return result2;
+		return result3;
 	}
 
 	// 대댓글 쓰기

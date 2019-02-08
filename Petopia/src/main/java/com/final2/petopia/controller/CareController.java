@@ -202,6 +202,7 @@ public class CareController {
 	
 	
 	// [19-01-25. 수정 시작_hyunjae]
+	// [19-02-08. 수정 시작_hyunjae]
 	//===== 케어관리페이지 요청 =====
 	@RequestMapping(value="/careCalendar.pet", method={RequestMethod.GET})
 	public String calendar(HttpServletRequest req) {
@@ -220,6 +221,7 @@ public class CareController {
 		
 		return "care/careCalendar.tiles2";
 	}
+	// [19-02-08. 수정 시작_hyunjae]
 	// [19-01-30. 수정 끝_hyunjae]
 	
 	// [19-01-31. 수정 끝_hyunjae]
