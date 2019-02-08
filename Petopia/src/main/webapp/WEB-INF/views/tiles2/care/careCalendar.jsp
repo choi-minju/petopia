@@ -138,50 +138,14 @@
 	$(document).ready(function() {
 		
 		getPet();
+		
+		// [19-02-08. 수정 시작_hyunjae]
 		getPetcare();
 
-	    /* initialize the external events
-	    -----------------------------------------------------------------*/
-		$('#external-events .fc-event').each(function() {
-	
-			// store data so the calendar knows to render an event upon drop
-			$(this).data('event', {
-				title: $.trim($(this).text()), // use the element's text as the event title
-				stick: true // maintain when user navigates (see docs on the renderEvent method)
-			});
-	
-			// make the event draggable using jQuery UI
-			$(this).draggable({
-				zIndex: 999,
-				revert: true,      // will cause the event to go back to its
-				revertDuration: 0  //  original position after the drag
-			});
-	
-		});
-	
-	
-		/* initialize the calendar
-		-----------------------------------------------------------------*/
-		$('#calendar').fullCalendar({
-			header: {
-	        left: 'prev,next today',
-	        center: 'title',
-	        right: 'month'
-			},
-			editable: true,
-			droppable: true, // this allows things to be dropped onto the calendar
-			drop: function() {
-			// is the "remove after drop" checkbox checked?
-			if ($('#drop-remove').is(':checked')) {
-				// if so, remove the element from the "Draggable Events" list
-				$(this).remove();
-				}
-			}
-		});
-	
+		
 	});// end of $(document).ready()----------------------------------------
 	
-    function getPet() { 
+	function getPet() { 
 	      
 	      var form_data = {fk_idx : "${fk_idx}"}; 
 
@@ -195,7 +159,7 @@
 	                                 
 	                 var html = "";
 	                  
-	                  $.each(json, function(entryIndex, entry){ 
+	                  $.each(json, function(entryIndex, entry) { 
 	                      
 	                     html += "<div align='center' class='pet-box'>"
 	                     	   + "	<span class='petname'>" + entry.PET_NAME + "</span>"
@@ -213,51 +177,148 @@
 	          }         
 	      });
 	      
-	   } // end of function getPet()-------------------------------------------
- 
-	    function getPetcare() { 
-		      
-		      var form_data = {pet_UID : "${pet_UID}"}; 
-		      console.log(form_data);
-
-		      $.ajax({
-		         url : "getPetcare.pet",   
-		         type :"GET",                              
-		         data : form_data,                          
-		         dataType : "JSON",                        
-		         success : function(json) {                
-		                 $("#displayPetcare").empty();
-		                                 
-		                 var html = "<table id='table' class='table table-sm'>"
-                   	   			  + "	<thead>"
-                   	   			  + "		<tr>"
-                   	   			  + "			<th colspan='3'>Handle</th>"
-                   	   			  + "		</tr>"
-                   	   			  + "	</thead>"
-	                   	   		  + "	<tbody>";
-			                  
-		                  $.each(json, function(entryIndex, entry){ 
-		                      
-		                     html += "		<tr>"
-		                    	   + "			<td>" + entry.CARETYPE_NAME + "</td>"
-		                     	   + "			<td>" + entry.CARE_CONTENTS + "</td>"
-		                     	   + "			<td>" + entry.CARE_END + "</td>"
-		                     	   + "		<tr>";
-		                          
-		                  });
-		                     
-		                  	html += "	</tbody>"
-		                  		  + "</table>";
-		                  	
-		                  $("#displayPetcare").append(html);
-		          },
-		          error: function(request, status, error){
-		               alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		          }         
-		      });
-		      
-		   } // end of function getPet()-------------------------------------------	   
+	} // end of function getPet()-------------------------------------------
 	   
+	function getPetcare() { 
+	      
+	      var form_data = {pet_UID : "${pet_UID}"}; 
+
+	      var str = "";
+	      
+	      $.ajax({
+	         url : "getPetcare.pet",   
+	         type :"GET",                              
+	         data : form_data,                          
+	         dataType : "JSON",                        
+	         success : function(json) {     
+	        	 	 $("#displayPetcare").empty();
+	                 $("#calendar").empty();
+	                 
+	         		// [19-02-08. 수정 시작_hyunjae]
+	         		var resultArr = []; // #뉴 어레이도 가능
+						
+						for(var i=0; i<json.length; i++) {
+							var obj = {
+										title: json[i].CARETYPE_NAME
+				    	              ,	start: json[i].CARE_START
+				    	              , end : json[i].CARE_END
+				    	              };
+							resultArr.push(obj); // 배열속에 값을 넣기
+							console.log(obj);
+					} // end of for
+					
+					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~");
+					
+					console.log(resultArr);
+					
+					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~");
+					
+					console.log(resultArr[0].title);
+                    
+                    
+					for(var i=0; i<resultArr.length; i++) {
+						
+						str += "{title: '"+resultArr[i].title+"', start: '"+resultArr[i].start+"', end: '"+resultArr[i].end+"'}"; 
+																		
+						if(i<resultArr.length-1) {
+							str += ",";
+						}
+					}
+					
+					console.log(str);
+					
+					////////////////////////////// FullCalendar 시작 //////////////////////////////
+	         		$('#external-events .fc-event').each(function() {
+	         	
+	         			// store data so the calendar knows to render an event upon drop
+	         			$(this).data('event', {
+	         				title: $.trim($(this).text()), // use the element's text as the event title
+	         				stick: true // maintain when user navigates (see docs on the renderEvent method)
+	         			});
+	         	
+	         			// make the event draggable using jQuery UI
+	         			$(this).draggable({
+	         				zIndex: 999,
+	         				revert: true,      // will cause the event to go back to its
+	         				revertDuration: 0  //  original position after the drag
+	         			});
+	         	
+	         		});
+	         	
+	         		/* initialize the calendar
+	         		-----------------------------------------------------------------*/
+	         		$('#calendar').fullCalendar({
+	         			header: {
+	         				left: 'prev,next',
+	         				center: 'title',
+	         				right: 'today'
+	         			},
+	         			editable: true,
+	         			droppable: true, // this allows things to be dropped onto the calendar
+	         			drop: function() {
+	         				// is the "remove after drop" checkbox checked?
+	         				if ($('#drop-remove').is(':checked')) {
+	         					// if so, remove the element from the "Draggable Events" list
+	         					$(this).remove();
+	         				}
+	         				
+	         				console.log("###############");
+	         				console.log(str);
+	         			},
+	         			events: [
+	         				
+	         				//resultArr
+	         				
+	         				//str
+	         				
+	         				 {title: '용변', start: '2019-03-07 15:30', end: '2019-02-07 16:20'},{title: '식사', start: '2019-02-07 16:10', end: '2019-02-07 16:30'},{title: '식사', start: '2019-02-07 15:30', end: '2019-02-07 16:00'}
+	         				
+	         			    /* {
+	         			      title: 'Event Title1',
+	         			      start: '2019-02-08T13:13:55.008',
+	         			      end: '2019-02-08T13:13:55.008'
+	         			    },
+	         			    {
+	         			      title: 'Event Title2',
+	         			      start: '2019-02-10T13:13:55-0400',
+	         			      end: '2019-02-12T13:13:55-0400'
+	         			    } */
+	         			    
+	         			  ]
+	         		});
+					//////////////////////////////FullCalendar 끝 //////////////////////////////
+	         		// [19-02-08. 수정 끝_hyunjae]	                 
+	                  
+	                 var html = "<table id='table' class='table table-sm'>"
+             	   			  + "	<thead>"
+             	   			  + "		<tr>"
+             	   			  + "			<th colspan='3'>Handle</th>"
+             	   			  + "		</tr>"
+             	   			  + "	</thead>"
+                 	   		  + "	<tbody>";
+		                  
+	                  $.each(json, function(entryIndex, entry){ 
+	                      
+	                     html += "		<tr>"
+	                    	   + "			<td>" + entry.CARETYPE_NAME + "</td>"
+	                     	   + "			<td>" + entry.CARE_CONTENTS + "</td>"
+	                     	   + "			<td>" + entry.CARE_END + "</td>"
+	                     	   + "		<tr>";
+	                          
+	                  });
+	                     
+	                  	html += "	</tbody>"
+	                  		  + "</table>";
+	                  	
+	                  $("#displayPetcare").append(html);
+	          },
+	          error: function(request, status, error){
+	               alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	          }         
+	      });
+	      
+	} // end of function getPetcareWithCalendar()-------------------------------------------	   
+	  
 </script>
 
 

@@ -193,8 +193,9 @@
 		var whereNo = <%= whereNo%>;
 		
 		if(whereNo == 1) {
-			showHospital("${searchWord}");
-			showPharmacy("${searchWord}");
+			// showPharmacy("${searchWord}");
+			getHospitalPageBar(1);
+			showHospital(1,10);
 		}
 		
 	});
@@ -203,17 +204,134 @@
 	    document.getElementById("defaultOpen").click();
 	});
 	
-	function showHospital(searchWord) {
-
-		console.log(searchWord);
+	function showHospital(currentShowPageNo) {
 		
+		var sizePerPage = 10;
+		
+		var startno = (currentShowPageNo*sizePerPage) - (sizePerPage - 1)
+		var endno = (currentShowPageNo*sizePerPage)
+
 		$.ajax({
-			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/vtrHospitalInfo/1/5/",
+			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/vtrHospitalInfo/"+startno+"/"+endno+"/",
 			success: function(xml){
+
+				var rootElement = $(xml).find(":root");
 				
-				console.log(xml);
+				var hospitalArr = $(rootElement).find("row");
+
+				var html = "<tr><th>병원이름</th><th>주소</th><th>전화번호</th></tr>";
 				
-								
+				hospitalArr.each(function(){
+
+					var addr = !$(this).find("ADDR").text().trim()?$(this).find("ADDR_OLD").text():$(this).find("ADDR").text();
+					
+					// console.log($(this).find("NM").text()+$(this).find("ADDR_OLD").text()+$(this).find("ADDR").text());
+					html += "<tr><th>"+$(this).find("NM").text()+"</th><th>"+addr+"</th><th>"+$(this).find("TEL").text()+"</th></tr>";
+						
+				});
+				
+				$("#TblHospital").html(html);
+	
+				getHospitalPageBar(currentShowPageNo);
+
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+
+		});
+
+		
+	}
+	
+	
+	function getHospitalPageBar(currentShowPageNo) {
+
+		$.ajax({
+			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/vtrHospitalInfo/1/1/",
+			success: function(xml){
+
+				var rootElement = $(xml).find(":root");
+				
+				var totalCount = $(rootElement).find("list_total_count").text(); 
+				
+				var sizePerPage = 10; 
+				
+				console.log(totalCount);
+				
+				var totalPage = Math.ceil(totalCount/sizePerPage);
+				
+				console.log("totalCount : "+totalCount+"totalPage : "+totalPage);
+				
+			    var pageBarHTML = "";
+				 
+			    /////////////////////////
+			     
+			    var blockSize = 10;
+			    // blockSize 은 1개 블럭(토막)당 보여지는 페이지번호의 갯수이다.
+			    /*
+			         1 2 3   -- 1개블럭
+			         4 5 6   -- 1개블럭
+			         7 8 9   -- 1개블럭
+			    */
+			    var loop = 1;
+		        /* 
+		        loop 는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 갯수(지금은 3개)까지만 
+		                  증가하는 용도이다.
+		        */
+                // 자바스크립트에서는 1/3 이 0 이 아니라 0.33333 이므로 소수점을 버리기 위해 Math.floor(0.33333) 을 하면 소수점을 버린 정수만 나온다.
+                var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
+			    //**** !!! 공식이다. !!! ****//
+			    
+	    
+			     /*
+			         1 2 3   -- 첫번째 블럭의 페이지번호 시작값(pageNo)은 1 이다. 
+			         4 5 6   -- 두번째 블럭의 페이지번호 시작값(pageNo)은 4 이다.
+			         7 8 9   -- 세번째 블럭의 페이지번호 시작값(pageNo)은 4 이다.
+			         
+			          currentShowPageNo    pageNo
+			         -----------------------------
+			                1                1  == ((1 - 1)/3) * 3 + 1
+			                2                1  == ((2 - 1)/3) * 3 + 1  
+			                3                1  == ((3 - 1)/3) * 3 + 1 
+			               
+			                4                4  == ((4 - 1)/3) * 3 + 1 
+			                5                4  == ((5 - 1)/3) * 3 + 1 
+			                6                4  == ((6 - 1)/3) * 3 + 1
+			                
+			                7                7  == ((7 - 1)/3) * 3 + 1 
+			                8                7  == ((8 - 1)/3) * 3 + 1 
+			                9                7  == ((9 - 1)/3) * 3 + 1    
+			      */
+  	                					     
+				 // *** [이전] 만들기 *** //
+				 if(pageNo != 1) {
+			    	  pageBarHTML += "<a href='javascript:showHospital("+(pageNo-1)+")'>[이전]</a>";
+			     }
+                    /////////////////////////////////////////////////
+			     while( !(loop > blockSize || pageNo > totalPage) ) {
+			       	 
+			    	  if(pageNo == currentShowPageNo) {
+			    		  pageBarHTML += "&nbsp;<span style=\"color: red; font-size: 12pt; font-weight: bold; text-decoration: underline; \">"+pageNo+"</span>&nbsp;";
+			    	  }
+			    	  else {
+			    	  	  pageBarHTML += "&nbsp;<a href='javascript:showHospital("+pageNo+")'>"+pageNo+"</a>&nbsp;";
+			     	  }
+                    
+			       	 loop++;
+			    	 pageNo++;
+			     } // end of while-----------------------------------
+                       /////////////////////////////////////////////////
+
+			  	  // *** [다음] 만들기 *** //
+			     if( !(pageNo > totalPage) ) {
+			    	 pageBarHTML += "&nbsp;<a href='javascript:showHospital("+pageNo+")'>[다음]</a>";
+			     }
+				 	
+			     $("#pageBar").empty().html(pageBarHTML);
+			     
+			     pageBarHTML = "";
+		 		
 			},
 			error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -226,7 +344,6 @@
 	
 	
 	function showPharmacy(searchWord) {
-		
 
 		console.log(searchWord);
 		
@@ -235,8 +352,23 @@
 			type:"GET",
 			dataType: "XML",
 			success: function(xml){
+
+				var rootElement = $(xml).find(":root");
 				
-				console.log(xml);
+				var pharmacyArr = $(rootElement).find("row");
+
+				var html = "<tr><th>약국이름</th><th>주소</th><th>전화번호</th></tr>";
+				
+				pharmacyArr.each(function(){
+					
+					var addr = !$(this).find("ADDR").text().trim()?$(this).find("ADDR_OLD").text():$(this).find("ADDR").text();
+					
+					// console.log($(this).find("NM").text()+$(this).find("ADDR_OLD").text()+$(this).find("ADDR").text());
+					html += "<tr><th>"+$(this).find("NM").text()+"</th><th>"+addr+"</th><th>"+$(this).find("TEL").text()+"</th></tr>";
+						
+				});
+				
+				$("#TblPharmacy").html(html);
 				
 				
 			},
@@ -986,54 +1118,25 @@
 					<div id="Hospital" class="tabcontent" style="display: block;">
 					  <h3 style="color: black;">공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3>
 					  <p style="color: black;">※ 바로예약 서비스는 제공되지 않습니다. 내방 전 전화로 먼저 확인하시기 바랍니다. </p>
-						<table>
-						  <tr>
-						    <th>동물병원</th>
-						    <th>주소</th>
-						    <th>전화번호</th>
-						  </tr>
-						  <tr>
-						    <td>Jill</td>
-						    <td>Smith</td>
-						    <td>50</td>
-						  </tr>
-						  <tr>
-						    <td>Eve</td>
-						    <td>Jackson</td>
-						    <td>94</td>
-						  </tr>
-						  <tr>
-						    <td>Adam</td>
-						    <td>Johnson</td>
-						    <td>67</td>
-						  </tr>
-						</table>	
+						<table id="TblHospital"></table>
+						<div class="row">
+							<div class="col-sm-3"></div>
+							<div class="col-sm-6" id="pageBar"></div>
+							<div class="col-sm-3"></div>
+						</div>
 					</div>
 					
 					<div id="Pharmacy" class="tabcontent" style="display: none;">
-					  <h3 style="color: black;">공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3><br/>
-					 	 <table>
-						  <tr>
-						    <th>동물약국</th>
-						    <th>주소</th>
-						    <th>전화번호</th>
-						  </tr>
-						  <tr>
-						    <td>Jill</td>
-						    <td>Smith</td>
-						    <td>50</td>
-						  </tr>
-						  <tr>
-						    <td>Eve</td>
-						    <td>Jackson</td>
-						    <td>94</td>
-						  </tr>
-						  <tr>
-						    <td>Adam</td>
-						    <td>Johnson</td>
-						    <td>67</td>
-						  </tr>
-						</table>	
+					  <h3 style="color: black;">공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3>
+					  <p>&nbsp;</p>
+					 	 <table id="TblPharmacy"></table>
+					 	 <div class="row">
+							<div class="col-sm-3"></div>
+							<div class="col-sm-6" id="pageBar">
+								1 2 3 4 5
+							</div>
+							<div class="col-sm-3"></div>
+						</div>
 					</div>
 				</div>
 			</div>
