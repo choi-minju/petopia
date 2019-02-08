@@ -61,7 +61,7 @@
   display: none;
   position: absolute;
   background-color: white;
-  min-width: 280px;
+  min-width: 320px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
   padding: 20%;
@@ -102,7 +102,36 @@
 		if(${sessionScope.loginuser != null && sessionScope.loginuser.userid != 'admin@naver.com'}){
 			loopShowNotificationCount();
 		}
-	});
+		
+		$(".notdropbtn").hover(function(){
+			$.ajax({
+				url:"<%=ctxPath%>/notificationSimpleList.pet", 
+				type:"GET",
+				//data:form_data,
+				dataType:"JSON",
+				success:function(json){ 
+					
+					var html = "";
+					
+					if(json.length > 0){
+						$.each(json, function(entryIndex, entry){
+							html += "<a class='notmassage' style='color: #fc766b;' href='<%= ctxPath %>/notificationList.pet'>"+entry.SIMPLEMSG+"["+entry.COUNT+"]</a>";
+						});
+					}
+					else{
+						html += "<a class='notmassage' style='color: #fc766b;' href='<%= ctxPath %>/notificationList.pet'>새 알림이 없습니다.</a>";
+					}
+					html += "<hr align='center' width='100%' style='border:0.5px solid #fc766b; margin-top: 20%;'>"
+						 + "<a class='notmassage' style='color: #fc766b; border: 0px solid; margin-top: -5%; margin-left: 35%;' href='<%= ctxPath %>/notificationList.pet'>더보기</a>";
+					
+					$("#notSimpleList").empty().html(html);
+				},
+				error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
+		}); // $(".notdropbtn").hover(function(){
+	}); // $(document).ready(function(){
 	
 	function logOut(){ 
 		// 카카오 로그아웃
@@ -110,12 +139,14 @@
 		Kakao.Auth.getAccessToken();
 	} // end of logOut
 	
-	function showNotificationCount(){
+	function showNotificationCount(){ // 안읽은 알림 갯수
+		
+		var form_data = {count : $("#count").val() };
 		
 		$.ajax({
 			url:"<%=ctxPath%>/unreadNotificationCount.pet", 
 			type:"GET",
-			//data:form_data,
+			data:form_data,
 			dataType:"JSON",
 			success:function(json){
 				if(json.UNREADNOTIFICATIONCOUNT > 0) {
@@ -124,10 +155,13 @@
 					
 					var unreadnotificationcount = json.UNREADNOTIFICATIONCOUNT;
     		    	$("#badge").empty().html(unreadnotificationcount);
+    		    	
+    		    	$("#count").val(unreadnotificationcount);
 				}
 				else {
 					$("#badge").hide();
 				}
+				
 			},
 			error: function(request, status, error){
 			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -135,7 +169,7 @@
 		});
 	}
 	
-	function loopShowNotificationCount(){
+	function loopShowNotificationCount(){ // 매초마다 안읽은 알림 갯수 갱신
 				
 		showNotificationCount();
 		
@@ -179,16 +213,9 @@
 								<li class="notdropdown">
 									<span class="notdropbtn">
 										<img src="<%=request.getContextPath() %>/resources/img/notification/icon.png" style="margin-left: 50%; margin-top: 20%; width: 40%;" />
-										<%-- <c:if test=""> --%>
 											<span id="badge" class="badge"></span>
-										<%-- </c:if> --%>
 									</span>
-										<div class="notdropdown-content">
-											<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">게시판에 새 댓글이 있습니다.</a>
-											<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">화상상담 코드가 도착했습니다.</a>
-											<hr align="center" width="100%" style="border:0.5px solid #fc766b; margin-top: 35%;">
-											<a class="notmassage" style="color: #fc766b; border: 0px solid; margin-top: -5%; margin-left: 35%;" href="<%= ctxPath %>/notificationList.pet">더보기</a>
-											
+										<div class="notdropdown-content" id="notSimpleList">
 										</div>
 								</li>
 							</c:if>
@@ -286,7 +313,7 @@
 						<div class="column" id="bizBoard">
 							<a href="#">공지사항</a>
 							<a href="#">이벤트</a>
-							<a href="<%= ctxPath %>/allReviewList.pet">전체리뷰</a>
+							<a href="<%= ctxPath %>/bizReviewList.pet">전체리뷰</a>
 							<a href="#">자유게시판</a>
 						</div>
 					</div>
@@ -333,3 +360,7 @@
 		</div>
 	</c:if>
 </div>
+
+<form name="countfrm">
+<input type="hidden" id="count" name="count"/>
+</form>

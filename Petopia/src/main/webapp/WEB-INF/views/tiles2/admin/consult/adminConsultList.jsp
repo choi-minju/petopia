@@ -25,13 +25,16 @@
 		/* 뷰단에서 검색시 검색어 그대로 있도록 */
 		searchKeep();
 		
+		// 전체선택
 		$('.checkAll').click(function(){
 	          $('.checkSelectAll').prop('checked',this.checked);
 	    });
 	  
+		// 미답변선택
 		$('.checkNoCount').click(function(){
 	          $('.checkSelectNoCount').prop('checked',this.checked);
 	    });
+		
 		
 	}); // $(document).ready(function(){});
 	
@@ -62,8 +65,36 @@
 	}
 	
 	// 체크된 값들이 1개 이상일 경우 기업회원한테 알림메세지 보내기
+	function goNotification() {
+		var selectAll =  $("input:checkbox[name=checkSelectAll]:checked").length;
+		var selectNoCount = $("input:checkbox[name=checkSelectNoCount]:checked").length;
+		
+		if(selectAll+selectNoCount==0) {
+			alert("답변요청을 보내기 위한 상담글을 1개이상 선택하셔야합니다.");
+			return;
+		}
+		
+		var frm = document.notificationFrm;
+		frm.selected.value = selectAll+selectNoCount;
+		frm.action = "consultNotification.pet";
+		frm.method = "GET";
+		frm.submit();
+	}
 	
 	/*
+	
+	$("input:checkbox[name=]").length; // 체크박스 전체 갯수
+	$("input:checkbox[name=checkSelectNoCount]:checked").length; // 선택된 갯수
+	
+	alert( $("input:checkbox[name=checkSelectNoCount]:checked").length );
+	alert( $("input:checkbox[name=checkSelectAll]:checked").length );
+	
+	$("input:checkbox[name=]:checked").each(function(){
+		this.checked = true;
+	}); 
+	
+	
+	
 	var flag = false;
 	
 	$(".checkbox").each(function(){
@@ -90,11 +121,15 @@
   
   <div class="row">
 	 <div class="col-xs-12 col-md-4" style="background-color: #ffffff;">
-		<form name="myConsultFrm" >
+		<form name="notificationFrm" >
+		<input type="hidden" name="selected">
 		<input  type="checkbox" class="checkNoCount" id="noCount"><label for="noCount">&nbsp;미답변 선택&nbsp;&nbsp;</label>
+		<%-- 
 		<button type="button" class="btn btnmenu btn-rounder"  style="border: 1px solid #fc766b; border-radius:50px; width:40%; height:4%; font-size:12px;" onClick="goNotification();">
 		답변요청 알림보내기
 		</button>
+		--%>
+		<a style="cursor: pointer; padding:1% 5% 1% 5%;" class="btn btnmenu btn-rounder" data-toggle="modal" data-target="#notification" data-dismiss="modal" >답변요청 알림보내기</a>
 		</form>
 	 </div>
 			
@@ -128,10 +163,10 @@
 	    <div class="col-xs-12 col-md-12 row" style="padding:1% 0% 1% 0%;; border-bottom: 1px solid #999;" >
 	    	<div class="col-xs-2 col-md-2" >
 		    	<c:if test="${adminConsultvo.commentCount > 0 }">
-		    		<input type="checkbox" class="checkSelectAll" id="check${adminConsultvo.consult_UID}"/><label for="check${adminConsultvo.consult_UID}">&nbsp;${adminConsultvo.consult_UID}</label>
+		    		<input type="checkbox" class="checkSelectAll" name="checkSelectAll" id="check${adminConsultvo.consult_UID}"/><label for="check${adminConsultvo.consult_UID}">&nbsp;${adminConsultvo.consult_UID}</label>
 		    	</c:if>
 		    	<c:if test="${adminConsultvo.commentCount == 0 }">
-		    		<input type="checkbox" class="checkSelectAll checkSelectNoCount" id="check${adminConsultvo.consult_UID}"/><label for="check${adminConsultvo.consult_UID}">&nbsp;${adminConsultvo.consult_UID}</label>
+		    		<input type="checkbox" class="checkSelectAll checkSelectNoCount" name="checkSelectNoCount" id="check${adminConsultvo.consult_UID}"/><label for="check${adminConsultvo.consult_UID}">&nbsp;${adminConsultvo.consult_UID}</label>
 		    	</c:if>
 	    	</div>
 	    	
@@ -163,4 +198,31 @@
 
 </div>
 
+
+
+
+
+<%-- 알림 모달 --%>
+<div class="modal fade" id="notification" role="dialog" style="z-index: 100000; margin-top:5%;">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close myclose" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">답변요청 알림보내기</h4>
+      </div>
+      
+      <div class="modal-body">
+        <div id="consultNotification" align="center" style="margin-bottom:10%;">
+        	<div style="margin:5% 0% 5% 0%; font-size:16px;">선택한 1:1 상담에 대하여<br/>수의사 답변 요청 알림을 보내시겠습니까?</div>
+        	<button type="button" class="btn btnmenu btn-default myclose" style="width:18%;" data-dismiss="modal">cancel</button>
+        	<button type="button" class="btn btnmenu btn-default" style="width:18%;" data-dismiss="modal" onClick="goNotification();">OK</button>
+        	<%--<iframe style="border: none; width: 90%; height: 200px;" src="<%= request.getContextPath() %>/consultNotification.pet"></iframe> --%>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
 
