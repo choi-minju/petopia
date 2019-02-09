@@ -357,7 +357,7 @@ public class ReservationController {
 //	[190126] 예치금 히스토리 목록
 	@RequestMapping(value="/depositHistory.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public List<HashMap<String, Object>> depositHistory(HttpServletRequest req, HttpServletResponse res) {
+	public List<HashMap<String, Object>> requireLogin_depositHistory(HttpServletRequest req, HttpServletResponse res) {
 		List<HashMap<String, Object>> mapList = new ArrayList<HashMap<String, Object>>();
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -400,10 +400,10 @@ public class ReservationController {
 	
 	@RequestMapping(value="/depositHistoryPageBar.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, Integer> depositHistoryPageBar(HttpServletRequest req) {
+	public HashMap<String, Integer> requireLogin_depositHistoryPageBar(HttpServletRequest req, HttpServletResponse res) {
 		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
 		HttpSession session = req.getSession();
-		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser"); 
 		String idx = String.valueOf(loginuser.getIdx());
 		String sizePerPage = req.getParameter("sizePerPage");
 		String type = req.getParameter("type");
@@ -600,7 +600,7 @@ public class ReservationController {
 //	[190130]
 //	#일반회원 예약리스트에서 예약 취소하기
 	@RequestMapping(value="goCancleReservationMember.pet", method={RequestMethod.GET})
-	public String goCancleReservationMember(HttpServletRequest req) {
+	public String requireLogin_goCancleReservationMember(HttpServletRequest req, HttpServletResponse res) {
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		String fk_idx = String.valueOf(loginuser.getIdx());
@@ -645,7 +645,7 @@ public class ReservationController {
 //	#예약 상세 보기
 	@RequestMapping(value="reservationDetail.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, String> reservationDetail(HttpServletRequest req) {	
+	public HashMap<String, String> requireLogin_reservationDetail(HttpServletRequest req, HttpServletResponse res) {	
 		String payment_UID = req.getParameter("payment_UID");
 		
 //		[190131] 세션에서 멤버타입 변수 가져오기
@@ -808,7 +808,7 @@ public class ReservationController {
 	
 	
 //	[190208]
-//	#예치금 충전하기 chargeDeposit
+//	#예치금 충전하기 chargeDeposit  requireLogin 추가
 	@RequestMapping(value="chargeDeposit.pet", method= {RequestMethod.GET})
 	public String requireLogin_chargeDeposit(HttpServletRequest req, HttpServletResponse res) {
 		
@@ -822,8 +822,13 @@ public class ReservationController {
 	}
 	
 //	#PG결제 연결하기
-	@RequestMapping(value="chargeDepositEnd.pet", method= {RequestMethod.POST})
+	@RequestMapping(value="chargeDepositEnd.pet", method= {RequestMethod.GET})
 	public String requireLogin_chargeDepositEnd(HttpServletRequest req, HttpServletResponse res) {
+		// [190209] name 추가
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		String name = loginuser.getName();
 		String idx = req.getParameter("idx");
 		String deposit_type=req.getParameter("depositType");
 		String depositCoin = req.getParameter("depositCoin");
@@ -847,6 +852,7 @@ public class ReservationController {
 		
 		if(deposit_type.equals("card")) {	// 카드결제 아임포트로 연결
 			req.setAttribute("idx", idx);
+			req.setAttribute("name", name);
 			req.setAttribute("coinmoney", coinmoney);
 			req.setAttribute("realDeposit", depositCoin);
 			req.setAttribute("depositType", deposit_type);
@@ -881,7 +887,8 @@ public class ReservationController {
 	}
 
 //	#예치금 충전 후 결제정보 저장하기
-	@RequestMapping(value="insertDeposit.pet", method= {RequestMethod.GET})
+//	[190209] POST방식으로 변경
+	@RequestMapping(value="insertDeposit.pet", method= {RequestMethod.POST})
 	public String insertDeposit(HttpServletRequest req, HttpServletResponse res) {
 		
 		String idx = req.getParameter("idx");
@@ -901,8 +908,8 @@ public class ReservationController {
 		String msg="";
 		String loc="";
 		if(n==1) {
-			msg="충전완료";
-			loc="javascript:location.href='"+req.getContextPath()+"/deposit.pet'";
+			msg="충전완료"; // [190209] loc 경로 변경
+			loc="javascript:self.close(); opener.location.href='"+req.getContextPath()+"/deposit.pet';";
 		}
 		else {
 			msg="충전실패";
