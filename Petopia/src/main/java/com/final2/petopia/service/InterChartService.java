@@ -29,9 +29,6 @@ public interface InterChartService {
 	int insertChart(ChartVO cvo, List<HashMap<String, String>> mlist, HashMap<String, String> map) throws Throwable; // 병원페이지에서 차트 내용 인서트하기
 	// 0128 0130 0207
 
-	//int insertPre(List<HashMap<String, String>> mlist); // 병원페이지에서 처방전 인서트 하기
-
-	//void updaterstatus(String ruid); // 처방전인서트 성공하면 예약스테이터스 변경하기
 
 	HashMap<String, String> selectChart(HashMap<String, String> map); // 차트 내용 불러오기
 
@@ -47,7 +44,7 @@ public interface InterChartService {
 	// 0131 예약번호로 차트 번호 알아오기
 	String getChartuidbyruid(String ruid);
 
-	int Updatechart(HashMap<String, String> map); // 병원페이지에서 차트 수정하기
+	int Updatechart(HashMap<String, String> map, ChartVO cvo, List<HashMap<String, String>> plist); // 병원페이지에서 차트 수정하기
 
 	//int updatepre(HashMap<String, String> map); // 병원페이지에서 차트 수정시 처방전 수정
 
@@ -63,13 +60,16 @@ public interface InterChartService {
 	int getMinpuidbyidx(int idx);
 
 	// 0202petuid가 가장 작은 동물의 정보 가져오기
-	HashMap<String, String> getPinfobyminpuid(int minpuid);
+	HashMap<String, Object> getPinfobyminpuid(int minpuid);
 
 	// 0202 idx로 반려동물의 이미지와 이름 리스트 불러오기
 	List<HashMap<String, String>> getPmapListbyidx(int idx);
 
 	//0208 타입 받아오기 
 	int selectrtype(String ruid);
+
+	//0209 펫이미지 클릭시 보여질 정보 
+	HashMap<String, Object> getPinfo(String puid);
 
 	
 
