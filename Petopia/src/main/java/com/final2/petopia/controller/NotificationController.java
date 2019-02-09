@@ -43,6 +43,8 @@ public class NotificationController {
 		
 		returnMap.put("UNREADNOTIFICATIONCOUNT", unreadNotificationCount);
 		
+		// 접속한 페이지주소가 notificationList.pet 라면 카운트를 비교해서 알림리스트를 가져오는 ajax를 실행
+		
 		return returnMap;
 	}
 	
@@ -105,8 +107,21 @@ public class NotificationController {
 		return "notification/notificationList.tiles2";
 	}
 	
+	/*
 	// 알림 페이지 내용 요청(AJAX) -------------------------------------------------------------------------------------
+	@RequestMapping(value="/notificationListAJAX.pet", method= {RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, String>> notificationListAJAX(HttpServletRequest req) throws Throwable {
 	
-	
-	
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		
+		List<NotificationVO> notificationList = service.selectNotificationList(idx);
+		
+		
+		
+		return notificationList;
+	}
+	*/
 }

@@ -95,4 +95,31 @@ public interface InterReviewService {
 	// *** 병원 리뷰 디테일 *** //
 	HashMap<String, String> selectReviewByBiz_idReview_UID(HashMap<String, Integer> paraMap); // 병원 리뷰 정보
 	// === 2019.02.07 === 끝 //
+	
+	// === 2019.02.08 === 시작 //
+	// === 2019.02.08 ==== //
+	// *** 총관리자 페이지 *** //
+	// *** 모든 리뷰 보기 *** //
+	// 전체 갯수 알아오기
+	int selectAllTotalCountByAdmin(HashMap<String, String> paraMap); // 기간X검색X
+	int selectAllTotalCountByAdminSearch(HashMap<String, String> paraMap); // 기간X검색O
+	int selectAllTotalCountByAdminPeriod(HashMap<String, String> paraMap); // 기간O검색X
+	int selectAllTotalCountByAdminPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
+	
+	// *** 병원 리뷰 리스트 *** //
+	List<HashMap<String, String>> selectReviewListByAdmin(HashMap<String, String> paraMap); // 기간X검색X
+	List<HashMap<String, String>> selectReviewListByAdminSearch(HashMap<String, String> paraMap); // 기간X검색O
+	List<HashMap<String, String>> selectReviewListByAdminPeriod(HashMap<String, String> paraMap); // 기간O검색X
+	List<HashMap<String, String>> selectReviewListByAdminPeriodSearch(HashMap<String, String> paraMap); // 기간O검색O
+	
+	// *** 블라인드 처리 *** //
+	int updateReviewBlindStatusByReview_uid(HashMap<String, Integer> paraMap); // 블라인드 처리
+	int updateReviewBlindCancleByReview_uid(int review_uid); // 블라인드 처리 취소
+
+	// *** 리뷰 디테일 페이지 정보 가져오기 *** //
+	HashMap<String, String> selectReviewByAdminReview_UID(int review_UID);
+	
+	// === 2019.02.08 === 끝 //
+	
+	
 }

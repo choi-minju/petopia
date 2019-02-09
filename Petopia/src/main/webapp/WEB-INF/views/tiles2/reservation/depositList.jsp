@@ -114,7 +114,10 @@
 <%-- [190126] 일반회원 예치금 목록 --%>
 <script type="text/javascript">
 	$(document).ready(function(){
-		$("#sumDeposit").text(numberWithCommas(${sumDeposit}));
+		// [190208] 변수로 수정
+		var sumDeposit = ${sumDeposit};
+		
+		$("#sumDeposit").text(numberWithCommas(sumDeposit));
 		all("1");
 		
 		$("#all").click(function(){
@@ -388,6 +391,13 @@
 		document.getElementById('id01').style.display='block';
 
 	}
+	
+//	[190208] 예치금충전하기
+	function goChargeDeposit(idx){
+		var url = "chargeDeposit.pet?idx="+idx;
+		window.open(url, "예치금 충전하기", "left=350px, top=100px, width=650px, height=570px");
+
+	}
 </script>	    
 <div class="container" style="margin-bottom: 8%;">
 <%-- [190206] 예치금 잔액 추가 --%>
@@ -397,7 +407,8 @@
 	  		<p>예치금 사용내역을 확인할 수 있습니다.</p>
 		</div>
 		<div class="col-md-9 text-right" style="margin-top: 5%;">
-			<span style="font-weight: bold; font-size: 15px;">예치금 잔액: <span id="sumDeposit"></span>원</span>
+			<span style="font-weight: bold; font-size: 15px;">예치금 잔액: <span id="sumDeposit"></span>원</span>&nbsp;&nbsp;
+			<button type="button" class="btn btn-rounder btnmenu" onClick="goChargeDeposit(${sessionScope.loginuser.idx})">예치금충전</button>
 		</div>
 	</div>
 <%-- 190206 끝 --%>

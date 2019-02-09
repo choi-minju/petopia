@@ -112,6 +112,13 @@ public class ConsultDAO implements InterConsultDAO {
 		return n;
 	}
 
+	// - [notification] 댓글작성 알림 insert
+	@Override
+	public int insertCommentNotification(ConsultCommentVO commentvo) {
+		int n = sqlsession.insert("consult.insertCommentNotification", commentvo);
+		return n;
+	}
+	
 	// 댓글리스트 select
 	@Override
 	public List<ConsultCommentVO> selectCommentList(HashMap<String, String> paraMap) {
@@ -176,6 +183,8 @@ public class ConsultDAO implements InterConsultDAO {
 		int n = sqlsession.insert("consult.insertConsultNotification", idx);
 		return n;
 	}
+	
+	
 	
 	
 

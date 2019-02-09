@@ -135,6 +135,8 @@ public class ChartController {
 		
 		HashMap<String, String> chartmap = new HashMap<String, String>();
 
+		int reservation_type =service.selectrtype(ruid);
+		
 		chartmap = service.selectReserverInfo(ruid); // 예약번호를 이용하여 차트에 예약자 정보 불러오기
 
 		chartmap.put("fk_reservation_UID", ruid);
@@ -145,7 +147,7 @@ public class ChartController {
 
 		req.setAttribute("chartmap", chartmap);
 		req.setAttribute("doclist", doclist);
-
+        req.setAttribute("rtype", reservation_type);
 		return "chart/InsertChart.tiles2";
 
 	} // 진료 내역 인서트 창띄우기 (기업회원페이지에서)
@@ -154,7 +156,7 @@ public class ChartController {
        //0207 인서트 수정중 
 	@RequestMapping(value = "/InsertChartEnd.pet", method = { RequestMethod.POST })
 	public String InsertChartEnd(ChartVO cvo, HttpServletRequest req) throws Throwable {
-
+		
 		String ruid = req.getParameter("fk_reservation_UID");
 
 		/// 0 약국/1 진료 / 2 예방접종 / 3 수술 / 4 호텔링
@@ -164,7 +166,7 @@ public class ChartController {
 
 		String result = "";
 
-		int n = 0;
+		int n = 0; 
 		if (ctype.equals("약국")) {
 			result = "0";
 		} else if (ctype.equals("외래진료")) {
@@ -193,16 +195,20 @@ public class ChartController {
 		String[] dose_number = req.getParameterValues("dose_number");
 
 		for (int i = 0; i < rx_name.length; i++) {
-			map.put("rx_name", rx_name[i]);
-			map.put("dosage", dosage[i]);
-			map.put("dose_number", dose_number[i]);
+			HashMap<String, String> map2 = new HashMap<String, String>();
+			map2.put("chart_UID", cuid);
+			map2.put("rx_regName", rx_regName);
+			map2.put("rx_name", rx_name[i]);
+			
+			map2.put("dosage", dosage[i]);
+			map2.put("dose_number", dose_number[i]);
 
-			mlist.add(map);
+			mlist.add(map2);
 		}
-
+		
 		n = service.insertChart(cvo,mlist,map);// 차트테이블에 인서트
-			
-			
+		
+		
 		String msg = "";
 		String loc = "";
 		if(n==1) {
@@ -276,12 +282,6 @@ public class ChartController {
 		map.put("cuid", cuid);
 		int n = service.Updatechart(map);
 
-		System.out.println("n:" + n);
-
-		if (n == 1) {
-			int n2 = service.updatepre(map);
-			System.out.println("n2:" + n2);
-		}
 		return "chart/SelectChart.tiles2";
 
 	} // 기업회원 페이지에서 차트수정하기

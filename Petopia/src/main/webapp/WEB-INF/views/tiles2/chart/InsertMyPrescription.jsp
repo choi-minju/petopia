@@ -106,7 +106,20 @@ color:rgb(252, 118, 106);
 			// 펫정보 불러오기
 			// showPet(petUid);  --- 1
 			// 함수 showPet은 puid를 이용하여 한 마리의 반려동물 정보 불러오기 (ajax)
-
+                /* 
+                  $.ajax({
+		    		  url: "",
+		    		  type: "GET",
+		    		  data: data,
+		    		  dataType: "JSON",
+		    		  success: function(json){ 
+		    			  
+		    		  },error: function(request, status, error){
+ 			           if(request.readyState == 0 || request.status == 0) return;
+ 			        //else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+ 		                }
+		    		  });
+			*/
 			// 캘린더
 			
 			
@@ -114,7 +127,7 @@ color:rgb(252, 118, 106);
 		 }); // 반려동물 누르면
 		 
 		 
-		 
+	 	 
 		
 		 $("#register").click(function(){
 			 
@@ -178,7 +191,7 @@ color:rgb(252, 118, 106);
 		    	 
 		      }
 		      
-		  });
+		  }); 
 	});// end of $(document).ready()----------------------
 	
 	
