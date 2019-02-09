@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<% String ctxPath = request.getContextPath(); %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -75,7 +76,15 @@ label {
 
 .btn-rounder {
 	width: 80px;
-	font-size: 15px;
+	font-size: 10px;
+	color: white;
+	text-align: center;
+	background: gray;
+	border-radius: 30px;
+}
+.selected {
+	width: 80px;
+	font-size: 10px;
 	color: white;
 	text-align: center;
 	background: rgb(252, 118, 106);
@@ -84,17 +93,35 @@ label {
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
-		
+	// [190209] selected css 추가 및 jQurey 추가
+		$(".depositType").click(function(){
+			$(".depositType").removeClass("selected");
+			$("#depositType").val($(this).val());
+			$(this).addClass("selected");
+		});
 		
 	});
 	function numberWithCommas(x) {
 	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
 	
+	// [190209] 시작
 	function goPay(){
-		
+		var frm = document.chargePayFrm;
+	
+		var url = "chargeDepositEnd.pet?idx="+frm.idx.value+"&depositType="+frm.depositType.value+"&depositCoin="+frm.depositCoin.value;
+		window.open(url, "chargeDepositEnd", "left=350px, top=100px, width=900px, height=650px");
 	}
 	
+	function goInsertDeposit(idx, realDeposit, depositType){
+		var frm = document.insertDepositFrm;
+		frm.idx.value=idx;
+		frm.realDeposit.value=realDeposit;
+		frm.depositType.value=depositType;			
+		frm.method="POST";
+		frm.action="insertDeposit.pet";
+		frm.submit();
+	}
 </script>
 
 </head>
@@ -107,9 +134,11 @@ label {
     <div class="progress-bar" id="myBar"></div>
   </div> 
   </div>
+  <form name="chargePayFrm">
   <div class="deposit-body">
    	<div class="row">
     	<div class="col-md-3">회원번호: ${idx}</div>
+    	<input type="hidden" name="idx" value="${idx}"/>
 		<div class="col-md-3">예치금잔액: <fmt:formatNumber pattern="##,###">${depositAmount}</fmt:formatNumber>원</div>
    	</div>
    	<hr style="border-top: 0px solid gray;">
@@ -127,21 +156,25 @@ label {
    	<div class="subject">결제방식</div>
    	<div class="row">
    		<div class="col-md-8">
-    		<button type="button" class="btn btn-rounder" value="card">카드결제</button>&nbsp;
-    		<button type="button" class="btn btn-rounder" value="direct">무통장입금</button>
+    		<button type="button" class="btn btn-rounder depositType" value="card">카드결제</button>&nbsp;
+    		<button type="button" class="btn btn-rounder depositType" value="direct">무통장입금</button>
+   			<input type="hidden" id="depositType" name="depositType"/>
    		</div>
    	</div>
   </div>
+  </form>
   <div class="deposit-footer text-center">
       <button type="button" class="btn btn-default" onClick="goPay();">확인</button>
-      <button type="button" class="btn btn-default" onClick="">취소</button>
+      <button type="button" class="btn btn-default" onClick="javascript:self.close();">취소</button>
   </div>
   
-  <form name="chagePayFrm">
-  	<input type="hidden" id="depositType" name="depositType"/>
+  <form name="insertDepositFrm">
+  	<input type="hidden" name="idx"/>
+  	<input type="hidden" name="realDeposit"/>
+  	<input type="hidden" name="depositType"/>
   </form>
 </body>
-
+<%-- [190209] 끝 --%>
 <script>
 // When the user scrolls the page, execute myFunction 
 window.onscroll = function() {myFunction()};
