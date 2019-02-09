@@ -83,7 +83,6 @@ public class ChartDAO implements InterChartDAO {
 			int n = sqlsession.insert("chart.insertPre", map);
 			if (n == 0) {
 				result = 0;
-				return result;
 			} else {
 				result = 1;
 			}
@@ -196,6 +195,26 @@ public class ChartDAO implements InterChartDAO {
 	public List<HashMap<String, String>> getPmapListbyidx(int idx) {
 		List<HashMap<String, String>> pmaplist = sqlsession.selectList("chart.getPmapListbyidx", idx);
 		return pmaplist;
+	}
+
+	//0207 예약 타입 알아오기 
+	@Override
+	public int selectrtype(String ruid) {
+		int selectrtype = sqlsession.selectOne("chart.selectrtype",ruid);
+		return selectrtype;
+	}
+    //0207 차트에서 결제정보가 없는 예약자 정보 불러오기 
+	@Override
+	public HashMap<String, String> selectReserverInfoNopay(String ruid) {
+		HashMap<String, String> chartmap = sqlsession.selectOne("chart.selectReserverInfoNopay",ruid);
+		return chartmap;
+	}
+
+	//0208 결제정보가 없는 차트 인서트 
+	@Override
+	public int insertChartNopay(ChartVO cvo) {
+		int n = sqlsession.insert("chart.insertChartNopay", cvo);
+		return n;
 	}
 
 }

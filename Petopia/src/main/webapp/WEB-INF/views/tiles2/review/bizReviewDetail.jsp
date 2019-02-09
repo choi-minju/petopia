@@ -1,15 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!-- ==== 2019.02.04 ==== -->
+<!-- ==== 2019.02.07 ==== -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 
 <script type="text/javascript">
 	
 	$(document).ready(function(){
-		showComments("1"); /* === 2019.02.06 === */
 		
-		/* === 2019.02.07 === 시작 */
+		showComments("1"); // === 2019.02.08 === //
+		
 		$(".contents").click(function(){
 			if(${sessionScope.loginuser == null}) {
 				var bool = confirm("댓글은 로그인 후에 작성할 수 있습니다. 로그인 하시겠습니까?");
@@ -25,30 +24,88 @@
 				} // end of if~else
 			} // end of if
 		}); // end of $(".contents").click();
-		/* === 2019.02.07 === 끝 */
 		
 	}); // end of $(document).ready()
 	
-	function goDel(review_UID) {
-		var frm = document.delReviewFrm;
-		frm.review_UID.value = review_UID;
+	function reviewBlind(review_uid) {
 		
-		frm.action = "<%=request.getContextPath()%>/updateReviewStatus.pet";
-		frm.method = "POST";
-		frm.submit();
-	} // end of function goDel(review_UID)
+		var bool = confirm("해당 리뷰를 블라인드 요청하시겠습니까?");
+		
+		if(bool == true) {
+			
+			var data = {"review_uid":review_uid,
+						"rv_blind":2};// === 2019.02.08 === 수정 //
+			
+			$.ajax({
+				url: "<%=request.getContextPath()%>/reviewBlindByReview_uid.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					
+					if(json == 0) {
+						alert("블라인드 요청 실패하였습니다.");
+					} else {
+						alert("블라인드 요청되었습니다.");
+					}
+					location.reload();
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax()
+			
+		} else {
+			$(':focus').blur();
+			
+			return;
+		} // end of if~else
+	} // end of function setBlindReviewUID(review_uid)
 	
-	// === 2019.02.05 ==== //
+	function reviewBlindCancle(review_uid) {
+		
+		var bool = confirm("해당 리뷰를 블라인드 요청을 취소하시겠습니까?");
+		
+		if(bool == true) {
+			
+			var data = {"review_uid":review_uid,
+						"rv_blind":0};
+			
+			$.ajax({
+				url: "<%=request.getContextPath()%>/reviewBlindByReview_uid.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					
+					if(json == 0) {
+						alert("블라인드 취소 실패하였습니다."); // === 2019.02.08 === 수정 //
+					} else {
+						alert("블라인드 취소되었습니다."); // === 2019.02.08 === 수정 //
+					}
+					location.reload();
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax()
+			
+		} else {
+			$(':focus').blur();
+			
+			return;
+		} // end of if~else
+	} // end of function reviewBlindCancle(review_uid)
+	
+	// === 2019.02.08 === //
 	// 댓글쓰기
 	function addComments() {
-		// === 2019.02.07 ==== 시작 //
 		var contents = $("#rc_content").val();
 		contents= contents.replace(/(?:\r\n|\r|\n)/g, '<br />');
 		
 		var data = {"review_uid":$("#review_uid").val(),
 					"rc_content":contents,
 					"fk_userid":$("#fk_userid").val()};
-		// === 2019.02.07 ==== 끝 //
 		
 		$.ajax({
 			url: "<%=request.getContextPath()%>/addComments.pet",
@@ -58,7 +115,7 @@
 			success: function(json){
 				$("#rc_content").val("");
 				
-				showComments($("#totalPage").val());/* === 2019.02.07 === 수정 */
+				showComments($("#totalPage").val());
 			},
 			error: function(request, status, error){ 
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -67,7 +124,6 @@
 		
 	} // end of function addComments()
 	
-	/* === 2019.02.06 === */
 	// 댓글 리스트 보기
 	function showComments(currentPageNo) {
 		
@@ -102,7 +158,6 @@
 											+'<div class="row" style="margin-top: 5px; color: gray;">'
 												+'<span>'+entry.RC_WRITEDATE+'</span>'
 											+'</div>'
-									/* === 2019.02.07 === 시작 */
 											+'<div class="row" style="margin-top: 5px;">';
 								if(entry.RC_STATUS != "0") {
 									if("${sessionScope.loginuser != null}") {
@@ -117,7 +172,6 @@
 									html += '</div>'
 											+'<div class="row" id="commentsShow'+entry.RC_ID+'" style="margin-top: 5px;">'
 											+'</div>'
-									/* === 2019.02.07 === 끝 */
 										+'</div>'
 									+'</div>';
 						} else {
@@ -141,7 +195,6 @@
 											+'<div class="row" style="margin-top: 5px; color: gray;">'
 												+'<span>'+entry.RC_WRITEDATE+'</span>'
 											+'</div>'
-										/* === 2019.02.07 === */
 											+'<div class="row" style="margin-top: 5px;">';
 										if(entry.RC_STATUS != "0") {
 											if("${sessionScope.loginuser != null}") {
@@ -156,11 +209,9 @@
 											html += '</div>'
 											+'<div class="row" id="commentsShow'+entry.RC_ID+'" style="margin-top: 5px;">'
 											+'</div>'
-										/* === 2019.02.07 === */
 										+'</div>'
 									+'</div>';
 						} // end of if~else
-						
 					}); // end of each
 				} else {
 					html = "";
@@ -173,32 +224,27 @@
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		}); // end of ajax
-		
 	} // end of function showComments(currentPageNo)
-	// === 2019.02.05 ==== //
 	
 	// 댓글 페이지바 만들기
 	function showPageBar(currentPageNo) {
 		var data = {"review_uid":$("#review_uid").val()};
 		
 		$.ajax({
-			url: "<%=request.getContextPath()%>/selectReviewCommentsTotalCnt.pet",  /* === 2019.02.06 === */
+			url: "<%=request.getContextPath()%>/selectReviewCommentsTotalCnt.pet",
 			type: "GET",
 			data: data,
 			dataType: "JSON",
 			success: function(json){
 				var html = "";
 				
-				/* === 2019.02.08 === 수정 */
 				var totalCnt = json;
 				var sizePerPage = 10;
 				
 				var totalPage = parseInt(Math.ceil(parseFloat(totalCnt/sizePerPage)));
 				
 				$("#totalPageSpan").html(totalCnt);
-				/* === 2019.02.08 === 수정 */
-				
-				$("#totalPage").val(totalPage);/* === 2019.02.06 === 추가 */
+				$("#totalPage").val(totalPage);
 				
 				var blockSize = 5;
 				var loop = 1;
@@ -231,9 +277,7 @@
 			}
 		});// end of ajax
 	} // end of function showPageBar(currentPageNo)
-	/* === 2019.02.06 === */
 	
-	/* === 2019.02.07 === 시작 */
 	// *** 댓글 수정하기 ***//
 	// 수정 폼 보여주기
 	function goCommentsEditShow(idx, currentPageNo) {
@@ -273,7 +317,7 @@
 	
 	// 수정 처리하기
 	function goCommentsEdit(idx, currentPageNo) {
-		//alert("idx: "+idx+", currentPageNo: "+currentPageNo);
+		
 		var contents = $("#rc_content"+idx).val();
 		contents = contents.replace(/(?:\r\n|\r|\n)/g, '<br />')
 		var data = {"rc_id":idx,
@@ -374,7 +418,7 @@
 			}
 		}); // end of ajax
 	} // end of function goCommentsAdd(idx, currentPageNo)
-	/* === 2019.02.07 === 끝 */
+	// === 2019.02.08 === //
 	
 </script>
 
@@ -413,13 +457,13 @@
 		
 		<div class="row">
 			<div class="col-sm-offset-8 col-sm-4" align="right">
-				<button class="btn" onclick="javascript:location.href='<%=request.getContextPath()%>/allReviewList.pet'">목록</button>
-				<c:if test="${sessionScope.loginuser != null}">
-					<c:if test="${sessionScope.loginuser.userid == reviewMap.FK_USERID}">
-						<button class="btn" onclick="jsvascript:location.href='<%=request.getContextPath()%>/editReview.pet?review_UID=${reviewMap.REVIEW_UID}'">수정</button>
-						<button class="btn"onclick="goDel(${reviewMap.REVIEW_UID});">삭제</button>
-					</c:if>
+				<c:if test="${reviewMap.RV_BLIND == '0'}">
+					<button class="btn" onclick="reviewBlind(${reviewMap.REVIEW_UID});" style="background-color: rgb(252, 118, 106); color: white; font-weight: bold;">블라인드요청</button>
 				</c:if>
+				<c:if test="${reviewMap.RV_BLIND == '2'}"> <!-- === 2019.02.08 === 수정 -->
+					<button class="btn" onclick="reviewBlindCancle(${reviewMap.REVIEW_UID});">블라인드요청취소</button>
+				</c:if>
+				<button class="btn" onclick="javascript:location.href='<%=request.getContextPath()%>/bizReviewList.pet'">목록</button>
 			</div>
 		</div>
 	
@@ -427,28 +471,23 @@
 			<input type="hidden" name="review_UID"/>
 		</form>
 		
-		<%-- ==== 2019.02.05 ==== --%>
 		<div class="row">
 			<div class="col-sm-offset-1 col-sm-10">
 				<div class="col-sm-12" style="border: 1px solid #bfbfbf; border-radius: 10px;">
 					<div class="row">
 						<input type="hidden" id="review_uid" name="review_uid" value="${reviewMap.REVIEW_UID}"/>
 						<input type="hidden" id="fk_userid" name="fk_userid" value="${reviewMap.FK_USERID}"/>
-						<%-- ==== 2019.02.07 ==== --%>
 						<textarea class="form-control contents" id="rc_content" name="rc_content" rows="5" placeholder="주제와 무관한 댓글, 악플은 삭제될 수 있습니다." style="border: none;resize: none;"></textarea>
-						<%-- ==== 2019.02.07 ==== --%>
 					</div>
 					<div class="row" align="right" style="border-top: 1px solid #bfbfbf;">
-						<div class="col-sm-offset-10 col-sm-2"><%-- ==== 2019.02.07 ==== --%>
+						<div class="col-sm-offset-10 col-sm-2">
 							<button type="button" class="btn" onclick="addComments();" style="margin-top: 2px; background-color: rgb(252, 118, 106); color: white; font-weight: bold; color: white;">등록</button>
 						</div>
 					</div>
 				</div>
-				<%-- ==== 2019.02.05 ==== --%>
-				<%-- ==== 2019.02.06 ==== --%>
 				<div class="col-sm-12" style="margin-top: 10px;">
-					<input type="hidden" id="totalPage" /><%-- ==== 2019.02.07 ==== --%>
-					<span style="font-weight: bold;">댓글 <span id="totalPageSpan"></span>개</span> <%-- === 2019.02.08 === 수정 --%>
+					<input type="hidden" id="totalPage" />
+					<span style="font-weight: bold;">댓글 <span id="totalPageSpan"></span>개</span>
 					<button type="button" onclick="showComments('1')" class="btn" style="background-color: white;"><span class="glyphicon glyphicon-repeat"></span></button>
 				</div>
 				
@@ -461,9 +500,8 @@
 					  	</ul>
 				  	</div>
 				</div>
-				<%-- ==== 2019.02.06 ==== --%>
 			</div>
 		</div>
 	</div>
 </div>
-<!-- ==== 2019.02.04 ==== -->
+<!-- ==== 2019.02.07 ==== -->

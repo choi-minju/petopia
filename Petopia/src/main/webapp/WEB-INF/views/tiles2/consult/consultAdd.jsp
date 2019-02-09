@@ -40,9 +40,6 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.20.0/mode/xml/xml.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/2.36.0/formatting.js"></script>
 
-<!-- include summernote css/js
-<link href="summernote.css">
-<script src="summernote.js"></script>-->
 
 
 <script type="text/javascript">
@@ -50,6 +47,13 @@
 	$(document).ready(function(){
 	    
 		$('#cs_contents').summernote({
+			callbacks: {
+			    onImageUpload: function(files, editor, welEditable) {
+			    	for (var i = files.length - 1; i >= 0; i--) {
+			    		sendFile(files[i], this, welEditable);
+			    	}
+				}
+			},
             minHeight: 500,
             maxHeight: null,
             focus: true
@@ -88,6 +92,28 @@
 		
 	}); // end of ready()-------------------------------------------
 		
+
+	
+	// 썸머노트 파일업로드
+	function sendFile(file, editor, welEditable) {
+       
+ 		var form_data = new FormData();
+ 		form_data.append("file", file);
+ 	    $.ajax({
+ 	    	data: form_data,
+        	type: "POST",
+ 	        url : "<%=request.getContextPath()%>/summernoteImageUpload.pet",
+ 	        cache : false,
+	        contentType : false,
+	        enctype: 'multipart/form-data',
+	        processData : false,
+ 	        success : function(form_data) {
+                $('#cs_contents').summernote('editor.insertImage', "<%=request.getContextPath()%>/resources/img/consult/"+form_data);
+ 	        }
+ 	    });
+ 	}
+	
+	
 </script>
 
 <div style=" padding-top:8%;  margin-bottom: 0.2%;" class="container"> 

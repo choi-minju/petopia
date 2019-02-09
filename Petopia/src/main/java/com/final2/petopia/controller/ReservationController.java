@@ -201,7 +201,7 @@ public class ReservationController {
 		String loc="";
 		String msg = "";
 		String result = resultMap.get("result");
-		System.out.println(result);
+		
 		if(result.equals("1")) {
 			msg = "선예약 성공! 예치금 결제 페이지로 이동합니다.";
 			loc = req.getContextPath()+"/goPayDeposit.pet?fk_reservation_UID="+resultMap.get("seq")+"&fk_idx="+rvo.getFk_idx();
@@ -229,7 +229,7 @@ public class ReservationController {
 
 		if(depositAmount<100000) {
 			req.setAttribute("msg", "예치금 잔액이 부족합니다. 예치금 충전 후 예약목록에서 예치금 결제를 진행하세요.");
-			req.setAttribute("loc", req.getContextPath()+"/chargeDepositCoin.pet?idx="+idx+"&depositAmount="+depositAmount);
+			req.setAttribute("loc", req.getContextPath()+"/chargeDeposit.pet?idx="+idx);	// 190207 depositcoin 삭제, Coin 삭제
 			return "msg";
 		}
 		else {
@@ -333,7 +333,7 @@ public class ReservationController {
 		
 //		#currentURL 뷰로 보내기
 		String currentURL = MyUtil.getCurrentURL(req);
-		System.out.println(currentURL);
+		
 		if(currentURL.substring(currentURL.length()-5).equals("?null")) {
 			currentURL = currentURL.substring(0 , currentURL.length()-5);
 		}
@@ -787,4 +787,130 @@ public class ReservationController {
 	}
 // [190206] 끝
 	
+//	[190207]
+//	#관리자 예약결제관리 목록에서 진료기록을 입력한 기업회원에게 예치금 정산하기 
+	@RequestMapping(value="payForDepositToBiz.pet", method= {RequestMethod.GET})
+	@ResponseBody 
+	public HashMap<String, String> payForDepositToBiz(HttpServletRequest req) {
+		String reservation_UID = req.getParameter("reservation_UID");
+		String payment_UID = req.getParameter("payment_UID");
+		String idx_biz = req.getParameter("idx_biz");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("reservation_UID", reservation_UID);
+		paraMap.put("payment_UID", payment_UID);
+		paraMap.put("idx_biz", idx_biz);
+		
+		HashMap<String, String> returnMap = service.insertDepositToBiz(paraMap);
+		
+		return returnMap;
+	}
+	
+	
+//	[190208]
+//	#예치금 충전하기 chargeDeposit
+	@RequestMapping(value="chargeDeposit.pet", method= {RequestMethod.GET})
+	public String requireLogin_chargeDeposit(HttpServletRequest req, HttpServletResponse res) {
+		
+		String idx = req.getParameter("idx");
+		int depositAmount = service.selectSumDepositByIdx(idx);
+		
+		req.setAttribute("idx", idx);
+		req.setAttribute("depositAmount", depositAmount);
+		
+		return "tiles2/reservation/chargeDeposit";
+	}
+	
+//	#PG결제 연결하기
+	@RequestMapping(value="chargeDepositEnd.pet", method= {RequestMethod.POST})
+	public String requireLogin_chargeDepositEnd(HttpServletRequest req, HttpServletResponse res) {
+		String idx = req.getParameter("idx");
+		String deposit_type=req.getParameter("depositType");
+		String depositCoin = req.getParameter("depositCoin");
+		String coinmoney = "";
+		
+		if(depositCoin.equals("100000")) {
+			coinmoney = "100";
+		}
+		else if(depositCoin.equals("200000")) {
+			coinmoney = "200";
+		}
+		else if(depositCoin.equals("300000")) {
+			coinmoney = "300";
+		}
+		else if(depositCoin.equals("400000")) {
+			coinmoney = "400";
+		}
+		else if(depositCoin.equals("500000")) {
+			coinmoney = "500";
+		}
+		
+		if(deposit_type.equals("card")) {	// 카드결제 아임포트로 연결
+			req.setAttribute("idx", idx);
+			req.setAttribute("coinmoney", coinmoney);
+			req.setAttribute("realDeposit", depositCoin);
+			req.setAttribute("depositType", deposit_type);
+			
+			return "tiles2/reservation/paymentGateway";
+		}
+		else if(deposit_type.equals("direct")) { 	// 무통장입금
+			HashMap<String, String> paraMap = new HashMap<String, String>();
+			
+			paraMap.put("fk_idx", idx);
+			paraMap.put("depositcoin", depositCoin);
+			paraMap.put("deposit_status", "0");
+			paraMap.put("deposit_type", "direct");
+			paraMap.put("payment_UID", "0");
+			int n = service.insertChargeDeposit(paraMap);
+			
+			String msg = "";
+			String loc = "";
+			if(n==1) {
+				msg = "무통장입금 신청 성공! 24시간 이내에 신한 123 456 567890으로 입금 바랍니다.";
+				loc = "javascript:location.href='"+req.getContextPath()+"/deposit.pet'";
+			}
+			else {
+				msg = "충전 실패";
+				loc = "javascript:history.back();";
+			}
+			
+		}
+		
+		return "msg";
+
+	}
+
+//	#예치금 충전 후 결제정보 저장하기
+	@RequestMapping(value="insertDeposit.pet", method= {RequestMethod.GET})
+	public String insertDeposit(HttpServletRequest req, HttpServletResponse res) {
+		
+		String idx = req.getParameter("idx");
+		String realDeposit = req.getParameter("realDeposit");
+		String depositType = req.getParameter("depositType");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		
+		paraMap.put("fk_idx", idx);
+		paraMap.put("depositcoin", realDeposit);
+		paraMap.put("deposit_status", "1");
+		paraMap.put("deposit_type", depositType);
+		paraMap.put("payment_UID", "0");
+		
+		int n = service.insertChargeDeposit(paraMap);
+		
+		String msg="";
+		String loc="";
+		if(n==1) {
+			msg="충전완료";
+			loc="javascript:location.href='"+req.getContextPath()+"/deposit.pet'";
+		}
+		else {
+			msg="충전실패";
+			loc="javascript:history.back();";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		return "msg";
+	}
 }

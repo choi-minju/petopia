@@ -112,6 +112,13 @@ public class ConsultDAO implements InterConsultDAO {
 		return n;
 	}
 
+	// - [notification] 댓글작성 알림 insert
+	@Override
+	public int insertCommentNotification(ConsultCommentVO commentvo) {
+		int n = sqlsession.insert("consult.insertCommentNotification", commentvo);
+		return n;
+	}
+	
 	// 댓글리스트 select
 	@Override
 	public List<ConsultCommentVO> selectCommentList(HashMap<String, String> paraMap) {
@@ -162,6 +169,22 @@ public class ConsultDAO implements InterConsultDAO {
 		List<ConsultVO> AdminConsultList = sqlsession.selectList("consult.selectAdminConsultListPaging", paraMap);
 		return AdminConsultList;
 	}
+
+	// - 기업회원 idx 목록 member:select
+	@Override
+	public List<String> selectBizMemberList() {
+		List<String> bizMemberList = sqlsession.selectList("consult.selectBizMemberList");
+		return bizMemberList;
+	}
+
+	// - 알림 테이블에 board로 notification:insert
+	@Override
+	public int insertConsultNotification(String idx) {
+		int n = sqlsession.insert("consult.insertConsultNotification", idx);
+		return n;
+	}
+	
+	
 	
 	
 

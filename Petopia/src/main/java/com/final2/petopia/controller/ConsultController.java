@@ -1,5 +1,6 @@
 package com.final2.petopia.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.final2.petopia.common.FileManager;
 import com.final2.petopia.common.MyUtil;
 import com.final2.petopia.model.ConsultCommentVO;
 import com.final2.petopia.model.ConsultVO;
@@ -34,8 +38,8 @@ public class ConsultController {
 	//private AES256 aes;
 	
 	//===== 파일업로드 및 파일다운로드를 해주는 FileManager 클래스 의존객체 주입(DI:Dependency Injection) =====
-	//@Autowired
-	//private FileManager fileManager;
+	@Autowired
+	private FileManager fileManager;
 	
 	// ------------------------------------------------------------------------------------------------------------
 	
@@ -345,6 +349,34 @@ public class ConsultController {
 		
 	} // 
 	
+	// 썸머노트 이미지파일 업로드 -------------------------------------------------------------------------------------------
+	@RequestMapping(value="/summernoteImageUpload.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public String summernoteImageUpload(MultipartHttpServletRequest req) {
+
+		HttpSession session = req.getSession();
+		
+		MultipartFile file = req.getFile("file");
+		
+		String newFileName = "";
+		
+		if(!file.isEmpty()) {
+			
+			String root = session.getServletContext().getRealPath("/");
+			String path = root + "resources"+File.separator+"img"+File.separator+"consult";
+			
+			byte[] bytes = null;
+			
+			try {
+				bytes = file.getBytes();
+				newFileName = fileManager.doFileUpload(bytes, file.getOriginalFilename(), path);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return newFileName;
+	}
 	
 	// 1:1상담 댓글쓰기 -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultCommentAdd.pet", method= {RequestMethod.POST})
@@ -353,7 +385,7 @@ public class ConsultController {
 	
 		HashMap<String, String> returnMap = new HashMap<String, String>();
 			
-		int n = service.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1증가 update
+		int n = service.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1증가 update + [notification] 댓글작성 알림 insert
 		
 		if(n==1) {
 			// 댓글쓰기insert 및 원글의댓글갯수update 성공시
@@ -595,10 +627,70 @@ public class ConsultController {
 		return "admin/consult/adminConsultDetail.tiles2";
 	}
 	
-	// 1:1상담 알림 메세지 보내기
+	// 1:1상담 알림 메세지 보내기 -------------------------------------------------------------------------------------------
 	// 기업회원 idx를 List<String> select 해와서
 	// notification 테이블에 insert를 for문으로
+	@RequestMapping(value="/consultNotification.pet", method= {RequestMethod.GET})
+	public String consultNotification(HttpServletRequest req) {
 		
+		List<String> bizMemberList = new ArrayList<String>();
 		
+		String str_selected = req.getParameter("selected");
+		int selected = Integer.parseInt(str_selected);
+		
+		String msg = "";
+		String loc = "";
+		
+		if(selected==0) {
+			msg = "답변요청을 보내기 위한 상담글을 1개이상 선택하셔야합니다.";
+			loc = req.getContextPath()+"/adminConsultList.pet";
+		}
+		else {
+			// - 기업회원 idx 목록 member:select
+			//List<String> bizMemberList = service.selectBizMemberList();
+			bizMemberList = service.selectBizMemberList();
+			//System.out.println(bizMemberList);			// [8, 10]
+			//System.out.println(bizMemberList.size());	// 2
+
+			/*
+			for(int i=0; i<bizMemberList.size(); i++) { 
+				System.out.println("bizMemberList["+i+"] => "+bizMemberList.get(i));
+			}
+			// bizMemberList[0] => 8
+			// bizMemberList[1] => 10
+			*/
+			
+			int n = 0;
+			// 기업회원이 있는 경우
+			if(bizMemberList.size()>0) {
+			
+				// - 알림 테이블에 board로 notification:insert
+				for(int i=0; i<bizMemberList.size(); i++) { 
+					n = service.insertConsultNotification(bizMemberList.get(i));
+					n += n;
+				}
+				//System.out.println(n);
+				if(bizMemberList.size()==n) {
+					// 알림 성공시
+					msg = n+"명의 수의사님들께 요청이 완료되었습니다.";
+					loc = req.getContextPath()+"/adminConsultList.pet";
+				}
+				else {
+					// 알림 실패시
+					msg = "요청 실패!";
+					loc = req.getContextPath()+"/adminConsultList.pet";
+				}
+			}
+		}
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	}
+	
+		
+	
+	
+	
 		
 }

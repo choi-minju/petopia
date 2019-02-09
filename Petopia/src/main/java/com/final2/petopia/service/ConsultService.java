@@ -127,21 +127,25 @@ public class ConsultService implements InterConsultService {
 		return n;
 	}
 
-	// [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1 update
+	// [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1 update + [notification] 댓글작성 알림 insert
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
 	public int insertComment(ConsultCommentVO commentvo) throws Throwable {
 		
 		int result1 = 0;
 		int result2 = 0;
+		int result3 = 0;
 		
 		result1 = dao.insertComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert
 		
 		if(result1==1) {
 			result2 = dao.updateConsultCommentCount(commentvo.getFk_consult_UID()); // - [consult]commentCount 원글의 댓글갯수 1 update
 		}
+		if(result2==1) {
+			result3 = dao.insertCommentNotification(commentvo); // - [notification] 댓글작성 알림 insert
+		}
 		
-		return result2;
+		return result3;
 	}
 
 	// 대댓글 쓰기
@@ -213,6 +217,20 @@ public class ConsultService implements InterConsultService {
 	public List<ConsultVO> selectAdminConsultListPaging(HashMap<String, String> paraMap) {
 		List<ConsultVO> AdminConsultList = dao.selectAdminConsultListPaging(paraMap);
 		return AdminConsultList;
+	}
+
+	// - 기업회원 idx 목록 member:select
+	@Override
+	public List<String> selectBizMemberList() {
+		List<String> bizMemberList = dao.selectBizMemberList();
+		return bizMemberList;
+	}
+
+	// - 알림 테이블에 board로 notification:insert
+	@Override
+	public int insertConsultNotification(String idx) {
+		int n = dao.insertConsultNotification(idx);
+		return n;
 	}
 	
 

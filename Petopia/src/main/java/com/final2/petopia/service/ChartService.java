@@ -5,10 +5,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.InterChartDAO;
-import com.final2.petopia.model.PetVO;
+
 
 @Service
 public class ChartService implements InterChartService {
@@ -57,10 +60,17 @@ public class ChartService implements InterChartService {
 		return totalCount;
 	}
 
-	// 예약번호로 예약자 정보 얻어오기
+	// 예약번호로 예약자 정보 얻어오기  0207
 	@Override
 	public HashMap<String, String> selectReserverInfo(String ruid) {
-		HashMap<String, String> chartmap = dao.selectReserverInfo(ruid);
+		HashMap<String, String> chartmap =null;
+		int reservation_type =dao.selectrtype(ruid);
+		
+		if(reservation_type == 3) { //결제 정보가 있을때 (수술)
+			chartmap = dao.selectReserverInfo(ruid);
+		}else if(reservation_type != 3) { //결제정보가 없을때  (수술 이외 )
+			chartmap=dao.selectReserverInfoNopay(ruid);
+		}
 		return chartmap;
 	}
 
@@ -72,15 +82,42 @@ public class ChartService implements InterChartService {
 		return doclist;
 	}
 
-	// 병원페이지에서 차트내용 인서트하기 0126
+	// 병원페이지에서 차트내용 인서트하기 0126  0207 0208
 	@Override
-	public int insertChart(ChartVO cvo) {
-
-		int n = dao.insertChart(cvo);
-		return n;
+	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public int insertChart(ChartVO cvo, List<HashMap<String, String>> mlist,HashMap<String, String> map) throws Throwable {
+   
+		int n1 =0;
+		int n2=0;
+		int result =0; 
+		System.out.println("mlist s: "+mlist);
+		String ruid =map.get("ruid");
+		
+		int reservation_type =dao.selectrtype(ruid);
+		
+		if(reservation_type ==3) {//결제정보가 있는 경우에 인서트
+			n1 = dao.insertChart(cvo);	
+			
+		}else if(reservation_type !=3) { //결제정보가 없는 경우에 인서트 
+			n1=dao.insertChartNopay(cvo);
+		}
+		
+		if (n1 ==1) { // 차트 인서트에 성공하면 
+			System.out.println("mlist: "+mlist);
+			n2 = dao.insertPre(mlist); //처방전에 인서트하기 
+			
+		   if(n2==1) {
+			   dao.updaterstatus(ruid); //스테이터스 변경하기 
+			}
+		}
+		
+		if(n1*n2 ==1) {
+			result=1;
+		}
+		return result;
 	}
 
-	// 0128 0130 병원페이지에서 처방전 인서트하기
+/*	// 0128 0130 병원페이지에서 처방전 인서트하기
 	@Override
 	public int insertPre(List<HashMap<String, String>> mlist) {
 		int n = dao.insertPre(mlist);
@@ -92,7 +129,7 @@ public class ChartService implements InterChartService {
 	public void updaterstatus(String ruid) {
 		dao.updaterstatus(ruid);
 
-	}
+	}*/
 
 	// 병원페이지에서 처방전 내용 불러오기
 	@Override
@@ -142,15 +179,19 @@ public class ChartService implements InterChartService {
 	@Override
 	public int Updatechart(HashMap<String, String> map) {
 		int n = dao.Updatechart(map);
+		
+		if (n== 1) {
+			 n = dao.Updatepre(map);// 병원페이지에서 차트 수정시 처방전 수정
+		}
 		return n;
 	}
 
-	// 병원페이지에서 차트 수정시 처방전 수정
+/*	// 병원페이지에서 차트 수정시 처방전 수정
 	@Override
 	public int updatepre(HashMap<String, String> map) {
 		int n = dao.Updatepre(map);
 		return n;
-	}
+	}*/
 
 	// 병원 차트페이지에서 처방전 부분
 	@Override
@@ -193,5 +234,14 @@ public class ChartService implements InterChartService {
 		List<HashMap<String, String>> pmaplist = dao.getPmapListbyidx(idx);
 		return pmaplist;
 	}
+
+	@Override
+	public int selectrtype(String ruid) {
+		int rtype =dao.selectrtype(ruid);
+		return rtype;
+	}
+
+
+
 
 }
