@@ -1,5 +1,6 @@
 package com.final2.petopia.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -140,26 +141,37 @@ public class ChartDAO implements InterChartDAO {
 		String cuid = sqlsession.selectOne("chart.getChartuidbyruid", ruid);
 		return cuid;
 	}
-
+///////////////////////////////////////////////////////////////////////////////////////
 	// 0131병원페이지에서 차트 수정하기
 	@Override
-	public int Updatechart(HashMap<String, String> map) {
+	public int Updatechart(HashMap<String, String> map,ChartVO cvo) {
 		int n = sqlsession.update("chart.Updatechart", map);
 		return n;
 	}
 
 	// 0131병원페이지에서 차트 수정시 처방전 수정
 	@Override
-	public int Updatepre(HashMap<String, String> map) {
-		int n = sqlsession.update("chart.Updatepre", map);
-		return n;
+	public int Updatepre(HashMap<String, String> map,List<HashMap<String, String>> plist) {
+		int result =0;
+		for (HashMap<String, String> pmap : plist) {
+			
+			int n = sqlsession.update("chart.Updatepre",pmap);
+			
+			if (n == 0) {
+				result = 0;
+			} else {
+				result = 1;
+			}
+		}
+		return result;
+		
 	}
-
+//////////////////////////////////////////////////////////////////////
 	// 병원 차트페이지에서 처방전 부분
 	@Override
 	public List<HashMap<String, String>> selectPre(HashMap<String, String> map) {
-		List<HashMap<String, String>> pmap2list = sqlsession.selectList("chart.selectPre", map);
-		return pmap2list;
+		List<HashMap<String, String>> plist = sqlsession.selectList("chart.selectPre", map);
+		return plist;
 	}
 
 	// 0201 캘린더에 넣을 정보 리스트 가벼오기
@@ -185,8 +197,8 @@ public class ChartDAO implements InterChartDAO {
 
 	// 0202 가장 작은 petuid를 가진 동물의 정보 가져오기
 	@Override
-	public HashMap<String, String> getPinfobyminpuid(int minpuid) {
-		HashMap<String, String> minpinfo = sqlsession.selectOne("chart.getPinfobyminpuid", minpuid);
+	public HashMap<String, Object> getPinfobyminpuid(int minpuid) {
+		HashMap<String, Object> minpinfo = sqlsession.selectOne("chart.getPinfobyminpuid", minpuid);
 		return minpinfo;
 	}
 
@@ -208,6 +220,26 @@ public class ChartDAO implements InterChartDAO {
 	public HashMap<String, String> selectReserverInfoNopay(String ruid) {
 		HashMap<String, String> chartmap = sqlsession.selectOne("chart.selectReserverInfoNopay",ruid);
 		return chartmap;
+	}
+
+	//0208 결제정보가 없는 차트 인서트 
+	@Override
+	public int insertChartNopay(ChartVO cvo) {
+		int n = sqlsession.insert("chart.insertChartNopay", cvo);
+		return n;
+	}
+	//0209 결제 정보가 없는 차트 불러오기 
+	@Override
+	public HashMap<String, String> selectChartNopay(HashMap<String, String> map) {
+		HashMap<String, String> cmap = sqlsession.selectOne("chart.selectChartNopay",map);
+		return cmap;
+	}
+
+	//0209 펫이미지 버튼 클릭시 보여질 정보 
+	@Override
+	public HashMap<String, Object> getPinfo(String puid) {
+		HashMap<String, Object> pinfo =sqlsession.selectOne("chart.getPinfo", puid);
+		return pinfo;
 	}
 
 }

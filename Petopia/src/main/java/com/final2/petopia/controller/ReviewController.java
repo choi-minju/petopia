@@ -477,10 +477,7 @@ public class ReviewController {
 		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
 		paraMap.put("REVIEW_UID", review_UID);
 		
-		// 전체 갯수 알아오기 -> 페이징 처리를 위한
-		int totalCnt = service.selectReviewCommentsTotalCount(paraMap);
-		
-		req.setAttribute("totalCnt", totalCnt);
+		// === 2019.02.08 ==== 내용 삭제 //
 		// === 2019.02.06 ==== //
 		
 		return "review/reviewDetail.tiles2";
@@ -816,16 +813,16 @@ public class ReviewController {
 	// === 2019.02.05 ==== //
 	
 	// === 2019.02.06 ==== //
+	// === 2019.02.08 ==== 수정 //
 	// 페이지바를 만들기 위한 페이지 갯수 알아오기
-	@RequestMapping(value="/selectReviewCommentsTotalPage.pet", method={RequestMethod.GET})
+	@RequestMapping(value="/selectReviewCommentsTotalCnt.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public int selectReviewCommentsTotalPage(HttpServletRequest req) {
-		int totalPage = 0;
+	public int selectReviewCommentsTotalCnt(HttpServletRequest req) {
+		int totalCnt = 0;
 		
 		String str_review_uid = req.getParameter("review_uid");
 		
 		int review_uid = 0;
-		int sizePerPage = 10;
 		
 		// review_uid
 		if(str_review_uid == null || "".equals(str_review_uid)) {
@@ -842,14 +839,11 @@ public class ReviewController {
 		paraMap.put("REVIEW_UID", review_uid);
 		
 		// 전체 갯수 알아오기 -> 페이징 처리를 위한
-		int totalCnt = service.selectReviewCommentsTotalCount(paraMap);
+		totalCnt = service.selectReviewCommentsTotalCount(paraMap);
 		
-		// 총페이지
-		totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
-		
-		return totalPage;
-	} // end of public int selectReviewCommentsTotalPage(HttpServletRequest req)
-	
+		return totalCnt;
+	} // end of public int selectReviewCommentsTotalCnt(HttpServletRequest req)
+	// === 2019.02.08 ==== 수정 //
 	// === 2019.02.06 ==== //
 	
 	// === 2019.02.07 ==== //
@@ -1186,4 +1180,278 @@ public class ReviewController {
 		return "review/bizReviewDetail.tiles2";
 	} // end of public String valuebizReviewDetail(HttpServletRequest req, HttpServletResponse res)
 	// === 2019.02.07 ==== //
+	
+	// === 2019.02.08 ==== //
+	// *** 총관리자 페이지 *** //
+	// *** 모든 리뷰 보기 *** //
+	// 리뷰 페이지 보기
+	@RequestMapping(value="/adminReviewList.pet", method={RequestMethod.GET})
+	public String requireLoginAdmin_adminReviewList(HttpServletRequest req, HttpServletResponse res) {
+		
+		return "admin/review/adminReviewList.tiles2";
+	} // end of 
+	
+	// 리뷰 목록 불러오기
+	@RequestMapping(value="/selectAdminReviewList.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, String>> requireLoginAdmin_selectAdminReviewList(HttpServletRequest req, HttpServletResponse res) {
+		List<HashMap<String, String>> reviewList = null;
+		
+		String str_currentPageNo = req.getParameter("currentPageNo");
+		String str_period = req.getParameter("period");
+		String searchWhat = req.getParameter("searchWhat");
+		String search = req.getParameter("search");
+		
+		int sizePerPage = 10; // 한 페이지당 갯수
+		int totalCnt = 0;
+		
+		int currentPageNo = 0;
+		int period = 0;
+		
+		// 기간
+		if(str_period == null || "".equals(str_period)) {
+			str_period = "0";
+		}
+		
+		try {
+			period = Integer.parseInt(str_period);
+			
+			if(period != 0 && period != 1 && period != 3 && period != 6) { 
+				period = 0;
+			}
+		} catch (NumberFormatException e) {
+			period = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("PERIOD", String.valueOf(period));
+		paraMap.put("SEARCHWHAT", searchWhat);
+		paraMap.put("SEARCH", search);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		if(period == 0) {
+			// 기간이 없는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				totalCnt = service.selectAllTotalCountByAdmin(paraMap);
+			} else {
+				// 검색이 있는 경우
+				totalCnt = service.selectAllTotalCountByAdminSearch(paraMap);
+			}// end of if~else
+		} else {
+			// 기간이 있는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				totalCnt = service.selectAllTotalCountByAdminPeriod(paraMap);
+			} else {
+				// 검색이 있는 경우
+				totalCnt = service.selectAllTotalCountByAdminPeriodSearch(paraMap);
+			}// end of if~else
+		} // end of if~else
+		
+		// 총페이지
+		int totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		// 페이지번호 
+		if(str_currentPageNo == null || "".equals(str_currentPageNo)) {
+			str_currentPageNo = "1";
+		}
+		
+		try {
+			currentPageNo = Integer.parseInt(str_currentPageNo);
+			
+			if(currentPageNo < 1 || currentPageNo > totalPage) {
+				currentPageNo = 1;
+			}
+		} catch (NumberFormatException e) {
+			currentPageNo = 1;
+		}
+		
+		int startRno = ((currentPageNo-1) * sizePerPage) + 1;
+		int endRno = (currentPageNo * sizePerPage);
+		
+		paraMap.put("STARTRNO", String.valueOf(startRno));
+		paraMap.put("ENDRNO", String.valueOf(endRno));
+		
+		if(period == 0) {
+			// 기간이 없는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				reviewList = service.selectReviewListByAdmin(paraMap);
+			} else {
+				// 검색이 있는 경우
+				reviewList = service.selectReviewListByAdminSearch(paraMap);
+			}// end of if~else
+		} else {
+			// 기간이 있는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				reviewList = service.selectReviewListByAdminPeriod(paraMap);
+			} else {
+				// 검색이 있는 경우
+				reviewList = service.selectReviewListByAdminPeriodSearch(paraMap);
+			}// end of if~else
+		} // end of if~else
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> requireLoginAdmin_selectAdminReviewList(HttpServletRequest req, HttpServletResponse res)
+	
+	@RequestMapping(value="/selectAdminReviewListTotalPage.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int requireLoginAdmin_selectAdminReviewListTotalPage(HttpServletRequest req, HttpServletResponse res) {
+		int totalPage = 0;
+		
+		String str_period = req.getParameter("period");
+		String searchWhat = req.getParameter("searchWhat");
+		String search = req.getParameter("search");
+		String idx = req.getParameter("idx");
+		
+		int sizePerPage = 10; // 한 페이지당 갯수
+		int totalCnt = 0;
+		
+		int period = 0;
+		
+		// 기간
+		if(str_period == null || "".equals(str_period)) {
+			str_period = "0";
+		}
+		
+		try {
+			period = Integer.parseInt(str_period);
+			
+			if(period != 0 && period != 1 && period != 3 && period != 6) { 
+				period = 0;
+			}
+		} catch (NumberFormatException e) {
+			period = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("PERIOD", String.valueOf(period));
+		paraMap.put("SEARCHWHAT", searchWhat);
+		paraMap.put("SEARCH", search);
+		paraMap.put("IDX", idx);
+		
+		// 전체 갯수 알아오기 -> 페이징 처리를 위한
+		if(period == 0) {
+			// 기간이 없는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				totalCnt = service.selectAllTotalCountByAdmin(paraMap);
+			} else {
+				// 검색이 있는 경우
+				totalCnt = service.selectAllTotalCountByAdminSearch(paraMap);
+			}// end of if~else
+		} else {
+			// 기간이 있는 경우
+			if(searchWhat == null || "".equals(searchWhat) || search == null || "".equals(search)) {
+				// 검색이 없는 경우
+				totalCnt = service.selectAllTotalCountByAdminPeriod(paraMap);
+			} else {
+				// 검색이 있는 경우
+				totalCnt = service.selectAllTotalCountByAdminPeriodSearch(paraMap);
+			}// end of if~else
+		} // end of if~else
+		
+		// 총페이지
+		totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		return totalPage;
+	} // end of public int requireLoginAdmin_selectAdminReviewListTotalPage(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 블라인드 처리 *** //
+	// 리뷰 블라인드 처리
+	@RequestMapping(value="/updateReviewBlindStatusByReview_uid.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLoginAdmin_updateReviewBlindStatusByReview_uid(HttpServletRequest req, HttpServletResponse res) {
+		int result = 0;
+		
+		String str_review_uid = req.getParameter("review_uid");
+		String str_rv_blind = req.getParameter("rv_blind");
+		
+		int review_uid = 0;
+		int rv_blind = 0;
+		
+		// review_uid
+		if(str_review_uid == null || "".equals(str_review_uid)) {
+			str_review_uid = "0";
+		}
+		
+		try {
+			review_uid = Integer.parseInt(str_review_uid);
+		} catch (NumberFormatException e) {
+			review_uid = 0;
+		} // end of try~catch
+		
+		// rv_blind
+		if(str_rv_blind == null || "".equals(str_rv_blind)) {
+			str_rv_blind = "0";
+		}
+		
+		try {
+			rv_blind = Integer.parseInt(str_rv_blind);
+		} catch (NumberFormatException e) {
+			rv_blind = 0;
+		}
+		// 블라인드 처리
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("REVIEW_UID", review_uid);
+		paraMap.put("RV_BLIND", rv_blind);
+		
+		result = service.updateReviewBlindStatusByReview_uid(paraMap);
+		
+		return result;
+	} // end of public int requireLoginAdmin_updateReviewBlindStatusByReview_uid(HttpServletRequest req, HttpServletResponse res)
+	
+	// 리뷰 블라인드 처리 취소
+	@RequestMapping(value="/updateReviewBlindCancleByReview_uid.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLoginAdmin_updateReviewBlindCancleByReview_uid(HttpServletRequest req, HttpServletResponse res) {
+		int result = 0;
+		
+		String str_review_uid = req.getParameter("review_uid");
+		
+		int review_uid = 0;
+		
+		// review_uid
+		if(str_review_uid == null || "".equals(str_review_uid)) {
+			str_review_uid = "0";
+		}
+		
+		try {
+			review_uid = Integer.parseInt(str_review_uid);
+		} catch (NumberFormatException e) {
+			review_uid = 0;
+		} // end of try~catch
+		
+		// 블라인드 처리 취소
+		result = service.updateReviewBlindCancleByReview_uid(review_uid);
+		
+		return result;
+	} // end of public int requireLoginAdmin_updateReviewBlindCancleByReview_uid(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 기업 회원 리뷰 디테일 *** //
+	@RequestMapping(value="/adminReviewDetail.pet", method={RequestMethod.GET})
+	public String requireLoginAdmin_adminReviewDetail(HttpServletRequest req, HttpServletResponse res) {
+		String str_review_UID = req.getParameter("review_UID");
+		
+		int review_UID = 0;
+		
+		if(str_review_UID == null || "".equals(str_review_UID)) {
+			str_review_UID = "0";
+		}
+		
+		try {
+			review_UID = Integer.parseInt(str_review_UID);
+		} catch (NumberFormatException e) {
+			review_UID = 0;
+		} // end of try~catch
+		
+		HashMap<String, String> reviewMap = service.selectReviewByAdminReview_UID(review_UID);
+		
+		req.setAttribute("reviewMap", reviewMap);
+		
+		return "admin/review/adminReviewDetail.tiles2";
+	} // end of public String requireLoginAdmin_adminReviewDetail(HttpServletRequest req, HttpServletResponse res)
+	// === 2019.02.08 ==== //
 }
