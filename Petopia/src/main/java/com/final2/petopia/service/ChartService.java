@@ -21,8 +21,8 @@ public class ChartService implements InterChartService {
 
 	// 마이페이지에서 처방전 입력하기
 	@Override
-	public int insertmychart(HashMap<String, String> mychartmap) {
-		int n = dao.insertmychart(mychartmap);
+	public int insertmychart(HashMap<String, String> map) {
+		int n = dao.insertmychart(map);
 		return n;
 	}
 
@@ -103,7 +103,7 @@ public class ChartService implements InterChartService {
 		}
 		
 		if (n1 ==1) { // 차트 인서트에 성공하면 
-			System.out.println("mlist: "+mlist);
+			
 			n2 = dao.insertPre(mlist); //처방전에 인서트하기 
 			
 		   if(n2==1) {
@@ -117,25 +117,23 @@ public class ChartService implements InterChartService {
 		return result;
 	}
 
-/*	// 0128 0130 병원페이지에서 처방전 인서트하기
-	@Override
-	public int insertPre(List<HashMap<String, String>> mlist) {
-		int n = dao.insertPre(mlist);
-		return n;
-	}
 
-	// 처방전인서트 성공하면 예약스테이터스 변경하기
-	@Override
-	public void updaterstatus(String ruid) {
-		dao.updaterstatus(ruid);
-
-	}*/
-
-	// 병원페이지에서 처방전 내용 불러오기
+	// 병원페이지에서 처방전 내용 불러오기 0209 결제 정보 유무로 나누기 
 	@Override
 	public HashMap<String, String> selectChart(HashMap<String, String> map) {
-		HashMap<String, String> cmap = dao.selectChart(map);
-
+		
+		HashMap<String, String> cmap =null;
+		String ruid=map.get("ruid");
+		
+		int reservation_type =dao.selectrtype(ruid);
+		
+		if (reservation_type ==3) { //결제정보가 있으면 수술
+			 cmap = dao.selectChart(map);
+			 
+		}else if(reservation_type !=3) { //결제 정보가 없으면 
+			 cmap=dao.selectChartNopay(map);
+			 
+		}
 		return cmap;
 	}
 
@@ -177,21 +175,29 @@ public class ChartService implements InterChartService {
 
 	// 0131병원페이지에서 차트 수정하기
 	@Override
-	public int Updatechart(HashMap<String, String> map) {
-		int n = dao.Updatechart(map);
+	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public int Updatechart(HashMap<String, String> map,ChartVO cvo,List<HashMap<String, String>> plist) {
 		
-		if (n== 1) {
-			 n = dao.Updatepre(map);// 병원페이지에서 차트 수정시 처방전 수정
+		int n1 = dao.Updatechart(map,cvo);
+		
+		int result =0;
+		 int n2=0;
+		if (n1== 1) {
+			 n2 = dao.Updatepre(map,plist);// 병원페이지에서 차트 수정시 처방전 수정
+			
 		}
-		return n;
+		if (n1*n2==1) {
+			result=1;
+		}
+		return result;
 	}
 
-/*	// 병원페이지에서 차트 수정시 처방전 수정
+/*   // 병원페이지에서 차트 수정시 처방전 수정
 	@Override
 	public int updatepre(HashMap<String, String> map) {
 		int n = dao.Updatepre(map);
 		return n;
-	}*/
+	} */
 
 	// 병원 차트페이지에서 처방전 부분
 	@Override
@@ -223,8 +229,8 @@ public class ChartService implements InterChartService {
 
 	// 0202 가장 작은 petuid를 가진 동물의 정보 가져오기
 	@Override
-	public HashMap<String, String> getPinfobyminpuid(int minpuid) {
-		HashMap<String, String> minpinfo = dao.getPinfobyminpuid(minpuid);
+	public HashMap<String, Object> getPinfobyminpuid(int minpuid) {
+		HashMap<String, Object> minpinfo = dao.getPinfobyminpuid(minpuid);
 		return minpinfo;
 	}
 
@@ -239,6 +245,42 @@ public class ChartService implements InterChartService {
 	public int selectrtype(String ruid) {
 		int rtype =dao.selectrtype(ruid);
 		return rtype;
+	}
+
+	//0209 펫이미지 클릭시 보여질 정보
+	@Override
+	public HashMap<String, Object> getPinfo(String puid) {
+		HashMap<String, Object> piinfo = dao.getPinfo(puid);
+		
+		return piinfo;
+	}
+
+	//0210 마이페이지에서 진료관리 클릭시 보여지는 병원 방문 날짜 리스트 가져오기 
+	@Override
+	public List<HashMap<String,String>> getmyreservedaylist(HashMap<String, Object> paramap) {
+		List<HashMap<String,String>> reservedaylist = dao.getmyreservedaylist(paramap);
+		return reservedaylist;
+	}
+
+	//0210 가장 작은예약번호 알아오기 (마이페이지 진료관리 처방전 입력에 필요 )
+	@Override
+	public String getminRuid(HashMap<String, Object> paramap) {
+		String minRuid = dao.getminRuid(paramap);
+		return minRuid;
+	}
+
+	//0210 마이페이지에서 잔료관리 클릭시  보여지는 처방전  인서트 창에 불러올 기본 정보 
+	@Override
+	public HashMap<String, Object> getmyPreinfo(HashMap<String, Object> paramap2) {
+		HashMap<String, Object> myPreinfo = dao.getmyPreinfo(paramap2);
+		return myPreinfo;
+	}
+
+	//0210 마이페이지 진료관리에서 처방전 인서트할때 필요한 차트 유아이디 
+	@Override
+	public String getcuid(String minruid) {
+	  String cuid=dao.getcuid(minruid);
+		return cuid;
 	}
 
 
