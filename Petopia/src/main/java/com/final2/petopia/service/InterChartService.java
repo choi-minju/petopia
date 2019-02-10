@@ -8,7 +8,8 @@ import com.final2.petopia.model.ReservationVO;
 
 public interface InterChartService {
 
-	int insertmychart(HashMap<String, String> mychartmap);
+	//0210 해시맵 수정
+	int insertmychart(HashMap<String, String> map);
 
 	ChartVO selectchartinfo(int idx); // 차트 인포 불러오기
 
@@ -70,6 +71,18 @@ public interface InterChartService {
 
 	//0209 펫이미지 클릭시 보여질 정보 
 	HashMap<String, Object> getPinfo(String puid);
+
+	//0210 마이페이지에서 진료관리 클릭시 보여지는 병원 방문 리스트 가져오기 
+	List<HashMap<String,String>> getmyreservedaylist(HashMap<String, Object> paramap);
+
+	//0210 가장 작은예약번호 알아오기 (마이페이지 진료관리 처방전 입력에 필요 )
+	String getminRuid(HashMap<String, Object> paramap);
+
+	//0210 마이페이지에서 잔료관리 클릭시  보여지는 처방전  인서트 창에 불러올 기본 정보 
+	HashMap<String, Object> getmyPreinfo(HashMap<String, Object> paramap2);
+
+	//0210 마이페이지 진료관리에서 처방전 인서트할때 필요한 차트 유아이디 
+	String getcuid(String minruid);
 
 	
 

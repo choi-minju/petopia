@@ -74,8 +74,28 @@ public class ChartController {
 			HashMap<String, Object> minpinfo = new HashMap<String, Object>();
 			minpinfo = service.getPinfobyminpuid(minpuid);
              
-			System.out.println("pmaplist: "+pmaplist);
-
+			//0210 마이페이지에서 진료 관리 클릭시 가장 먼저 보여지는 처방전의 날짜 리스트 (minpuid 기준 )
+			HashMap<String,Object> paramap= new HashMap<String,Object>();
+			paramap.put("idx", idx);
+			paramap.put("minpuid", minpuid);
+			
+			List<HashMap<String,String>> myreservedaylist = new ArrayList<HashMap<String,String>>();
+			myreservedaylist =service.getmyreservedaylist(paramap);
+			
+			//0210  마이페이지에서 진료 관리 클릭시 가장 먼저 보여지는 처방전의 정보(결제 정보포함) minpuid기준으로 가져오기 
+			String minruid=service.getminRuid(paramap); //가장 작은 예약번호 알아오기 
+			
+			HashMap<String,Object> paramap2= new HashMap<String,Object>();
+			paramap2.put("minruid",minruid);
+			paramap2.put("idx",idx);
+			paramap2.put("minpuid",minpuid);
+			
+			HashMap<String,Object> mypreinfo =new HashMap<String,Object>();
+			mypreinfo = service.getmyPreinfo(paramap2);//마이페이지 처방전에서 보여지는 정보 
+			
+			
+			req.setAttribute("mypreinfo", mypreinfo);
+			req.setAttribute("myreservedaylist", myreservedaylist);
 			req.setAttribute("minpinfo", minpinfo);
 			req.setAttribute("minpuid", minpuid);
 			req.setAttribute("pmaplist", pmaplist);
@@ -95,11 +115,9 @@ public class ChartController {
 		int idx = loginuser.getIdx();
 
 		String puid = req.getParameter("fk_pet_uid");
-		System.out.println("puid1: "+puid);
+		
 		HashMap<String,Object> pinfo = service.getPinfo(puid);
-			System.out.println("puid2: "+puid);
-			System.out.println("pinfo : "+pinfo.get("pet_gender"));
-			System.out.println("pinfo: "+ pinfo);
+		
 		return pinfo;
 	
 	} // 진료 내역 인서트 (마이 페이지에서)
@@ -117,37 +135,80 @@ public class ChartController {
 
 		return callist;
 	} //
-
+	
+	//0210 마이페이지 - 진료관리에서 일반회원이 처방전 입력하기 
 	@RequestMapping(value = "/InsertMyChartEnd.pet", method = { RequestMethod.POST })
-	public int InsertMyChartEnd(ChartVO cvo, HttpServletRequest req) {
+	public String InsertMyChartEnd(HttpServletRequest req) {
 
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-
+		
 		int idx = loginuser.getIdx();
+		int minpuid = service.getMinpuidbyidx(idx);
 
-		// 처방전 테이블에 인서트 !!!!!1
-
-		String mname = req.getParameter("mname"); // 약이름
-		String caution = req.getParameter("caution"); // 주의사항
-		String memo = req.getParameter("memo"); // 내용
-		String name = req.getParameter("name");// 등록자 이름
-		String mtimes = req.getParameter("mtimes");// 복용횟수
-		String ms = req.getParameter("ms");// 복용량
-		HashMap<String, String> mychartmap = new HashMap<String, String>();
-
-		mychartmap.put("MNAME", mname);
-		mychartmap.put("CAUTION", caution);
-		mychartmap.put("MEMO", memo);
-		mychartmap.put("NAME", name);
-		mychartmap.put("MTIMES", mtimes);
-		mychartmap.put("MS", ms);
-		int n = service.insertmychart(mychartmap);
-
-		return n;
+		HashMap<String,Object> paramap= new HashMap<String,Object>();
+		paramap.put("idx", idx);
+		paramap.put("minpuid", minpuid);
+		
+		String minruid=service.getminRuid(paramap);
+		
+		String cuid=service.getcuid(minruid);
+		String rx_name= req.getParameter("rx_name");
+		String dose_number= req.getParameter("dose_number");
+		String dosage= req.getParameter("dosage");
+		String rx_cautions=req.getParameter("rx_cautions");
+		String rx_notice=req.getParameter("rx_notice");
+		String rx_regname=req.getParameter("rx_regname");
+		
+		HashMap<String,String> map= new HashMap<String,String>();
+		map.put("idx",String.valueOf(idx));
+		map.put("cuid",cuid);
+		map.put("rx_name",rx_name);
+		map.put("dose_number",dose_number);
+		map.put("dosage",dosage);
+		map.put("rx_cautions",rx_cautions);
+		map.put("rx_notice",rx_notice);
+		map.put("rx_regname",rx_regname);
+		
+		
+	    System.out.println("rx_name: "+rx_name);
+	    
+	    System.out.println("dosage: "+dosage);
+	    System.out.println("cuid : "+cuid);
+	    System.out.println("idx : "+idx);
+		int n = service.insertmychart(map); //개인사용자가 마이페이지에서 처방전 입력하기
+		
+		String msg = "";
+		String loc = "";
+		
+		if(n==1) {
+			msg="처방전 등록 성공";
+			loc="javascript:history.back();";
+		}else {
+			msg="처방전 등록 실패";
+			loc="javascript:history.back();";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
 
 	} // 진료 내역 인서트 (마이 페이지에서)
-
+	
+	//0210 마이페이지 진료관리에서 처방전 셀렉트 하기 
+	@RequestMapping(value = "/insertMyPrescription.pet", method = { RequestMethod.GET })
+	@ResponseBody
+	public List<HashMap<String, String>> selectmychart(HttpServletRequest req) {
+	
+		List<HashMap<String, String>> selectmychartlist= new ArrayList<HashMap<String,String>>();
+		
+		
+		return selectmychartlist;
+	
+	}
+	
+	
 	// 01.24 0130 0131 병원 회원 페이지에서 인서트 창띄우기
 	@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
 	public String requireLoginBiz_InsertChart(HttpServletRequest req, HttpServletResponse res) {
