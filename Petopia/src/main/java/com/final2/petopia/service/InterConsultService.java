@@ -44,7 +44,7 @@ public interface InterConsultService {
 
 	// 댓글 [consult_comment] ---------------------------------------------------------------------
 	
-	// [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1update
+	// [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1update + [notification] 댓글작성 알림 insert
 	int insertComment(ConsultCommentVO commentvo) throws Throwable;
 
 	// 대댓글 쓰기

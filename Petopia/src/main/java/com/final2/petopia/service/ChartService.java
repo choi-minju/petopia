@@ -66,10 +66,10 @@ public class ChartService implements InterChartService {
 		HashMap<String, String> chartmap =null;
 		int reservation_type =dao.selectrtype(ruid);
 		
-		if(reservation_type != 3) { //결제 정보가 없을때 
-			 chartmap=dao.selectReserverInfoNopay(ruid);
-		}else if(reservation_type == 3) { //결제정보가 있을때 
-			 chartmap = dao.selectReserverInfo(ruid);
+		if(reservation_type == 3) { //결제 정보가 있을때 (수술)
+			chartmap = dao.selectReserverInfo(ruid);
+		}else if(reservation_type != 3) { //결제정보가 없을때  (수술 이외 )
+			chartmap=dao.selectReserverInfoNopay(ruid);
 		}
 		return chartmap;
 	}
@@ -82,47 +82,58 @@ public class ChartService implements InterChartService {
 		return doclist;
 	}
 
-	// 병원페이지에서 차트내용 인서트하기 0126  0207
+	// 병원페이지에서 차트내용 인서트하기 0126  0207 0208
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
 	public int insertChart(ChartVO cvo, List<HashMap<String, String>> mlist,HashMap<String, String> map) throws Throwable {
-
-		int n1 =0 ;
+   
+		int n1 =0;
 		int n2=0;
 		int result =0; 
-		n1 = dao.insertChart(cvo);
+		System.out.println("mlist s: "+mlist);
+		String ruid =map.get("ruid");
+		
+		int reservation_type =dao.selectrtype(ruid);
+		
+		if(reservation_type ==3) {//결제정보가 있는 경우에 인서트
+			n1 = dao.insertChart(cvo);	
+			
+		}else if(reservation_type !=3) { //결제정보가 없는 경우에 인서트 
+			n1=dao.insertChartNopay(cvo);
+		}
+		
 		if (n1 ==1) { // 차트 인서트에 성공하면 
 			
 			n2 = dao.insertPre(mlist); //처방전에 인서트하기 
 			
 		   if(n2==1) {
-			   String ruid = map.get("ruid");
-			   dao.updaterstatus(ruid);
+			   dao.updaterstatus(ruid); //스테이터스 변경하기 
 			}
 		}
 		
+		if(n1*n2 ==1) {
+			result=1;
+		}
 		return result;
 	}
 
-/*	// 0128 0130 병원페이지에서 처방전 인서트하기
-	@Override
-	public int insertPre(List<HashMap<String, String>> mlist) {
-		int n = dao.insertPre(mlist);
-		return n;
-	}
 
-	// 처방전인서트 성공하면 예약스테이터스 변경하기
-	@Override
-	public void updaterstatus(String ruid) {
-		dao.updaterstatus(ruid);
-
-	}*/
-
-	// 병원페이지에서 처방전 내용 불러오기
+	// 병원페이지에서 처방전 내용 불러오기 0209 결제 정보 유무로 나누기 
 	@Override
 	public HashMap<String, String> selectChart(HashMap<String, String> map) {
-		HashMap<String, String> cmap = dao.selectChart(map);
-
+		
+		HashMap<String, String> cmap =null;
+		String ruid=map.get("ruid");
+		
+		int reservation_type =dao.selectrtype(ruid);
+		
+		if (reservation_type ==3) { //결제정보가 있으면 수술
+			 cmap = dao.selectChart(map);
+			 
+		}else if(reservation_type !=3) { //결제 정보가 없으면 
+			 cmap=dao.selectChartNopay(map);
+			 
+		}
 		return cmap;
 	}
 
@@ -164,17 +175,29 @@ public class ChartService implements InterChartService {
 
 	// 0131병원페이지에서 차트 수정하기
 	@Override
-	public int Updatechart(HashMap<String, String> map) {
-		int n = dao.Updatechart(map);
-		return n;
+	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public int Updatechart(HashMap<String, String> map,ChartVO cvo,List<HashMap<String, String>> plist) {
+		
+		int n1 = dao.Updatechart(map,cvo);
+		
+		int result =0;
+		 int n2=0;
+		if (n1== 1) {
+			 n2 = dao.Updatepre(map,plist);// 병원페이지에서 차트 수정시 처방전 수정
+			
+		}
+		if (n1*n2==1) {
+			result=1;
+		}
+		return result;
 	}
 
-	// 병원페이지에서 차트 수정시 처방전 수정
+/*   // 병원페이지에서 차트 수정시 처방전 수정
 	@Override
 	public int updatepre(HashMap<String, String> map) {
 		int n = dao.Updatepre(map);
 		return n;
-	}
+	} */
 
 	// 병원 차트페이지에서 처방전 부분
 	@Override
@@ -206,8 +229,8 @@ public class ChartService implements InterChartService {
 
 	// 0202 가장 작은 petuid를 가진 동물의 정보 가져오기
 	@Override
-	public HashMap<String, String> getPinfobyminpuid(int minpuid) {
-		HashMap<String, String> minpinfo = dao.getPinfobyminpuid(minpuid);
+	public HashMap<String, Object> getPinfobyminpuid(int minpuid) {
+		HashMap<String, Object> minpinfo = dao.getPinfobyminpuid(minpuid);
 		return minpinfo;
 	}
 
@@ -217,6 +240,21 @@ public class ChartService implements InterChartService {
 		List<HashMap<String, String>> pmaplist = dao.getPmapListbyidx(idx);
 		return pmaplist;
 	}
+
+	@Override
+	public int selectrtype(String ruid) {
+		int rtype =dao.selectrtype(ruid);
+		return rtype;
+	}
+
+	//0209 펫이미지 클릭시 보여질 정보
+	@Override
+	public HashMap<String, Object> getPinfo(String puid) {
+		HashMap<String, Object> piinfo = dao.getPinfo(puid);
+		
+		return piinfo;
+	}
+
 
 
 

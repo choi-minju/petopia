@@ -97,13 +97,17 @@
 <script type="text/javascript" src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js" charset="utf-8"></script>
 
 <script type="text/javascript">
+	
 	$(document).ready(function(){
 		
+		// 로그인 시(관리자가 아닐 경우) 알림 아이콘 생성
 		if(${sessionScope.loginuser != null && sessionScope.loginuser.userid != 'admin@naver.com'}){
 			loopShowNotificationCount();
-		}
+		} // if
 		
+		// 알림 아이콘 호버 -> 심플 알림창 생성
 		$(".notdropbtn").hover(function(){
+			
 			$.ajax({
 				url:"<%=ctxPath%>/notificationSimpleList.pet", 
 				type:"GET",
@@ -129,8 +133,10 @@
 				error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				}
-			});
+			}); // $.ajax({
+			
 		}); // $(".notdropbtn").hover(function(){
+		
 	}); // $(document).ready(function(){
 	
 	function logOut(){ 
@@ -166,8 +172,8 @@
 			error: function(request, status, error){
 			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
-		});
-	}
+		}); // $.ajax({
+	} // function showNotificationCount(){
 	
 	function loopShowNotificationCount(){ // 매초마다 안읽은 알림 갯수 갱신
 				
@@ -179,7 +185,7 @@
 			loopShowNotificationCount();	
 			}, timeCycle);
 
-	}
+	} // function loopShowNotificationCount(){
 	
 </script>
 
@@ -351,7 +357,7 @@
 						<div class="column" id="adminBoard">
 							<a href="#">공지사항</a>
 							<a href="#">이벤트</a>
-							<a href="<%= ctxPath %>/allReviewList.pet">전체리뷰</a>
+							<a href="<%= ctxPath %>/adminReviewList.pet">전체리뷰</a>
 							<a href="#">자유게시판</a>
 						</div>
 					</div>

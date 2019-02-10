@@ -63,7 +63,7 @@ color:rgb(252, 118, 106);
   <table class="table" style="text-align: center;width:80%;margin: 0 auto;" >
     <thead>
       <tr>
-        <th style="text-align: center;">코드</th>
+        <th style="text-align: center;">담당의</th>
         <th style="text-align: center;">명칭</th>
         <th style="text-align: center;">수술</th>
         <th style="text-align: center;">투약</th>

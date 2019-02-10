@@ -201,7 +201,7 @@ public class ReservationController {
 		String loc="";
 		String msg = "";
 		String result = resultMap.get("result");
-		System.out.println(result);
+		
 		if(result.equals("1")) {
 			msg = "선예약 성공! 예치금 결제 페이지로 이동합니다.";
 			loc = req.getContextPath()+"/goPayDeposit.pet?fk_reservation_UID="+resultMap.get("seq")+"&fk_idx="+rvo.getFk_idx();
@@ -229,7 +229,7 @@ public class ReservationController {
 
 		if(depositAmount<100000) {
 			req.setAttribute("msg", "예치금 잔액이 부족합니다. 예치금 충전 후 예약목록에서 예치금 결제를 진행하세요.");
-			req.setAttribute("loc", req.getContextPath()+"/chargeDepositCoin.pet?idx="+idx+"&depositAmount="+depositAmount);
+			req.setAttribute("loc", req.getContextPath()+"/chargeDeposit.pet?idx="+idx);	// 190207 depositcoin 삭제, Coin 삭제
 			return "msg";
 		}
 		else {
@@ -333,7 +333,7 @@ public class ReservationController {
 		
 //		#currentURL 뷰로 보내기
 		String currentURL = MyUtil.getCurrentURL(req);
-		System.out.println(currentURL);
+		
 		if(currentURL.substring(currentURL.length()-5).equals("?null")) {
 			currentURL = currentURL.substring(0 , currentURL.length()-5);
 		}
@@ -357,12 +357,11 @@ public class ReservationController {
 //	[190126] 예치금 히스토리 목록
 	@RequestMapping(value="/depositHistory.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public List<HashMap<String, Object>> depositHistory(HttpServletRequest req, HttpServletResponse res) {
+	public List<HashMap<String, Object>> requireLogin_depositHistory(HttpServletRequest req, HttpServletResponse res) {
 		List<HashMap<String, Object>> mapList = new ArrayList<HashMap<String, Object>>();
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		int idx = loginuser.getIdx();
-		System.out.println("idx: "+ idx);
 		
 		String currentShowPageNo = req.getParameter("currentShowPageNo");
 		if(currentShowPageNo == null || "".equals(currentShowPageNo)) {
@@ -392,7 +391,7 @@ public class ReservationController {
 			map.put("showDepositStatus", dvo.getShowDepositStatus());
 			map.put("deposit_status", dvo.getDeposit_status());
 			map.put("fk_payment_UID", dvo.getFk_payment_UID()); // [190130] fk_payment_UID 추가
-			System.out.println("dvo.getFk_payment_UID(): "+dvo.getFk_payment_UID());
+			
 			mapList.add(map);
 		}
 		
@@ -401,10 +400,10 @@ public class ReservationController {
 	
 	@RequestMapping(value="/depositHistoryPageBar.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, Integer> depositHistoryPageBar(HttpServletRequest req) {
+	public HashMap<String, Integer> requireLogin_depositHistoryPageBar(HttpServletRequest req, HttpServletResponse res) {
 		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
 		HttpSession session = req.getSession();
-		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser"); 
 		String idx = String.valueOf(loginuser.getIdx());
 		String sizePerPage = req.getParameter("sizePerPage");
 		String type = req.getParameter("type");
@@ -601,7 +600,7 @@ public class ReservationController {
 //	[190130]
 //	#일반회원 예약리스트에서 예약 취소하기
 	@RequestMapping(value="goCancleReservationMember.pet", method={RequestMethod.GET})
-	public String goCancleReservationMember(HttpServletRequest req) {
+	public String requireLogin_goCancleReservationMember(HttpServletRequest req, HttpServletResponse res) {
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		String fk_idx = String.valueOf(loginuser.getIdx());
@@ -646,7 +645,7 @@ public class ReservationController {
 //	#예약 상세 보기
 	@RequestMapping(value="reservationDetail.pet", method={RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, String> reservationDetail(HttpServletRequest req) {	
+	public HashMap<String, String> requireLogin_reservationDetail(HttpServletRequest req, HttpServletResponse res) {	
 		String payment_UID = req.getParameter("payment_UID");
 		
 //		[190131] 세션에서 멤버타입 변수 가져오기
@@ -807,4 +806,118 @@ public class ReservationController {
 		return returnMap;
 	}
 	
+	
+//	[190208]
+//	#예치금 충전하기 chargeDeposit  requireLogin 추가
+	@RequestMapping(value="chargeDeposit.pet", method= {RequestMethod.GET})
+	public String requireLogin_chargeDeposit(HttpServletRequest req, HttpServletResponse res) {
+		
+		String idx = req.getParameter("idx");
+		int depositAmount = service.selectSumDepositByIdx(idx);
+		
+		req.setAttribute("idx", idx);
+		req.setAttribute("depositAmount", depositAmount);
+		
+		return "tiles2/reservation/chargeDeposit";
+	}
+	
+//	#PG결제 연결하기
+	@RequestMapping(value="chargeDepositEnd.pet", method= {RequestMethod.GET})
+	public String requireLogin_chargeDepositEnd(HttpServletRequest req, HttpServletResponse res) {
+		// [190209] name 추가
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		String name = loginuser.getName();
+		String idx = req.getParameter("idx");
+		String deposit_type=req.getParameter("depositType");
+		String depositCoin = req.getParameter("depositCoin");
+		String coinmoney = "";
+		
+		if(depositCoin.equals("100000")) {
+			coinmoney = "100";
+		}
+		else if(depositCoin.equals("200000")) {
+			coinmoney = "200";
+		}
+		else if(depositCoin.equals("300000")) {
+			coinmoney = "300";
+		}
+		else if(depositCoin.equals("400000")) {
+			coinmoney = "400";
+		}
+		else if(depositCoin.equals("500000")) {
+			coinmoney = "500";
+		}
+		
+		if(deposit_type.equals("card")) {	// 카드결제 아임포트로 연결
+			req.setAttribute("idx", idx);
+			req.setAttribute("name", name);
+			req.setAttribute("coinmoney", coinmoney);
+			req.setAttribute("realDeposit", depositCoin);
+			req.setAttribute("depositType", deposit_type);
+			
+			return "tiles2/reservation/paymentGateway";
+		}
+		else if(deposit_type.equals("direct")) { 	// 무통장입금
+			HashMap<String, String> paraMap = new HashMap<String, String>();
+			
+			paraMap.put("fk_idx", idx);
+			paraMap.put("depositcoin", depositCoin);
+			paraMap.put("deposit_status", "0");
+			paraMap.put("deposit_type", "direct");
+			paraMap.put("payment_UID", "0");
+			int n = service.insertChargeDeposit(paraMap);
+			
+			String msg = "";
+			String loc = "";
+			if(n==1) {
+				msg = "무통장입금 신청 성공! 24시간 이내에 신한 123 456 567890으로 입금 바랍니다.";
+				loc = "javascript:location.href='"+req.getContextPath()+"/deposit.pet'";
+			}
+			else {
+				msg = "충전 실패";
+				loc = "javascript:history.back();";
+			}
+			
+		}
+		
+		return "msg";
+
+	}
+
+//	#예치금 충전 후 결제정보 저장하기
+//	[190209] POST방식으로 변경
+	@RequestMapping(value="insertDeposit.pet", method= {RequestMethod.POST})
+	public String insertDeposit(HttpServletRequest req, HttpServletResponse res) {
+		
+		String idx = req.getParameter("idx");
+		String realDeposit = req.getParameter("realDeposit");
+		String depositType = req.getParameter("depositType");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		
+		paraMap.put("fk_idx", idx);
+		paraMap.put("depositcoin", realDeposit);
+		paraMap.put("deposit_status", "1");
+		paraMap.put("deposit_type", depositType);
+		paraMap.put("payment_UID", "0");
+		
+		int n = service.insertChargeDeposit(paraMap);
+		
+		String msg="";
+		String loc="";
+		if(n==1) {
+			msg="충전완료"; // [190209] loc 경로 변경
+			loc="javascript:self.close(); opener.location.href='"+req.getContextPath()+"/deposit.pet';";
+		}
+		else {
+			msg="충전실패";
+			loc="javascript:history.back();";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		return "msg";
+	}
 }
