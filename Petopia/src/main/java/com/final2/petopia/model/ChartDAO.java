@@ -16,8 +16,8 @@ public class ChartDAO implements InterChartDAO {
 
 	// 마이페이지에서 처방전 입력하기
 	@Override
-	public int insertmychart(HashMap<String, String> mychartmap) {
-		int n = sqlsession.insert("chart.insertmychart", mychartmap);
+	public int insertmychart(HashMap<String, String> map){
+		int n = sqlsession.insert("chart.insertmychart", map);
 		return n;
 	}
 
@@ -240,6 +240,34 @@ public class ChartDAO implements InterChartDAO {
 	public HashMap<String, Object> getPinfo(String puid) {
 		HashMap<String, Object> pinfo =sqlsession.selectOne("chart.getPinfo", puid);
 		return pinfo;
+	}
+
+	//0210 마이페이지에서 진료관리 클릭시 보여지는 병원 방문 날짜 리스트 가져오기
+	@Override
+	public List<HashMap<String,String>> getmyreservedaylist(HashMap<String, Object> paramap) {
+		List<HashMap<String,String>> myreservedaylist = sqlsession.selectList("chart.getmyreservedaylist", paramap);
+		return myreservedaylist;
+	}
+
+	//0210 가장 작은예약번호 알아오기 (마이페이지 진료관리 처방전 입력에 필요 )
+	@Override
+	public String getminRuid(HashMap<String, Object> paramap) {
+		String minRuid = sqlsession.selectOne("chart.getminRuid",paramap);
+		return minRuid;
+	}
+
+	//0210 마이페이지에서 잔료관리 클릭시  보여지는 처방전  인서트 창에 불러올 기본 정보 
+	@Override
+	public HashMap<String, Object> getmyPreinfo(HashMap<String, Object> paramap2) {
+		HashMap<String, Object> myPreinfo = sqlsession.selectOne("chart.getmyPreinfo",paramap2);
+		return myPreinfo;
+	}
+
+	//0210 마이페이지 진료관리에서 처방전 인서트할때 필요한 차트 유아이디 
+	@Override
+	public String getcuid(String minruid) {
+		String cuid = sqlsession.selectOne("chart.getcuid",minruid);
+		return cuid;
 	}
 
 }
