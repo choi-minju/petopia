@@ -27,10 +27,21 @@
 	group by not_type
 </select>
 
-
-
-
-
+<!-- 알림 리스트 가져오기 -->
+<select id="selectNotificatioList" parameterType="int" resultType="com.final2.petopia.model.NotificationVO">
+	
+	select  RNO AS NOT_UID, FK_IDX, NOT_TYPE, NOT_MESSAGE, NOT_DATE, 
+			NOT_READCHECK, NOT_REMINDSTATUS, NOT_TIME, NOT_URL
+	from
+	(
+		select 	ROWNUM AS RNO, NOT_UID, FK_IDX, NOT_TYPE, NOT_MESSAGE, NOT_DATE, 
+				NOT_READCHECK, NOT_REMINDSTATUS, NOT_TIME, NOT_URL
+		from notification
+		where fk_idx = #{idx}
+		and to_char(not_time, 'yyyy-mm-dd hh24:mi:ss') <![CDATA[<=]]> to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss')
+	) V
+	order by NOT_UID desc
+</select>
 
 
 </mapper>
