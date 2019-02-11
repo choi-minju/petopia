@@ -454,11 +454,20 @@
      
      <!-- 0210 가장 작은예약번호 알아오기 (마이페이지 진료관리 처방전 입력에 필요 ) -->
      <select id="getminRuid" resultType="String" parameterType="HashMap">
-       select min (reservation_uid) as reservation_uid
-	   from reservation 
-	   where fk_idx=#{idx} and fk_pet_uid=#{minpuid}
-       and to_char(reservation_date,'yyyy-mm') = to_char(sysdate,'yyyy-mm')
-       and reservation_status in (1,2,3)
+       select reservation_uid
+	   from       
+		(       
+		select rownum as rno,  reservation_uid
+		from
+		    (
+		    select reservation_uid
+		    from reservation 
+		    where fk_idx=#{idx} and fk_pet_uid=#{minpuid}
+		    and reservation_status in (1,2,3)
+		    order by reservation_date desc
+		    ) v
+		) t
+		where t.rno=1
      </select>
      
      <!-- 0210 마이페이지에서 잔료관리 클릭시  보여지는 처방전  인서트 창에 불러올 기본 정보  -->

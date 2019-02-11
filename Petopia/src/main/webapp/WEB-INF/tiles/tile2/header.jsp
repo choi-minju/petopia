@@ -101,7 +101,7 @@
 	$(document).ready(function(){
 		
 		// 로그인 시(관리자가 아닐 경우) 알림 아이콘 생성
-		if(${sessionScope.loginuser != null && sessionScope.loginuser.userid != 'admin@naver.com'}){
+		if(${sessionScope.loginuser != null && sessionScope.loginuser.membertype != 3}){
 			loopShowNotificationCount();
 		} // if
 		
@@ -215,7 +215,7 @@
 							<li><a style="color: #ffffff;" href="<%= ctxPath %>/login.pet" >로그인</a></li>
 						</c:if>
 						<c:if test="${sessionScope.loginuser != null }">
-							<c:if test="${sessionScope.loginuser.userid != 'admin@naver.com'}">
+							<c:if test="${sessionScope.loginuser.membertype != 3}">
 								<li class="notdropdown">
 									<span class="notdropbtn">
 										<img src="<%=request.getContextPath() %>/resources/img/notification/icon.png" style="margin-left: 50%; margin-top: 20%; width: 40%;" />
@@ -334,6 +334,7 @@
 		   		<div class="row">
 					<div class="col-md-3"></div>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">회원관리</button>
+					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">예치금관리</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">리뷰관리</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티관리</button>
@@ -345,8 +346,10 @@
 						<div class="column" id="adminMember">
 							<a href="<%= ctxPath %>/adminMember.pet">일반회원</a>
 							<a href="<%= ctxPath %>/adminBiz_member.pet">병원회원</a>
-							<%-- [190203] 관리자 로그인 시  예약결제관리 추가 --%>
+						</div>
+						<div class="column" id="adminDeposit">
 							<a href="<%= ctxPath %>/adminPaymentList.pet">예약결제관리</a>
+							<a href="<%= ctxPath %>/admin_depositList.pet">입금관리</a>
 						</div>
 						<div class="column" id="adminReview">
 						</div>
