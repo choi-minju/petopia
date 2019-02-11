@@ -49,7 +49,7 @@ th{
 
 </script>
 <div class="container">
-  <h2>Reservatil List</h2>
+  <h2>병원 예약 관리</h2>
   <p>예약내역을 확인할 수 있습니다.</p>  
   <i class="glyphicon glyphicon-search"></i><input class="form-control search" id="myInput" type="text" name="search" placeholder="Search..">
   <br>
@@ -68,6 +68,7 @@ th{
         <!-- -버튼 1: 예약완료 2결제(차트작성 처방전작성 노쇼// 예약상태업데이트) 3 진료완료(진료완료 진료기록상세보기)4:노쇼 -->
         <th>진료차트</th>
         <th>취소</th>
+        <th>노쇼</th>
       </tr>
     </thead>
     <tbody id="myTable">
@@ -96,11 +97,6 @@ th{
             <input type="hidden" name="reservation_UID" value="reservation_UID"/>
           </c:if>
         </td>  
-          <c:if test="${rmap.reservation_status=='4'}">
-        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">노쇼</button>
-            <input type="hidden" name="reservation_UID" value="reservation_UID"/>
-          </c:if>
-        </td>
         <td>
         	<c:if test="${rmap.reservation_status=='1'|| rmap.reservation_status=='2'}">
         	<button type="button" class="btn btn-rounder btnmenu" onClick="goRsvCancle(${rmap.reservation_UID})">취소</button>
@@ -108,6 +104,12 @@ th{
         	<c:if test="${rmap.reservation_status=='3' || rmap.reservation_status=='4' || rmap.reservation_status=='5'}">
         	<a class="btn btn-rounder btnmenu" style="color: white; background-color: gray; cursor: default;">취소</a>
         	</c:if>
+        </td>
+          <td>
+          <c:if test="${rmap.reservation_status=='4'}">
+        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">노쇼</button>
+            <input type="hidden" name="reservation_UID" value="reservation_UID"/>
+          </c:if>
         </td>
       </tr>
 	  </c:forEach>
