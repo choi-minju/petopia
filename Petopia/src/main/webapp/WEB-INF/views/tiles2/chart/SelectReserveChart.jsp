@@ -64,17 +64,17 @@ color:rgb(252, 118, 106);
     <thead>
       <tr>
         <th style="text-align: center;">담당의</th>
-        <th style="text-align: center;">명칭</th>
-        <th style="text-align: center;">수술</th>
-        <th style="text-align: center;">투약</th>
+        <th style="text-align: center;">반려동물</th>
+        <th style="text-align: center;">병명</th>
+        <th style="text-align: center;">진료과</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>A90</td>
-        <td>뎅기열</td>
-        <td><input type="checkbox"/></td>
-        <td>투약</td>
+        <td>수의사</td>
+        <td>고양이</td>
+        <td>감기</td>
+        <td>일반진료</td>
     
     </tbody>
   </table>
@@ -86,18 +86,16 @@ color:rgb(252, 118, 106);
   <table class="table" style="text-align:center;margin: 0 auto;width:80%;" >
     <thead>
       <tr>
-        <th style="text-align: center;">처방코드</th>
-        <th style="text-align: center;">명칭</th>
-        <th style="text-align: center;">총용량</th>
-        <th style="text-align: center;">일수</th>
+        <th style="text-align: center;">처방약 명</th>
+        <th style="text-align: center;">1회 복용용량</th>
+        <th style="text-align: center;">1일 복용횟수</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>121</td>
-        <td>세노바액</td>
-        <td>6</td>
-        <td>1</td>
+        <td>세노바</td>
+        <td>20ml</td>
+        <td>3회 </td>
     
     </tbody>
   </table>

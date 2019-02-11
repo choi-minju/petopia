@@ -138,7 +138,6 @@
 	  background-color: #f2f2f2
 	}
 	
-	
 	/* Style tab links */
 	.tablink {
 	  background-color: #555;
@@ -161,10 +160,25 @@
 	  color: white;
 	  display: none;
 	  padding: 100px 20px;
-	  height: 100%;
+	  height: 120%;
 	}
 	
 	#Pharmacy, #Hospital {background-color: #f9ecf2;}
+
+	.pagination a {
+	  color: black;
+	  float: left;
+	  padding: 8px 16px;
+	  text-decoration: none;
+	  transition: background-color .3s;
+	}
+	
+	.pagination a.active {
+	  background-color: rgb(252, 118, 106);
+	  color: white;
+	}
+	
+	.pagination a:hover:not(.active) {background-color: #ddd;}
 	
 </style>
 
@@ -189,64 +203,21 @@
 		if(cnt != 0) {
 			setBounds();
 		}
-		
-		var whereNo = <%= whereNo%>;
-		
-		if(whereNo == 1) {
-			// showPharmacy("${searchWord}");
-			getHospitalPageBar(1);
-			showHospital(1,10);
-		}
+
+		getHospitalTotalCnt();
+		getPharmacyTotalCnt();
 		
 	});
 
 	document.addEventListener("DOMContentLoaded", function(event) { 
 	    document.getElementById("defaultOpen").click();
 	});
+
+	var hospitalArr = [];
+	var pharmacyArr = [];
 	
-	function showHospital(currentShowPageNo) {
+	function getHospitalTotalCnt() {
 		
-		var sizePerPage = 10;
-		
-		var startno = (currentShowPageNo*sizePerPage) - (sizePerPage - 1)
-		var endno = (currentShowPageNo*sizePerPage)
-
-		$.ajax({
-			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/vtrHospitalInfo/"+startno+"/"+endno+"/",
-			success: function(xml){
-
-				var rootElement = $(xml).find(":root");
-				
-				var hospitalArr = $(rootElement).find("row");
-
-				var html = "<tr><th>병원이름</th><th>주소</th><th>전화번호</th></tr>";
-				
-				hospitalArr.each(function(){
-
-					var addr = !$(this).find("ADDR").text().trim()?$(this).find("ADDR_OLD").text():$(this).find("ADDR").text();
-					
-					// console.log($(this).find("NM").text()+$(this).find("ADDR_OLD").text()+$(this).find("ADDR").text());
-					html += "<tr><th>"+$(this).find("NM").text()+"</th><th>"+addr+"</th><th>"+$(this).find("TEL").text()+"</th></tr>";
-						
-				});
-				
-				$("#TblHospital").html(html);
-	
-				getHospitalPageBar(currentShowPageNo);
-
-			},
-			error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-
-		});
-
-		
-	}
-	
-	
-	function getHospitalPageBar(currentShowPageNo) {
-
 		$.ajax({
 			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/vtrHospitalInfo/1/1/",
 			success: function(xml){
@@ -255,133 +226,271 @@
 				
 				var totalCount = $(rootElement).find("list_total_count").text(); 
 				
-				var sizePerPage = 10; 
+				getHospitalList(totalCount);
 				
-				console.log(totalCount);
-				
-				var totalPage = Math.ceil(totalCount/sizePerPage);
-				
-				console.log("totalCount : "+totalCount+"totalPage : "+totalPage);
-				
-			    var pageBarHTML = "";
-				 
-			    /////////////////////////
-			     
-			    var blockSize = 10;
-			    // blockSize 은 1개 블럭(토막)당 보여지는 페이지번호의 갯수이다.
-			    /*
-			         1 2 3   -- 1개블럭
-			         4 5 6   -- 1개블럭
-			         7 8 9   -- 1개블럭
-			    */
-			    var loop = 1;
-		        /* 
-		        loop 는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 갯수(지금은 3개)까지만 
-		                  증가하는 용도이다.
-		        */
-                // 자바스크립트에서는 1/3 이 0 이 아니라 0.33333 이므로 소수점을 버리기 위해 Math.floor(0.33333) 을 하면 소수점을 버린 정수만 나온다.
-                var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
-			    //**** !!! 공식이다. !!! ****//
-			    
-	    
-			     /*
-			         1 2 3   -- 첫번째 블럭의 페이지번호 시작값(pageNo)은 1 이다. 
-			         4 5 6   -- 두번째 블럭의 페이지번호 시작값(pageNo)은 4 이다.
-			         7 8 9   -- 세번째 블럭의 페이지번호 시작값(pageNo)은 4 이다.
-			         
-			          currentShowPageNo    pageNo
-			         -----------------------------
-			                1                1  == ((1 - 1)/3) * 3 + 1
-			                2                1  == ((2 - 1)/3) * 3 + 1  
-			                3                1  == ((3 - 1)/3) * 3 + 1 
-			               
-			                4                4  == ((4 - 1)/3) * 3 + 1 
-			                5                4  == ((5 - 1)/3) * 3 + 1 
-			                6                4  == ((6 - 1)/3) * 3 + 1
-			                
-			                7                7  == ((7 - 1)/3) * 3 + 1 
-			                8                7  == ((8 - 1)/3) * 3 + 1 
-			                9                7  == ((9 - 1)/3) * 3 + 1    
-			      */
-  	                					     
-				 // *** [이전] 만들기 *** //
-				 if(pageNo != 1) {
-			    	  pageBarHTML += "<a href='javascript:showHospital("+(pageNo-1)+")'>[이전]</a>";
-			     }
-                    /////////////////////////////////////////////////
-			     while( !(loop > blockSize || pageNo > totalPage) ) {
-			       	 
-			    	  if(pageNo == currentShowPageNo) {
-			    		  pageBarHTML += "&nbsp;<span style=\"color: red; font-size: 12pt; font-weight: bold; text-decoration: underline; \">"+pageNo+"</span>&nbsp;";
-			    	  }
-			    	  else {
-			    	  	  pageBarHTML += "&nbsp;<a href='javascript:showHospital("+pageNo+")'>"+pageNo+"</a>&nbsp;";
-			     	  }
-                    
-			       	 loop++;
-			    	 pageNo++;
-			     } // end of while-----------------------------------
-                       /////////////////////////////////////////////////
-
-			  	  // *** [다음] 만들기 *** //
-			     if( !(pageNo > totalPage) ) {
-			    	 pageBarHTML += "&nbsp;<a href='javascript:showHospital("+pageNo+")'>[다음]</a>";
-			     }
-				 	
-			     $("#pageBar").empty().html(pageBarHTML);
-			     
-			     pageBarHTML = "";
-		 		
 			},
 			error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-
+			}			
+			
 		});
-
+		
 		
 	};
 	
 	
-	function showPharmacy(searchWord) {
-
-		console.log(searchWord);
+	function getHospitalList(totalCount) {
 		
 		$.ajax({
-			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/animalPharmacyInfo/1/5/",
-			type:"GET",
-			dataType: "XML",
+			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/json/vtrHospitalInfo/1/"+totalCount+"/",
+			success: function(json){
+				
+				// console.log(json.vtrHospitalInfo);
+				
+				// console.log(entry.row[1].ADDR);
+				for(var i=0;i<totalCount;i++) {
+
+					var addr = json.vtrHospitalInfo.row[i].ADDR.trim()==""?json.vtrHospitalInfo.row[i].ADDR_OLD:json.vtrHospitalInfo.row[i].ADDR;
+					// console.log(addr);
+					
+					if(addr.includes("${searchWord}")) {
+						hospitalArr.push(json.vtrHospitalInfo.row[i]);
+						hospitalArr.slice(-1)[0].ADDR = addr;
+					}
+					
+					// hospitalArr.push(json.vtrHospitalInfo.row[i]);
+				}
+				
+				console.log(hospitalArr);
+				
+				if(hospitalArr.length == 0) {
+					var html = "<tr><th>병원이름</th><th>주소</th><th>전화번호</th></tr><tr><td colspan='3'>검색결과가 없습니다. </td></tr>";	
+					$("#TblHospital").html(html);
+				}
+				else {
+					showHospitalByWord(1);	
+				}
+				
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}		
+			
+		});
+		
+	}
+	
+	function showHospitalByWord(currentShowPageNo) {
+		// console.log(hospitalArr);
+		// console.log(currentShowPageNo);
+		
+		var sizePerPage = 10;
+		
+		var startno = (currentShowPageNo*sizePerPage) - (sizePerPage - 1);
+		var endno = (currentShowPageNo*sizePerPage);
+		
+		endno = (hospitalArr.length<endno)?(hospitalArr.length):(currentShowPageNo*sizePerPage);
+		
+		console.log(startno);
+		console.log(endno);
+		
+		var html = "<tr><th>병원이름</th><th>주소</th><th>전화번호</th></tr>";		
+		
+		for(var i=startno;i<endno;i++) {
+			
+			html += "<tr><td>"+hospitalArr[i].NM+"</th><td>"+hospitalArr[i].ADDR+"</th><td>"+hospitalArr[i].TEL+"</th></tr>";	
+			
+		}
+
+		$("#TblHospital").html(html);
+		
+		showHospitalByWordPageBar(currentShowPageNo);
+		
+	}
+	
+	
+	function showHospitalByWordPageBar(currentShowPageNo) {
+		
+		var sizePerPage = 10;
+		
+		var totalPage = Math.ceil(hospitalArr.length/sizePerPage);
+		
+	    var pageBarHTML = "";
+		 
+	    var blockSize = 10;
+	    
+	    var loop = 1;
+        
+	    var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
+            					     
+		 // *** [이전] 만들기 *** //
+		 if(pageNo != 1) {
+	    	  pageBarHTML += "<a href='javascript:showHospitalByWord("+(pageNo-1)+")'>&laquo;</a>";
+	     }
+            /////////////////////////////////////////////////
+	     while( !(loop > blockSize || pageNo > totalPage) ) {
+	       	 
+	    	  if(pageNo == currentShowPageNo) {
+	    		  pageBarHTML += "<a class='active'>"+pageNo+"</a>";
+	    	  }
+	    	  else {
+	    	  	  pageBarHTML += "<a href='javascript:showHospitalByWord("+pageNo+")'>"+pageNo+"</a>";
+	     	  }
+            
+	       	 loop++;
+	    	 pageNo++;
+	     } // end of while-----------------------------------
+               /////////////////////////////////////////////////
+
+	  	  // *** [다음] 만들기 *** //
+	     if( !(pageNo > totalPage) ) {
+	    	 pageBarHTML += "<a href='javascript:showHospitalByWord("+pageNo+")'>&raquo;</a>";
+	     }
+		 	
+	     $(".pagenation_H").empty().html(pageBarHTML);
+	     
+	     pageBarHTML = "";
+
+	}
+	
+
+	
+
+	function getPharmacyTotalCnt() {
+		
+		$.ajax({
+			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/xml/animalPharmacyInfo/1/1/",
 			success: function(xml){
 
 				var rootElement = $(xml).find(":root");
+				var totalCount = $(rootElement).find("list_total_count").text(); 
 				
-				var pharmacyArr = $(rootElement).find("row");
-
-				var html = "<tr><th>약국이름</th><th>주소</th><th>전화번호</th></tr>";
-				
-				pharmacyArr.each(function(){
-					
-					var addr = !$(this).find("ADDR").text().trim()?$(this).find("ADDR_OLD").text():$(this).find("ADDR").text();
-					
-					// console.log($(this).find("NM").text()+$(this).find("ADDR_OLD").text()+$(this).find("ADDR").text());
-					html += "<tr><th>"+$(this).find("NM").text()+"</th><th>"+addr+"</th><th>"+$(this).find("TEL").text()+"</th></tr>";
-						
-				});
-				
-				$("#TblPharmacy").html(html);
-				
+				getPharmacyList(totalCount);
 				
 			},
 			error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-
+			}			
+			
 		});
-
 		
 		
 	};
 	
+	
+	function getPharmacyList(totalCount) {
+		
+		$.ajax({
+			url:"http://openapi.seoul.go.kr:8088/6b556842446c656533304b4a684e76/json/animalPharmacyInfo/1/"+totalCount+"/",
+			success: function(json){
+				
+				// console.log(json.vtrHospitalInfo);
+				
+				// console.log(entry.row[1].ADDR);
+				for(var i=0;i<totalCount;i++) {
+
+					var addr = json.animalPharmacyInfo.row[i].ADDR.trim()==""?json.animalPharmacyInfo.row[i].ADDR_OLD:json.animalPharmacyInfo.row[i].ADDR;
+					// console.log(addr);
+					
+					if(addr.includes("${searchWord}")) {
+						pharmacyArr.push(json.animalPharmacyInfo.row[i]);
+						pharmacyArr.slice(-1)[0].ADDR = addr;
+					}
+					
+					// pharmacyArr.push(json.animalPharmacyInfo.row[i]);
+				}
+				
+				console.log(pharmacyArr);
+				
+				if(pharmacyArr.length == 0) {
+					var html = "<tr><th>약국이름</th><th>주소</th><th>전화번호</th></tr><tr><td colspan='3'>검색결과가 없습니다.</td></tr>";	
+					$("#TblPharmacy").html(html);
+				}
+				else {
+					showPharmacyByWord(1);
+				}
+
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}		
+			
+		});
+		
+	}
+	
+	function showPharmacyByWord(currentShowPageNo) {
+		// console.log(pharmacyArr);
+		// console.log(currentShowPageNo);
+		
+		var sizePerPage = 10;
+		
+		var startno = (currentShowPageNo*sizePerPage) - (sizePerPage - 1);
+		var endno = (currentShowPageNo*sizePerPage);
+		
+		endno = (pharmacyArr.length<endno)?(pharmacyArr.length):(currentShowPageNo*sizePerPage);
+		
+		console.log(startno);
+		console.log(endno);
+		
+		var html = "<tr><th>약국이름</th><th>주소</th><th>전화번호</th></tr>";		
+		
+		for(var i=startno;i<endno;i++) {
+			
+			html += "<tr><td>"+pharmacyArr[i].NM+"</th><td>"+pharmacyArr[i].ADDR+"</th><td>"+pharmacyArr[i].TEL+"</th></tr>";	
+			
+		}
+
+		$("#TblPharmacy").html(html);
+		
+		showPharmacyByWordPageBar(currentShowPageNo);
+		
+	}
+	
+	
+	function showPharmacyByWordPageBar(currentShowPageNo) {
+		
+		var sizePerPage = 10;
+		
+		var totalPage = Math.ceil(pharmacyArr.length/sizePerPage);
+		
+	    var pageBarHTML = "";
+		 
+	    var blockSize = 10;
+	    
+	    var loop = 1;
+        
+	    var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
+            					     
+		 // *** [이전] 만들기 *** //
+		 if(pageNo != 1) {
+	    	  pageBarHTML += "<a href='javascript:showPharmacyByWord("+(pageNo-1)+")'>&laquo;</a>";
+	     }
+            /////////////////////////////////////////////////
+	     while( !(loop > blockSize || pageNo > totalPage) ) {
+	       	 
+	    	  if(pageNo == currentShowPageNo) {
+	    		  pageBarHTML += "<a class='active'>"+pageNo+"</a>";
+	    	  }
+	    	  else {
+	    	  	  pageBarHTML += "<a href='javascript:showPharmacyByWord("+pageNo+")'>"+pageNo+"</a>";
+	     	  }
+            
+	       	 loop++;
+	    	 pageNo++;
+	     } // end of while-----------------------------------
+               /////////////////////////////////////////////////
+
+	  	  // *** [다음] 만들기 *** //
+	     if( !(pageNo > totalPage) ) {
+	    	 pageBarHTML += "<a href='javascript:showPharmacyByWord("+pageNo+")'>&raquo;</a>";
+	     }
+		 	
+	     $(".pagenation_P").empty().html(pageBarHTML);
+	     
+	     pageBarHTML = "";
+
+	}	
 	
 	function searchEnter(event) {
 		
@@ -464,8 +573,9 @@
 		
 	}
 	
-	function enterGeocoder() {
+	function enterGeocoder(event) {
 		if(event.keyCode == 13) {
+			$('#myModal').modal('hide');
 			setGeocoder();
 		}
 	}
@@ -491,6 +601,8 @@
 		  elmnt.style.backgroundColor = color;
 	}
 
+	// 오류잡기용
+	function setBounds() {}
 	
 </script>
 
@@ -759,7 +871,6 @@
 					    // LatLngBounds 객체에 좌표를 추가합니다
 					    bounds.extend(positions_array[i].position);
 					}
-					
 	
 					function setBounds() {
 					    // LatLngBounds 객체에 추가된 좌표들을 기준으로 지도의 범위를 재설정합니다
@@ -767,6 +878,7 @@
 					    map.setBounds(bounds);
 					}
 					// *** 모든 마커를 보여주기 위해 중심좌표와 비율을 다시 설정하기 끝 *** //
+					
 					
 					
 					// *** 선의 거리 계산하기 만들기 시작 ***//
@@ -1044,10 +1156,6 @@
 						
 					}
 				
-					
-					
-	
-					
 				</script>
 			</div>
 		    <div class="col-sm-5" align="center">
@@ -1109,38 +1217,38 @@
 
 
 <div class="container" style="margin-top: 10%; margin-bottom: 10%;">
-		<c:if test="${whereNo == 1 }">
-			<div class="row">
-				<div class="col-sm-12">	
-					<button class="tablink" id="defaultOpen" onclick="openPage('Hospital', this, 'rgb(252, 118, 106)')">동물병원</button>
-					<button class="tablink" onclick="openPage('Pharmacy', this, 'rgb(252, 118, 106)')">동물약국</button>
-					
-					<div id="Hospital" class="tabcontent" style="display: block;">
-					  <h3 style="color: black;">공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3>
-					  <p style="color: black;">※ 바로예약 서비스는 제공되지 않습니다. 내방 전 전화로 먼저 확인하시기 바랍니다. </p>
-						<table id="TblHospital"></table>
-						<div class="row">
-							<div class="col-sm-3"></div>
-							<div class="col-sm-6" id="pageBar"></div>
-							<div class="col-sm-3"></div>
-						</div>
+	<div class="row">
+		<div class="col-sm-12">	
+			<button class="tablink" id="defaultOpen" onclick="openPage('Hospital', this, 'rgb(252, 118, 106)')">동물병원</button>
+			<button class="tablink" onclick="openPage('Pharmacy', this, 'rgb(252, 118, 106)')">동물약국</button>
+			
+			<div id="Hospital" class="tabcontent">
+			  <h3 style="color: black;">서울시 공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3>
+			  <p style="color: black;">※ 바로예약 서비스는 제공되지 않습니다. 내방 전 전화로 먼저 확인하시기 바랍니다. </p>
+				<table id="TblHospital"></table>
+				<div class="row">
+					<div class="col-sm-2"></div>
+					<div class="col-sm-8" align="center">
+						<div class="pagination pagenation_H"></div>
 					</div>
-					
-					<div id="Pharmacy" class="tabcontent" style="display: none;">
-					  <h3 style="color: black;">공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3>
-					  <p>&nbsp;</p>
-					 	 <table id="TblPharmacy"></table>
-					 	 <div class="row">
-							<div class="col-sm-3"></div>
-							<div class="col-sm-6" id="pageBar">
-								1 2 3 4 5
-							</div>
-							<div class="col-sm-3"></div>
-						</div>
-					</div>
+					<div class="col-sm-2"></div>
 				</div>
 			</div>
-	</c:if>
+			
+			<div id="Pharmacy" class="tabcontent">
+			  <h3 style="color: black;">서울시 공공데이터를 기반으로 '<span style="color: #990000">${ searchWord}</span>'로 검색하여 나온 결과입니다. </h3>
+			  <p>&nbsp;</p>
+			 	 <table id="TblPharmacy"></table>
+			 	 <div class="row">
+					<div class="col-sm-2"></div>
+					<div class="col-sm-8" align="center">
+						<div class="pagination pagenation_P"></div>
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 
@@ -1155,14 +1263,14 @@
         <h4 class="modal-title">주소를 입력해주세요</h4>
       </div>
       <div class="modal-body">
-	    <form>
+	    <form onsubmit="return false;">
 		  <div class="form-group" align="center">
-			<input type="text" class="form-control" id="address" placeholder="예) 서울시 강남구 논현동 55 " style="width: 50%;" onkeyup="enterGeocoder()">
+			<input type="text" class="form-control" id="address" placeholder="예) 서울시 강남구 논현동 55 " style="width: 50%;" onkeyup="enterGeocoder(event)">
 		  </div>
 		</form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="setGeocoder()">입력</button>
+        <input type="button" class="btn btn-primary" data-dismiss="modal" value="입력" onclick="setGeocoder()">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
