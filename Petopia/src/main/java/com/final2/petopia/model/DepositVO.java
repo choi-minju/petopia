@@ -84,6 +84,9 @@ public class DepositVO {
 		case "3":
 			result = "출금";
 			break;
+		case "-1": // [190211] -1 일 때 조건 추가
+			result = "입금대기";
+			break;
 		}
 		return result;
 	}

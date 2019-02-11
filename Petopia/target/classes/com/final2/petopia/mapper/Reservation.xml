@@ -349,14 +349,16 @@
 		where d.depositcoin!=0 and p.payment_UID=#{payment_UID}
 	</select>
 	
-	<!-- [190131] 예약 상세 페이지에 정보 select 하기 (biz)-->
-	<select id="selectRvDetailByPUIDForBiz" parameterType="String" resultMap="rmap_reservationDetail">
+	<!-- [190131] 예약 상세 페이지에 정보 select 하기 (biz)
+		[190211] idx_biz 추가, chart 추가
+	-->
+	<select id="selectRvDetailForBiz" parameterType="HashMap" resultMap="rmap_reservationDetail">
 		select r.reservation_UID, r.fk_idx, r.fk_idx_biz, r.fk_schedule_UID, r.fk_pet_UID, to_char(r.bookingdate, 'yyyy-mm-dd hh24:mi') as bookingdate
         , to_char(r.reservation_DATE, 'yyyy-mm-dd hh24:mi') as reservation_DATE, r.reservation_status
         , decode(r.reservation_type, 1, '외래진료', 2, '예방접종', 3, '수술상담', 4, '호텔링') as rv_type
 		, r.reservation_type
 		, m.name, m.phone, pet_name, decode(pet_type, 'dog', '강아지', 'cat', '고양이', 'smallani', '소동물', 'etc', '기타종류') as pet_type
-        , payment_pay*-1 as payment_pay, payment_point, payment_total, to_char(payment_date, 'yyyy-mm-dd hh24:mi') as payment_date
+        , addpay+p.payment_pay*-1 as payment_pay, p.payment_point, totalpay as payment_total, to_char(payment_date, 'yyyy-mm-dd hh24:mi') as payment_date
 		from deposit d join payment p
 		on d.fk_payment_UID = p.payment_UID
 		join reservation r
@@ -365,7 +367,9 @@
 		on m.idx=r.fk_idx
 		join pet_info i
 		on i.pet_UID = r.fk_pet_UID
-		where p.payment_UID=#{payment_UID}
+		join chart c
+		on r.reservation_UID = C.fk_reservation_UID
+		where p.payment_UID=#{payment_UID} and d.fk_idx=#{idx_biz}
 	</select>
 	
 	
@@ -547,5 +551,65 @@
 	<!-- #정산 완료 후 payment status 0으로 변경하기 -->
 	<update id="updatePaymentStatusTo0" parameterType="HashMap">
 		update payment set payment_status = 0 where payment_UID = #{payment_UID}
+	</update>
+	
+	<!-- [190211] -->
+	<!-- #무통장입금 정보 조회하기 -->
+	<resultMap type="HashMap" id="rmap_direct_deposit">
+		<result property="deposit_account" column="deposit_account" javaType="String"/>
+		<result property="deposit_date" column="deposit_date" javaType="String"/>
+		<result property="depositcoin" column="depositcoin" javaType="String"/>
+	</resultMap>
+	<select id="selectDepositDirectAccount" parameterType="String" resultMap="rmap_direct_deposit">
+		select deposit_type as deposit_account, to_char(deposit_date+3, 'yyyy-mm-dd hh24:mi') as deposit_date, depositcoin
+		from deposit
+		where deposit_UID = #{deposit_UID}
+	</select>
+	
+	<!-- #관리자 예치금 히스토리 목록에서 모두보기 -->
+	<select id="selectDepositListByIdxNoneTypeForAdmin" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
+		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+		(
+		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+			(
+			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
+			from deposit
+			where depositcoin != 0
+			order by deposit_UID desc
+			)
+		)
+		where rno between #{rno1} and #{rno2}
+	</select>
+	
+	<!-- #관리자 예치금 히스토리 목록에서 충전/사용목록 보기 -->
+	<select id="selectDepositListByIdxForAdmin" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
+		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+		(
+		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		from
+			(
+			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
+			from deposit
+			where deposit_status = #{type} and depositcoin != 0
+			order by deposit_UID desc
+			)
+		)
+		where rno between #{rno1} and #{rno2}
+	</select>
+	<!-- #관리자 예치금 히스토리 목록; 모든 건수 -->
+	<select id="selectDepositListTotalCountNoneTypeForAdmin" parameterType="HashMap" resultType="int">
+		select count(*) from deposit where depositcoin != 0
+	</select>
+	<!-- #관리자 예치금 히스토리 목록; 충전/사용건수 -->
+	<select id="selectDepositListTotalCountForAdmin" parameterType="HashMap" resultType="int">
+		select count(*) from deposit where deposit_status=#{type} and depositcoin != 0
+	</select>
+	
+	<!-- #DUID로 무통장입금건 status 변경하기 -->
+	<update id="updateDepositStatusByDUID" parameterType="String">
+		update deposit set deposit_status=1 where deposit_UID=#{deposit_UID}
 	</update>
 </mapper>
