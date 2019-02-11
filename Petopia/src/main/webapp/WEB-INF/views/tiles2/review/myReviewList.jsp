@@ -320,11 +320,18 @@
 										+'<button type="button" class="btn" onclick="delReview('+json.REVIEW_UID+')">삭제</button>'
 									+ '</div>'
 								+ '</div>'
-								+ '<div class="row" style="margin-top: 15px; padding: 7px;word-break:break-all;">'
-									+ '<div class="col-sm-12 content" style="background-color: #f7f7f7; word-break:break-all; border: 0px solid #999; overflow-x:auto; height:auto; padding:20px; border-radius:5px; " >'
+							/* ==== 2019.02.11 ==== 수정 시작 */
+								+ '<div class="row" style="margin-top: 15px; padding: 7px;word-break:break-all;">';
+							
+							if(json.RV_STATUS == "0" && json.RV_BLIND != "0") {
+									html += '블라인드 처리되거나 삭제 된 댓글 입니다.';
+							} else {
+								html += '<div class="col-sm-12 content" style="background-color: #f7f7f7; word-break:break-all; border: 0px solid #999; overflow-x:auto; height:auto; padding:20px; border-radius:5px; " >'
 										+ json.RV_CONTENTS
-									+ '</div>'
-								+ '</div>'
+									+ '</div>';
+									}
+							html += '</div>'
+							/* ==== 2019.02.11 ==== 수정 끝 */
 								/* ==== 2019.01.31 ==== 수정 시작 */
 								+ '<div class="row" style="border: 0px solid black; padding: 7px; font-size: 10pt;">'
 									+ '<div class="col-sm-12" align="right" style="border: 0px solid yellow;">'

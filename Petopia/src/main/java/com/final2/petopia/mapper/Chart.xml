@@ -362,11 +362,11 @@
      <result property="chart_type"            column="chartType"            javaType="String"/>
    </resultMap>
    <select id="selectMyPrescription" parameterType="String" resultMap="selectMyPrescription_info">
-		 select c.chart_uid, to_char(c.reservation_date, 'yyyy-mm-dd hh24:mi') as reservation_date
-		    , case c. chart_type when 0 then '약국' when 1 then '진료' when 2 then '예방접종' when 3 then '수술' when 4 then '호텔링' end as chartType
-		from chart c join reservation r
-        on c.fk_idx =#{fk_pet_uid}
-		where c.fk_pet_uid = 3 and r.reservation_status in (1,2,3)
+   		select c.chart_uid, to_char(c.reservation_date, 'yyyy-mm-dd hh24:mi') as reservation_date
+				    , case c. chart_type when 0 then '약국' when 1 then '진료' when 2 then '예방접종' when 3 then '수술' when 4 then '호텔링' end as chartType
+		from chart c JOIN reservation r
+		ON c.fk_reservation_uid = r.reservation_uid
+		where c.fk_pet_uid = #{fk_pet_uid} and r.reservation_status in(1,2,3)
    </select>
    
    
@@ -440,22 +440,34 @@
      <resultMap type="HashMap" id="myday_typeList">
 	     <result property="reservation_date" column="RESERVATION_DATE"  javaType="String"/>
 	     <result property="chart_type"       column="CHART_TYPE"        javaType="String"/>
+	     <result property="reservedate"       column="RESERVEDATE"        javaType="String"/>
      </resultMap>
      <select id="getmyreservedaylist" parameterType="HashMap" resultMap="myday_typeList">
-       select to_char(reservation_date,'mm-dd') as reservation_date
-              ,decode(chart_type,0, '약국',1,'진료', 2,'예방접종',3,'수술',4,'호텔링')as chart_type
-            from chart
-            where to_char(reservation_date,'yyyy-mm') = to_char(sysdate,'yyyy-mm') 
-                 and fk_idx=#{idx} and fk_pet_uid=#{minpuid}
+       select to_char(c.reservation_date,'mm-dd') as reservation_date
+              ,to_char(r.reservation_date,'yyyy-mm-dd hh24:mi:ss') as reservedate
+              ,decode(c.chart_type,0, '약국',1,'진료', 2,'예방접종',3,'수술',4,'호텔링')as chart_type
+            from chart c join reservation r
+            on c.fk_reservation_uid = r.reservation_uid
+            where to_char(c.reservation_date,'yyyy-mm') = to_char(sysdate,'yyyy-mm') 
+                 and c.fk_idx=#{idx} and c.fk_pet_uid=#{minpuid}
      </select>
      
      <!-- 0210 가장 작은예약번호 알아오기 (마이페이지 진료관리 처방전 입력에 필요 ) -->
      <select id="getminRuid" resultType="String" parameterType="HashMap">
-       select min (reservation_uid) as reservation_uid
-	   from reservation 
-	   where fk_idx=#{idx} and fk_pet_uid=#{minpuid}
-       and to_char(reservation_date,'yyyy-mm') = to_char(sysdate,'yyyy-mm')
-       and reservation_status in (1,2,3)
+       select reservation_uid
+	   from       
+		(       
+		select rownum as rno,  reservation_uid
+		from
+		    (
+		    select reservation_uid
+		    from reservation 
+		    where fk_idx=#{idx} and fk_pet_uid=#{minpuid}
+		    and reservation_status in (1,2,3)
+		    order by reservation_date desc
+		    ) v
+		) t
+		where t.rno=1
      </select>
      
      <!-- 0210 마이페이지에서 잔료관리 클릭시  보여지는 처방전  인서트 창에 불러올 기본 정보  -->
@@ -485,5 +497,37 @@
       from chart C join reservation R
       on C.fk_reservation_uid = R.reservation_uid
       where reservation_uid=#{minruid}
+     </select>
+     
+     <!-- 0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기 -->
+     <select id="getmyPreinfobyajax" parameterType="HashMap" resultMap="myPreinfo">
+        select r.bookingdate,r.reservation_date,c.addpay,c.doc_name
+             ,p.payment_total,p.payment_point,p.payment_pay*-1 as payment_pay,biz_name
+		from chart C join reservation R
+		on C.fk_reservation_uid=R.reservation_uid
+		join payment P
+		on p.fk_reservation_uid = R.reservation_uid
+		where c.fk_idx=#{idx} and c.fk_pet_uid=#{puid} and r.reservation_uid = #{ruid} 
+             and to_char(r.reservation_date,'yyyy-mm-dd hh24:mi:ss') = #{rdate}
+     </select>
+     
+     <!--0210 예약 날짜 및 시간과 맞는 펫 유아이디 가져오기  -->
+     <select id="getpetuidbyajax" parameterType="String" resultType="int">
+        select pet_uid
+		from pet_info p join chart c
+		on p.pet_uid=c.fk_pet_uid
+		join reservation r
+		on r.reservation_uid = c.fk_reservation_uid
+		where to_char(r.reservation_date,'yyyy-mm-dd hh24:mi:ss')=#{reservedate}
+     </select>
+     
+     <!-- //0210 예약날짜 및 시간과 맞는 예약번호 가져오기  -->
+     <select id="getruidbyajax" parameterType="String" resultType="String">
+        select r.reservation_uid
+		from pet_info p join chart c
+		on p.pet_uid=c.fk_pet_uid
+		join reservation r
+		on r.reservation_uid = c.fk_reservation_uid
+		where to_char(r.reservation_date,'yyyy-mm-dd hh24:mi:ss')=#{reservedate}
      </select>
 </mapper>

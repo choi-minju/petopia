@@ -53,7 +53,7 @@
 		(
 		    select fk_reservation_UID as fk_reservation_UID2, count(*) AS reviewCnt
 		    from review
-		    where rv_status = 1
+		    where (rv_status = 1 or rv_blind != 0)<!-- === 2019.02.11 === 수정  -->
 		    group by fk_reservation_UID
 		) T
 		ON v.fk_reservation_UID = t.fk_reservation_UID2
@@ -80,7 +80,7 @@
 		(
 		    select fk_reservation_UID as fk_reservation_UID2, count(*) AS reviewCnt
 		    from review
-		    where rv_status = 1
+		    where (rv_status = 1 or rv_blind != 0)<!-- === 2019.02.11 === 수정  -->
 		    group by fk_reservation_UID
 		) T
 		ON v.fk_reservation_UID = t.fk_reservation_UID2
@@ -125,7 +125,7 @@
 		select review_UID, fk_idx_biz, fk_idx, fk_reservation_UID, startpoint, fk_userid, fk_nickname
 		    	, rv_contents, rv_status, rv_blind, to_char(rv_writeDate, 'yy.mm.dd') as rv_writeDate
 		from review
-		where fk_reservation_UID = #{fk_reservation_UID} and rv_status = 1
+		where fk_reservation_UID = #{fk_reservation_UID} and (rv_status = 1 or rv_blind != 0)<!-- === 2019.02.11 === 수정  -->
 	</select>
 	
 	<!-- *** 리뷰번호로 리뷰 수정하기 *** -->
@@ -471,12 +471,15 @@
 	</select>
 	
 	<!-- *** 병원 리뷰 리스트 *** -->
+	<!-- === 2019.02.11 === 수정 -->
 	<resultMap type="HashMap" id="bizReviewListMap">
 		<result property="RNO"					column="rno"				javaType="String"/>
 		<result property="REVIEW_UID"			column="review_UID"			javaType="String"/>
 		<result property="FK_NICKNAME"			column="fk_nickname"		javaType="String"/>
 		<result property="NAME"					column="name"				javaType="String"/>
+		<result property="FILENAME"				column="filename"			javaType="String"/>
 		<result property="FK_USERID"			column="fk_userid"			javaType="String"/>
+		<result property="RV_CONTENTS"			column="rv_contents"		javaType="String"/>
 		<result property="STARTPOINT"			column="startpoint"			javaType="String"/>
 		<result property="RV_WRITEDATE"			column="rv_writedate"		javaType="String"/>
 		<result property="RV_STATUS"			column="rv_status"			javaType="String"/>
@@ -485,16 +488,17 @@
 	
 	<!-- 기간X검색X -->
 	<select id="selectReviewListByBiz_id" parameterType="HashMap" resultMap="bizReviewListMap">
-		select rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		select rno, review_uid, fk_nickname, name, filename, fk_userid, startpoint, rv_contents, rv_writedate, rv_status, rv_blind
 		from 
 		(
-		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		    select rownum as orderIdx, rno, review_uid, fk_nickname, name, filename, fk_userid, startpoint, rv_contents, rv_writedate, rv_status, rv_blind
 		    from
 		    (
-		        select rownum as rno, review_uid, fk_nickname, name, fk_userid, startpoint, rv_writedate, rv_status, rv_blind
+		        select rownum as rno, review_uid, fk_nickname, name, filename, fk_userid, startpoint, rv_contents, rv_writedate, rv_status, rv_blind
 		        from
 		        (
-		            select a.review_uid, a.fk_nickname, b.name, a.fk_userid, a.startpoint, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate, rv_status, rv_blind
+		            select a.review_uid, a.fk_nickname, b.name, b.filename, a.fk_userid, a.startpoint, a.rv_contents
+		            	, to_char(a.rv_writedate, 'yyyy-mm-dd') as rv_writedate, rv_status, rv_blind
 		            from review a JOIN member b
 		            ON a.fk_idx_biz = b.idx
 		            where rv_status = 1 and b.idx = #{IDX} 
@@ -505,6 +509,7 @@
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
 	</select>
+	<!-- === 2019.02.11 === 수정 -->
 	
 	<!-- 기간X검색O -->
 	<select id="selectReviewListByBiz_idSearch" parameterType="HashMap" resultMap="bizReviewListMap">
@@ -598,6 +603,13 @@
 		ON V.fk_idx_biz = c.idx
 	</select>
 	<!-- === 2019.02.07 === 끝 -->
+	
+	<!-- === 2019.02.11 === 시작 -->
+	<update id="updateReviewCommentsBlindByRc_id" parameterType="HashMap">
+		update review_comment set rc_blind = #{RC_BLIND}
+		where rc_id = #{RC_ID}
+	</update>
+	<!-- === 2019.02.11 === 끝 -->
 	
 	<!-- === 2019.02.08 === 시작 -->
 	<!-- *** 총관리자 페이지 *** -->
@@ -768,4 +780,26 @@
 		ON V.fk_idx_biz = c.idx	
 	</select>
 	<!-- === 2019.02.08 === 끝 -->
+	
+	<!-- === 2019.02.11 ==== 시작 -->
+	<!-- *** 리뷰 댓글 블라인드 처리 *** -->
+	<!-- 블라인드 처리 -->
+	<update id="updateReviewCommentsBlindStatusByRc_id" parameterType="HashMap">
+		update review_comment set rc_blind = #{RC_BLIND}, rc_status = 0
+		where rc_id = #{RC_ID}
+	</update>
+	
+	<!-- 블라인드 처리 취소 -->
+	<update id="updateReviewCommentsBlindCancleByRc_id" parameterType="int">
+		update review_comment set rc_blind = 0, rc_status = 1
+		where rc_id = #{RC_ID}
+	</update>
+	
+	<!-- *** 병원 상세페이지에서 리뷰 별점 평균 불러오기 *** -->
+	<select id="selectAvgStarPoint" parameterType="int" resultType="int">
+		select nvl(trunc(avg(startpoint)), 0)
+		from review
+		where fk_idx_biz = #{idx}
+	</select>
+	<!-- === 2019.02.11 ==== 끝 -->
 </mapper>

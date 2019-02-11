@@ -36,7 +36,25 @@
 			reviewBlind(review_uid, blindNo);
 			
 			$('[type=radio]').prop('checked', false);
-		}); // end of $("#blindModalOK").click();
+		}); // end of $("#blindModalOK").click(); 
+		
+		/* === 2019.02.11 ==== */
+		// 댓글 블라인드 처리
+		$("#commentsBlindModalOK").click(function(){
+			
+			var frm = document.commentsBlindModalFrm;
+			
+			var rc_id = frm.rc_id.value;
+			var blindNo = frm.blindNo.value;
+			var currentPageNo = frm.currentPageNo.value;
+			
+			//alert("rc_id: "+rc_id+", currentPageNo: "+currentPageNo+", blindNo: "+blindNo);
+			
+			reviewCommentsBlind(rc_id, blindNo, currentPageNo);
+			
+			$('[type=radio]').prop('checked', false);
+		}); // end of $("#blindModalOK").click(); 
+		/* === 2019.02.11 ==== */
 		
 	}); // end of $(document).ready()
 	
@@ -75,12 +93,14 @@
 												+'<span>'+entry.RC_WRITEDATE+'</span>'
 											+'</div>'
 											+'<div class="row" style="margin-top: 5px;">';
-								if(entry.RC_STATUS == "0" && entry.RV_BLIND != "0") {
-									html += '<button class="btn" onclick="" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">블라인드 처리 취소</button>';
-								} else if(entry.RC_STATUS == "1" && entry.RV_BLIND == "2") {
-									html += '<button class="btn addColor2" onclick="" style="font-size: 8pt; border: none; padding: 7px;">기업블라인드요청</button>';								
+								if(entry.RC_STATUS == "0" && entry.RC_BLIND != "0") {
+									html += '<button class="btn" onclick="reviewCommentsBlindCancle('+entry.RC_ID+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">블라인드 처리 취소</button>';
+								} else if(entry.RC_STATUS == "1" && entry.RC_BLIND == "2") {
+									html += '<button class="btn addColor2" onclick="reviewCommentsBlind('+entry.RC_ID+', 2, '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px;">기업블라인드요청</button>';								
 								} else  {
-									html += '<button class="btn addColor" onclick="" style="font-size: 8pt; border: none; padding: 7px;" data-toggle="modal" data-target="#showBlind">블라인드 처리</button>';
+									// === 2019.02.11 === 시작 //
+									html += '<button class="btn addColor" onclick="setCommentsBlind('+entry.RC_ID+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px;" data-toggle="modal" data-target="#showCommentsBlind">블라인드 처리</button>';
+									// === 2019.02.11 === 끝 //
 								}// end of if
 
 									html += '</div>'
@@ -111,10 +131,15 @@
 											+'</div>'
 											+'<div class="row" style="margin-top: 5px;">';
 											
-										if(entry.RC_STATUS == "0" && entry.RV_BLIND != "0") {
-											html += '<button class="btn" onclick="" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">블라인드 처리 취소</button>';
-										} else if(entry.RC_STATUS == "1") {
-											html += '<button class="btn addColor" onclick="" style="font-size: 8pt; border: none; padding: 7px;">블라인드 처리</button>';
+										if(entry.RC_STATUS == "0" && entry.RC_BLIND != "0") {
+											html += '<button class="btn" onclick="reviewCommentsBlindCancle('+entry.RC_ID+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">블라인드 처리 취소</button>';
+											// === 2019.02.11 === 시작 //
+										} else if(entry.RC_STATUS == "1" && entry.RC_BLIND == "2") {
+											html += '<button class="btn addColor2" onclick="reviewCommentsBlind('+entry.RC_ID+', 2, '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px;">기업블라인드요청</button>';								
+										} else {
+											
+											html += '<button class="btn addColor" onclick="setCommentsBlind('+entry.RC_ID+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px;" data-toggle="modal" data-target="#showCommentsBlind">블라인드 처리</button>';
+											// === 2019.02.11 === 끝 //
 										}// end of if
 											
 											html += '</div>'
@@ -246,7 +271,7 @@
 					} else {
 						alert("블라인드 취소되었습니다.");
 					}
-					location.reload();
+					showComments(currentPageNo);
 				},
 				error: function(request, status, error){ 
 					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -260,11 +285,91 @@
 	} // end of function reviewBlindCancle(review_uid, currentPageNo)
 	
 	// 블라인드 버튼 누르면 해당 정보 넘기기
-	function setBlind(review_uid, currentPageNo) {
+	function setBlind(rc_id, currentPageNo) {
 		
-		$("#modalReview_uid").val(review_uid);
+		$("#modalReview_uid").val(rc_id);
 		
 	} // end of function setBlind(review_uid, currentPageNo)
+	
+	/* === 2019.02.11 === */
+	// 댓글 블라인드 버튼 누르면 해당 정보 넘기기
+	function setCommentsBlind(rc_id, currentPageNo) {
+		
+		$("#modalCommentsRc_id").val(rc_id);
+		$("#modalCommentsCurrentPageNo").val(currentPageNo);
+		
+	} // end of function setBlind(review_uid, currentPageNo)
+	
+	// 댓글 블라인드
+	function reviewCommentsBlind(rc_id, blindNo, currentPageNo) {
+		
+		var bool = confirm("해당 댓글을 블라인드 처리하시겠습니까?");
+		
+		if(bool == true) {
+			
+			var data = {"rc_id":rc_id,
+						"rc_blind":blindNo};
+			
+			$.ajax({
+				url: "<%=request.getContextPath()%>/updateReviewCommentsBlindStatusByRc_id.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					
+					if(json == 0) {
+						alert("블라인드 처리 실패하였습니다.");
+					} else {
+						alert("블라인드 처리되었습니다.");
+					}
+					showComments(currentPageNo);
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax()
+			
+		} else {
+			$(':focus').blur();
+			
+			return;
+		} // end of if~else
+	} // end of function reviewCommentsBlind(rc_id, blindNo, currentPageNo)
+	
+	// 댓글 블라인드 취소
+	function reviewCommentsBlindCancle(rc_id, currentPageNo) {
+		
+		var bool = confirm("해당 댓글의 블라인드 요청을 취소하시겠습니까?");
+		
+		if(bool == true) {
+			
+			var data = {"rc_id":rc_id};
+			
+			$.ajax({
+				url: "<%=request.getContextPath()%>/updateReviewCommentsBlindCancleByRc_id.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					
+					if(json == 0) {
+						alert("블라인드 취소가 실패하였습니다.");
+					} else {
+						alert("블라인드 취소되었습니다.");
+					}
+					showComments(currentPageNo);
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax()
+			
+		} else {
+			$(':focus').blur();
+			return;
+		} // end of if~else
+	} // end of function reviewCommentsBlindCancle(rc_id, currentPageNo)
+	/* === 2019.02.11 === */
 	
 </script>
 
@@ -369,4 +474,39 @@
 		</div>
 	</div>
 </div>
+
+<!-- ==== 2019.02.11 ==== -->
+<!-- Modal -->
+<div id="showCommentsBlind" class="modal fade" role="dialog" style="margin-top: 50px;">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">댓글 블라인드 처리</h4>
+			</div>
+			
+			<div class="modal-body">
+				<p>블라인드 처리를 하시겠습니까?</p>
+				<p style="font-weight: bold; margin-top: 10px;">블라인드 사유</p>
+				<form name="commentsBlindModalFrm">
+					<input type="hidden" name="rc_id" id="modalCommentsRc_id" />
+					<input type="hidden" name="currentPageNo" id="modalCommentsCurrentPageNo" />
+					
+					<label for="blindComments1"><input type="radio" name="blindNo" id="blindComments1" value="1"/> 욕설/비방</label><br>
+					<label for="blindComments2"><input type="radio" name="blindNo" id="blindComments2" value="2"/> 기업회원의 요청</label><br>
+					<label for="blindComments3"><input type="radio" name="blindNo" id="blindComments3" value="3"/> 신고 누적</label><br>
+					<label for="blindComments4"><input type="radio" name="blindNo" id="blindComments4" value="4"/> 기타</label>
+				</form>
+			</div>
+			
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-default addColor" data-dismiss="modal" id="commentsBlindModalOK">OK</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- ==== 2019.02.11 ==== -->
 <!-- ==== 2019.02.08 ==== -->
