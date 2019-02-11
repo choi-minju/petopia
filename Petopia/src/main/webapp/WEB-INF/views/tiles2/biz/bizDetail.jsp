@@ -211,6 +211,12 @@
 				</div>
 					<div class="row">${bizmvo.easyway}</div>
 				
+				<!-- === 2019.02.11 === 시작 -->
+				<div class="row" style="margin-top: 2%; border: 0px solid red;">
+					<%@ include file="/WEB-INF/views/tiles2/review/hosReviewList.jsp" %>
+				</div>
+				<!-- === 2019.02.11 === 끝 -->
+				
 				<div class="row" style="margin-top: 2%;">
 					<label>의료진</label><BR>
 					
@@ -251,6 +257,7 @@
 						
 					</div>
 					</c:forEach>
+					
 			</div>
 	</div>
 </div>
