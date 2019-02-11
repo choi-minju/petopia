@@ -128,11 +128,13 @@
    <div class="span col-md-12"><textarea  name="chart_contents" style="width:50%; height:15%;"></textarea></div>
    
 	<hr style="width:100%; height:3%; color:white;"></hr>
-	<div class="span col-md-8 ">11.사용한 예치금 : <span id="pament_pay"> ${chartmap.payment_pay}원 </span></div>
-	<div class="span col-md-8 ">12.사용한 포인트 : <span id="">${chartmap.payment_point} POINT</span></div>
-	<div class="span col-md-8 ">13.본인 부담금 :   <span> <input type="number"  id="addpay" name="addpay"/>원</span>
-	 <button type="button" id="btnplus">총합</button></div>
-	<div class="span col-md-8 ">14.총     합 : <span id="paytotal"></span>원</div>
+	<c:if test="${rtype==3}">
+		<div class="span col-md-8 ">11.사용한 예치금 : <span id="pament_pay"> ${chartmap.payment_pay}원 </span></div>
+		<div class="span col-md-8 ">12.사용한 포인트 : <span id="">${chartmap.payment_point} POINT</span></div>
+		<div class="span col-md-8 ">13.본인 부담금 :   <span> <input type="number"  id="addpay" name="addpay" value="0"/>원</span>
+		 <button type="button" id="btnplus">총합</button></div>
+		<div class="span col-md-8 ">14.총     합 : <span id="paytotal"></span>원</div>
+    </c:if>
    
    </div>
     <button type="button" id="register" class="btn1" style="margin-left: 42%; margin-top: 4%;margin-bottom:2%;
@@ -151,11 +153,12 @@
 <input type="hidden" name="pet_type" value="${chartmap.pet_type}"/>
 <input type="hidden" name="pet_name" value="${chartmap.pet_name}"/>
 <input type="hidden" name="reservation_type" value="${chartmap.reservation_type}"/>
+<input type="hidden" name="rx_regName" value="${sessionScope.loginuser.name}"/> 
+<c:if test="${rtype==3}">
 <input type="hidden" name="payment_pay" id="payment_pay"    value="${chartmap.payment_pay}"/>
 <input type="hidden" name="payment_point" id="payment_point"  value="${chartmap.payment_point}"/>
 <input type="hidden" name="totalpay" id="totalpay" value=""/>
-<input type="hidden" name="rx_regName" value="${sessionScope.loginuser.name}"/> 
-
+</c:if>
 
 </Form>
 </div>
