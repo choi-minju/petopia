@@ -99,9 +99,24 @@ public class ConsultController {
 		String search = req.getParameter("search");
 		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
 		String idx = req.getParameter("fk_idx");
+		String str_membertype = req.getParameter("membertype");
+		
+		System.out.println();
+		System.out.println("colname : "+colname);
+		System.out.println("search : "+search);
+		System.out.println("str_currentShowPageNo : "+str_currentShowPageNo);
+		System.out.println("idx : "+idx);
+		System.out.println("membertype : "+str_membertype);
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		//int idx = loginuser.getIdx();
+		//String membertype = loginuser.getMembertype();
+		
+		//System.out.println("membertype : "+loginuser.getMembertype());
+		//System.out.println("idx : "+loginuser.getIdx());
+		
 		
 		HashMap<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("COLNAME", colname);
@@ -117,21 +132,34 @@ public class ConsultController {
 		int endRno = 0; 			// 끝행번호
 		
 		int blockSize = 10;// '페이지바'에 보여줄 페이지의 갯수 
+		//  && loginuser.getIdx()==Integer.parseInt(idx)
 		
-		// - [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
-		if(search!=null && !search.trim().equals("") && !search.trim().equals("null")) {
-			totalCount = service.selectTotalCountWithSearch(paraMap);
+		if(str_membertype==null && idx==null) {
+			// - [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
+			if(search!=null && !search.trim().equals("") && !search.trim().equals("null")) {
+				totalCount = service.selectTotalCountWithSearch(paraMap);
+			}
+		 	// - [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
+			else {
+				totalCount = service.selectTotalCountNoSearch();	
+			}
 		}
-		// - [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
-		else if(idx!=null && loginuser.getIdx()==Integer.parseInt(idx)) {
-			totalCount = service.selectMyConsultCountNoSearch(idx);
+		else if(str_membertype!=null && idx!=null){
+			// - [페이징처리 O, 검색조건 X] 일반회원 : 내가쓴글 갯수 totalCount
+			if( Integer.parseInt(str_membertype)==1 && Integer.parseInt(str_membertype)!=2 && idx!=null) {
+				totalCount = service.selectMyConsultCountNoSearch(idx);
+				System.out.println("일반회원 totalCount : "+totalCount);
+			}
+			// - [페이징처리 O, 검색조건 X] 기업회원 : 내가 댓글 단 글 갯수 totalCount
+			else if( Integer.parseInt(str_membertype)!=1 && Integer.parseInt(str_membertype)==2 && idx!=null ) {
+				totalCount = service.selectBizConsultCountNoSearch(idx);
+				System.out.println("기업회원 totalCount : "+totalCount);
+			}
 		}
-	 	// - [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
-		else {
-			totalCount = service.selectTotalCountNoSearch();
-		}
-		
 		totalPage = (int)Math.ceil((double)totalCount/sizePerPage);
+		
+		// http://localhost:9090/petopia/consultList.pet?membertype=1&fk_idx=7
+		// http://localhost:9090/petopia/consultList.pet?currentShowPageNo=1&sizePerPage=10&colname=null&search=null&period=null
 		
 		// 게시판 목록보기 첫화면 (현재페이지번호가 없을경우)
 		if(str_currentShowPageNo==null) {
@@ -151,14 +179,28 @@ public class ConsultController {
 			}
 		}
 		
+		
+		/*
+		// - 기업회원 : 내가 댓글 단 글번호 배열
+		String[] bizArr = service.selectBizConsultComment(idx);
+		
+		for(int i=0; i<bizArr.length; i++) { 
+			System.out.println("bizArr["+i+"] => "+bizArr[i]);
+		}
+		paraMap.put("BIZARR", bizArr);
+		*/
+		
+		
+		
 		startRno = ((currentShowPageNo-1)*sizePerPage) + 1;
 		endRno = startRno + sizePerPage - 1;
 		
 		paraMap.put("STARTRNO", String.valueOf(startRno));
 		paraMap.put("ENDRNO", String.valueOf(endRno));
 		
+		paraMap.put("MEMBERTYPE", str_membertype);
 		paraMap.put("IDX", idx);
-
+		
 		// - [페이징처리 O, 검색조건 O] 한 페이지 범위마다 보여지는 글목록 // consult:select
 		consultList = service.selectConsultListPaging(paraMap);
 		
@@ -436,6 +478,7 @@ public class ConsultController {
 			map.put("CMT_ID", commentvo.getCmt_id());
 			map.put("FK_CONSULT_UID", commentvo.getFk_consult_UID());
 			map.put("FK_IDX", commentvo.getFk_idx());
+			map.put("CONSULT_FK_IDX", commentvo.getConsult_fk_idx());
 			map.put("CSCMT_NICKNAME", commentvo.getCscmt_nickname());
 			map.put("CSCMT_CONTENTS", commentvo.getCscmt_contents());
 			map.put("CSCMT_WRITEDAY", commentvo.getCscmt_writeday());
@@ -482,6 +525,7 @@ public class ConsultController {
 		
 		String fk_cmt_id = req.getParameter("fk_cmt_id");
 		String fk_idx = req.getParameter("fk_idx");
+		String consult_fk_idx = req.getParameter("consult_fk_idx");
 		String str_cscmt_group = req.getParameter("cscmt_group");
 		String str_cscmt_g_odr = req.getParameter("cscmt_g_odr");
 		String str_cscmt_depth = req.getParameter("cscmt_depth");
@@ -491,6 +535,7 @@ public class ConsultController {
 	
 		commentvo.setFk_cmt_id(fk_cmt_id);
 		commentvo.setFk_idx(fk_idx);
+		commentvo.setConsult_fk_idx(consult_fk_idx);
 		commentvo.setCscmt_group(Integer.parseInt(str_cscmt_group));
 		commentvo.setCscmt_g_odr(Integer.parseInt(str_cscmt_g_odr));
 		commentvo.setCscmt_depth(Integer.parseInt(str_cscmt_depth));
@@ -499,7 +544,7 @@ public class ConsultController {
 		commentvo.setFk_consult_UID(fk_consult_UID);
 		
 		// 대댓글 쓰기
-		int n = service.insertCommentByComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1증가 update
+		int n = service.insertCommentByComment(commentvo); // - [consult_comment]commentvo 댓글쓰기 insert + [consult]commentCount 원글의 댓글갯수 1증가 update + [notification] 댓글작성 알림 insert
 		
 		if(n==1) {
 			// 대댓글쓰기insert 및 원글의댓글갯수update 성공시
