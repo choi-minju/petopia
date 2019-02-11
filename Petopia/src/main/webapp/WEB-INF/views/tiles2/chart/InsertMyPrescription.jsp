@@ -94,7 +94,7 @@ color:rgb(252, 118, 106);
 		//ajaxData();
 		 $(".petimg").click(function(){
 			var classes = $(this).attr('class');
-			 //alert(classes); petimg petUid3
+			 //alert(classes); //petimg petUid3
 			 var str_classes = String(classes); // String으로 변환
 			 var index = str_classes.indexOf('petUid'); // petUid의 자릿수
 			 //alert(index); // 7
@@ -104,40 +104,13 @@ color:rgb(252, 118, 106);
 			 $("#petUidNo").val(petUid);
 			 
 			// 펫정보 불러오기
-			// showPet(petUid);  --- 1
+			 showPet(); // 1
 			// 함수 showPet은 puid를 이용하여 한 마리의 반려동물 정보 불러오기 (ajax)
-                /* 
-                  $.ajax({
-		    		  url: "",
-		    		  type: "GET",
-		    		  data: data,
-		    		  dataType: "JSON",
-		    		  success: function(json){ 
-		    			  
-		    		  },error: function(request, status, error){
- 			           if(request.readyState == 0 || request.status == 0) return;
- 			        //else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
- 		                }
-		    		  });
-			*/
-			// 캘린더
 			
-			
-			
-		 }); // 반려동물 누르면
-		 
-		 
-	 	 
+			// 캘린더  클릭한 펫이미지의 스케줄을 달력으로 불러오기 
 		
-		 $("#register").click(function(){
-			 
-			var frm=document.registerFrm;
-			frm.addaction = "<%=ctxPath%>/InsertMyChartEnd.pet";
-			frm.method="POST";
-			frm.submit();
-		 });
-		 
-		 $('#calendar').fullCalendar({
+
+			 $('#calendar').fullCalendar({
 			 selectable: true,
 		      header: {
 		        left: 'prev,next today',
@@ -163,7 +136,7 @@ color:rgb(252, 118, 106);
 		      events: function(start, end, timezone, callback){
 		    	  
 		    	  var data = {"fk_pet_uid":$("#petUidNo").val()};
-		    	  
+		    	 
 		    	  $.ajax({
 		    		  url: "<%=request.getContextPath()%>/selectMyPrescription.pet",
 		    		  type: "GET",
@@ -189,83 +162,112 @@ color:rgb(252, 118, 106);
 		        		}
 		    	  }); // end of ajax();
 		    	 
-		      }
+		      } //end of events;
 		      
-		  }); 
+		  }); // end 
+		        
+		        
+				
+		 }); // 반려동물이미지 누르면 $(".petimg").click(function()
+		
+	 
+	//등록하기 버튼 
+	 $("#register").click(function(){
+		 
+		var frm=document.registerFrm;
+		frm.action = "<%=ctxPath%>/InsertMyChartEnd.pet";
+		frm.method="POST";
+		frm.submit();
+	 });
+		 
+		
 	});// end of $(document).ready()----------------------
-	
+	 function showPet(){
+         var data = {"fk_pet_uid":$("#petUidNo").val()};
+          $.ajax({
+    		  url: "<%=request.getContextPath()%>/getPinfobyminpuid.pet",
+    		  type: "GET",
+    		  data:data,
+    		  dataType: "JSON",
+    		  success: function(json){ 
+    			  $("#container").empty();
+    			  var html = "<p style='padding-top:1%;'>생년월일: "+json.pet_birthday+"</p></br>"
+    			             +"<p>성별: "+json.pet_gender+"</p></br>"
+    			             +"<p>몸무게: "+json.pet_weight+"kg</p>";
+    			  $("#container").append(html);
+    		  },error: function(request, status, error){
+		           if(request.readyState == 0 || request.status == 0) return;
+		        else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	                }
+    		  });
+	 }// show pet end
+	 
 	
 </script>
 <div class="container divbox1">
    <h3 class="h3_1">진료기록 관리하기</h3>
+   
    <div class="row" >
    
 	   <c:forEach items="${pmaplist}" var="pvo" varStatus="status">
 		    <div class="col-md-3" style="display:inlineblock;float:left;">
-		    <input type="hidden" value="${pvo.pet_UID}" id="imgpuid${pvo.pet_UID}">
-		    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" class="petimg petUid${pvo.pet_UID}" width="50%"style="border-radius: 50%;display:block;"> 
-		    <span style="font-weight: bold;padding-left: 10%;">[${pvo.pet_name}] 님</span>
+			    <input type="hidden" value="${pvo.pet_uid}" id="imgpuid${pvo.pet_uid}"/>
+			    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" class="petimg petUid${pvo.pet_uid}" width="30%"style="border-radius: 50%;display:block;"/> 
+			    <span style="font-weight: bold;padding-left: 10%;">[${pvo.pet_name}] 님</span>
 		    </div>
 	    </c:forEach>
   
    </div>
   
   <div class="divbox3">
-	   <div class="container" Style="width:100%;">
-	   <input type="text" id="petUidNo" value="${minpinfo.pet_UID}">
-			  <p style="padding-top:1%;">생년월일: ${minpinfo.pet_birthday}</p>
+	   <div id="container" Style="width:100%; padding-top: 1%;">
+	   <input type="hidden" id="petUidNo" value="${minpinfo.pet_UID}"/>
+			  <p style="padding-top:1.5%;">생년월일: ${minpinfo.pet_birthday}</p>
 			  <p>성별:   ${minpinfo.pet_gender}</p>
 			  <p>몸무게: ${minpinfo.pet_weight} kg</p>
 	   </div>
   </div>
-  
+   <!-- 달력칸  -->
 <div class="divbox4" id="content" style="width:100%" >
 	<div id="calendar">
 	</div>
 </div>
- <!-- 달력칸  -->
+
  
 <div class="tab-content divbox5 container">
    <div class="container" Style="width:100%;">
 	    <ul class="nav nav-tabs">
-		    <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-		    <li><a data-toggle="tab" href="#menu1">Menu 1</a></li>
-		    <li><a data-toggle="tab" href="#menu2">Menu 2</a></li>
-		    <li><a data-toggle="tab" href="#menu3">Menu 3</a></li>
+		    <c:forEach items="${myreservedaylist}" var="daymap">
+			   <li><a data-toggle="tab" href="#home">${daymap.reservation_date}-${daymap.chart_type}</a></li>
+			</c:forEach>
 	    </ul>
     </div>
     <form name="registerFrm">
     <div id="home" class="tab-pane fade in active" style="padding-left:2%;">
-      
-       <h3></h3>
-       <p>진료예약일자:  </p>
-       <p>방문일자: </p>
+       <h3>${mypreinfo.biz_name}</h3>
+       <p>진료예약일자: ${mypreinfo.bookingdate} </p>
+       <p>방문일자: ${mypreinfo.reservation_DATE}</p>
        <hr Style="width:100%; height:2%;"></hr>
-       <div class="span col-md-10"><h3 style="font-weight:bold;color:pink; margin-top:0">진료결과 </h3></div>
-       <div class="span col-md-10"><p>담당수의사: </p><input type="text" name="docname" style="margin-bottom: 1%;"/></div>
-       <div class="span col-md-10"><p>처방약: </p><input type="text" name="mname" style="margin-bottom: 1%;"/></div>
-        <div  class="span col-md-10"><span>하루 복용 횟수 :</span>
-	      <select name="mtimes" style="margin-bottom: 1%;">
-	        <option value="1">1</option>
-	        <option value="2">2</option>
-	        <option value="3">3</option>
-	      </select>
-	     </div>
-        <div class="span col-md-10"><p>복용량: </p><input type="text" name="ms" style="margin-bottom: 1%;"/></div>
-       <div class="span col-md-10"><p>주의사항: </p><textarea name="caution" style="width:40%;height:20%; margin-bottom: 1%;"></textarea></div>
-       <div class="span col-md-10"><p>내  용: </p><textarea name="memo" style="width:40%;height:20%;"></textarea></div>
+        <div class="span col-md-10"><h3 style="font-weight:bold;color:pink; margin-top:0">진료결과 </h3></div>
+        <div class="span col-md-10"><p>담당수의사: ${mypreinfo.doc_name}</p></div>
+        <div class="span col-md-10"><p>처방약: </p><input type="text" name="rx_name" style="margin-bottom: 1%;"/></div>
+        <div class="span col-md-10"><p>하루 복용 횟수 :</p><input type="text" name="dose_number" style="margin-bottom: 1%;"/></div>
+        <div class="span col-md-10"><p>복용량: </p><input type="text" name="dosage" style="margin-bottom: 1%;"/></div>
+        <div class="span col-md-10"><p>주의사항: </p><textarea name="rx_cautions" style="width:40%;height:20%; margin-bottom: 1%;"></textarea></div>
+        <div class="span col-md-10"><p>내  용: </p><textarea name="rx_notice" style="width:40%;height:20%;"></textarea></div>
         <hr style="width:100%; height:2%;"></hr>
         <div style="margin-left: 70%;">
-	       <p>예치금: </p>
-	       <p>본인 부담금:</p>
-	       <p>진료비 총액:</p>
-       </div>
+	       <p>결제 포인트: ${mypreinfo.payment_point} POINT</p>
+	       <p>본인 부담금:${mypreinfo.addpay} 원</p>
+	       <p>실제 결제 금액:${mypreinfo.payment_pay}원</p>
+	       <p>진료비 총액: ${mypreinfo.payment_total} 원</p>
+        </div>
       </div>
-        <input type="hidden" value="${sessionScope.loginuser.name}" name="name"/>
+        <input type="hidden" value="${sessionScope.loginuser.name}" name="rx_regname"/>
         </form>
         <button type="button" class="btn2" id="register">등록하기</button>
-    </div>
+       <!--  <button type="button" class="btn3" id="edit">수정하기</button> -->
+    </div> <!--  컨테이너 5 -->
    
 </div>
-
 
