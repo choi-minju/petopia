@@ -1,4 +1,4 @@
-package com.final2.petopia.controller;
+ package com.final2.petopia.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.model.NotificationVO;
 import com.final2.petopia.service.InterNotificationService;
@@ -30,7 +31,7 @@ public class NotificationController {
 	// 안읽은 알림 배지 생성(AJAX) ------------------------------------------------------------------------------------
 	@RequestMapping(value="/unreadNotificationCount.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, Integer> unreadNotificationCount(HttpServletRequest req) throws Throwable {
+	public HashMap<String, Integer> requireLogin_unreadNotificationCount(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
 		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
 		
@@ -52,7 +53,7 @@ public class NotificationController {
 	// (안읽은 알림만 생성)
 	@RequestMapping(value="/notificationSimpleList.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public List<HashMap<String, String>> notificationSimpleList(HttpServletRequest req) throws Throwable {
+	public List<HashMap<String, String>> requireLogin_notificationSimpleList(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
 		List<HashMap<String, String>> notificationSimpleList = new ArrayList<HashMap<String, String>>();
 		
@@ -107,21 +108,39 @@ public class NotificationController {
 		return "notification/notificationList.tiles2";
 	}
 	
-	/*
-	// 알림 페이지 내용 요청(AJAX) -------------------------------------------------------------------------------------
+	// 알림 페이지 내용 생성(AJAX) -------------------------------------------------------------------------------------
 	@RequestMapping(value="/notificationListAJAX.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public List<HashMap<String, String>> notificationListAJAX(HttpServletRequest req) throws Throwable {
+	public List<HashMap<String, String>> requireLogin_notificationListAJAX(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 	
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		int idx = loginuser.getIdx();
 		
+		// 알림 리스트 가져오기
 		List<NotificationVO> notificationList = service.selectNotificationList(idx);
 		
+		List<HashMap<String, String>> returnMapList = new ArrayList<HashMap<String, String>>();
 		
+		if(notificationList.size() > 0) {
+			for(NotificationVO nvo : notificationList) {
+				HashMap<String, String> returnMap = new HashMap<String, String>();
+				
+				returnMap.put("NOT_UID", nvo.getNot_UID());
+				returnMap.put("NOT_TYPE", nvo.getShowNot_type());
+				returnMap.put("NOT_MESSAGE", nvo.getNot_message());
+				returnMap.put("NOT_DATE", nvo.getNot_date());
+				returnMap.put("NOT_READCHECK", nvo.getNot_readcheck());
+				returnMap.put("NOT_REMINDSTATUS", nvo.getNot_remindstatus());
+				returnMap.put("NOT_TIME", nvo.getNot_time());
+				returnMap.put("NOT_URL", nvo.getNot_URL());
+				
+				returnMapList.add(returnMap);
+			}
+		}
 		
-		return notificationList;
+		return returnMapList;
 	}
-	*/
+	
+	
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.final2.petopia.model.InterNotificationDAO;
+import com.final2.petopia.model.NotificationVO;
 
 @Service
 public class NotificationService implements InterNotificationService {
@@ -37,6 +38,15 @@ public class NotificationService implements InterNotificationService {
 		List<HashMap<String, String>> n_List = dao.selectNotificatioSimplenList(idx);
 		
 		return n_List;
+	}
+	
+	// 알림 리스트 가져오기
+	@Override
+	public List<NotificationVO> selectNotificationList(int idx) {
+		
+		List<NotificationVO> notificationList = dao.selectNotificationList(idx);
+		
+		return notificationList;
 	}
 
 }
