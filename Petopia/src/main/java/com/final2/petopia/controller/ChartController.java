@@ -60,7 +60,7 @@ public class ChartController {
 			req.setAttribute("loc", loc);
 			req.setAttribute("msg", msg);
 
-			return msg;
+			return "msg";
 		} else {
 
 			// 0202 반려동물의 이미지와 이름을 리스트로 보여주기
