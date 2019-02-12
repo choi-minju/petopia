@@ -101,4 +101,35 @@ public class NotificationVO {
 		this.not_URL = not_URL;
 	}
 	
+	public String getShowNot_type() {
+		
+		String result = "";
+		
+		switch (not_type) {
+		case "0":
+			result = "공지";
+			break;
+		case "1":
+			result = "케어";
+			break;
+		case "2":
+			result = "예약";
+			break;
+		case "3":
+			result = "결제";
+			break;
+		case "4":
+			result = "댓글";
+			break;
+		case "5":
+			result = "화상상담";
+			break;
+		default:
+			break;
+		}
+		
+		return result;
+		
+	}
+	
 }

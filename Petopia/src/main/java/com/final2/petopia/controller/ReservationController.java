@@ -3,6 +3,7 @@ package com.final2.petopia.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -79,6 +80,25 @@ public class ReservationController {
 		}
 		
 		return halfTime;
+	}
+//	[190211] 랜덤 무통장입금 계좌 만들기
+	public String makeAccountNumber() {
+		int certNumLength = 12;
+
+        Random random = new Random(System.currentTimeMillis());
+        
+        int range = (int)Math.pow(12,certNumLength);
+        int trim = (int)Math.pow(12, certNumLength-1);
+        int result = random.nextInt(range)+trim;
+         
+        if(result>range){
+            result = result - trim;
+        }
+        if(result<0) {
+        	result = result*-1;
+        }
+        String str_result = String.valueOf(result).substring(0, 3)+"-"+String.valueOf(result).substring(3, 6)+"-"+String.valueOf(result).substring(6);
+        return str_result;
 	}
 	
 	@RequestMapping(value="/reservation.pet", method= {RequestMethod.GET})
@@ -349,7 +369,9 @@ public class ReservationController {
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		String idx = String.valueOf(loginuser.getIdx());
 		int sumDeposit = service.selectSumDepositByIdx(idx);
+		int sumPoint = service.selectPointByIdx(idx);
 		req.setAttribute("sumDeposit", sumDeposit);
+		req.setAttribute("sumPoint", sumPoint);
 		// 190206 끝
 		return "reservation/depositList.tiles2";
 	}
@@ -369,7 +391,7 @@ public class ReservationController {
 		}
 		String type = req.getParameter("type");
 		if(type == null || "".equals(type)) {
-			type = "-1";
+			type = "-10";
 		}
 		
 		int sizePerPage = 10;	// 한 페이지 당 보여줄 댓글의 갯수
@@ -381,7 +403,15 @@ public class ReservationController {
 		paraMap.put("rno1", String.valueOf(rno1));
 		paraMap.put("rno2", String.valueOf(rno2));
 		paraMap.put("type", type);
-		List<DepositVO> depositList = service.selectDepositListByIdx(paraMap);
+		// [190211] 관리자 경우 추가
+		List<DepositVO> depositList = new ArrayList<DepositVO>();
+		
+		if(loginuser.getMembertype().equals("3")) {
+			depositList = service.selectDepositListByIdxForAdmin(paraMap);
+		}
+		else {
+			depositList = service.selectDepositListByIdx(paraMap);
+		}
 		
 		for(DepositVO dvo : depositList) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -408,7 +438,7 @@ public class ReservationController {
 		String sizePerPage = req.getParameter("sizePerPage");
 		String type = req.getParameter("type");
 		if(type == null || "".equals(type)) {
-			type = "-1";
+			type = "-10";
 		}
 		if(sizePerPage == null || "".equals(sizePerPage)) {
 			sizePerPage = "10"; // [190130] 페이지바 수정
@@ -418,7 +448,15 @@ public class ReservationController {
 		paraMap.put("idx", idx);
 		paraMap.put("type", type);
 		paraMap.put("sizePerPage", sizePerPage);
-		int totalCount = service.selectDepositListTotalCount(paraMap);
+		
+		// [190211] 관리자 추가
+		int totalCount = 0;
+		if(loginuser.getMembertype().equals("3")) {
+			totalCount = service.selectDepositListTotalCountForAdmin(paraMap);
+		}
+		else {
+			totalCount = service.selectDepositListTotalCount(paraMap);
+		}
 
 //		총 페이지 수 구하기
 //		ex) 57.0(행 개수)/10(sizePerPage) => 5.7 => 6.0 => 6
@@ -652,15 +690,21 @@ public class ReservationController {
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		String membertype = loginuser.getMembertype();
-
-		HashMap<String, String> resultMap = service.selectRvDetailByPUID(payment_UID, membertype); 
+		String idx = String.valueOf(loginuser.getIdx()); // [190211] 
+		HashMap<String, String> resultMap = service.selectRvDetailByPUID(payment_UID, membertype, idx); 
 		
 		return resultMap;
 	}
 	
 	@RequestMapping(value="bizDepositAccount.pet", method= {RequestMethod.GET})
 	public String requireLogin_biz_depositList(HttpServletRequest req, HttpServletResponse res) {
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
+		String idx = String.valueOf(loginuser.getIdx());
+		
+		int sumDeposit = service.selectSumDepositByIdx(idx);
+		req.setAttribute("sumDeposit", sumDeposit);
 		return "reservation/biz_depositList.tiles2";
 	}
 	
@@ -864,22 +908,25 @@ public class ReservationController {
 			
 			paraMap.put("fk_idx", idx);
 			paraMap.put("depositcoin", depositCoin);
-			paraMap.put("deposit_status", "0");
-			paraMap.put("deposit_type", "direct");
+			paraMap.put("deposit_status", "-1");
+			
 			paraMap.put("payment_UID", "0");
-			int n = service.insertChargeDeposit(paraMap);
+			String accountNumber = makeAccountNumber();
+			paraMap.put("deposit_type", accountNumber);
+			int n = service.insertDeposit(paraMap);
 			
 			String msg = "";
 			String loc = "";
 			if(n==1) {
-				msg = "무통장입금 신청 성공! 24시간 이내에 신한 123 456 567890으로 입금 바랍니다.";
-				loc = "javascript:location.href='"+req.getContextPath()+"/deposit.pet'";
+				msg = "무통장입금 신청 성공! 24시간 이내에 신한 "+accountNumber+"으로 입금 바랍니다.";
+				loc = "javascript:self.close(); opener.close(); opener.opener.location.href='"+req.getContextPath()+"/deposit.pet';";
 			}
 			else {
 				msg = "충전 실패";
 				loc = "javascript:history.back();";
 			}
-			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", loc);
 		}
 		
 		return "msg";
@@ -903,7 +950,7 @@ public class ReservationController {
 		paraMap.put("deposit_type", depositType);
 		paraMap.put("payment_UID", "0");
 		
-		int n = service.insertChargeDeposit(paraMap);
+		int n = service.insertDeposit(paraMap);
 		
 		String msg="";
 		String loc="";
@@ -920,4 +967,89 @@ public class ReservationController {
 		req.setAttribute("loc", loc);
 		return "msg";
 	}
+	
+	@RequestMapping(value="selectDirectAccountView.pet", method= {RequestMethod.GET})
+	@ResponseBody
+	public HashMap<String, String> selectDirectAccountView(HttpServletRequest req, HttpServletResponse res) {
+		HashMap<String, String> returnMap = new HashMap<String, String>();
+		
+		String deposit_UID = req.getParameter("deposit_UID");
+		
+		returnMap = service.selectDepositDirectAccount(deposit_UID);
+		
+		return returnMap;
+	}
+	
+	@RequestMapping(value="admin_depositList.pet", method= {RequestMethod.GET})
+	public String requireLogin_admin_depositList(HttpServletRequest req, HttpServletResponse res) {
+		
+		return "reservation/admin_depositList.tiles2";
+	}
+	
+	@RequestMapping(value="goUpdateDepositStatus.pet", method= {RequestMethod.GET})
+	public String goUpdateDepositStatus(HttpServletRequest req, HttpServletResponse res) {
+		String deposit_UID = req.getParameter("deposit_UID");
+		
+		int result = service.updateDepositStatusByDUID(deposit_UID);
+		
+		String msg="";
+		String loc="";
+		
+		if(result==1) {
+			msg="입금확인 완료!";
+			loc=req.getContextPath()+"/admin_depositList.pet";
+		}
+		else {
+			msg="상태변경 실패";
+			loc="javascript:history.back();";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		return "msg";
+	}
+	
+	@RequestMapping(value="withdrawForBiz.pet", method= {RequestMethod.GET})
+	public String requireLogin_withdrawForBiz(HttpServletRequest req, HttpServletResponse res) {
+		String idx = req.getParameter("idx");
+		int depositAmount = service.selectSumDepositByIdx(idx);
+		req.setAttribute("idx", idx);
+		req.setAttribute("depositAmount", depositAmount);
+		return "tiles2/reservation/biz_withdraw";
+	}
+	
+	@RequestMapping(value="withdrawForBizEnd.pet", method= {RequestMethod.POST})
+	public String requireLogin_withdrawForBizEnd(HttpServletRequest req, HttpServletResponse res) {
+		String idx_biz = req.getParameter("idx");
+		String depositCoin = "-"+req.getParameter("depositCoin");
+		String depositType = req.getParameter("depositType");
+		String accountNumber = req.getParameter("accountNumber");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		
+		paraMap.put("fk_idx", idx_biz);
+		paraMap.put("depositcoin", depositCoin);
+		paraMap.put("depositType", depositType+" "+accountNumber);
+		paraMap.put("deposit_status", "3");
+		paraMap.put("deposit_type", depositType);
+		paraMap.put("payment_UID", "0");
+		
+		String msg = "";
+		String loc = "";
+		
+		int n = service.insertDeposit(paraMap);
+		if(n==1) {
+			msg="출금완료! 5분~3시간 이내 확인 바랍니다.";
+			loc="javascript:self.close(); opener.location.reload();";
+		}
+		else {
+			msg="출금실패";
+			loc="javascript:history.back();";
+		}
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		return "msg";
+	}
+	
+	
 }

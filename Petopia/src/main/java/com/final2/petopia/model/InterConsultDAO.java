@@ -14,8 +14,13 @@ public interface InterConsultDAO {
 	// [페이징처리 O, 검색조건 O] 전체글 갯수 totalCount
 	int selectTotalCountWithSearch(HashMap<String, String> paraMap);
 
-	// [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
+	// [페이징처리 O, 검색조건 X] 일반회원 : 내가쓴글 갯수 totalCount
 	int selectMyConsultCountNoSearch(String idx);
+	
+	// [페이징처리 O, 검색조건 X] 기업회원 : 내가 댓글 단 글 갯수 totalCount
+	int selectBizConsultCountNoSearch(String idx);
+	// 기업회원 : 내가 댓글 단 글번호 리스트
+	//String[] selectBizConsultComment(String idx);
 	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	int selectTotalCountNoSearch();
@@ -78,6 +83,9 @@ public interface InterConsultDAO {
 
 	// - 알림 테이블에 board로 notification:insert
 	int insertConsultNotification(String idx);
+
+
+	
 
 	
 

@@ -34,4 +34,15 @@ public class NotificationDAO implements InterNotificationDAO{
 		return n_List;
 	}
 
+	// 알림 리스트 가져오기
+	@Override
+	public List<NotificationVO> selectNotificationList(int idx) {
+		
+		List<NotificationVO> notificationList = sqlsession.selectList("notification.selectNotificatioList", idx);
+		
+		return notificationList;
+	}
+
+	
+	
 }

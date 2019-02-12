@@ -138,10 +138,7 @@
 	$(document).ready(function() {
 		
 		getPet();
-		
-		// [19-02-08. 수정 시작_hyunjae]
-		getPetcare();
-
+		getPetcare(); 
 		
 	});// end of $(document).ready()----------------------------------------
 	
@@ -195,7 +192,7 @@
 	                 $("#calendar").empty();
 	                 
 	         		// [19-02-08. 수정 시작_hyunjae]
-	         		var resultArr = []; // #뉴 어레이도 가능
+	         		var resultArr = []; 
 						
 						for(var i=0; i<json.length; i++) {
 							var obj = {
@@ -204,29 +201,8 @@
 				    	              , end : json[i].CARE_END
 				    	              };
 							resultArr.push(obj); // 배열속에 값을 넣기
-							console.log(obj);
 					} // end of for
-					
-					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~");
-					
-					console.log(resultArr);
-					
-					console.log("~~~~~~~~~~~~~~~~~~~~~~~~~");
-					
-					console.log(resultArr[0].title);
-                    
-                    
-					for(var i=0; i<resultArr.length; i++) {
-						
-						str += "{title: '"+resultArr[i].title+"', start: '"+resultArr[i].start+"', end: '"+resultArr[i].end+"'}"; 
-																		
-						if(i<resultArr.length-1) {
-							str += ",";
-						}
-					}
-					
-					console.log(str);
-					
+
 					////////////////////////////// FullCalendar 시작 //////////////////////////////
 	         		$('#external-events .fc-event').each(function() {
 	         	
@@ -262,29 +238,18 @@
 	         					$(this).remove();
 	         				}
 	         				
-	         				console.log("###############");
-	         				console.log(str);
 	         			},
-	         			events: [
-	         				
-	         				//resultArr
-	         				
-	         				//str
-	         				
-	         				 {title: '용변', start: '2019-03-07 15:30', end: '2019-02-07 16:20'},{title: '식사', start: '2019-02-07 16:10', end: '2019-02-07 16:30'},{title: '식사', start: '2019-02-07 15:30', end: '2019-02-07 16:00'}
-	         				
-	         			    /* {
-	         			      title: 'Event Title1',
-	         			      start: '2019-02-08T13:13:55.008',
-	         			      end: '2019-02-08T13:13:55.008'
-	         			    },
-	         			    {
-	         			      title: 'Event Title2',
-	         			      start: '2019-02-10T13:13:55-0400',
-	         			      end: '2019-02-12T13:13:55-0400'
-	         			    } */
-	         			    
-	         			  ]
+	         			// [19-02-11. 수정 시작_hyunjae]
+	         			events: resultArr, 
+	         			
+	         			eventRender: function(event, element) { 
+	         			      eventsdate = moment(event.start).format('hh:mm a'); 
+	         			      eventedate = moment(event.end).format('hh:mm a'); 
+
+	         			      element.find('.fc-time').html(eventsdate + " - " + eventedate + "<br>"); 
+	         			}
+	         			// [19-02-11. 수정 끝_hyunjae]	 
+
 	         		});
 					//////////////////////////////FullCalendar 끝 //////////////////////////////
 	         		// [19-02-08. 수정 끝_hyunjae]	                 
@@ -292,7 +257,7 @@
 	                 var html = "<table id='table' class='table table-sm'>"
              	   			  + "	<thead>"
              	   			  + "		<tr>"
-             	   			  + "			<th colspan='3'>Handle</th>"
+             	   			  + "			<th colspan='3'>${date}</th>"
              	   			  + "		</tr>"
              	   			  + "	</thead>"
                  	   		  + "	<tbody>";

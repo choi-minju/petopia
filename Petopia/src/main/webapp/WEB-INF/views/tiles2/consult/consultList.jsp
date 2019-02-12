@@ -69,7 +69,7 @@
 		frm.method = "GET";
 		frm.submit();
 	}
-	
+
 	// 내가 쓴 글 목록
 	function goMyConsult() {
 		var frm = document.myConsultFrm;
@@ -77,7 +77,7 @@
 		frm.method = "GET";
 		frm.submit();
 	}
-	
+
 </script>
 
 
@@ -87,10 +87,11 @@
 		
 		
 		<div class="row">
-			<%-- 일반회원 --%>
+			<%-- 일반회원 javascript:location.href='<%=request.getContextPath()%>/consultList.pet' --%>
 			<c:if test="${sessionScope.loginuser.membertype==1}"> 
 				<div class="col-xs-12 col-md-4" style="background-color: #ffffff;">
 					<form name="myConsultFrm" >
+					<input type="hidden" name="membertype" value="${sessionScope.loginuser.membertype}" />
 					<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}" />
 					<button type="button" class="btn btnmenu btn-rounder"  style="border: 1px solid #fc766b; float:left; border-radius:50px; width:30%; height:4%; font-size:12px;" onClick="goMyConsult();">
 					내가 쓴 글
@@ -99,10 +100,11 @@
 				</div>
 			</c:if>
 			
-			<%-- 기업회원 
+			<%-- 기업회원 --%>
 			<c:if test="${sessionScope.loginuser.membertype==2}"> 
 				<div class="col-xs-12 col-md-4" style="background-color: #ffffff;">
 					<form name="myConsultFrm" >
+					<input type="hidden" name="membertype" value="${sessionScope.loginuser.membertype}" />
 					<input type="hidden" name="fk_idx" value="${sessionScope.loginuser.idx}" />
 					<button type="button" class="btn btnmenu btn-rounder"  style="border: 1px solid #fc766b; float:left; border-radius:50px; width:30%; height:4%; font-size:12px;" onClick="goMyConsult();">
 					내가 상담한 글
@@ -110,7 +112,7 @@
 					</form>
 				</div>
 			</c:if>
-			--%>
+			
 			
 			<div class="col-xs-12 col-md-8" style="background-color: #ffffff;">
 				<form name="searchFrm" >
