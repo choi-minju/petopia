@@ -166,9 +166,19 @@
 												  + '<button class="btn" onclick="goCommentsDel('+entry.RC_ID+', '+currentPageNo+')" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">삭제</button>';
 										}
 										html +='<button class="btn" onclick="goCommentsAddShow('+entry.RC_ID+', '+rc_userid+', '+entry.RC_GROUP+', '+entry.RC_G_ODR+', '+entry.RC_DEPTH+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">답글</button>';
+										
+										// === 2019.02.11 === 시작 //
+										if("${sessionScope.loginuser.idx}" != entry.FK_IDX) {
+											if(entry.RC_STATUS == "1" && entry.RC_BLIND == "2") {
+												html += '<button class="btn addColor2" onclick="reviewCommentsBlindCancle('+entry.RC_ID+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px;">블라인드 요청 취소</button>';								
+											} else {
+												html += '<button class="btn" onclick="reviewCommentsBlind('+entry.RC_ID+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">블라인드 요청</button>';
+											}
+										}// end of if~else
+										// === 2019.02.11 === 시작 //
 									} 
 								}// end of if
-
+								
 									html += '</div>'
 											+'<div class="row" id="commentsShow'+entry.RC_ID+'" style="margin-top: 5px;">'
 											+'</div>'
@@ -201,10 +211,22 @@
 												if("${sessionScope.loginuser.idx}" == entry.FK_IDX) {
 													html += '<button class="btn" onclick="goCommentsEditShow('+entry.RC_ID+', '+currentPageNo+')" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">수정</button>'
 														  + '<button class="btn" onclick="goCommentsDel('+entry.RC_ID+', '+currentPageNo+')" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">삭제</button>';
-												}
+												} 
 												html +='<button class="btn" onclick="goCommentsAddShow('+entry.RC_ID+', '+rc_userid+', '+entry.RC_GROUP+', '+entry.RC_G_ODR+', '+entry.RC_DEPTH+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">답글</button>';
+												
+												// === 2019.02.11 === 시작 //
+												if("${sessionScope.loginuser.idx}" != entry.FK_IDX) {
+													if(entry.RC_STATUS == "1" && entry.RC_BLIND == "2") {
+														html += '<button class="btn addColor2" onclick="reviewCommentsBlindCancle('+entry.RC_ID+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px;">블라인드 요청 취소</button>';								
+													} else {
+														html += '<button class="btn" onclick="reviewCommentsBlind('+entry.RC_ID+', '+currentPageNo+');" style="font-size: 8pt; border: none; padding: 7px; background-color: white;">블라인드 요청</button>';
+													}
+												}// end of if~else
+												// === 2019.02.11 === 시작 //
 											} 
 										}// end of if
+										
+										
 											
 											html += '</div>'
 											+'<div class="row" id="commentsShow'+entry.RC_ID+'" style="margin-top: 5px;">'
@@ -419,6 +441,79 @@
 		}); // end of ajax
 	} // end of function goCommentsAdd(idx, currentPageNo)
 	// === 2019.02.08 === //
+	
+	/* === 2019.02.11 === */
+	// *** 댓글 블라인드 ***//
+	function reviewCommentsBlind(rc_id, currentPageNo) {
+		
+		var bool = confirm("해당 댓글을 블라인드 요청하시겠습니까?");
+		
+		if(bool == true) {
+			
+			var data = {"rc_id":rc_id,
+						"rc_blind":2};
+			
+			$.ajax({
+				url: "<%=request.getContextPath()%>/reviewCommentsBlindByRc_id.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					
+					if(json == 0) {
+						alert("블라인드 처리 실패하였습니다.");
+					} else {
+						alert("블라인드 처리되었습니다.");
+					}
+					showComments(currentPageNo);
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax()
+			
+		} else {
+			$(':focus').blur();
+			
+			return;
+		} // end of if~else
+	} // end of function reviewCommentsBlind(rc_id, blindNo, currentPageNo)
+	
+	// 댓글 블라인드 취소
+	function reviewCommentsBlindCancle(rc_id, currentPageNo) {
+		
+		var bool = confirm("해당 댓글의 블라인드 요청을 취소하시겠습니까?");
+		
+		if(bool == true) {
+			
+			var data = {"rc_id":rc_id,
+						"rc_blind": 0};
+			
+			$.ajax({
+				url: "<%=request.getContextPath()%>/reviewCommentsBlindByRc_id.pet",
+				type: "POST",
+				data: data,
+				dataType: "JSON",
+				success: function(json){
+					
+					if(json == 0) {
+						alert("블라인드 취소가 실패하였습니다.");
+					} else {
+						alert("블라인드 취소되었습니다.");
+					}
+					showComments(currentPageNo);
+				},
+				error: function(request, status, error){ 
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			}); // end of ajax()
+			
+		} else {
+			$(':focus').blur();
+			return;
+		} // end of if~else
+	} // end of function reviewCommentsBlindCancle(rc_id, currentPageNo)
+	/* === 2019.02.11 === */
 	
 </script>
 

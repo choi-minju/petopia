@@ -40,12 +40,27 @@ public class ConsultService implements InterConsultService {
 		return n;
 	}
 
-	// [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
+	// [페이징처리 O, 검색조건 X] 일반회원 : 내가쓴글 갯수 totalCount
 	@Override
 	public int selectMyConsultCountNoSearch(String idx) {
 		int n = dao.selectMyConsultCountNoSearch(idx);
 		return n;
 	}
+	
+	// [페이징처리 O, 검색조건 X] 기업회원 : 내가 댓글 단 글 갯수 totalCount
+	@Override
+	public int selectBizConsultCountNoSearch(String idx) {
+		int n = dao.selectBizConsultCountNoSearch(idx);
+		return n;
+	}
+	/*
+	// 기업회원 : 내가 댓글 단 글번호 리스트
+	@Override
+	public String[] selectBizConsultComment(String idx) {
+		String[] bizArr = dao.selectBizConsultComment(idx);
+		return bizArr;
+	}
+	*/
 	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	@Override
@@ -156,6 +171,7 @@ public class ConsultService implements InterConsultService {
 		int result1 = 0;
 		int result2 = 0;
 		int result3 = 0;
+		int result4 = 0;
 		
 		if( commentvo.getFk_cmt_id()!=null && commentvo.getFk_cmt_id()!="0" ) {
 			int fk_cmt_idCount = dao.getFk_cmt_idCount(commentvo); // 받아온 fk_cmt_id값이 기존에 fk_cmt_id과 같은게 있는지 없는지
@@ -176,10 +192,11 @@ public class ConsultService implements InterConsultService {
 			result2 = dao.updateCommentCscmtgOdr(commentvo); // - cscmt_g_odr update
 			if(result2>=0) {
 				result3 = dao.updateConsultCommentCount(commentvo.getFk_consult_UID()); // - [consult]commentCount 원글의 댓글갯수 1 update
+				result4 = dao.insertCommentNotification(commentvo); // - [notification] 댓글작성 알림 insert
 			}
 		}
 		
-		return result3;
+		return result4;
 	}
 	
 	// 댓글리스트 select
@@ -232,6 +249,10 @@ public class ConsultService implements InterConsultService {
 		int n = dao.insertConsultNotification(idx);
 		return n;
 	}
+
+	
+
+	
 	
 
 	

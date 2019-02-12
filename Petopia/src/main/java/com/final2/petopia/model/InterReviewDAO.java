@@ -99,6 +99,11 @@ public interface InterReviewDAO {
 	HashMap<String, String> selectReviewByBiz_idReview_UID(HashMap<String, Integer> paraMap);
 	// === 2019.02.07 === 끝 //
 	
+	// === 2019.02.11 === 시작 //
+	// *** 댓글 블라인드처리 요청 *** //
+	int updateReviewCommentsBlindByRc_id(HashMap<String, Integer> paraMap);
+	// === 2019.02.11 === 끝 //
+	
 	// === 2019.02.08 === 시작 //
 	// === 2019.02.08 ==== //
 	// *** 총관리자 페이지 *** //
@@ -121,8 +126,17 @@ public interface InterReviewDAO {
 	
 	// *** 리뷰 디테일 페이지 정보 가져오기 *** //
 	HashMap<String, String> selectReviewByAdminReview_UID(int review_UID);
-	
 	// === 2019.02.08 === 끝 //
+	
+	// === 2019.02.11 ==== //
+	// *** 리뷰 댓글 블라인드 처리 *** //
+	int updateReviewCommentsBlindStatusByRc_id(HashMap<String, Integer> paraMap); // 블라인드 처리
+	int updateReviewCommentsBlindCancleByRc_id(int rc_id); // 블라인드 처리 취소
+	
+	// *** 병원 상세페이지에서 리뷰 별점 평균 불러오기 *** //
+	int selectAvgStarPoint(int idx);
+	
+	// === 2019.02.11 ==== //
 	
 	
 }

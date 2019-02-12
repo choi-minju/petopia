@@ -70,7 +70,7 @@ public interface InterReservationService {
 
 //	[190130]
 //	#예약 상세 페이지
-	HashMap<String, String> selectRvDetailByPUID(String payment_UID, String membertype);	// [190131] membertype 추가
+	HashMap<String, String> selectRvDetailByPUID(String payment_UID, String membertype, String idx);	// [190131] membertype 추가 190211 idx 추가
 
 //	[190203]
 	int selectPaymentTotalCountWithSearch(HashMap<String, String> paraMap);
@@ -90,7 +90,17 @@ public interface InterReservationService {
 
 //	[190208]
 //	#결제시 deposit테이블에 정보 insert
-	int insertChargeDeposit(HashMap<String, String> paraMap);
+	int insertDeposit(HashMap<String, String> paraMap);
+
+//	[190211]
+//	#deposit테이블에서 무통장입금 계좌 정보 가져오기
+	HashMap<String, String> selectDepositDirectAccount(String deposit_UID);
+
+	List<DepositVO> selectDepositListByIdxForAdmin(HashMap<String, String> paraMap);
+
+	int selectDepositListTotalCountForAdmin(HashMap<String, String> paraMap);
+
+	int updateDepositStatusByDUID(String deposit_UID);
 
 	
 

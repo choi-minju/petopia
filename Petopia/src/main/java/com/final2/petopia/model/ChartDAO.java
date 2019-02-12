@@ -244,22 +244,22 @@ public class ChartDAO implements InterChartDAO {
 
 	//0210 마이페이지에서 진료관리 클릭시 보여지는 병원 방문 날짜 리스트 가져오기
 	@Override
-	public List<HashMap<String,String>> getmyreservedaylist(HashMap<String, Object> paramap) {
+	public List<HashMap<String,String>> getmyreservedaylist(HashMap<String, String> paramap) {
 		List<HashMap<String,String>> myreservedaylist = sqlsession.selectList("chart.getmyreservedaylist", paramap);
 		return myreservedaylist;
 	}
 
 	//0210 가장 작은예약번호 알아오기 (마이페이지 진료관리 처방전 입력에 필요 )
 	@Override
-	public String getminRuid(HashMap<String, Object> paramap) {
+	public String getminRuid(HashMap<String, String> paramap) {
 		String minRuid = sqlsession.selectOne("chart.getminRuid",paramap);
 		return minRuid;
 	}
 
 	//0210 마이페이지에서 잔료관리 클릭시  보여지는 처방전  인서트 창에 불러올 기본 정보 
 	@Override
-	public HashMap<String, Object> getmyPreinfo(HashMap<String, Object> paramap2) {
-		HashMap<String, Object> myPreinfo = sqlsession.selectOne("chart.getmyPreinfo",paramap2);
+	public HashMap<String, String> getmyPreinfo(HashMap<String, String> paramap2) {
+		HashMap<String, String> myPreinfo = sqlsession.selectOne("chart.getmyPreinfo",paramap2);
 		return myPreinfo;
 	}
 
@@ -268,6 +268,27 @@ public class ChartDAO implements InterChartDAO {
 	public String getcuid(String minruid) {
 		String cuid = sqlsession.selectOne("chart.getcuid",minruid);
 		return cuid;
+	}
+
+	//0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기
+	@Override
+	public HashMap<String, String> getmyPreinfobyajax(HashMap<String, String> paramap2) {
+		HashMap<String, String> myPreinfobyajax =sqlsession.selectOne("chart.getmyPreinfobyajax",paramap2);
+		return myPreinfobyajax;
+	}
+
+	//0210 예약 날짜 및 시간과 맞는 펫 유아이디 가져오기
+	@Override
+	public int getpetuidbyajax(String reservedate) {
+		int petuidbyajax = sqlsession.selectOne("chart.getpetuidbyajax",reservedate);
+		return petuidbyajax;
+	}
+
+	//0210 예약날짜 및 시간과 맞는 예약번호 가져오기 
+	@Override
+	public String getruidbyajax(String reservedate) {
+		String ruidbyajax = sqlsession.selectOne("chart.getruidbyajax",reservedate);
+		return ruidbyajax;
 	}
 
 }

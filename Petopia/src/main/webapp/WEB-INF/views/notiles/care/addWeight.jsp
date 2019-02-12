@@ -32,13 +32,18 @@
 		weightFrm.action = "/addWeightEnd.pet"
 		weightFrm.submit();
 		self.close();
+		
 	}
 	
 </script> 
 
 <div class="container">
 	<form name="weightFrm">
-		<input id="weight" name="weight" type="text" />
+		<div><input id="weight" name="weight" type="text" value="name" readonly /></div>
+		<div>
+			<input id="weight" name="weight" type="text" /> kg
+			<input id="weight_targerted" name="weight_targerted" type="text" /> kg
+		</div>
 		<input type="date" id="datepicker" class="form-control input-md" name="care_start" autocomplete="off" />
 		<button type="button" onclick="updateWeight();">추가하기</button>
 	</form>
