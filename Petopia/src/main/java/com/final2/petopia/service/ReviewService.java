@@ -410,6 +410,16 @@ public class ReviewService implements InterReviewService {
 	} // end of public HashMap<String, String> selectReviewByBiz_idReview_UID(HashMap<String, Integer> paraMap)
 	// === 2019.02.07 === 끝 //
 	
+	// === 2019.02.11 === 시작 //
+	// *** 댓글 블라인드처리 요청 *** //
+	@Override
+	public int updateReviewCommentsBlindByRc_id(HashMap<String, Integer> paraMap) {
+		int result = dao.updateReviewCommentsBlindByRc_id(paraMap);
+		
+		return result;
+	} // end of public int updateReviewCommentsBlindByRc_id(HashMap<String, Integer> paraMap)
+	// === 2019.02.11 === 끝 //
+	
 	// === 2019.02.08 === 시작 //
 	// *** 총관리자 페이지 *** //
 	// *** 모든 리뷰 보기 *** //
@@ -503,7 +513,34 @@ public class ReviewService implements InterReviewService {
 		
 		return reviewMap;
 	} // end of public HashMap<String, String> selectReviewByAdminReview_UID(int review_UID)
-	
 	// === 2019.02.08 === 끝 //
+
+	// === 2019.02.11 ==== //
+	// *** 리뷰 댓글 블라인드 처리 *** //
+	// 블라인드 처리
+	@Override
+	public int updateReviewCommentsBlindStatusByRc_id(HashMap<String, Integer> paraMap) {
+		int result = dao.updateReviewCommentsBlindStatusByRc_id(paraMap);
+		
+		return result;
+	} // end of public int updateReviewCommentsBlindStatusByRc_id(HashMap<String, Integer> paraMap)
+
+	// 블라인드 처리 취소
+	@Override
+	public int updateReviewCommentsBlindCancleByRc_id(int rc_id) {
+		int result = dao.updateReviewCommentsBlindCancleByRc_id(rc_id);
+		
+		return result;
+	} // end of public int updateReviewCommentsBlindCancleByRc_id(int rc_id)
+	
+	// *** 병원 상세페이지에서 리뷰 별점 평균 불러오기 *** //
+	@Override
+	public int selectAvgStarPoint(int idx) {
+		int result = dao.selectAvgStarPoint(idx);
+		
+		return result;
+	} // end of public int selectAvgStarPoint(int idx)
+	
+	// === 2019.02.11 ==== //
 
 }

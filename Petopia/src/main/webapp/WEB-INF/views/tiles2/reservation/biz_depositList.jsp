@@ -112,6 +112,9 @@
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
+		var sumDeposit = ${sumDeposit};
+		$("#sumDeposit").text(numberWithCommas(sumDeposit));
+		
 		all("1");
 		
 		$("#all").click(function(){
@@ -134,7 +137,7 @@
 	
 	function all(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "-1"};
+						, "type": "-10"};
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -149,9 +152,9 @@
 							"<td>"+entry.deposit_date+"</td>"; // [190207] 오류 수정
 					if(entry.deposit_status=="1"){
 						html += "<td>입금</td>"+
-								"<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세"+entry.fk_payment_UID+"</button></td>";
+								"<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button></td>";
 					}
-					else if(entry.deposit_status=="4"){
+					else if(entry.deposit_status=="3"){
 						html += "<td>출금완료</td><td><button type='button' class='btn btn-default' onClick='goWithdrawDetail("+entry.fk_payment_UID+");'>출금내역</button></td>";
 								
 					}
@@ -218,7 +221,7 @@
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"; // [190207] 오류 수정
-					if(entry.deposit_status=="4"){
+					if(entry.deposit_status=="3"){
 						html += "<td><button type='button' class='btn btn-default' onClick='goWithdrawDetail("+entry.fk_payment_UID+");'>출금내역</button></td>";
 					}
 					html += "</tr>";		
@@ -360,7 +363,15 @@
 				$("#modal_rv_type").html(json.rv_type);
 				$("#modal_reservation_date").html(json.reservation_DATE);
 				$("#modal_bookingdate").html(json.bookingdate);
-				$("#modal_reservation_status").html(json.reservation_status);
+				if(json.reservation_status=="2"){
+					$("#modal_reservation_status").html("예약완료");
+				}
+				else if(json.reservation_status=="1"){
+					$("#modal_reservation_status").html("미결제");
+				}
+				else if(json.reservation_status=="3"){
+					$("#modal_reservation_status").html("<button class='btn btn-default' onClick='goChartDetatil("+json.reservation_UID+")'>진료완료</button>");
+				}
 				$("#modal_payment_date").html(json.payment_date);
 				$("#modal_payment_point").html(numberWithCommas(json.payment_point)+"point");
 				$("#modal_payment_pay").html(numberWithCommas(json.payment_pay)+"원");
@@ -374,28 +385,44 @@
 		document.getElementById('id01').style.display='block';
 
 	}
+	
+	function goChartDetatil(reservation_UID){
+		document.getElementById('id01').style.display='none';
+		location.href="<%=ctxPath%>/SelectChart.pet?reservation_UID="+reservation_UID;
+	}
+	
+	function goWithdraw(idx){
+		var url = "withdrawForBiz.pet?idx="+idx;
+		window.open(url, "예치금 출금하기", "left=350px, top=100px, width=650px, height=570px");
+	}
 </script>	    
 <div class="container" style="margin-bottom: 8%;">
-	<div  style="margin-top: 8%;">
-  		<h2>Deposit History</h2>
-  		<p>예치금 사용내역을 확인할 수 있습니다.</p>
+	<div class="row" style="margin-top: 8%;">
+		<div class="col-md-3">
+	  		<h2>Deposit History</h2>
+	  		<p>예치금 정산내역을 확인할 수 있습니다.</p>
+		</div>
+		<div class="col-md-9 text-right" style="margin-top: 5%;">
+			<span style="font-weight: bold; font-size: 15px;">예치금 잔액: <span id="sumDeposit"></span>원</span>&nbsp;&nbsp;
+			<button type="button" class="btn btn-rounder btnmenu" onClick="goWithdraw(${sessionScope.loginuser.idx})">출금하기</button>
+		</div>
 	</div>
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" id="all" href="#home">전체</a></li>
-    <li><a data-toggle="tab" id="charged" href="#menu1">충전내역</a></li>
-    <li><a data-toggle="tab" id="used" href="#menu2">사용내역</a></li>
+    <li><a data-toggle="tab" id="charged" href="#menu1">정산내역</a></li>
+    <li><a data-toggle="tab" id="used" href="#menu2">출금내역</a></li>
   </ul>
 
   <div class="tab-content">
     <div id="home" class="tab-pane fade in active">
-      <h3>전체 사용 내역</h3>
+      <h3>전체 내역</h3>
       	<div class="table-responsive">
       	<table class="table">
       		<thead>
       		<tr>
       			<th>NO</th>
       			<th>금액</th>
-      			<th>충전/사용일</th>
+      			<th>정산/출금일</th>
       			<th>상태</th>
       			<th>변경</th>
       		</tr>
@@ -407,15 +434,15 @@
       	</div>
     </div>
     <div id="menu1" class="tab-pane fade">
-      <h3>충전내역</h3>
+      <h3>정산내역</h3>
       <div class="table-responsive">
       	<table class="table">
       		<thead>
       		<tr>
       			<th>NO</th>
       			<th>금액</th>
-      			<th>충전일</th>
-      			<th>취소/환불</th>
+      			<th>정산일</th>
+      			<th>확인</th>
       		</tr>
       		</thead>
       		<tbody id="chargedContents">
@@ -425,15 +452,15 @@
       	</div>
     </div>
     <div id="menu2" class="tab-pane fade">
-      <h3>사용내역</h3>
+      <h3>출금내역</h3>
       <div class="table-responsive">
       	<table class="table">
       		<thead>
       		<tr>
       			<th>NO</th>
       			<th>금액</th>
-      			<th>사용일</th>
-      			<th>예약상태</th>
+      			<th>출금일</th>
+      			<th>확인</th>
       		</tr>
       		</thead>
       		<tbody id="usedContents">
@@ -458,7 +485,7 @@
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">예약자명</div>
-    		<div class="col-md-4" id="modal_biz_name"></div>
+    		<div class="col-md-4" id="modal_name"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">연락처</div>

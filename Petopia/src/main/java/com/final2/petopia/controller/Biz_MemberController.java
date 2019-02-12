@@ -107,10 +107,10 @@ public class Biz_MemberController {
 	}// end of bizIdDuplicateCheck()---------------
 	
 	
-	@RequestMapping(value="/editBizMember.pet", method={RequestMethod.GET})
+	@RequestMapping(value="/bizMemberInfo.pet", method={RequestMethod.GET})
 	public String editBizMember() {
 		
-		return "join/editBizMember.tiles1";
+		return "biz/bizMemberInfo.tiles2";
 	} // end of public String editBizMember()
 	
 	

@@ -1,6 +1,8 @@
 package com.final2.petopia.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -172,6 +174,8 @@ public class CareController {
 	@RequestMapping(value="/addWeight.pet", method={RequestMethod.GET})
 	public String addWeight(HttpServletRequest req) {
 		
+		String idx = req.getParameter("idx");
+		
 		return "care/addWeight.notiles";
 	}
 
@@ -210,11 +214,15 @@ public class CareController {
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월");
+	    String date = sdf.format(new Date());
+		
 		if(loginuser != null && loginuser.getMembertype().equals("1")) {
 		
 			String fk_idx = String.valueOf(loginuser.getIdx());
 			String pet_UID = req.getParameter("pet_UID");
 			
+			req.setAttribute("date", date);
 			req.setAttribute("fk_idx", fk_idx);
 			req.setAttribute("pet_UID", pet_UID);
 		}

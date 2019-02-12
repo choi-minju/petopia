@@ -91,8 +91,10 @@ color:rgb(252, 118, 106);
 <script type="text/javascript">
     
 	$(document).ready(function(){
+		
 		//ajaxData();
-		 $(".petimg").click(function(){
+			 
+			/*  onclick -> 사진에
 			var classes = $(this).attr('class');
 			 //alert(classes); //petimg petUid3
 			 var str_classes = String(classes); // String으로 변환
@@ -101,7 +103,7 @@ color:rgb(252, 118, 106);
 			 var petUid = str_classes.substring(index+6);
 			 //alert(petUid);
 			
-			 $("#petUidNo").val(petUid);
+			 $("#petUidNo").val(petUid); */
 			 
 			// 펫정보 불러오기
 			 showPet(); // 1
@@ -166,10 +168,21 @@ color:rgb(252, 118, 106);
 		      
 		  }); // end 
 		        
-		        
-				
-		 }); // 반려동물이미지 누르면 $(".petimg").click(function()
+		$(".datetab").click(function(){ //날짜 탭을 누르면 
 		
+			var tabs =$(this).attr('class');
+			//alert(tabs);
+			var str_tabs =String(tabs);
+			
+			var index=str_tabs.indexOf('rdate');
+			//alert(index);//8
+			var redate = str_tabs.substring(index+5);
+			//alert(redate);
+			
+			$("#reservedate").val(redate);
+			
+			showPreinfo(); //처방전 인서트 기본창 불러오기 
+		});
 	 
 	//등록하기 버튼 
 	 $("#register").click(function(){
@@ -201,7 +214,33 @@ color:rgb(252, 118, 106);
 	                }
     		  });
 	 }// show pet end
-	 
+	 //탭 클릭시 처방전 기본정보 불러오기 
+	 function showPreinfo(){
+		 var data ={"reservedate":$("#reservedate").val()};
+		    $.ajax({
+	    		  url: "<%=request.getContextPath()%>/selectMyPreInfo.pet",
+	    		  type: "GET",
+	    		  data:data,
+	    		  dataType: "JSON",
+	    		  success: function(json){ 
+	    			  $("#infocontainer").empty();
+	    			  $("#infocontainer2").empty();
+	    			  var html1 = "<h3>"+json.biz_name+"</h3>"
+	    			             +"<p>"+json.bookingdate+"</p>"
+	    			             +"<p>"+json.reservation_DATE+"</p>";
+	    			  
+	    			  var html2="<p>결제 포인트: "+json.payment_point+"POINT</p>"+
+				    			   "<p>추가 결제금액: "+json.addpay+"원</p>"+
+				    			   "<p>실제 결제 금액: "+json.payment_pay+"원</p>"+
+				    			   "<p> 총  합 : "+json.payment_total+"원</p>";          
+	    			  $("#infocontainer").append(html1);
+	    			  $("#infocontainer2").append(html2);
+	    		  },error: function(request, status, error){
+			           if(request.readyState == 0 || request.status == 0) return;
+			        else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		                }
+	    		  });
+	 }
 	
 </script>
 <div class="container divbox1">
@@ -212,7 +251,7 @@ color:rgb(252, 118, 106);
 	   <c:forEach items="${pmaplist}" var="pvo" varStatus="status">
 		    <div class="col-md-3" style="display:inlineblock;float:left;">
 			    <input type="hidden" value="${pvo.pet_uid}" id="imgpuid${pvo.pet_uid}"/>
-			    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" class="petimg petUid${pvo.pet_uid}" width="30%"style="border-radius: 50%;display:block;"/> 
+			    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" onclick="javascript:location.href='<%=ctxPath%>/InsertMyPrescription.pet?puid=${pvo.pet_uid}'"  class="petimg petUid${pvo.pet_uid}" width="30%"style="border-radius: 50%;display:block;"/> 
 			    <span style="font-weight: bold;padding-left: 10%;">[${pvo.pet_name}] 님</span>
 		    </div>
 	    </c:forEach>
@@ -220,8 +259,8 @@ color:rgb(252, 118, 106);
    </div>
   
   <div class="divbox3">
+  <input type="text" id="petUidNo" value="${minpuid}"/>
 	   <div id="container" Style="width:100%; padding-top: 1%;">
-	   <input type="hidden" id="petUidNo" value="${minpinfo.pet_UID}"/>
 			  <p style="padding-top:1.5%;">생년월일: ${minpinfo.pet_birthday}</p>
 			  <p>성별:   ${minpinfo.pet_gender}</p>
 			  <p>몸무게: ${minpinfo.pet_weight} kg</p>
@@ -238,15 +277,20 @@ color:rgb(252, 118, 106);
    <div class="container" Style="width:100%;">
 	    <ul class="nav nav-tabs">
 		    <c:forEach items="${myreservedaylist}" var="daymap">
-			   <li><a data-toggle="tab" href="#home">${daymap.reservation_date}-${daymap.chart_type}</a></li>
+		    <input type="text" id="redate${daymap.reservedate}" value="${daymap.reservedate}">
+			   <li><a data-toggle="tab" href="#home" class="datetab rdate${daymap.reservedate}">${daymap.reservation_date}-${daymap.chart_type}</a></li>
 			</c:forEach>
+			
 	    </ul>
     </div>
     <form name="registerFrm">
     <div id="home" class="tab-pane fade in active" style="padding-left:2%;">
-       <h3>${mypreinfo.biz_name}</h3>
-       <p>진료예약일자: ${mypreinfo.bookingdate} </p>
-       <p>방문일자: ${mypreinfo.reservation_DATE}</p>
+       <div id="infocontainer">
+       <input type="text" id="reservedate"/>
+	       <h3>${mypreinfo.biz_name}</h3>
+	       <p>진료예약일자: ${mypreinfo.bookingdate} </p>
+	       <p>방문일자: ${mypreinfo.reservation_DATE}</p>
+       </div>
        <hr Style="width:100%; height:2%;"></hr>
         <div class="span col-md-10"><h3 style="font-weight:bold;color:pink; margin-top:0">진료결과 </h3></div>
         <div class="span col-md-10"><p>담당수의사: ${mypreinfo.doc_name}</p></div>
@@ -256,7 +300,7 @@ color:rgb(252, 118, 106);
         <div class="span col-md-10"><p>주의사항: </p><textarea name="rx_cautions" style="width:40%;height:20%; margin-bottom: 1%;"></textarea></div>
         <div class="span col-md-10"><p>내  용: </p><textarea name="rx_notice" style="width:40%;height:20%;"></textarea></div>
         <hr style="width:100%; height:2%;"></hr>
-        <div style="margin-left: 70%;">
+        <div style="margin-left: 70%;" id="infocontainer2">
 	       <p>결제 포인트: ${mypreinfo.payment_point} POINT</p>
 	       <p>본인 부담금:${mypreinfo.addpay} 원</p>
 	       <p>실제 결제 금액:${mypreinfo.payment_pay}원</p>

@@ -66,7 +66,7 @@ th{
 	
 </script>
 <div class="container">
-  <h2>Reservatil List</h2>
+  <h2>Reservation List</h2>
   <p>예약내역을 확인할 수 있습니다.</p>  
   <i class="glyphicon glyphicon-search"></i><input class="form-control search" id="myInput" type="text" name="search" placeholder="Search..">
   <br>
