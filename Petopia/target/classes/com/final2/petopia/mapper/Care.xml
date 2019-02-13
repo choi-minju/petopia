@@ -125,10 +125,20 @@
 		<result property="PETWEIGHT_DATE" column="petweight_date" javaType="String" />
 	</resultMap>
 	<select id="getWeight" parameterType="String" resultMap="petweightMap">
-		select petweight_UID, fk_pet_UID, petweight_past, petweight_date
+		select petweight_UID, fk_pet_UID, petweight_past, petweight_targeted, petweight_date
 		from petweight 
 		where fk_pet_UID = #{pet_UID}
 	</select>
+	
+	
+	<!-- // ***** Mybatis 에서 프로시저 호출해서 사용하기 ***** // #프로시저는 항상 좌중괄호, 우중괄호 -->
+	<insert id="addWeight" statementType="CALLABLE" parameterType="HashMap">
+		{ call PCD_PETWEIGHT_INSERT( #{PET_UID, mode=IN}
+								   , #{PETWEIGHT_PAST, mode=IN}
+								   , #{PETWEIGHT_TARGETED, mode=IN}
+								   , #{PETWEIGHT_DATE, mode=IN} )
+		}	
+	</insert> 
 	
 	
 	<!-- //===== 특정 반려동물관리 진료기록(Ajax) ===== -->
