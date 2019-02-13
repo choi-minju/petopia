@@ -33,6 +33,7 @@ import com.final2.petopia.common.SHA256;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.service.InterMemberService;
 import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.google.gson.Gson;
 
 @Controller
 public class MemberController {
@@ -1060,4 +1061,38 @@ public class MemberController {
 		return "tiles1/findMember/changePwdFinish"; // 비밀번호 완료 페이지로 이동
 	} // end of public String updatePwd(HttpServletRequest req)
 	// === 2019.01.25 === 비밀번호 찾기 수정 //
+	
+	// === 2019.02.13 === 아이디 찾기 //
+	// 비밀번호 찾는 모달
+	@RequestMapping(value="/findID.pet", method={RequestMethod.GET})
+	public String findId() {
+		
+		return "tiles1/findMember/findId";
+	} // end of public String findId()
+	
+	@RequestMapping(value="/selectFindId.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public String selectFindId(HttpServletRequest req) {
+		String findId = "";
+		
+		String name = req.getParameter("name");
+		String phone = req.getParameter("phone");
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+
+		try {
+			paraMap.put("NAME", name);
+			paraMap.put("PHONE", aes.encrypt(phone));
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		} // end of try catch
+		
+		findId = service.selectMemberIdByNamePhone(paraMap);
+		//System.out.println("findId: "+findId);
+		
+		Gson gson = new Gson();
+		String gson_findId = gson.toJson(findId);
+		return gson_findId;
+	} // end of public String selectFindId(HttpServletRequest req)
+	// === 2019.02.13 === 아이디 찾기 //
 }
