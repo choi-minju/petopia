@@ -144,8 +144,14 @@
 			success : function(json){
 				var html = "";
 				$.each(json, function(entryIndex, entry){
-					html += "<tr><td>"+entry.deposit_UID+"</td>"+
-							"<td>"+entry.depositcoin+"</td>"+
+					html += "<tr><td>"+entry.deposit_UID+"</td>";
+							if(entry.membertype=="1"){
+								html+= "<td><span class='label label-primary' style='background-color: #ff6e60;'>일반회원("+entry.fk_idx+")</span></td>";
+							}
+							else if(entry.membertype=="2"){
+								html+= "<td><span class='label label-default'>기업회원("+entry.fk_idx+")</span></td>";
+							}
+							html+="<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"+
 							"<td>"+entry.showDepositStatus+"</td>"+
 							"<td>";
@@ -153,18 +159,21 @@
 						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>충전완료</span>";
 					}
 					else if(entry.deposit_status=="3"){
-						html += "<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button>";
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>"+entry.deposit_type+"</span>"; // [190213] 버튼 삭제하고 type으로 수정
 					}
 					else if(entry.deposit_status=="2"){
-						html += "<span class='text-center' style='text-align: center;'>환불완료</span>";
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>환불완료</span>";
 					}
 					else if(entry.deposit_status=="-1"){
 						html += "<button type='button' class='btn btn-warning' onClick='goUpdateDepositStatus("+entry.deposit_UID+");'>입금확인</button>";
 					}
+					else if(entry.deposit_status=="0"){
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>사용완료</span>";
+					}
 					html += "</td></tr>";		
 				}); // end of each
 				$("#allContents").empty().html(html);
-				makePageBar(currentShowPageNo, "-1");
+				makePageBar(currentShowPageNo, "-10");
 
 			},
 			error: function(request, status, error){
@@ -178,7 +187,7 @@
 	
 	function charged(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "1"};
+						, "type": "1,2,-1"};
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -188,23 +197,35 @@
 			success : function(json){
 				var html = "";
 				$.each(json, function(entryIndex, entry){
-					html += "<tr><td>"+entry.deposit_UID+"</td>"+
-							"<td>"+entry.depositcoin+"</td>"+
+					html += "<tr><td>"+entry.deposit_UID+"</td>";
+							if(entry.membertype=="1"){
+								html+= "<td><span class='label label-primary' style='background-color: #ff6e60;'>일반회원("+entry.fk_idx+")</span></td>";
+							}
+							else if(entry.membertype=="2"){
+								html+= "<td><span class='label label-default'>기업회원("+entry.fk_idx+")</span></td>";
+							}
+							html+="<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"+
 							"<td>";
 					if(entry.deposit_status=="1"){
-						html += "<span class='text-center' style='text-align: center;'>충전완료</span>";
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>충전완료</span>";
 					}
 					else if(entry.deposit_status=="3"){
-						html += "<span class='text-center' style='text-align: center;'>환불완료</span>";
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>"+entry.deposit_type+"</span>"; // [190213] 버튼 삭제하고 type으로 수정
 					}
-					else if(entry.deposit_status=="4"){
-						html += "<span class='text-center' style='text-align: center;'>출금완료</span>";
+					else if(entry.deposit_status=="2"){
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>환불완료</span>";
+					}
+					else if(entry.deposit_status=="-1"){
+						html += "<button type='button' class='btn btn-warning' onClick='goUpdateDepositStatus("+entry.deposit_UID+");'>입금확인</button>";
+					}
+					else if(entry.deposit_status=="0"){
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>사용완료</span>";
 					}
 					html += "</td></tr>";		
 				}); // end of each
 				$("#chargedContents").empty().html(html);
-				makePageBar(currentShowPageNo, "1");
+				makePageBar(currentShowPageNo, "1,2,-1");
 
 			},
 			error: function(request, status, error){
@@ -218,7 +239,7 @@
 
 	function used(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "3"};	// [190129] 타입 숫자 변경
+						, "type": "3,0"};	// [190129] 타입 숫자 변경
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -228,15 +249,35 @@
 			success : function(json){
 				var html = "";
 				$.each(json, function(entryIndex, entry){
-					html += "<tr><td>"+entry.deposit_UID+"</td>"+
-							"<td>"+entry.depositcoin+"</td>"+
+					html += "<tr><td>"+entry.deposit_UID+"</td>";
+							if(entry.membertype=="1"){
+								html+= "<td><span class='label label-primary' style='background-color: #ff6e60;'>일반회원("+entry.fk_idx+")</span></td>";
+							}
+							else if(entry.membertype=="2"){
+								html+= "<td><span class='label label-default'>기업회원("+entry.fk_idx+")</span></td>";
+							}
+							html+="<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"+
-							"<td>"+
-							"<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+")'>예약상세</button>"+
-							"</td></tr>";		
+							"<td>";
+					if(entry.deposit_status=="1"){
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>충전완료</span>";
+					}
+					else if(entry.deposit_status=="3"){
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>"+entry.deposit_type+"</span>"; // [190213] 버튼 삭제하고 type으로 수정
+					}
+					else if(entry.deposit_status=="2"){
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>환불완료</span>";
+					}
+					else if(entry.deposit_status=="-1"){
+						html += "<button type='button' class='btn btn-warning' onClick='goUpdateDepositStatus("+entry.deposit_UID+");'>입금확인</button>";
+					}
+					else if(entry.deposit_status=="0"){
+						html += "<span class='text-center' style='text-align: center; font-size: 10pt;'>사용완료</span>";
+					}
+					html += "</td></tr>";
 				}); // end of each
 				$("#usedContents").empty().html(html);
-				makePageBar(currentShowPageNo, "2");
+				makePageBar(currentShowPageNo, "3,0");
 
 			},
 			error: function(request, status, error){
@@ -266,7 +307,7 @@
 					var loop = 1; 
 					
 					var pageNo = Math.floor((currentShowPageNo-1)/blockSize)*blockSize+1;
-					if(json.type==-1){
+					if(json.type==-10){
 						if( pageNo!= 1){
 							pageBarHTML += "&nbsp;<a href='javascript:all(\""+(pageNo-1)+"\");'>&laquo;</a>&nbsp;";
 						}
@@ -310,7 +351,7 @@
 						
 						$("#pageBarCharged").empty().html(pageBarHTML);
 					}
-					else if(json.type==2){
+					else if(json.type==3){
 						if( pageNo!= 1){
 							pageBarHTML += "&nbsp;<a href='javascript:used(\""+(pageNo-1)+"\");'>&laquo;</a>&nbsp;";
 						}
@@ -333,13 +374,13 @@
 					
 				}
 				else{
-					if(json.type==-1){
+					if(json.type==-10){
 						$("#pageBarAll").empty();
 					}
 					else if(json.type==1){
 						$("#pageBarCharged").empty();
 					}
-					else if(json.type==2){
+					else if(json.type==3){
 						$("#pageBarUsed").empty();
 					}
 					pageBarHTML = "";
@@ -411,10 +452,11 @@
 		</div>
 	</div>
 <%-- 190206 끝 --%>
+<%-- [190213] 탭 이름 수정 --%>
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" id="all" href="#home">전체</a></li>
-    <li><a data-toggle="tab" id="charged" href="#menu1">충전내역</a></li>
-    <li><a data-toggle="tab" id="used" href="#menu2">사용내역</a></li>
+    <li><a data-toggle="tab" id="charged" href="#menu1">일반회원 입금내역</a></li>
+    <li><a data-toggle="tab" id="used" href="#menu2">기업회원 출금내역</a></li>
   </ul>
 
   <div class="tab-content">
@@ -425,6 +467,7 @@
       		<thead>
       		<tr>
       			<th>NO</th>
+      			<th>회원번호</th>
       			<th>금액</th>
       			<th>충전/사용일</th>
       			<th>상태</th>
@@ -438,12 +481,13 @@
       	</div>
     </div>
     <div id="menu1" class="tab-pane fade">
-      <h3>충전내역</h3>
+      <h3>일반회원 입금내역</h3>
       <div class="table-responsive">
       	<table class="table">
       		<thead>
       		<tr>
       			<th>NO</th>
+      			<th>회원번호</th>
       			<th>금액</th>
       			<th>충전일</th>
       			<th>취소/환불</th>
@@ -456,15 +500,16 @@
       	</div>
     </div>
     <div id="menu2" class="tab-pane fade">
-      <h3>사용내역</h3>
+      <h3>기업회원 출금내역</h3>
       <div class="table-responsive">
       	<table class="table">
       		<thead>
       		<tr>
       			<th>NO</th>
+      			<th>회원번호</th>
       			<th>금액</th>
-      			<th>사용일</th>
-      			<th>예약상태</th>
+      			<th>출금신청일</th>
+      			<th>상태</th>
       		</tr>
       		</thead>
       		<tbody id="usedContents">

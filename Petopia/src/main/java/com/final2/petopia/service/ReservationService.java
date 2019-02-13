@@ -215,11 +215,11 @@ public class ReservationService implements InterReservationService{
 
 //	[190125] 예치금 히스토리 목록 중 모두보기인 경우 
 	@Override
-	public List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap) {
-		String type=paraMap.get("type");
+	public List<DepositVO> selectDepositListByIdx(HashMap<String, Object> paraMap) {
+		String[] type=(String[])paraMap.get("typeArr");
 		List<DepositVO> depositList = null;
-		if(type.equals("-10")) {
-			paraMap.remove("type");
+		if(type[0].equals("-10")) {
+			paraMap.remove("typeArr");
 			depositList = dao.selectDepositListByIdxNoneType(paraMap);
 		}
 		else {
@@ -229,10 +229,11 @@ public class ReservationService implements InterReservationService{
 	}
 //	[190126] 예치금 히스토리 목록 페이지바 만들기
 	@Override
-	public int selectDepositListTotalCount(HashMap<String, String> paraMap) {
+	public int selectDepositListTotalCount(HashMap<String, Object> paraMap) {
 		int totalCount = 0;
-		String type=paraMap.get("type");
-		if(type.equals("-1")) {
+		String[] type=(String[]) paraMap.get("typeArr");
+		if(type[0].equals("-10")) {
+			paraMap.remove("typeArr");
 			totalCount = dao.selectDepositListTotalCountNoneType(paraMap);
 		}
 		else {
@@ -391,7 +392,7 @@ public class ReservationService implements InterReservationService{
 			int payment_pay = pvo.getPayment_pay()*-1;	// 음수인 결제금액을 양수로 치환
 			paraMap.put("depositcoin", String.valueOf(payment_pay));
 			paraMap.put("deposit_status", "2");
-			paraMap.put("deposit_type", "예약취소환불");
+			paraMap.put("deposit_type", "refund");	// 190213 수정
 			paraMap.put("payment_UID", "0");		// 190207 fk_payment_UID 추가
 			n4 = dao.insertDepositPlus(paraMap);
 		}
@@ -546,7 +547,7 @@ public class ReservationService implements InterReservationService{
 					if(addpay*-1!=point) {
 						paraMap.put("fk_idx", String.valueOf(cvo.getFk_idx()));
 						paraMap.put("depositcoin", String.valueOf(addpay*-1-point));
-						paraMap.put("deposit_status", "1");
+						paraMap.put("deposit_status", "2");
 						paraMap.put("deposit_type", "refund");
 						n2 = dao.insertDepositPlus(paraMap);
 					}
@@ -560,7 +561,7 @@ public class ReservationService implements InterReservationService{
 			else if(point==0){
 				paraMap.put("fk_idx", String.valueOf(cvo.getFk_idx()));
 				paraMap.put("depositcoin", String.valueOf(addpay*-1));
-				paraMap.put("deposit_status", "1");
+				paraMap.put("deposit_status", "2");
 				paraMap.put("deposit_type", "refund");
 				n1 = dao.insertDepositPlus(paraMap);
 			}
@@ -608,10 +609,10 @@ public class ReservationService implements InterReservationService{
 	
 //	#관리자 예치금 히스토리 목록
 	@Override
-	public List<DepositVO> selectDepositListByIdxForAdmin(HashMap<String, String> paraMap) {
-		String type=paraMap.get("type");
+	public List<DepositVO> selectDepositListByIdxForAdmin(HashMap<String, Object> paraMap) {
+		String[] type=(String[]) paraMap.get("typeArr");
 		List<DepositVO> depositList = null;
-		if(type.equals("-10")) {
+		if(type[0].equals("-10")) {
 			paraMap.remove("type");
 			depositList = dao.selectDepositListByIdxNoneTypeForAdmin(paraMap);
 		}
@@ -622,10 +623,10 @@ public class ReservationService implements InterReservationService{
 	}
 //	#관리자 예치금 히스토리 목록 페이지바 만들기
 	@Override
-	public int selectDepositListTotalCountForAdmin(HashMap<String, String> paraMap) {
+	public int selectDepositListTotalCountForAdmin(HashMap<String, Object> paraMap) {
 		int totalCount = 0;
-		String type=paraMap.get("type");
-		if(type.equals("none")) {
+		String[] type=(String[]) paraMap.get("typeArr");
+		if(type[0].equals("-10")) {
 			totalCount = dao.selectDepositListTotalCountNoneTypeForAdmin(paraMap);
 		}
 		else {
