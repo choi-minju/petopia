@@ -153,9 +153,10 @@
 			    			  +"<div style='margin:0px;'>"
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
-			    			  +"		<input type='hidden' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
-			    			  +"		<input type='hidden' name='consult_fk_idx' value='"+entry.FK_IDX+"' />"
-			    			  +"		<input type='hidden' name='membertype' value='${sessionScope.loginuser.membertype}' />"
+			    			  +"		<input type='text' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
+			    			  +"		<input type='text' name='fk_idx2' value='"+entry.FK_IDX+"' />"
+			    			  +"		<input type='text' name='consult_fk_idx' value='"+entry.CONSULT_FK_IDX+"' />"
+			    			  +"		<input type='text' name='membertype' value='${sessionScope.loginuser.membertype}' />"
 			    			  +"		<input type='hidden' name='cmt_id' value='"+entry.CMT_ID+"' />"
 			    			  +"		<input type='hidden' name='cscmt_group' value='"+entry.CSCMT_GROUP+"' />"
 			    			  +"		<input type='hidden' name='cscmt_g_odr' value='"+entry.CSCMT_G_ODR+"' />"
@@ -190,9 +191,10 @@
 			    			  +"<div style='margin:0px; background-color:#EAEAEA;'>"
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
-			    			  +"		<input type='hidden' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
-			    			  +"		<input type='hidden' name='consult_fk_idx' value='"+entry.FK_IDX+"' />"
-			    			  +"		<input type='hidden' name='membertype' value='${sessionScope.loginuser.membertype}' />"
+			    			  +"		<input type='text' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
+			    			  +"		<input type='text' name='fk_idx2' value='"+entry.FK_IDX+"' />"
+			    			  +"		<input type='text' name='consult_fk_idx' value='"+entry.CONSULT_FK_IDX+"' />"
+			    			  +"		<input type='text' name='membertype' value='${sessionScope.loginuser.membertype}' />"
 			    			  +"		<input type='hidden' name='cmt_id' value='"+entry.CMT_ID+"' />"
 			    			  +"		<input type='hidden' name='cscmt_group' value='"+entry.CSCMT_GROUP+"' />"
 			    			  +"		<input type='hidden' name='cscmt_g_odr' value='"+entry.CSCMT_G_ODR+"' />"
@@ -222,6 +224,7 @@
     		    for(var i=0; i<10; i++) {
     				$("#hide"+i).slideUp();
     			}
+    		    
     		},
     		error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -276,11 +279,12 @@
 		//console.log(queryString);
 
         
-		var consult_fk_idxval = $("#"+id).find("input[name=consult_fk_idx]").val();
+		var consult_fk_idxval = $("#"+id).find("input[name=consult_fk_idx]").val(); // 상담글의 idx
+		var fk_idx2val = $("#"+id).find("input[name=fk_idx2]").val(); // 원댓글(로그인한 사람이 댓글을 달고있는 윗댓글)의 idx
 		var membertypeval = $("#"+id).find("input[name=membertype]").val();
 		
 		var cmt_idval = $("#"+id).find("input[name=cmt_id]").val();
-		var fk_idxval = $("#"+id).find("input[name=fk_idx]").val();
+		var fk_idxval = $("#"+id).find("input[name=fk_idx]").val();	// 로그인한 자기자신 (댓글을 작성하는 idx)
 		var cscmt_groupval = $("#"+id).find("input[name=cscmt_group]").val();
 		var cscmt_g_odrval = $("#"+id).find("input[name=cscmt_g_odr]").val();
 		var cscmt_depthval = $("#"+id).find("input[name=cscmt_depth]").val();
@@ -288,6 +292,9 @@
 		var cscmt_contentsval = $("#"+id).find("input[name=cscmt_contents]").val();
 		var fk_consult_UIDval = $("#"+id).find("input[name=fk_consult_UID]").val();
 		
+		console.log("consult_fk_idxval 상담글 "+consult_fk_idxval);
+		console.log("fk_idx2val 원댓글 "+fk_idx2val);
+		console.log("fk_idxval 댓글 "+fk_idxval);
 		<%--
 		console.log("cmt_idval"+cmt_idval);
 		console.log("fk_idxval"+fk_idxval);
@@ -306,6 +313,7 @@
 		frm.submit();
 		--%>
 		
+		// !(기업회원이거나 일반회원이지만 로그인한 사람과 상담글을 작성한 사람이 같으면 댓글쓰기 가능)
 		if( !(membertypeval==2 || (membertypeval==1 && fk_idxval==consult_fk_idxval)) ) {
 			alert("다른회원의 글에 댓글을 작성할 수 없습니다.");
 			return;
@@ -320,6 +328,7 @@
 		
 		var form_data = { "fk_cmt_id":cmt_idval
 						, "fk_idx":fk_idxval
+						, "consult_fk_idx":consult_fk_idxval
 						, "cscmt_group":cscmt_groupval
 						, "cscmt_g_odr":cscmt_g_odrval
 						, "cscmt_depth":cscmt_depthval

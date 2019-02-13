@@ -1,6 +1,8 @@
 package com.final2.petopia.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import com.final2.petopia.model.CareVO;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.model.PetVO;
 import com.final2.petopia.service.InterCareService;
+import com.final2.petopia.service.InterMemberService;
 
 @Controller
 @Component
@@ -27,6 +30,8 @@ public class CareController {
 	@Autowired
 	private InterCareService service;
 	
+	@Autowired
+	private InterMemberService member_service;
 	
 	// [19-01-24. 수정 시작_hyunjae]
 	// ===== 반려동물 리스트페이지 요청 =====
@@ -168,12 +173,63 @@ public class CareController {
 		return returnmapList;
 	}
 
+	
 	//===== 특정 반려동물관리 체중 추가 =====
 	@RequestMapping(value="/addWeight.pet", method={RequestMethod.GET})
 	public String addWeight(HttpServletRequest req) {
 		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		// 로그인 한 사용자의 정보 가져오기
+		MemberVO mvo = member_service.selectMemberByIdx(loginuser.getIdx());
+		
+		String pet_UID = req.getParameter("pet_UID");
+		
+		req.setAttribute("mvo", mvo);
+		req.setAttribute("pet_UID", pet_UID);
+		
 		return "care/addWeight.notiles";
 	}
+	
+	//===== 특정 반려동물관리 체중 추가 =====
+	@RequestMapping(value="/addWeightEnd.pet", method={RequestMethod.POST})       
+	public String addWeightEnd(HttpServletRequest req) {
+		
+		// 1. form 에서 넘어온 값 받기
+		String pet_UID = req.getParameter("pet_UID");
+		String petweight_past = req.getParameter("petweight_past");
+		String petweight_targeted = req.getParameter("petweight_targeted");
+		String petweight_date = req.getParameter("petweight_date");
+		
+		// 2. HashMap으로 저장시킨다. 
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("PET_UID", pet_UID);
+		paraMap.put("PETWEIGHT_PAST", petweight_past);
+		paraMap.put("PETWEIGHT_TARGETED", petweight_targeted);
+		paraMap.put("PETWEIGHT_DATE", petweight_date);
+
+		service.addWeight(paraMap);
+/*		
+		// 3. Service 단으로 HashMap 을 넘긴다.
+		String msg = "";
+		try {
+			service.addWeight(paraMap);
+//			msg = "회원가입 성공!!";
+//			req.setAttribute("msg", msg);
+			return "/petList.pet";
+		} catch(Exception e) { 
+//			msg = "회원가입 실패!!";
+//			req.setAttribute("msg", msg);
+			System.out.println("익셉션");
+			return "register/mybatisTest17AddEnd";
+		}
+*/
+		return "care/petList.tiles2";
+	//   /WEB-INF/views/register/mybatisTest17AddEnd.jsp 를 파일을 생성한다.
+
+	}	
+
 
 	//===== 특정 반려동물관리 진료기록(Ajax) =====
 	@RequestMapping(value="/getChart.pet", method={RequestMethod.GET})
@@ -210,11 +266,15 @@ public class CareController {
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월");
+	    String date = sdf.format(new Date());
+		
 		if(loginuser != null && loginuser.getMembertype().equals("1")) {
 		
 			String fk_idx = String.valueOf(loginuser.getIdx());
 			String pet_UID = req.getParameter("pet_UID");
 			
+			req.setAttribute("date", date);
 			req.setAttribute("fk_idx", fk_idx);
 			req.setAttribute("pet_UID", pet_UID);
 		}

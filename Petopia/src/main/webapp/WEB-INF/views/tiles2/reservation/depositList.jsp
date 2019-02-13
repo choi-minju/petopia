@@ -116,8 +116,10 @@
 	$(document).ready(function(){
 		// [190208] 변수로 수정
 		var sumDeposit = ${sumDeposit};
-		
+		var sumPoint = ${sumPoint};
 		$("#sumDeposit").text(numberWithCommas(sumDeposit));
+		$("#sumPoint").text(numberWithCommas(sumPoint));
+		
 		all("1");
 		
 		$("#all").click(function(){
@@ -140,7 +142,7 @@
 	
 	function all(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "-1"};
+						, "type": "-10"};
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -158,19 +160,22 @@
 					if(entry.deposit_status=="1"){
 						html += "<button type='button' class='btn btn-danger' onClick='goCancleDeposit("+entry.deposit_UID+");'>충전취소</button>";
 					}
-					else if(entry.deposit_status=="3"){ // [190129] 상태 숫자 변경
+					else if(entry.deposit_status=="0"){ // [190129] 상태 숫자 변경
 						html += "<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button>";
 					}
 					else if(entry.deposit_status=="2"){	// [190129] 상태 숫자 변경
-						html += "<span style='text-align: center;'>환불완료</span>";
+						html += "<span style='text-align: center;'>차액환불</span>";
 					}
-					else if(entry.deposit_status=="0"){ // [190129] 상태 숫자 변경
+					else if(entry.deposit_status=="-1"){ // [190129] 상태 숫자 변경 // [190211] 변경
+						html += "<button type='button' class='btn btn-warning' onClick='showDirectAccountView("+entry.deposit_UID+");'>입금정보</button>";
+					}
+					else if(entry.deposit_status=="3"){
 						html += "<span style='text-align: center;'>출금완료</span>";
 					}
 					html += "</td></tr>";		
 				}); // end of each
 				$("#allContents").empty().html(html);
-				makePageBar(currentShowPageNo, "-1");
+				makePageBar(currentShowPageNo, "-10");
 
 			},
 			error: function(request, status, error){
@@ -184,7 +189,7 @@
 	
 	function charged(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "1"};
+						, "type": "1,2,-1"};
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -201,16 +206,16 @@
 					if(entry.deposit_status=="1"){
 						html += "<button type='button' class='btn btn-danger' onClick='goCancleDeposit("+entry.deposit_UID+");'>충전취소</button>";
 					}
-					else if(entry.deposit_status=="3"){
-						html += "<span style='text-align: center;'>환불완료</span>";
+					else if(entry.deposit_status=="2"){
+						html += "<span style='text-align: center;'>환불(예치금차액)</span>";
 					}
-					else if(entry.deposit_status=="4"){
-						html += "<span style='text-align: center;'>출금완료</span>";
+					else if(entry.deposit_status=="-1"){
+						html += "<button type='button' class='btn btn-warning' onClick='showDirectAccountView("+entry.deposit_UID+");'>입금정보</button>";
 					}
 					html += "</td></tr>";		
 				}); // end of each
 				$("#chargedContents").empty().html(html);
-				makePageBar(currentShowPageNo, "1");
+				makePageBar(currentShowPageNo, "1,2,-1");
 
 			},
 			error: function(request, status, error){
@@ -224,7 +229,7 @@
 
 	function used(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "3"};	// [190129] 타입 숫자 변경
+						, "type": "3,0"};	// [190129] 타입 숫자 변경
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -237,12 +242,17 @@
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"+
-							"<td>"+
-							"<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+")'>예약상세</button>"+
+							"<td>";
+							if(entry.deposit_status=="0"){
+								html += "<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+")'>예약상세</button>";
+							}
+							else if(entry.deposit_status=="3"){
+								html += "<span style='text-align: center;'>출금완료</span>";
+							}
 							"</td></tr>";		
 				}); // end of each
 				$("#usedContents").empty().html(html);
-				makePageBar(currentShowPageNo, "2");
+				makePageBar(currentShowPageNo, "3,0");
 
 			},
 			error: function(request, status, error){
@@ -272,7 +282,7 @@
 					var loop = 1; 
 					
 					var pageNo = Math.floor((currentShowPageNo-1)/blockSize)*blockSize+1;
-					if(json.type==-1){
+					if(json.type==-10){
 						if( pageNo!= 1){
 							pageBarHTML += "&nbsp;<a href='javascript:all(\""+(pageNo-1)+"\");'>&laquo;</a>&nbsp;";
 						}
@@ -316,7 +326,7 @@
 						
 						$("#pageBarCharged").empty().html(pageBarHTML);
 					}
-					else if(json.type==2){
+					else if(json.type==3){
 						if( pageNo!= 1){
 							pageBarHTML += "&nbsp;<a href='javascript:used(\""+(pageNo-1)+"\");'>&laquo;</a>&nbsp;";
 						}
@@ -339,13 +349,13 @@
 					
 				}
 				else{
-					if(json.type==-1){
+					if(json.type==-10){
 						$("#pageBarAll").empty();
 					}
 					else if(json.type==1){
 						$("#pageBarCharged").empty();
 					}
-					else if(json.type==2){
+					else if(json.type==3){
 						$("#pageBarUsed").empty();
 					}
 					pageBarHTML = "";
@@ -370,14 +380,19 @@
 			dataType: "JSON",
 			success: function(json){
 				$("#modal_reservation_UID").html(json.reservation_UID);
-				$("#modal_biz_name").html(json.biz_name);
+				$("#modal_biz_name").html(json.name);
 				$("#modal_phone").html(json.phone);
 				$("#modal_pet_type").html(json.pet_type);
 				$("#modal_pet_name").html(json.pet_name);
 				$("#modal_rv_type").html(json.rv_type);
 				$("#modal_reservation_date").html(json.reservation_DATE);	// [190131] reservation_date -> reservation_DATE
 				$("#modal_bookingdate").html(json.bookingdate);
-				$("#modal_reservation_status").html(json.reservation_status);
+				if(json.reservation_status=="2"){
+					$("#modal_reservation_status").html("예약완료");
+				}
+				else if(json.reservation_status=="1"){
+					$("#modal_reservation_status").html("미결제");
+				}
 				$("#modal_payment_date").html(json.payment_date);
 				$("#modal_payment_point").html(numberWithCommas(json.payment_point)+"point");	//[190131] 금액타입 콤마 찍기
 				$("#modal_payment_pay").html(numberWithCommas(json.payment_pay)+"원");
@@ -396,7 +411,36 @@
 	function goChargeDeposit(idx){
 		var url = "chargeDeposit.pet?idx="+idx;
 		window.open(url, "예치금 충전하기", "left=350px, top=100px, width=650px, height=570px");
-
+	}
+	
+//	[190211] 무통장입금 계좌정보 조회하기
+	function showDirectAccountView(deposit_UID){
+		var form_data ={"deposit_UID":deposit_UID};
+		
+		$.ajax({
+			url: "selectDirectAccountView.pet",
+			type: "GET",
+			data: form_data,
+			dataType: "JSON",
+			success: function(json){
+				$("#modal_deposit_account").html("신한은행 "+json.deposit_account);
+				$("#modal_deposit_date").html(json.deposit_date);
+				$("#modal_depositcoin").html(numberWithCommas(json.depositcoin)+"원");
+			},// end of success
+			error: function(request, status, error){
+				if(request.readyState == 0 || request.status == 0) return;
+				else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});// end of $.ajax
+		document.getElementById('id02').style.display='block';
+	}
+	function goExcelDownload(){
+		var frm = document.excelForm;
+		frm.submit();
+	}
+	function goExcelUpload(idx){
+		var url = "<%=ctxPath%>/excelUploadCare.pet?idx="+idx;
+		window.open(url, "엑셀파일 업로드", "left=350px, top=100px, width=650px, height=570px");
 	}
 </script>	    
 <div class="container" style="margin-bottom: 8%;">
@@ -407,8 +451,21 @@
 	  		<p>예치금 사용내역을 확인할 수 있습니다.</p>
 		</div>
 		<div class="col-md-9 text-right" style="margin-top: 5%;">
+			<span style="font-weight: bold; font-size: 15px;">포인트: <span id="sumPoint"></span>point</span>&nbsp;/&nbsp;
 			<span style="font-weight: bold; font-size: 15px;">예치금 잔액: <span id="sumDeposit"></span>원</span>&nbsp;&nbsp;
 			<button type="button" class="btn btn-rounder btnmenu" onClick="goChargeDeposit(${sessionScope.loginuser.idx})">예치금충전</button>
+		</div>
+		<div>
+		  <form id="excelForm" name="excelForm" method="post" action="<%= ctxPath %>/ExcelPoi.pet">
+		    <input type="text" name="fileName" />
+		    <input type="hidden" name="type" value="deposit"/>
+		    <input type="hidden" name="idx" value="${sessionScope.loginuser.idx}"/>
+		    <button type="button" class="btn btn-default" onClick="goExcelDownload();">xls파일로 받기</button>
+		  </form>
+		</div>
+		<div>
+			<a href="<%= request.getContextPath() %>/downCareFile.pet">양식다운로드</a>
+		    <button type="button" class="btn btn-default" onClick="goExcelUpload(${sessionScope.loginuser.idx});">xls파일 업로드</button>
 		</div>
 	</div>
 <%-- 190206 끝 --%>
@@ -492,51 +549,51 @@
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">병원명</div>
-    		<div class="col-md-4" id="modal_biz_name"></div>
+    		<div class="col-md-8" id="modal_biz_name"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">연락처</div>
-    		<div class="col-md-4" id="modal_phone"></div>
+    		<div class="col-md-8" id="modal_phone"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">진료과</div>
-    		<div class="col-md-4" id="modal_pet_type"></div>
+    		<div class="col-md-8" id="modal_pet_type"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">반려동물명</div>
-    		<div class="col-md-4" id="modal_pet_name"></div>
+    		<div class="col-md-8" id="modal_pet_name"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">진료타입</div>
-    		<div class="col-md-4" id="modal_rv_type"></div>
+    		<div class="col-md-8" id="modal_rv_type"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">진료일시</div>
-    		<div class="col-md-4" id="modal_reservation_date"></div>
+    		<div class="col-md-8" id="modal_reservation_date"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">예약일시</div>
-    		<div class="col-md-4" id="modal_bookingdate"></div>
+    		<div class="col-md-8" id="modal_bookingdate"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">예약상태</div>
-    		<div class="col-md-4" id="modal_reservation_status"></div>
+    		<div class="col-md-8" id="modal_reservation_status"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">결제일시</div>
-    		<div class="col-md-4" id="modal_payment_date"></div>
+    		<div class="col-md-8" id="modal_payment_date"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">결제포인트</div>
-    		<div class="col-md-4" id="modal_payment_point"></div>
+    		<div class="col-md-8" id="modal_payment_point"></div>
     	</div>
     	<div class="row tblrow">
     		<div class="col-md-3 col1">실 결제금액</div>
-    		<div class="col-md-4" id="modal_payment_pay"></div>
+    		<div class="col-md-8" id="modal_payment_pay"></div>
     	</div>
     	<div class="row tblrow" style="border-bottom: 0px solid gray;">
     		<div class="col-md-3 col1">총 결제금액</div>
-    		<div class="col-md-4" id="modal_payment_total"></div>
+    		<div class="col-md-8" id="modal_payment_total"></div>
     	</div>
     </div>
     <div class="modal-footer">
@@ -545,14 +602,44 @@
   </div>
 </div>
 
+
+<%-- [190211] 모달 추가 --%>
+<div id="id02" class="modal">
+  	<div class="modal-content" style="height: 42.4%; width: 35%;">
+	    <div class="modal-header">
+	      <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+	      <h2>무통장입금 정보</h2>
+	    </div>
+    <div class="modal-body">
+      	<div class="row tblrow text-center">
+    		<h3><span id="modal_deposit_date"></span>까지 입금 바랍니다.</h3>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">계좌정보</div>
+    		<div class="col-md-8" id="modal_deposit_account"></div>
+    	</div>
+    	<div class="row tblrow">
+    		<div class="col-md-3 col1">입금예정금액</div>
+    		<div class="col-md-8" id="modal_depositcoin"></div>
+    	</div>
+    </div>
+    <div class="modal-footer">
+    	<span onclick="document.getElementById('id02').style.display='none'" class="btn">close</span>
+    </div>
+  </div>
+</div>
 <script>
 // Get the modal
 var modal = document.getElementById('id01');
+var modal2 = document.getElementById('id02');
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
+    }
+    else if (event.target == modal2) {
+        modal2.style.display = "none";
     }
 }
 </script>

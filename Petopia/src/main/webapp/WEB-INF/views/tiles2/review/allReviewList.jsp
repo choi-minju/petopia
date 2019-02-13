@@ -155,7 +155,7 @@
 				} // end of while
 					
 				if(!(pageNo > totalPage)) {
-					html += "<li><a href=\"javascript:showMemberList("+(pageNo+1)+")\">다음</a></li>";
+					html += "<li><a href=\"javascript:showReviewList("+(pageNo+1)+")\">다음</a></li>"; // === 2019.02.13 === 수정 //
 				} // end of if
 				
 				$("#pageBar").empty().html(html);

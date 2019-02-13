@@ -30,12 +30,27 @@ public class ConsultDAO implements InterConsultDAO {
 		return n;
 	}
 
-	// [페이징처리 O, 검색조건 X] 내가쓴글 갯수 totalCount
+	// [페이징처리 O, 검색조건 X] 일반회원 : 내가쓴글 갯수 totalCount
 	@Override
 	public int selectMyConsultCountNoSearch(String idx) {
 		int n = sqlsession.selectOne("consult.selectMyConsultCountNoSearch", idx);
 		return n;
 	}
+	
+	// [페이징처리 O, 검색조건 X] 기업회원 : 내가 댓글 단 글 갯수 totalCount
+	@Override
+	public int selectBizConsultCountNoSearch(String idx) {
+		int n = sqlsession.selectOne("consult.selectBizConsultCountNoSearch", idx);
+		return n;
+	}
+	
+	/*
+	// 기업회원 : 내가 댓글 단 글번호 리스트
+	@Override
+	public String[] selectBizConsultComment(String idx) {
+		String[] bizArr = sqlsession.selectOne("consult.selectBizConsultComment", idx);
+		return bizArr;
+	}*/
 	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	@Override
@@ -112,7 +127,7 @@ public class ConsultDAO implements InterConsultDAO {
 		return n;
 	}
 
-	// - [notification] 댓글작성 알림 insert
+	// [notification] 댓글작성 알림 insert
 	@Override
 	public int insertCommentNotification(ConsultCommentVO commentvo) {
 		int n = sqlsession.insert("consult.insertCommentNotification", commentvo);
@@ -183,6 +198,9 @@ public class ConsultDAO implements InterConsultDAO {
 		int n = sqlsession.insert("consult.insertConsultNotification", idx);
 		return n;
 	}
+
+	
+
 	
 	
 	

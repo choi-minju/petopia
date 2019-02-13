@@ -66,4 +66,9 @@ public interface InterMemberDAO {
 	int updateMemberPwdByUserid(HashMap<String, String> paramap); // member 테이블 비밀번호 변경
 	int updateLogin_logPwdByUserid(HashMap<String, String> paramap); // login_log 테이블 비밀번호 변경
 	// === 2019.01.25 === 비밀번호 변경 // 
+
+	// === 2019.02.13 === //
+	// 아이디 찾기 
+	String selectMemberIdByNamePhone(HashMap<String, String> paraMap);
+	// === 2019.02.13 === //
 }

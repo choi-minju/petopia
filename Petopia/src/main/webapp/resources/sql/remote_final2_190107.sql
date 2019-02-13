@@ -21,6 +21,8 @@ show user;
 -- [190205] review_comment 테이블 default 추가; 민주
 -- [190206] review_comment 테이블 컬럼 추가; 민주
 -- [190207] 맞춤추천에 필요한 function 생성; 고은
+-- [190211] deposit테이블의 deposit_status 체크제약조건 수정;수미 / petcare 테이블에서 notification 테이블로 insert하는 프로시저;현재
+-- [190213] notification 테이블의 not_date 컬럼 default값 sysdate 생성 ; 지민
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -518,11 +520,17 @@ nocache;
 -- *** 반려동물체중
 -- drop table petweight purge;
 create table petweight
-(petweight_UID  NUMBER  NOT NULL    -- 반려동물 몸무게 코드
-,fk_pet_UID     NUMBER  NOT NULL    -- 반려동물코드
-,petweight_past NUMBER  NOT NULL    -- 반려동물 몸무게
-,petweight_date DATE    NOT NULL    -- 등록일자
+(petweight_UID      NUMBER  NOT NULL    -- 반려동물 몸무게 코드
+,fk_pet_UID         NUMBER  NOT NULL    -- 반려동물코드
+,petweight_past     NUMBER  NOT NULL    -- 반려동물 몸무게
+,petweight_targeted NUMBER              -- 반려동물 목표 몸무게d
+,petweight_date     DATE    NOT NULL    -- 등록일자
 )
+/*	
+    [19-02-11] 반려동물 목표체중 컬럼 추가 
+    alter table petweight
+    add petweight_targeted NUMBER;
+*/
 
 -- drop sequence seq_petweight_UID
 create sequence seq_petweight_UID 
@@ -655,6 +663,13 @@ CREATE TABLE deposit (
 alter table deposit
 add FK_PAYMENT_UID NUMBER DEFAULT 0 NOT NULL;
 
+-- 190211; deposit테이블의 deposit_status 체크제약조건 수정
+alter table deposit
+drop CONSTRAINT CK_deposit_status;
+
+alter table deposit
+add CONSTRAINT CK_deposit_status check(deposit_status in(0,1,2,3, -1));
+
 -- 예치금 
 create sequence seq_deposit_UID
 start with 1
@@ -729,6 +744,10 @@ add not_URL VARCHAR2(200) default 'http://localhost:9090/petopia/alarm.pet' NOT 
 -- 190130
 alter table notification
 modify not_URL 'http://localhost:9090/petopia/notificationList.pet';
+
+-- 190213
+alter table notification
+modify NOT_DATE default sysdate;
 
 create sequence seq_notification_UID --알람
 start with 1
@@ -1782,3 +1801,66 @@ begin
     
     return v_result;
 end;
+
+
+-- [190211] petcare 테이블에서 notification 테이블로 insert하는 프로시저 
+--create or replace procedure pcd_petcare_insert_not
+--is
+--begin
+--    insert into notification(not_UID, fk_idx, not_type, not_message, not_date, not_readcheck, not_remindstatus, not_time, not_url)
+--    select seq_notification_UID.nextval,(select distinct i.fk_idx from pet_info I join petcare C on i.pet_uid = c.fk_pet_uid where c.care_date = to_char(sysdate, 'yyyy-mm-dd hh24:mi')) as fk_idx, 1
+--         , care_contents, to_date(care_date, 'yyyy-mm-dd hh24:mi'), 0, 0, sysdate, 'http://localhost:9090/petopia/notificationList.pet'
+--    from petcare
+--    where care_date = to_char(sysdate, 'yyyy-mm-dd hh24:mi');
+--     
+--    commit;
+--end pcd_petcare_insert_not;
+
+-- [190211] 프로시저 수정
+create or replace procedure pcd_petcare_insert_not
+is
+
+begin
+    for rcd in (
+    select i.fk_idx, care_contents, to_date(care_date, 'yyyy-mm-dd hh24:mi') as care_date 
+    from pet_info I join petcare C
+    on i.pet_uid = c.fk_pet_uid
+    where c.care_date = to_char(sysdate, 'yyyy-mm-dd hh24:mi')
+    )
+    
+    loop
+         insert into notification(not_UID, fk_idx, not_type, not_message, not_date, not_readcheck, not_remindstatus, not_time, not_url)
+         values(seq_notification_UID.nextval, rcd.fk_idx, 1, rcd.care_contents,  rcd.care_date, 0, 0, sysdate, 'http://localhost:9090/petopia/notificationList.pet');
+    end loop;
+    commit;
+    
+end pcd_petcare_insert_not;
+
+-- [190211] petcare 테이블에서 notification 테이블로 insert하는 프로시저 job 등록
+declare 
+    jobno number;
+begin
+    SYS.DBMS_JOB.SUBMIT(
+        job   => jobno 
+        ,what => 'FINAL2.PCD_PETCARE_INSERT_NOT;' 
+        ,next_date => SYSDATE
+        ,interval => 'SYSDATE + 1/60/24'
+        ,no_parse => TRUE
+    );
+end;
+commit;
+
+SELECT * FROM USER_JOBS;
+
+-- [190213] petweight 테이블 insert 프로시저 생성
+create or replace procedure pcd_petweight_insert
+(p_fk_pet_UID           IN  petweight.fk_pet_UID%type
+,p_petweight_past       IN  petweight.petweight_past%type
+,p_petweight_targeted   IN  petweight.petweight_targeted%type
+,p_petweight_date       IN  petweight.petweight_date%type
+)
+is
+begin
+      insert into petweight(petweight_UID, fk_pet_UID, petweight_past, petweight_targeted, petweight_date) 
+      values(seq_petweight_UID.nextval, p_fk_pet_UID, p_petweight_past, p_petweight_targeted, p_petweight_date);
+end pcd_petweight_insert;

@@ -21,7 +21,13 @@
 		<result property="PET_PROFILEIMG"  column="pet_profileimg"  javaType="String" />
 	</resultMap>
 	<select id="getPet_infoList" resultMap="getPet_infoListMap" parameterType="int">	
-		select pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		select pet_UID, fk_idx, pet_name
+		     , decode(pet_type, 'dog', '개'
+		                      , 'cat', '고양이'
+		                      , 'smallani', '소동물'
+		                                  , '기타') as pet_type, pet_birthday, pet_size, pet_weight
+		     , decode(pet_gender, '1', '남자'
+		                             , '여자') as pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
 		from pet_info
 		where fk_idx = #{fk_idx} and
 		      pet_status in('1','2')
@@ -93,7 +99,15 @@
 		(
 		    select lag(pet_UID, 1) over(order by pet_UID desc) as previouspet_UID
 		         , lag(pet_name, 1) over(order by pet_UID desc) as previouspet_name
-		         , pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		         , pet_UID, fk_idx, pet_name
+                 , decode(pet_type, 'dog', '개'
+                    			  , 'cat', '고양이'
+                    			  , 'smallani', '소동물'
+                                			  , '기타') as pet_type
+		         , pet_birthday, pet_size, pet_weight
+	             , decode(pet_gender, '1', '남자'
+                             			 , '여자') as pet_gender
+		         , pet_neutral, medical_history, allergy, pet_profileimg
 		         , lead(pet_UID, 1) over(order by pet_UID desc) as nextpet_UID
 		         , lead(pet_name, 1) over(order by pet_UID desc) as nextpet_name
 		    from pet_info
@@ -111,10 +125,20 @@
 		<result property="PETWEIGHT_DATE" column="petweight_date" javaType="String" />
 	</resultMap>
 	<select id="getWeight" parameterType="String" resultMap="petweightMap">
-		select petweight_UID, fk_pet_UID, petweight_past, petweight_date
+		select petweight_UID, fk_pet_UID, petweight_past, petweight_targeted, petweight_date
 		from petweight 
 		where fk_pet_UID = #{pet_UID}
 	</select>
+	
+	
+	<!-- // ***** Mybatis 에서 프로시저 호출해서 사용하기 ***** // #프로시저는 항상 좌중괄호, 우중괄호 -->
+	<insert id="addWeight" statementType="CALLABLE" parameterType="HashMap">
+		{ call PCD_PETWEIGHT_INSERT( #{PET_UID, mode=IN}
+								   , #{PETWEIGHT_PAST, mode=IN}
+								   , #{PETWEIGHT_TARGETED, mode=IN}
+								   , #{PETWEIGHT_DATE, mode=IN} )
+		}	
+	</insert> 
 	
 	
 	<!-- //===== 특정 반려동물관리 진료기록(Ajax) ===== -->
@@ -127,6 +151,7 @@
 		select chart_UID, biz_name, to_char(reservation_date, 'yyyy-mm-dd') as reservation_date
 		from chart
 		where fk_pet_UID = #{pet_UID}
+		order by chart_UID desc
 	</select>
 	
 
@@ -147,10 +172,12 @@
 	</resultMap>
 	<select id="getPetcare" parameterType="String" resultMap="petcareMap">
 		select c.caretype_uid, c.caretype_name, c.caretype_info
-		     , P.care_uid, P.fk_pet_uid, P.fk_caretype_uid, P.care_contents, P.care_memo, P.care_start, P.care_end, P.care_alarm, P.care_date
+		     , P.care_uid, P.fk_pet_uid, P.fk_caretype_uid, P.care_contents, P.care_memo
+		     , P.care_start, P.care_end, P.care_alarm, P.care_date
 		from caretype C JOIN petcare P
 		on c.caretype_uid = P.fk_caretype_uid
 		where P.fk_pet_uid = #{pet_UID}
+		order by to_date(P.care_end, 'yyyy-mm-dd hh24:mi:ss') desc
 	</select>
 
 

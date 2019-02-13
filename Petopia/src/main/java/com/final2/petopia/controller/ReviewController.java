@@ -1178,7 +1178,52 @@ public class ReviewController {
 		req.setAttribute("reviewMap", reviewMap);
 		
 		return "review/bizReviewDetail.tiles2";
-	} // end of public String valuebizReviewDetail(HttpServletRequest req, HttpServletResponse res)
+	} // end of public String requireLoginBiz_bizReviewDetail(HttpServletRequest req, HttpServletResponse res)
+	
+	// === 2019.02.11 ==== //
+	// *** 댓글 블라인드처리 요청 *** //
+	@RequestMapping(value="/reviewCommentsBlindByRc_id.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLoginBiz_reviewCommentsBlindByRc_id(HttpServletRequest req, HttpServletResponse res) {
+		int result = 0;
+		
+		String str_rc_id = req.getParameter("rc_id");
+		String str_rc_blind = req.getParameter("rc_blind");
+		
+		int rc_id = 0;
+		int rc_blind = 0;
+		
+		// rc_id
+		if(str_rc_id == null || "".equals(str_rc_id)) {
+			str_rc_id = "0";
+		}
+		
+		try {
+			rc_id = Integer.parseInt(str_rc_id);
+		} catch (NumberFormatException e) {
+			rc_id = 0;
+		} // end of try~catch
+		
+		// rc_blind
+		if(str_rc_blind == null || "".equals(str_rc_blind)) {
+			str_rc_blind = "0";
+		}
+		
+		try {
+			rc_blind = Integer.parseInt(str_rc_blind);
+		} catch (NumberFormatException e) {
+			rc_blind = 0;
+		}
+		// 블라인드 처리 요청
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("RC_ID", rc_id);
+		paraMap.put("RC_BLIND", rc_blind);
+		
+		result = service.updateReviewCommentsBlindByRc_id(paraMap);
+		
+		return result;
+	} // end of public int requireLoginBiz_reviewCommentsBlindByRc_id(HttpServletRequest req, HttpServletResponse res)
+	// === 2019.02.11 ==== //
 	// === 2019.02.07 ==== //
 	
 	// === 2019.02.08 ==== //
@@ -1397,7 +1442,7 @@ public class ReviewController {
 		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
 		paraMap.put("REVIEW_UID", review_uid);
 		paraMap.put("RV_BLIND", rv_blind);
-		
+		System.out.println("review_uid: "+review_uid+", rv_blind: "+rv_blind);
 		result = service.updateReviewBlindStatusByReview_uid(paraMap);
 		
 		return result;
@@ -1454,4 +1499,185 @@ public class ReviewController {
 		return "admin/review/adminReviewDetail.tiles2";
 	} // end of public String requireLoginAdmin_adminReviewDetail(HttpServletRequest req, HttpServletResponse res)
 	// === 2019.02.08 ==== //
+	
+	// === 2019.02.11 ==== //
+	// *** 리뷰 댓글 블라인드 처리 *** //
+	// 블라인드 처리
+	@RequestMapping(value="/updateReviewCommentsBlindStatusByRc_id.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLoginAdmin_updateReviewCommentsBlindStatusByRc_id(HttpServletRequest req, HttpServletResponse res) {
+		int result = 0;
+		
+		String str_rc_id = req.getParameter("rc_id");
+		String str_rc_blind = req.getParameter("rc_blind");
+		
+		int rc_id = 0;
+		int rc_blind = 0;
+		
+		// review_uid
+		if(str_rc_id == null || "".equals(str_rc_id)) {
+			str_rc_id = "0";
+		}
+		
+		try {
+			rc_id = Integer.parseInt(str_rc_id);
+		} catch (NumberFormatException e) {
+			rc_id = 0;
+		} // end of try~catch
+		
+		// rv_blind
+		if(str_rc_blind == null || "".equals(str_rc_blind)) {
+			str_rc_blind = "0";
+		}
+		
+		try {
+			rc_blind = Integer.parseInt(str_rc_blind);
+		} catch (NumberFormatException e) {
+			rc_blind = 0;
+		}
+		
+		// 블라인드 처리
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		paraMap.put("RC_ID", rc_id);
+		paraMap.put("RC_BLIND", rc_blind);
+		
+		result = service.updateReviewCommentsBlindStatusByRc_id(paraMap);
+		
+		return result;
+	} // end of public int requireLoginAdmin_updateReviewCommentsBlindStatusByRc_id(HttpServletRequest req, HttpServletResponse res)
+	
+	// 블라인드 처리 취소
+	@RequestMapping(value="/updateReviewCommentsBlindCancleByRc_id.pet", method={RequestMethod.POST})
+	@ResponseBody
+	public int requireLoginAdmin_updateReviewCommentsBlindCancleByRc_id(HttpServletRequest req, HttpServletResponse res) {
+		int result = 0;
+		
+		String str_rc_id = req.getParameter("rc_id");
+		
+		int rc_id = 0;
+		
+		// review_uid
+		if(str_rc_id == null || "".equals(str_rc_id)) {
+			str_rc_id = "0";
+		}
+		
+		try {
+			rc_id = Integer.parseInt(str_rc_id);
+		} catch (NumberFormatException e) {
+			rc_id = 0;
+		} // end of try~catch
+		
+		// 블라인드 처리 취소
+		result = service.updateReviewCommentsBlindCancleByRc_id(rc_id);
+		
+		return result;
+	} // end of public int requireLoginAdmin_updateReviewCommentsBlindCancleByRc_id(HttpServletRequest req, HttpServletResponse res)
+	
+	// *** 병원 상세 페이지에서 리뷰 목록 보기 *** //
+	@RequestMapping(value="/showHosReview.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public List<HashMap<String, String>> showHosReview(HttpServletRequest req) {
+		List<HashMap<String, String>> reviewList = null;
+		
+		String str_idx = req.getParameter("idx");
+		String str_currentPageNo = req.getParameter("currentPageNo");
+		
+		int idx = 0;
+		int currentPageNo = 0;
+		int sizePerPage = 3;
+		
+		// idx
+		if(str_idx == null || "".equals(str_idx)) {
+			str_idx = "0";
+		}
+		
+		try {
+			idx = Integer.parseInt(str_idx);
+		} catch (NumberFormatException e) {
+			idx = 0;
+		}
+		
+		// currentPageNo
+		if(str_currentPageNo == null || "".equals(str_currentPageNo)) {
+			str_currentPageNo = "1";
+		}
+		
+		try {
+			currentPageNo = Integer.parseInt(str_currentPageNo);
+		} catch (NumberFormatException e) {
+			currentPageNo = 1;
+		}
+		
+		int startno = ((currentPageNo-1) * sizePerPage) + 1;
+		int endno = (currentPageNo * sizePerPage);
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("IDX", String.valueOf(idx));
+		paraMap.put("STARTRNO", String.valueOf(startno));
+		paraMap.put("ENDRNO", String.valueOf(endno));
+		
+		reviewList = service.selectReviewListByBiz_id(paraMap);
+		
+		return reviewList;
+	} // end of public List<HashMap<String, String>> showHosReview(HttpServletRequest req)
+	
+	// *** 병원 상세페이지에서 리뷰 별점 평균 불러오기 *** //
+	@RequestMapping(value="/selectAvgStarPoint.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int selectAvgStarPoint(HttpServletRequest req) {
+		
+		int result = 0;
+		
+		String str_idx = req.getParameter("idx");
+		
+		int idx = 0;
+		
+		if(str_idx == null || "".equals(str_idx)) {
+			str_idx = "0";
+		}
+		
+		try {
+			idx = Integer.parseInt(str_idx);
+		} catch (NumberFormatException e) {
+			idx = 0;
+		}
+		
+		result = service.selectAvgStarPoint(idx);
+		
+		return result;
+	} // end of public int selectAvgStarPoint(HttpServletRequest req)
+	// === 2019.02.11 ==== //
+	
+	// === 2019.02.13 ==== //
+	// 해당 병원.약국의 리뷰 페이지 갯수
+	@RequestMapping(value="/showHosReviewTotal.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int showHosReviewTotal(HttpServletRequest req) {
+		int totalPage = 0;
+		
+		String str_idx = req.getParameter("idx");
+		
+		int idx = 0;
+		int sizePerPage = 3;
+		
+		if(str_idx == null || "".equals(str_idx)) {
+			str_idx = "0";
+		}
+		
+		try {
+			idx = Integer.parseInt(str_idx);
+		} catch (NumberFormatException e) {
+			idx = 0;
+		}
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("IDX", String.valueOf(idx));
+		
+		int totalCnt = service.selectAllTotalCountByBiz_id(paraMap);
+		
+		totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		return totalPage;
+	} // end of public int showHosReviewTotal(HttpServletRequest req)
+	// === 2019.02.13 ==== //
 }

@@ -107,10 +107,16 @@ label {
 	
 	// [190209] 시작
 	function goPay(){
+		
 		var frm = document.chargePayFrm;
-	
-		var url = "chargeDepositEnd.pet?idx="+frm.idx.value+"&depositType="+frm.depositType.value+"&depositCoin="+frm.depositCoin.value;
-		window.open(url, "chargeDepositEnd", "left=350px, top=100px, width=900px, height=650px");
+		var bool = confirm("예치금 "+numberWithCommas(frm.depositCoin.value)+"원을 충전하시겠습니까?");
+		if(bool){
+			var url = "chargeDepositEnd.pet?idx="+frm.idx.value+"&depositType="+frm.depositType.value+"&depositCoin="+frm.depositCoin.value;
+			window.open(url, "chargeDepositEnd", "left=350px, top=100px, width=900px, height=650px");
+		}
+		else{
+			return false;
+		}
 	}
 	
 	function goInsertDeposit(idx, realDeposit, depositType){

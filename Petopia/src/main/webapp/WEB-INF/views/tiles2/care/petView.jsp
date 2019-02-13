@@ -56,9 +56,9 @@
 		// 체중 추가 버튼
 		$("#addWeight").click(function() {
 			
-			var url = "addWeight.pet";				
+			var url = "addWeight.pet?pet_UID=${pet_UID}";				
 			window.open(url, "addWeight"
-					 , "left=500px, top=100px, width=300px, height=230px");
+					 	   , "left=500px, top=100px, width=300px, height=230px");
 			
 		});
 		
@@ -90,14 +90,13 @@
 				$.each(json, function(entryIndex, entry) {
 					html += "		<tr>"
 						  + "			<td>" + entry.PETWEIGHT_DATE + "</td>"
-						  + "			<td>" + entry.PETWEIGHT_PAST + "</td>"
+						  + "			<td>" + entry.PETWEIGHT_PAST + "kg </td>"
 						  + "			<td>" + entry.PETWEIGHT_UID + "</td>"
 						  + "		</tr>";		
 				});
 				
 					html += "	</tbody>"
 						  + "</table>";
-						
 
 				$("#table_weight").append(html);
 			},
@@ -141,7 +140,6 @@
 				
 					html += "	</tbody>"
 						  + "</table>";
-						
 
 				$("#table_chart").append(html);
 			},
@@ -190,8 +188,8 @@
 	<div class="col-sm-12">
 		<div class="row" style="text-align: center; margin-top: 5px; margin-right: 10px;" >
 			<div style="margin:0 auto;">
-				<button type="button">수정하기</button>
-				<button type="button">지우기</button>	
+                <button type="button" id="btnRegister" class="btn btn-rounder btnmenu">수정하기</button>
+                <button type="button" class="btn btn-rounder btnmenu" style="color: white; background-color: gray;" onclick="javascript:history.back();">지우기</button>
 			</div>
 		</div>
 	</div>
