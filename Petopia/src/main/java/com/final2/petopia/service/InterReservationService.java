@@ -49,9 +49,9 @@ public interface InterReservationService {
 
 	
 //	[190126] 예치금 히스토리 목록
-	List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap);
+	List<DepositVO> selectDepositListByIdx(HashMap<String, Object> paraMap);
 //	[190126] 예치금 히스토리 목록 페이지바 만들기
-	int selectDepositListTotalCount(HashMap<String, String> paraMap);
+	int selectDepositListTotalCount(HashMap<String, Object> paraMap);
 //	#최초 스케줄 생성 프로시저
 	void insertScheduleFirst(String idx_biz);
 //	#병원회원의 스케줄 개수 가져오기
@@ -96,12 +96,10 @@ public interface InterReservationService {
 //	#deposit테이블에서 무통장입금 계좌 정보 가져오기
 	HashMap<String, String> selectDepositDirectAccount(String deposit_UID);
 
-	List<DepositVO> selectDepositListByIdxForAdmin(HashMap<String, String> paraMap);
+	List<DepositVO> selectDepositListByIdxForAdmin(HashMap<String, Object> paraMap);
 
-	int selectDepositListTotalCountForAdmin(HashMap<String, String> paraMap);
+	int selectDepositListTotalCountForAdmin(HashMap<String, Object> paraMap);
 
 	int updateDepositStatusByDUID(String deposit_UID);
-
-	
 
 }
