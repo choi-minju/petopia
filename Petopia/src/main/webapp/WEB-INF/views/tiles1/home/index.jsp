@@ -383,21 +383,21 @@
   <h4>What we offer</h4>
   <div class="row text-center">
     <div class="col-sm-4">
-      <div class="thumbnail">
+      <div class="thumbnail" onclick="javascript:location.href='<%= cxtPath %>/chat.pet'">
         <img src="<%= cxtPath %>/resources/img/homeheader/catkissing.jpg" alt="Paris">
         <p><strong>수의사 상담</strong></p>
         <p>실시간 수의사 채팅 서비스를 제공합니다.</p>
       </div>
     </div>
     <div class="col-sm-4">
-      <div class="thumbnail">
-        <img src="<%= cxtPath %>/resources/img/homeheader/streetcat.jpg" alt="New York">
+      <div class="thumbnail" onclick="javascript:location.href='<%= cxtPath %>/consultList.pet'">
+        <img src="<%= cxtPath %>/resources/img/homeheader/sleepingcat.jpg" alt="New York">
         <p><strong>화상진료</strong></p>
         <p>간단한 외상의 경우 화상진료가 가능합니다.</p>
       </div>
     </div>
     <div class="col-sm-4">
-      <div class="thumbnail">
+      <div class="thumbnail" onclick="javascript:location.href='<%= cxtPath %>/careCalendar.pet'">
         <img src="<%= cxtPath %>/resources/img/homeheader/cutecat.jpg" alt="San Francisco">
         <p><strong>반려동물 케어수첩</strong></p>
         <p>당신의 반려동물에 대한 모든 정보를 담으세요.</p>
@@ -430,17 +430,17 @@
   <br>
   <div class="row">
   	<div class="col-sm-4">
-      <span class="glyphicon glyphicon-search logo-small slideanim"></span>
+      <span class="glyphicon glyphicon-search logo-small slideanim" onclick="javascript:location.href='<%= cxtPath %>/search.pet'"></span>
       <h4>SEARCH</h4>
       <p>동물병원/약국 맞춤 추천 서비스를 제공합니다.</p>
     </div>
     <div class="col-sm-4">
-      <span class="glyphicon glyphicon-pencil logo-small slideanim"></span>
+      <span class="glyphicon glyphicon-pencil logo-small slideanim" onclick="javascript:location.href='<%= cxtPath %>/allReviewList.pet'"></span>
       <h4>REVIEW</h4>
       <p>동물병원/약국을 실제로 이용하신 분들의 후기를 확인해보세요.</p>
     </div>
     <div class="col-sm-4">
-      <span class="glyphicon glyphicon-facetime-video logo-small slideanim"></span>
+      <span class="glyphicon glyphicon-facetime-video logo-small slideanim" onclick="javascript:location.href='<%= cxtPath %>/chat.pet'"></span>
       <h4>CHATTING</h4>
       <p>수의사와 상담을 진행해보세요.</p>
     </div>
@@ -531,3 +531,4 @@
     </div>
   </div>
 </div>
+ 
