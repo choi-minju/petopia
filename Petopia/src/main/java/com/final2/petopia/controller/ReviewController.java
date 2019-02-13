@@ -1580,9 +1580,13 @@ public class ReviewController {
 		List<HashMap<String, String>> reviewList = null;
 		
 		String str_idx = req.getParameter("idx");
+		String str_currentPageNo = req.getParameter("currentPageNo");
 		
 		int idx = 0;
+		int currentPageNo = 0;
+		int sizePerPage = 3;
 		
+		// idx
 		if(str_idx == null || "".equals(str_idx)) {
 			str_idx = "0";
 		}
@@ -1593,8 +1597,19 @@ public class ReviewController {
 			idx = 0;
 		}
 		
-		int startno = 1;
-		int endno = 3;
+		// currentPageNo
+		if(str_currentPageNo == null || "".equals(str_currentPageNo)) {
+			str_currentPageNo = "1";
+		}
+		
+		try {
+			currentPageNo = Integer.parseInt(str_currentPageNo);
+		} catch (NumberFormatException e) {
+			currentPageNo = 1;
+		}
+		
+		int startno = ((currentPageNo-1) * sizePerPage) + 1;
+		int endno = (currentPageNo * sizePerPage);
 		
 		HashMap<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("IDX", String.valueOf(idx));
@@ -1632,4 +1647,37 @@ public class ReviewController {
 		return result;
 	} // end of public int selectAvgStarPoint(HttpServletRequest req)
 	// === 2019.02.11 ==== //
+	
+	// === 2019.02.13 ==== //
+	// 해당 병원.약국의 리뷰 페이지 갯수
+	@RequestMapping(value="/showHosReviewTotal.pet", method={RequestMethod.GET})
+	@ResponseBody
+	public int showHosReviewTotal(HttpServletRequest req) {
+		int totalPage = 0;
+		
+		String str_idx = req.getParameter("idx");
+		
+		int idx = 0;
+		int sizePerPage = 3;
+		
+		if(str_idx == null || "".equals(str_idx)) {
+			str_idx = "0";
+		}
+		
+		try {
+			idx = Integer.parseInt(str_idx);
+		} catch (NumberFormatException e) {
+			idx = 0;
+		}
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("IDX", String.valueOf(idx));
+		
+		int totalCnt = service.selectAllTotalCountByBiz_id(paraMap);
+		
+		totalPage = (int)Math.ceil((double)totalCnt/sizePerPage);
+		
+		return totalPage;
+	} // end of public int showHosReviewTotal(HttpServletRequest req)
+	// === 2019.02.13 ==== //
 }
