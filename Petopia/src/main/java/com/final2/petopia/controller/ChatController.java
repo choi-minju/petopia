@@ -59,11 +59,16 @@ public class ChatController extends TextWebSocketHandler{
 	@RequestMapping(value="/videochat.pet", method= {RequestMethod.GET})
 	public String videochat(HttpServletRequest req, HttpServletResponse res) {
 		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String name = loginuser.getName();
+		
 		ChatVO chatvo = new ChatVO();
 		
 		String chatcode = chatvo.getChatcode();
 		
 		req.setAttribute("chatcode", chatcode);
+		req.setAttribute("Name", name);
 	
 		return "chat/videochat.tiles2";
 	}
@@ -194,5 +199,20 @@ public class ChatController extends TextWebSocketHandler{
 		
 		return returnmapList;
 	} // end of viewlog
+	
+	/////////////////////////////////////////////////////////////////////
+	
+	//예제
+		@RequestMapping(value="/example.pet", method= {RequestMethod.GET})
+		public String requireLogin_example(HttpServletRequest req, HttpServletResponse res) {
+			
+			HttpSession session = req.getSession();
+			MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+			String MemberType = loginuser.getMembertype();
+			
+			req.setAttribute("MemberType", MemberType);
+			
+			return "chat2/videochat2.tiles2";
+		}
 	
 }

@@ -56,11 +56,11 @@ function getOtherPc(pc) {
   return (pc === pc1) ? pc2 : pc1;
 }
 
-async function start() {
+function start() {
   console.log('Requesting local stream');
   startButton.disabled = true;
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+    const stream = navigator.mediaDevices.getUserMedia({audio: true, video: true});
     console.log('Received local stream');
     localVideo.srcObject = stream;
     localStream = stream;
@@ -76,7 +76,7 @@ function getSelectedSdpSemantics() {
   return option.value === '' ? {} : {sdpSemantics: option.value};
 }
 
-async function call() {
+function call() {
   callButton.disabled = true;
   hangupButton.disabled = false;
   console.log('Starting call');
@@ -101,8 +101,8 @@ async function call() {
   localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
 
   try {
-    const offer = await pc1.createOffer(offerOptions);
-    await onCreateOfferSuccess(offer);
+    const offer =  pc1.createOffer(offerOptions);
+    onCreateOfferSuccess(offer);
   } catch (e) {
     onCreateSessionDescriptionError(e);
   }
@@ -112,10 +112,10 @@ function onCreateSessionDescriptionError(error) {
   
 }
 
-async function onCreateOfferSuccess(desc) {
+function onCreateOfferSuccess(desc) {
 
   try {
-    await pc1.setLocalDescription(desc);
+     pc1.setLocalDescription(desc);
     onSetLocalSuccess(pc1);
   } catch (e) {
     onSetSessionDescriptionError();
@@ -123,7 +123,7 @@ async function onCreateOfferSuccess(desc) {
 
   console.log('pc2 setRemoteDescription start');
   try {
-    await pc2.setRemoteDescription(desc);
+     pc2.setRemoteDescription(desc);
     onSetRemoteSuccess(pc2);
   } catch (e) {
     onSetSessionDescriptionError();
@@ -134,23 +134,23 @@ async function onCreateOfferSuccess(desc) {
   // to pass in the right constraints in order for it to
   // accept the incoming offer of audio and video.
   try {
-    const answer = await pc2.createAnswer();
-    await onCreateAnswerSuccess(answer);
+    const answer =  pc2.createAnswer();
+     onCreateAnswerSuccess(answer);
   } catch (e) {
     onCreateSessionDescriptionError(e);
   }
 }
 
 function onSetLocalSuccess(pc) {
-
+	console.log('내화면출력성공');
 }
 
 function onSetRemoteSuccess(pc) {
-
+	console.log('상대화면출력성공');
 }
 
 function onSetSessionDescriptionError(error) {
-
+	console.log('오류입니다.');
 }
 
 function gotRemoteStream(e) {
@@ -160,24 +160,24 @@ function gotRemoteStream(e) {
   }
 }
 
-async function onCreateAnswerSuccess(desc) {
+function onCreateAnswerSuccess(desc) {
 
   try {
-    await pc2.setLocalDescription(desc);
+    pc2.setLocalDescription(desc);
     onSetLocalSuccess(pc2);
   } catch (e) {
     onSetSessionDescriptionError(e);
   }
 
   try {
-    await pc1.setRemoteDescription(desc);
+   pc1.setRemoteDescription(desc);
     onSetRemoteSuccess(pc1);
   } catch (e) {
     onSetSessionDescriptionError(e);
   }
 }
 
-async function onIceCandidate(pc, event) {
+ function onIceCandidate(pc, event) {
   try {
     await (getOtherPc(pc).addIceCandidate(event.candidate));
     onAddIceCandidateSuccess(pc);
@@ -211,10 +211,21 @@ var PeerConnection = (function(){
 })();
 
 var pc = new PeerConnection({
-	iceServers: [
-		{"url": "stun:23.21.150.121" },
-		{"url": "stun:stun.l.google.com:19302"}
-	]}, {
+	'iceServers': [
+	    {
+	      'urls': 'stun:stun.l.google.com:19302'
+	    },
+	    {
+	      'urls': 'turn:192.158.29.39:3478?transport=udp',
+	      'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+	      'username': '28224511:1379330808'
+	    },
+	    {
+	      'urls': 'turn:192.158.29.39:3478?transport=tcp',
+	      'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+	      'username': '28224511:1379330808'
+	    }
+	  ]}, {
 		optional: [
 			{ DtlsSrtpKeyAgreement: true },
 			{ RtpDataChannels: false }

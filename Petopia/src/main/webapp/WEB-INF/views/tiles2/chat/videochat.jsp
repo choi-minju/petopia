@@ -43,117 +43,38 @@
 
 <script type="text/javascript" src="<%=ctxPath%>/resources/js/json2.js"></script>
 <!-- JSON.stringify() 는 값을 그 값을 나타내는 JSON 표기법의 문자열로 변환해주는 것인데 이것을 사용하기 위해서는 json2.js 가 필요하다. -->
-
+<script src="http://26.42.136.15:3000/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script type="text/javascript" >
 
     // === !!! WebSocket 통신은 스크립트로 작성하는 것이다. !!! === //
     $(document).ready(function(){
     		
-        var url = window.location.host;   // 웹브라우저의 주소창의 포트까지 가져옴
-    //  alert("url : " + url);
-    //  결과값  url: 192.168.50.53:9090
-    	    
-    	var pathname = window.location.pathname; // '/'부터 오른쪽에 있는 모든 경로
-    // 	alert("pathname : " + pathname);
-    //  결과값  pathname : /board/chatting/multichat.action
-    	 	
-    	var appCtx = pathname.substring(0, pathname.lastIndexOf("/"));  // "전체 문자열".lastIndexOf("검사할 문자");   
-   	// pathname.lastIndexOf("/") ==> 15
-    // 	alert("appCtx : " + appCtx);
-    //  결과값  appCtx : /board/chatting
-    //	alert("chatcode : " + chatcode);
-    	var root = url+appCtx;
-    	
-    // 	alert("root : " + root);
-    //  결과값   root : 192.168.50.53:9090/board/chatting
-   	
-    	var wsUrl = "ws://"+root+"/multichatstart.pet";// http가아닌 ws를 사용 //multichatstart.action 은 xml에있음
-       	var websocket = new WebSocket(wsUrl);  //  /WEB-INF/web.xml 에 가서 appServlet 의 contextConfigLocation 을 수정한다.
-     //  	alert(wsUrl);
-     // var websocket = new WebSocket("ws://192.168.50.53:9090/board/chatting/multichatstart.action");
+    	var socket = io("http://26.42.136.15:3000");
         
-     // alert(wsUrl);
-    	
-    	// >>>> === Javascript WebSocket 이벤트 정리 === <<<< 
-	    //      onopen    ==>  WebSocket 연결
-	    //      onmessage ==>  메시지 수신
-	    //      onerror   ==>  전송 에러 발생
-	    //      onclose   ==>  WebSocket 연결 해제
-    	
-    	var messageObj = {}; // 자바스크립트에서 객체 생성함.
-    	
-	    // === 웹소켓에 최초로 연결이 되었을 경우에 실행되어지는 콜백함수 ===
-    	websocket.onopen = function() {
-    		alert("채팅 준비 완료!!");
-    	
-    	/*	
-            messageObj = {};  // 초기화
-            messageObj.message = "채팅방에 <span style='color: red;'>입장</span>했습니다";
-            messageObj.type = "all";
-            messageObj.to = "all";
-        */    
-            // 또는
-            messageObj = { message : "채팅방에 <span style='color: red;'>입장</span>했습니다"
-        		     	 , type : "all"
-        		     	 , to : "all" };  // 자바스크립트에서 객체의 데이터값 초기화
-        		     	
-            websocket.send(JSON.stringify(messageObj));
-                        // JSON.stringify() 는 값을 그 값을 나타내는 JSON 표기법의 문자열(String)로 변환한다
-                        /*
-	                        JSON.stringify({});                  // '{}'
-							JSON.stringify(true);                // 'true'
-							JSON.stringify('foo');               // '"foo"'
-							JSON.stringify([1, 'false', false]); // '[1,"false",false]'
-							JSON.stringify({ x: 5 });            // '{"x":5}'
-                        */
-        };
-    	
-    	// === 메시지 수신 콜백함수
-        websocket.onmessage = function(evt) {
-            $("#chatMessage").append(evt.data);
-            $("#chatMessage").append("<br />");
-            $("#chatMessage").scrollTop(99999999);
-        };
-        
-        // === 웹소캣 연결 해제 콜백함수
-        websocket.onclose = function() {
-            // websocket.send("채팅을 종료합니다.");
-        }
-         
-        
-         $("#message").keydown(function(key) {
-             if (key.keyCode == "13") {
-                $("#sendMessage").click();
-             }
-          }); 
-         
-        $("#sendMessage").click(function() {
-            if( $("#message").val() != "") {
-                
-            	// ==== 자바스크립트에서 replace를 replaceAll 처럼 사용하기 ====
-	             // 자바스크립트에서 replaceAll 은 없다.
-	             // 정규식을 이용하여 대상 문자열에서 모든 부분을 수정해 줄 수 있다.
-	             // 수정할 부분의 앞뒤에 슬래시를 하고 뒤에 gi 를 붙이면 replaceAll 과 같은 결과를 볼 수 있다.
-               // JSON.stringify() 는 값을 그 값을 나타내는 JSON 표기법의 문자열로 변환한다
-               
-               var message = $("#message").val();
-				message = message.replace(/</gi, "&lt;"); 
-            	
-                messageObj = {};
-                messageObj.message = message;
-                
-                messageObj.type = "all";
-                messageObj.to = "all";
-                                 
-                websocket.send(JSON.stringify(messageObj));
-                
-                
-                $("#chatMessage").append("<span style='color:red; background:white;margin-top:3px;width:100%;border-radius:5px;padding:5px;display:flex; font-weight:bold;'>[나] ▷ " + message + "</span><br/>");
-                $("#chatMessage").scrollTop(99999999);
-                 
-                $("#message").val("");
+        //msg에서 키를 누를떄
+        $("#message").keydown(function(key){
+            //해당하는 키가 엔터키(13) 일떄
+            if(key.keyCode == 13){
+                //msg_process를 클릭해준다.
+                sendMessage.click();
             }
         });
+        
+        //msg_process를 클릭할 때
+        $("#sendMessage").click(function(){
+            //소켓에 send_msg라는 이벤트로 input에 #msg의 벨류를 담고 보내준다.
+             socket.emit("send_msg", $('#name').val(), $("#message").val());
+            //#msg에 벨류값을 비워준다.
+            $("#message").val("");
+        });
+        
+      //소켓 서버로 부터 send_msg를 통해 이벤트를 받을 경우 
+        socket.on('send_msg', function(message) {
+            //div 태그를 만들어 텍스트를 msg로 지정을 한뒤 #chat_box에 추가를 시켜준다.
+            $("<span style='color:red; background:white;margin-top:3px;width:100%;border-radius:5px;padding:5px;display:flex; font-weight:bold;'>[나] ▷ </span><br/>").text(message).appendTo("#chatMessage");
+        });
+
     });
   
 </script>
@@ -179,7 +100,7 @@
 			</div>
 			 <div style="margin-top:350px;">
 				<input type="text" id="message" size="30" placeholder="메세지 내용" style="border:0; background:whitesmoke;"/>
-				
+				<input type="text" style="display: none" id="name" class="name" value="${Name}" /> 
 				<i class="fa fa-commenting-o" id="sendMessage" style="font-size: 40px;"></i>
 			 </div>
 		</div>
@@ -192,8 +113,8 @@
         <button type="button" class="btn2" onClick="javascript:location.href='<%= ctxPath %>/home.pet'">종료하기</button>
     </div>
 	
-    <div class="box" style="display: none;">
-        <span>SDP Semantics:</span>
+    <div class="box">
+        <span>설정 변경</span>
         <select id="sdpSemantics">
             <option selected value="">Default</option>
             <option value="unified-plan">Unified Plan</option>
@@ -208,4 +129,3 @@
 <script src="<%=ctxPath%>/resources/js/videochat.js" async></script>
 
 </body>
-
