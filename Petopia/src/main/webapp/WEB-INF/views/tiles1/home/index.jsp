@@ -391,7 +391,7 @@
     </div>
     <div class="col-sm-4">
       <div class="thumbnail">
-        <img src="<%= cxtPath %>/resources/img/homeheader/streetcat.jpg" alt="New York">
+        <img src="<%= cxtPath %>/resources/img/homeheader/sleepingcat.jpg" alt="New York">
         <p><strong>화상진료</strong></p>
         <p>간단한 외상의 경우 화상진료가 가능합니다.</p>
       </div>
@@ -430,7 +430,7 @@
   <br>
   <div class="row">
   	<div class="col-sm-4">
-      <span class="glyphicon glyphicon-search logo-small slideanim"></span>
+      <span class="glyphicon glyphicon-search logo-small slideanim" onclick="javascript:location.href='<%= cxtPath %>/search.pet'"></span>
       <h4>SEARCH</h4>
       <p>동물병원/약국 맞춤 추천 서비스를 제공합니다.</p>
     </div>
