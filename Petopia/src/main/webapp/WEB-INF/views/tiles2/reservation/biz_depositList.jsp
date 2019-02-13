@@ -135,6 +135,7 @@
 	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
 	
+	// [190213] function 전체적인 내용물 수정 시작
 	function all(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
 						, "type": "-10"};
@@ -155,13 +156,22 @@
 								"<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button></td>";
 					}
 					else if(entry.deposit_status=="3"){
-						html += "<td>출금완료</td><td><button type='button' class='btn btn-default' onClick='goWithdrawDetail("+entry.fk_payment_UID+");'>출금내역</button></td>";
+						html += "<td>출금완료</td><td>"+entry.deposit_type+"</td>";	// [190213] 버튼 삭제하고 type으로 수정
 								
+					}
+					else if(entry.deposit_status=="2"){
+						html += "<td>환불완료</td>";
+					}
+					else if(entry.deposit_status=="-1"){
+						html += "<td>입금대기</td>";
+					}
+					else if(entry.deposit_status=="0"){
+						html+="<td>사용완료</td>";
 					}
 					html += "</tr>";		
 				}); // end of each
 				$("#allContents").empty().html(html);
-				makePageBar(currentShowPageNo, "-1");
+				makePageBar(currentShowPageNo, "-10");
 
 			},
 			error: function(request, status, error){
@@ -175,7 +185,7 @@
 	
 	function charged(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "1"};
+						, "type": "1,2,-1"};
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -191,10 +201,17 @@
 					if(entry.deposit_status=="1"){
 						html += "<td><button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button></td>";
 					}
+					else if(entry.deposit_status=="2"){
+						html += "<td>환불완료</td>";
+					}
+					else if(entry.deposit_status=="-1"){
+						html += "<td>입금대기</td>";
+					}
+							
 					html += "</tr>";	
 				}); // end of each
 				$("#chargedContents").empty().html(html);
-				makePageBar(currentShowPageNo, "1");
+				makePageBar(currentShowPageNo, "1,2,-1");
 
 			},
 			error: function(request, status, error){
@@ -208,7 +225,7 @@
 
 	function used(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "3"};
+						, "type": "3,0"};
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -222,12 +239,15 @@
 							"<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"; // [190207] 오류 수정
 					if(entry.deposit_status=="3"){
-						html += "<td><button type='button' class='btn btn-default' onClick='goWithdrawDetail("+entry.fk_payment_UID+");'>출금내역</button></td>";
+						html += "<td>"+entry.deposit_type+"</td>";	// [190213] 버튼 삭제하고 type으로 수정
+					}
+					else if(entry.deposit_status=="0"){
+						html+="<td>사용완료</td>";
 					}
 					html += "</tr>";		
 				}); // end of each
 				$("#usedContents").empty().html(html);
-				makePageBar(currentShowPageNo, "2");
+				makePageBar(currentShowPageNo, "3,0");
 
 			},
 			error: function(request, status, error){
@@ -237,7 +257,8 @@
 
 		}); // end of ajax
 	}
-	
+//	[190213] 수정 끝
+
 	// [190130] 수정
 	function makePageBar(currentShowPageNo, type){
 		var form_data = {sizePerPage:"10",
@@ -257,7 +278,7 @@
 					var loop = 1; 
 					
 					var pageNo = Math.floor((currentShowPageNo-1)/blockSize)*blockSize+1;
-					if(json.type==-1){
+					if(json.type==-10){
 						if( pageNo!= 1){
 							pageBarHTML += "&nbsp;<a href='javascript:all(\""+(pageNo-1)+"\");'>&laquo;</a>&nbsp;";
 						}
@@ -301,7 +322,7 @@
 						
 						$("#pageBarCharged").empty().html(pageBarHTML);
 					}
-					else if(json.type==2){
+					else if(json.type==3){
 						if( pageNo!= 1){
 							pageBarHTML += "&nbsp;<a href='javascript:used(\""+(pageNo-1)+"\");'>&laquo;</a>&nbsp;";
 						}
@@ -324,13 +345,13 @@
 					
 				}
 				else{
-					if(json.type==-1){
+					if(json.type==-10){
 						$("#pageBarAll").empty();
 					}
 					else if(json.type==1){
 						$("#pageBarCharged").empty();
 					}
-					else if(json.type==2){
+					else if(json.type==3){
 						$("#pageBarUsed").empty();
 					}
 					pageBarHTML = "";
@@ -346,7 +367,6 @@
 	} // end of makeCommentPageBar
 	
 	function goRvDetail(payment_UID){
-		console.log("payment_UID: "+payment_UID);
 		var form_data = {"payment_UID": payment_UID};
 		
 		$.ajax({

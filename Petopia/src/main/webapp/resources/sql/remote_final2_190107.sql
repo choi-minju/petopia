@@ -22,6 +22,7 @@ show user;
 -- [190206] review_comment 테이블 컬럼 추가; 민주
 -- [190207] 맞춤추천에 필요한 function 생성; 고은
 -- [190211] deposit테이블의 deposit_status 체크제약조건 수정;수미 / petcare 테이블에서 notification 테이블로 insert하는 프로시저;현재
+-- [190213] notification 테이블의 not_date 컬럼 default값 sysdate 생성 ; 지민
 ------------------------------------------------------------------------------
 -- 계정 조회
 show user;
@@ -519,11 +520,17 @@ nocache;
 -- *** 반려동물체중
 -- drop table petweight purge;
 create table petweight
-(petweight_UID  NUMBER  NOT NULL    -- 반려동물 몸무게 코드
-,fk_pet_UID     NUMBER  NOT NULL    -- 반려동물코드
-,petweight_past NUMBER  NOT NULL    -- 반려동물 몸무게
-,petweight_date DATE    NOT NULL    -- 등록일자
+(petweight_UID      NUMBER  NOT NULL    -- 반려동물 몸무게 코드
+,fk_pet_UID         NUMBER  NOT NULL    -- 반려동물코드
+,petweight_past     NUMBER  NOT NULL    -- 반려동물 몸무게
+,petweight_targeted NUMBER              -- 반려동물 목표 몸무게d
+,petweight_date     DATE    NOT NULL    -- 등록일자
 )
+/*	
+    [19-02-11] 반려동물 목표체중 컬럼 추가 
+    alter table petweight
+    add petweight_targeted NUMBER;
+*/
 
 -- drop sequence seq_petweight_UID
 create sequence seq_petweight_UID 
@@ -737,6 +744,10 @@ add not_URL VARCHAR2(200) default 'http://localhost:9090/petopia/alarm.pet' NOT 
 -- 190130
 alter table notification
 modify not_URL 'http://localhost:9090/petopia/notificationList.pet';
+
+-- 190213
+alter table notification
+modify NOT_DATE default sysdate;
 
 create sequence seq_notification_UID --알람
 start with 1
@@ -1840,3 +1851,16 @@ end;
 commit;
 
 SELECT * FROM USER_JOBS;
+
+-- [190213] petweight 테이블 insert 프로시저 생성
+create or replace procedure pcd_petweight_insert
+(p_fk_pet_UID           IN  petweight.fk_pet_UID%type
+,p_petweight_past       IN  petweight.petweight_past%type
+,p_petweight_targeted   IN  petweight.petweight_targeted%type
+,p_petweight_date       IN  petweight.petweight_date%type
+)
+is
+begin
+      insert into petweight(petweight_UID, fk_pet_UID, petweight_past, petweight_targeted, petweight_date) 
+      values(seq_petweight_UID.nextval, p_fk_pet_UID, p_petweight_past, p_petweight_targeted, p_petweight_date);
+end pcd_petweight_insert;

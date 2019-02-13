@@ -160,19 +160,22 @@
 					if(entry.deposit_status=="1"){
 						html += "<button type='button' class='btn btn-danger' onClick='goCancleDeposit("+entry.deposit_UID+");'>충전취소</button>";
 					}
-					else if(entry.deposit_status=="3"){ // [190129] 상태 숫자 변경
+					else if(entry.deposit_status=="0"){ // [190129] 상태 숫자 변경
 						html += "<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+");'>예약상세</button>";
 					}
 					else if(entry.deposit_status=="2"){	// [190129] 상태 숫자 변경
-						html += "<span style='text-align: center;'>환불완료</span>";
+						html += "<span style='text-align: center;'>차액환불</span>";
 					}
 					else if(entry.deposit_status=="-1"){ // [190129] 상태 숫자 변경 // [190211] 변경
 						html += "<button type='button' class='btn btn-warning' onClick='showDirectAccountView("+entry.deposit_UID+");'>입금정보</button>";
 					}
+					else if(entry.deposit_status=="3"){
+						html += "<span style='text-align: center;'>출금완료</span>";
+					}
 					html += "</td></tr>";		
 				}); // end of each
 				$("#allContents").empty().html(html);
-				makePageBar(currentShowPageNo, "-1");
+				makePageBar(currentShowPageNo, "-10");
 
 			},
 			error: function(request, status, error){
@@ -186,7 +189,7 @@
 	
 	function charged(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "1"};
+						, "type": "1,2,-1"};
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -203,16 +206,16 @@
 					if(entry.deposit_status=="1"){
 						html += "<button type='button' class='btn btn-danger' onClick='goCancleDeposit("+entry.deposit_UID+");'>충전취소</button>";
 					}
-					else if(entry.deposit_status=="3"){
-						html += "<span style='text-align: center;'>환불완료</span>";
+					else if(entry.deposit_status=="2"){
+						html += "<span style='text-align: center;'>환불(예치금차액)</span>";
 					}
-					else if(entry.deposit_status=="4"){
-						html += "<span style='text-align: center;'>출금완료</span>";
+					else if(entry.deposit_status=="-1"){
+						html += "<button type='button' class='btn btn-warning' onClick='showDirectAccountView("+entry.deposit_UID+");'>입금정보</button>";
 					}
 					html += "</td></tr>";		
 				}); // end of each
 				$("#chargedContents").empty().html(html);
-				makePageBar(currentShowPageNo, "1");
+				makePageBar(currentShowPageNo, "1,2,-1");
 
 			},
 			error: function(request, status, error){
@@ -226,7 +229,7 @@
 
 	function used(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "3"};	// [190129] 타입 숫자 변경
+						, "type": "3,0"};	// [190129] 타입 숫자 변경
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -239,12 +242,17 @@
 					html += "<tr><td>"+entry.deposit_UID+"</td>"+
 							"<td>"+entry.depositcoin+"</td>"+
 							"<td>"+entry.deposit_date+"</td>"+
-							"<td>"+
-							"<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+")'>예약상세</button>"+
+							"<td>";
+							if(entry.deposit_status=="0"){
+								html += "<button type='button' class='btn btn-default' onClick='goRvDetail("+entry.fk_payment_UID+")'>예약상세</button>";
+							}
+							else if(entry.deposit_status=="3"){
+								html += "<span style='text-align: center;'>출금완료</span>";
+							}
 							"</td></tr>";		
 				}); // end of each
 				$("#usedContents").empty().html(html);
-				makePageBar(currentShowPageNo, "2");
+				makePageBar(currentShowPageNo, "3,0");
 
 			},
 			error: function(request, status, error){
@@ -274,7 +282,7 @@
 					var loop = 1; 
 					
 					var pageNo = Math.floor((currentShowPageNo-1)/blockSize)*blockSize+1;
-					if(json.type==-1){
+					if(json.type==-10){
 						if( pageNo!= 1){
 							pageBarHTML += "&nbsp;<a href='javascript:all(\""+(pageNo-1)+"\");'>&laquo;</a>&nbsp;";
 						}
@@ -318,7 +326,7 @@
 						
 						$("#pageBarCharged").empty().html(pageBarHTML);
 					}
-					else if(json.type==2){
+					else if(json.type==3){
 						if( pageNo!= 1){
 							pageBarHTML += "&nbsp;<a href='javascript:used(\""+(pageNo-1)+"\");'>&laquo;</a>&nbsp;";
 						}
@@ -341,13 +349,13 @@
 					
 				}
 				else{
-					if(json.type==-1){
+					if(json.type==-10){
 						$("#pageBarAll").empty();
 					}
 					else if(json.type==1){
 						$("#pageBarCharged").empty();
 					}
-					else if(json.type==2){
+					else if(json.type==3){
 						$("#pageBarUsed").empty();
 					}
 					pageBarHTML = "";
@@ -426,6 +434,14 @@
 		});// end of $.ajax
 		document.getElementById('id02').style.display='block';
 	}
+	function goExcelDownload(){
+		var frm = document.excelForm;
+		frm.submit();
+	}
+	function goExcelUpload(idx){
+		var url = "<%=ctxPath%>/excelUploadCare.pet?idx="+idx;
+		window.open(url, "엑셀파일 업로드", "left=350px, top=100px, width=650px, height=570px");
+	}
 </script>	    
 <div class="container" style="margin-bottom: 8%;">
 <%-- [190206] 예치금 잔액 추가 --%>
@@ -438,6 +454,18 @@
 			<span style="font-weight: bold; font-size: 15px;">포인트: <span id="sumPoint"></span>point</span>&nbsp;/&nbsp;
 			<span style="font-weight: bold; font-size: 15px;">예치금 잔액: <span id="sumDeposit"></span>원</span>&nbsp;&nbsp;
 			<button type="button" class="btn btn-rounder btnmenu" onClick="goChargeDeposit(${sessionScope.loginuser.idx})">예치금충전</button>
+		</div>
+		<div>
+		  <form id="excelForm" name="excelForm" method="post" action="<%= ctxPath %>/ExcelPoi.pet">
+		    <input type="text" name="fileName" />
+		    <input type="hidden" name="type" value="deposit"/>
+		    <input type="hidden" name="idx" value="${sessionScope.loginuser.idx}"/>
+		    <button type="button" class="btn btn-default" onClick="goExcelDownload();">xls파일로 받기</button>
+		  </form>
+		</div>
+		<div>
+			<a href="<%= request.getContextPath() %>/downCareFile.pet">양식다운로드</a>
+		    <button type="button" class="btn btn-default" onClick="goExcelUpload(${sessionScope.loginuser.idx});">xls파일 업로드</button>
 		</div>
 	</div>
 <%-- 190206 끝 --%>
