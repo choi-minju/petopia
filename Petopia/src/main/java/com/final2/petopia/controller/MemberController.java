@@ -43,7 +43,7 @@ public class MemberController {
 	
 	@Autowired
 	private AES256 aes;
-	
+	 
 	@Autowired
 	private FileManager fileManager;
 
