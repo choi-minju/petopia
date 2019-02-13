@@ -85,13 +85,22 @@ public interface InterChartService {
 	String getcuid(String minruid);
 
 	//0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기 
-	HashMap<String, String> getmyPreinfobyajax(HashMap<String, String> paramap2);
+	HashMap<String, String> getmyPreinfobyajax(String reservation_uid);
 
 	//0210 예약 날짜 및 시간과 맞는 펫 유아이디 가져오기 
 	int getpetuidbyajax(String reservedate);
 
 	//0210 예약날짜 및 시간과 맞는 예약번호 가져오기 
 	String getruidbyajax(String reservedate);
+
+	//0213 마이페이지 진료관리에서 처방전 작성자 이름 가져오기
+	String getRx_regname(int idx);
+
+	//0213 ㄴ처방전 작성자 이름으로 처방전 번호 가져오기 
+	String getRx_uid(String rx_regname);
+
+	//0213 마이페이지 진료관리 차트 , 결제정보가 없는 
+	HashMap<String, String> getmyPreinfobyajaxnopay(HashMap<String, String> paramap2);
 
 	
 	
