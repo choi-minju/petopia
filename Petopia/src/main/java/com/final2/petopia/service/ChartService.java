@@ -285,8 +285,10 @@ public class ChartService implements InterChartService {
 
 	//0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기 
 	@Override
-	public HashMap<String, String> getmyPreinfobyajax(HashMap<String, String> paramap2) {
-		HashMap<String, String> myPreinfobyajax = dao.getmyPreinfobyajax(paramap2);
+	public HashMap<String, String> getmyPreinfobyajax(String reservation_uid) {
+		
+		HashMap<String, String> myPreinfobyajax = dao.getmyPreinfobyajax(reservation_uid);
+		
 		return myPreinfobyajax;
 	}
 
@@ -302,6 +304,27 @@ public class ChartService implements InterChartService {
 	public String getruidbyajax(String reservedate) {
 	    String ruidbyajax =dao.getruidbyajax(reservedate);
 		return ruidbyajax;
+	}
+
+	//0213 마이페이지 진료관리에서 처방전 작성자 이름 가져오기
+	@Override
+	public String getRx_regname(int idx) {
+		String rx_regname = dao.getRx_regname(idx);
+		return rx_regname;
+	}
+	
+	//0213 ㄴ처방전 작성자 이름으로 처방전 번호 가져오기 
+	@Override
+	public String getRx_uid(String rx_regname) {
+		String rx_uid =dao.getRx_uid(rx_regname);
+		return rx_uid;
+	}
+
+	//0213 마이페이지 진료관리 차트 , 결제정보가 없는 
+	@Override
+	public HashMap<String, String> getmyPreinfobyajaxnopay(HashMap<String, String> paramap2) {
+		HashMap<String, String> myPreinfobyajaxnopay =dao.getmyPreinfobyajaxnopay(paramap2);
+		return myPreinfobyajaxnopay;
 	}
 
 

@@ -57,7 +57,10 @@
 					html += '<tr>'+
 					         '<td><input type="text" name="rx_name"/></td>'+
 			                 '<td><input type="text" name="dosage"/></td>'+
-			                 '<td><input type="text" name="dose_number"/></td>'+'</tr>';
+			                 '<td><input type="text" name="dose_number"/></td>' 
+			                 +  '<td><input type="text" name="rx_cautions"/></td>'
+				       	      +'<td><input type="text" name="rx_notice"/></td>'
+				                 +'</tr>';
 				}
 				
 				$("#textbox1").empty();
@@ -99,6 +102,8 @@
 	      <th>처방약</th>
 	      <th>투약 량</th>
 	      <th>하루 복용횟수</th>
+	      <th>주의 사항</th>
+	      <th>노  트 </th>
 	    </tr>
 	   </thead>
 	   <tbody id="textbox1">
@@ -107,6 +112,8 @@
 	      <td><input type="text" name="rx_name" value="${pmap.rx_name}"/></td>
 	      <td><input type="text" name="dosage" value="${pmap.dosage}"/></td>
 	      <td><input type="text" name="dose_number" value="${pmap.dose_number}"/></td>
+	      <td><input type="text" name="rx_cautions" value="${pmap.rx_cautions}"/></td>
+	      <td><input type="text" name="rx_notice" value="${pmap.rx_notice}"/></td>
 	      </tr>
 	     </c:forEach>
 	   </tbody>
@@ -114,9 +121,9 @@
    </div> 
    
    <div class="span col-md-12">9.주의 사항: </div>
-   <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;" placeholder="${cmap.cautions}" ></textarea></div>
+   <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;" placeholder="">${cmap.cautions}</textarea></div>
    <div class="span col-md-12">10.노트 : </div>
-   <div class="span col-md-12"><textarea  name="chart_contents" style="width:50%; height:15%;"placeholder="${cmap.chart_contents}"></textarea></div>
+   <div class="span col-md-12"><textarea  name="chart_contents" style="width:50%; height:15%;"placeholder="">${cmap.chart_contents}</textarea></div>
    <c:if test="${rtype==3}">
 	   <div class="span col-md-8 ">11.사용한 예치금 : <span id="pament_pay"> ${cmap.payment_pay}원 </span></div>
 	   <div class="span col-md-8 ">12.사용한 포인트 : <span id="">${cmap.payment_point} POINT</span></div>
