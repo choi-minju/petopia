@@ -616,7 +616,7 @@ public class ChartController {
 
 //		      #페이지바 넘겨주기
 		req.setAttribute("pageBar", pageBar);
-
+ 
 //		      #currentURL 뷰로 보내기
 		String currentURL = MyUtil.getCurrentURL(req);
 		// System.out.println(currentURL);
