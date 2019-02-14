@@ -73,6 +73,16 @@ margin-left: 38%;
 margin-top: 1%;
 margin-bottom: 2%;
 }
+
+.btn3{
+background-color:rgb(252, 118, 106);
+color:white;
+width:15%;
+height:5%;
+border-radius:15px;
+margin-top: 1%;
+margin-bottom: 2%;
+}
 .h3_1 {
 margin-left: 1%;
 margin-top:2%;
@@ -91,6 +101,8 @@ color:rgb(252, 118, 106);
 <script type="text/javascript">
     
 	$(document).ready(function(){
+		
+		showPreinfo(${myreservedaylist[0].reservation_uid});
 		
 		//ajaxData();
 			 
@@ -167,8 +179,10 @@ color:rgb(252, 118, 106);
 		      } //end of events;
 		      
 		  }); // end 
+		  
+			
 		        
-		$(".datetab").click(function(){ //날짜 탭을 누르면 
+		/* $(".datetab").click(function(){ //날짜 탭을 누르면 
 		
 			var tabs =$(this).attr('class');
 			//alert(tabs);
@@ -181,8 +195,8 @@ color:rgb(252, 118, 106);
 			
 			$("#reservedate").val(redate);
 			
-			showPreinfo(); //처방전 인서트 기본창 불러오기 
-		});
+			showPreinfo(); //처방전 인서트 기본창 정보 불러오기 
+		}); */
 	 
 	//등록하기 버튼 
 	 $("#register").click(function(){
@@ -192,10 +206,17 @@ color:rgb(252, 118, 106);
 		frm.method="POST";
 		frm.submit();
 	 });
-		 
-		
+	
+	//개인진료 등록하기 
+	$("#personalregister").click(function(){
+		console.log('click');
+        popupOpen();	//Popup Open 함수
+	});
+	
+	
 	});// end of $(document).ready()----------------------
-	 function showPet(){
+	
+	function showPet(){
          var data = {"fk_pet_uid":$("#petUidNo").val()};
           $.ajax({
     		  url: "<%=request.getContextPath()%>/getPinfobyminpuid.pet",
@@ -215,37 +236,125 @@ color:rgb(252, 118, 106);
     		  });
 	 }// show pet end
 	 //탭 클릭시 처방전 기본정보 불러오기 
-	 function showPreinfo(){
-		 var data ={"reservedate":$("#reservedate").val()};
+	 function showPreinfo(reservation_uid){
+		 var data ={"reservation_uid":reservation_uid};
 		    $.ajax({
 	    		  url: "<%=request.getContextPath()%>/selectMyPreInfo.pet",
 	    		  type: "GET",
 	    		  data:data,
 	    		  dataType: "JSON",
 	    		  success: function(json){ 
-	    			  $("#infocontainer").empty();
-	    			  $("#infocontainer2").empty();
-	    			  var html1 = "<h3>"+json.biz_name+"</h3>"
-	    			             +"<p>"+json.bookingdate+"</p>"
-	    			             +"<p>"+json.reservation_DATE+"</p>";
+						//alert(json.biz_name);
+	    			  var html = '<div>'
+									+'<h3>'+json.biz_name+'</h3>'
+									+'<p>진료예약일자: '+json.bookingdate+' </p>'
+			    			 	    +'<p>방문일자: '+json.reservation_DATE+'</p>'
+			    			 	    +'<p>진료과 :'+json.pet_type+'</p>'
+			    			 	   +'<p>동물 이름 :'+json.pet_name+'</p>'
+			    			      +'</div>'
+			    			      +'<hr Style="width:100%; height:2%;"/>'
+			    			      +'<div class="span col-md-10">'
+			    			      	+'<h3 style="font-weight:bold;color:pink; margin-top:0">진료결과 </h3>'
+			    			      +'</div>'
+			    			      +'<div class="span col-md-10">'
+			    			      	+'<p>담당수의사: '+json.doc_name+'</p>'
+			    			      +'</div>'
+			    			      +'<div id="medicine">'
+			    			       +'<div class="span col-md-10">'
+			    			        +'<table class="table">'
+			    				    +'<thead style="text-align: center;">'
+			    				     +'<tr>'
+			    				      +'<th>처방약</th>'
+			    				      +'<th>투약 량</th>'
+			    				      +'<th>하루 복용횟수</th>'
+			    				      +'<th>주의 사항</th>'
+			    				      +'<th>메  모 </th>'
+			    				      +'</tr>'
+			    				   +'</thead>'
+			    				   +'<tbody id="textbox">'
+			    				   +'</tbody>'
+			    			   +'</table>'
+			    			   +'</div>'
+			    			      +'</div>'
+			    			      +'<div class="span col-md-10"><p>주의사항: </p>'+json.cautions+'</div>'
+			    			      +'<div class="span col-md-10"><p>내  용: </p>'+json.chart_contents+'</div>'
+			    			      +'<hr style="width:100%; height:2%;"></hr>';
+			    		if(json.payment_point != null && json.payment_point != "0" && json.payment_point != "") {
+			    			html +='<div style="margin-left: 70%;" >'
+				    			 	  +'<p>결제 포인트: '+json.payment_point+' POINT</p>'
+				    			 	  +'<p>본인 부담금: '+json.addpay+' 원</p>'
+				    			 	  +'<p>실제 결제 금액: '+json.payment_pay+' 원</p>'
+				    			 	  +'<p>진료비 총액: '+json.payment_total+' 원</p>'
+			    			      +'</div>';
+			    		}
+	    			           
+	    			  $("#home").empty().append(html);
 	    			  
-	    			  var html2="<p>결제 포인트: "+json.payment_point+"POINT</p>"+
-				    			   "<p>추가 결제금액: "+json.addpay+"원</p>"+
-				    			   "<p>실제 결제 금액: "+json.payment_pay+"원</p>"+
-				    			   "<p> 총  합 : "+json.payment_total+"원</p>";          
-	    			  $("#infocontainer").append(html1);
-	    			  $("#infocontainer2").append(html2);
+	    			  showMedicine(json.chart_uid);
 	    		  },error: function(request, status, error){
 			           if(request.readyState == 0 || request.status == 0) return;
 			        else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		                }
 	    		  });
-	 }
+	 } // end
 	
+	 
+	 function showMedicine(chart_uid) {
+		 var data = {"chart_uid":chart_uid};
+		 
+		 $.ajax({
+   		  url: "<%=request.getContextPath()%>/getMediinfo.pet",
+   		  type: "GET",
+   		  data:data,
+   		  dataType: "JSON",
+   		  success: function(json){
+   			  var html = '';
+   			  
+   			  if(json.length == 0) {
+   				  html += '<tr>'
+   				  			+'<td colspan="3">처방된 약이 없습니다.</td>'
+   						+'</tr>';
+   			  } else {
+	   			  $.each(json, function(entryindex,entry){
+	   				  
+	   				  html += '<tr>'
+			   				    +'<td>'+entry.rx_name
+			   				    +'</td>'
+			   				    +'<td>'+entry.dosage
+							    +'</td>'
+							    +'<td>'+entry.dose_number
+			   				    +'</td>'
+			   				 +'<td>'+entry.rx_cautions
+			   				    +'</td>'
+			   				 +'<td>'+entry.rx_noice
+			   				    +'</td>'
+	   				         +'</tr>';
+	   			  });
+   			  }
+   			  $("#textbox").html(html);
+   		  },
+   		  error: function(request, status, error){
+	           if(request.readyState == 0 || request.status == 0) return;
+	        else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+             }
+   		  });
+	 }
+	 
+	 //개인진료기록 등록 팝업창 띄우기 
+	 
+   
+  
+	function popupOpen(){
+		var url= "<%=request.getContextPath()%>/InsertmyChartnoReserve.pet";      //팝업창 페이지 URL
+		var winWidth = 700;
+	    var winHeight = 600;
+	    var popupOption= "width="+winWidth+", height="+winHeight;    //팝업창 옵션(optoin)
+		window.open(url,"",popupOption);
+	}
 </script>
 <div class="container divbox1">
    <h3 class="h3_1">진료기록 관리하기</h3>
-   
+   <button type="button" class="btn3" id="personalregister">개인진료 기록하기</button>
    <div class="row" >
    
 	   <c:forEach items="${pmaplist}" var="pvo" varStatus="status">
@@ -259,7 +368,7 @@ color:rgb(252, 118, 106);
    </div>
   
   <div class="divbox3">
-  <input type="text" id="petUidNo" value="${minpuid}"/>
+  <input type="hidden" id="petUidNo" value="${minpuid}"/>
 	   <div id="container" Style="width:100%; padding-top: 1%;">
 			  <p style="padding-top:1.5%;">생년월일: ${minpinfo.pet_birthday}</p>
 			  <p>성별:   ${minpinfo.pet_gender}</p>
@@ -277,16 +386,16 @@ color:rgb(252, 118, 106);
    <div class="container" Style="width:100%;">
 	    <ul class="nav nav-tabs">
 		    <c:forEach items="${myreservedaylist}" var="daymap">
-		    <input type="text" id="redate${daymap.reservedate}" value="${daymap.reservedate}">
-			   <li><a data-toggle="tab" href="#home" class="datetab rdate${daymap.reservedate}">${daymap.reservation_date}-${daymap.chart_type}</a></li>
+		    <input type="hidden" id="redate" value="${daymap.reservedate}">
+			   <li><a data-toggle="tab" href="#home" onclick="showPreinfo('${daymap.reservation_uid}');" class="datetab">${daymap.reservation_date}-${daymap.chart_type}</a></li>
 			</c:forEach>
 			
 	    </ul>
     </div>
     <form name="registerFrm">
     <div id="home" class="tab-pane fade in active" style="padding-left:2%;">
-       <div id="infocontainer">
-       <input type="text" id="reservedate"/>
+       <%-- <div id="infocontainer">
+        <input type="hidden" id="reservedate"/>
 	       <h3>${mypreinfo.biz_name}</h3>
 	       <p>진료예약일자: ${mypreinfo.bookingdate} </p>
 	       <p>방문일자: ${mypreinfo.reservation_DATE}</p>
@@ -305,7 +414,7 @@ color:rgb(252, 118, 106);
 	       <p>본인 부담금:${mypreinfo.addpay} 원</p>
 	       <p>실제 결제 금액:${mypreinfo.payment_pay}원</p>
 	       <p>진료비 총액: ${mypreinfo.payment_total} 원</p>
-        </div>
+        </div> --%>
       </div>
         <input type="hidden" value="${sessionScope.loginuser.name}" name="rx_regname"/>
         </form>

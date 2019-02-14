@@ -28,23 +28,24 @@
 	function updateWeight() {
 		
 		var weightFrm = document.weightFrm;
+		weightFrm.action = "addWeightEnd.pet"
 		weightFrm.method = "POST";
-		weightFrm.action = "/addWeightEnd.pet"
 		weightFrm.submit();
-		self.close();
-		
+		//self.close();
+		 
 	}
 	
 </script> 
 
 <div class="container">
 	<form name="weightFrm">
-		<div><input id="weight" name="weight" type="text" value="name" readonly /></div>
+		<input type="hidden" name="pet_UID" value="${pet_UID}">
+		<div><input type="text" id="weight" name="name" value="${mvo.name}" readonly /></div>
 		<div>
-			<input id="weight" name="weight" type="text" /> kg
-			<input id="weight_targerted" name="weight_targerted" type="text" /> kg
+			<input type="text" id="weight" name="petweight_past" /> kg
+			<input type="text" id="weight_targerted" name="petweight_targeted" /> kg
 		</div>
-		<input type="date" id="datepicker" class="form-control input-md" name="care_start" autocomplete="off" />
+		<input type="date" id="datepicker" class="form-control input-md" name="petweight_date" autocomplete="off" />
 		<button type="button" onclick="updateWeight();">추가하기</button>
 	</form>
 </div>

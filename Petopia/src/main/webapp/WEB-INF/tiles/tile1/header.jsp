@@ -99,7 +99,7 @@
            <a  style="color: #ffffff;" class="dropdown-toggle" data-toggle="dropdown">마이페이지
            <span class="caret"></span></a>
            <ul class="dropdown-menu">
-             <li><a href="<%= ctxPath %>/careIndex.pet">반려동물수첩</a></li>
+             <li><a href="<%= ctxPath %>/petList.pet">반려동물수첩</a></li>
 			<li><a href="<%= ctxPath %>/infoMember.pet">나의정보보기</a></li>
 			<li><a href="<%= ctxPath %>/myReviewList.pet">나의병원리뷰</a></li>
 			<li><a href="<%= ctxPath %>/InsertMyPrescription.pet">나의진료관리</a></li>
