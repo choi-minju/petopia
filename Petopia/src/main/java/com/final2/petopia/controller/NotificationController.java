@@ -31,7 +31,7 @@ public class NotificationController {
 	// 안읽은 알림 배지 생성(AJAX) ------------------------------------------------------------------------------------
 	@RequestMapping(value="/unreadNotificationCount.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public HashMap<String, Integer> requireLogin_unreadNotificationCount(HttpServletRequest req, HttpServletResponse res) throws Throwable {
+	public HashMap<String, Integer> unreadNotificationCount(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
 		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
 		
@@ -53,7 +53,7 @@ public class NotificationController {
 	// (안읽은 알림만 생성)
 	@RequestMapping(value="/notificationSimpleList.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public List<HashMap<String, String>> requireLogin_notificationSimpleList(HttpServletRequest req, HttpServletResponse res) throws Throwable {
+	public List<HashMap<String, String>> notificationSimpleList(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
 		List<HashMap<String, String>> notificationSimpleList = new ArrayList<HashMap<String, String>>();
 		
@@ -105,6 +105,16 @@ public class NotificationController {
 	// 알림 페이지 요청 -----------------------------------------------------------------------------------------------
 	@RequestMapping(value="/notificationList.pet", method= {RequestMethod.GET})
 	public String requireLogin_notificationList(HttpServletRequest req, HttpServletResponse res) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		
+		// 전체 알림 수 가져오기
+		int totalNotCount = service.selectTotalNotCount(idx);
+		
+		req.setAttribute("totalNotCount", totalNotCount);
+		
 		return "notification/notificationList.tiles2";
 	}
 	
@@ -117,8 +127,20 @@ public class NotificationController {
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		int idx = loginuser.getIdx();
 		
+		String start = req.getParameter("start");
+		String length = req.getParameter("length");
+		
+		int startRno = Integer.parseInt(start);
+		int endRno = startRno + Integer.parseInt(length) - 1;
+		
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		
+		paraMap.put("IDX", idx);
+		paraMap.put("STARTRNO", startRno);
+		paraMap.put("ENDRNO", endRno);
+		
 		// 알림 리스트 가져오기
-		List<NotificationVO> notificationList = service.selectNotificationList(idx);
+		List<NotificationVO> notificationList = service.selectNotificationList(paraMap);
 		
 		List<HashMap<String, String>> returnMapList = new ArrayList<HashMap<String, String>>();
 		
@@ -129,6 +151,7 @@ public class NotificationController {
 				returnMap.put("NOT_UID", nvo.getNot_UID());
 				returnMap.put("NOT_TYPE", nvo.getShowNot_type());
 				returnMap.put("NOT_MESSAGE", nvo.getNot_message());
+				returnMap.put("NOT_MESSAGE_COMMENT", nvo.getShowNot_message());
 				returnMap.put("NOT_DATE", nvo.getNot_date());
 				returnMap.put("NOT_READCHECK", nvo.getNot_readcheck());
 				returnMap.put("NOT_REMINDSTATUS", nvo.getNot_remindstatus());
@@ -142,5 +165,129 @@ public class NotificationController {
 		return returnMapList;
 	}
 	
+	// 알림 내용 클릭 시 not_readcheck 컬럼 1로 변경 -------------------------------------------------------------------------
+	@RequestMapping(value="/updateReadcheck.pet", method= {RequestMethod.POST})
+	public String updateReadcheck(HttpServletRequest req) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		
+		int not_uid = Integer.parseInt(req.getParameter("not_uid"));
+		String not_URL = req.getParameter("not_URL");
+		
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		
+		paraMap.put("IDX", idx);
+		paraMap.put("NOT_UID", not_uid);
+		
+		// 가져온 알림번호를 통해 readcheck를 읽음상태로 업데이트
+		int n = service.updateReadcheck(paraMap);
+		
+		if(n == 1) {
+		
+			String msg = "해당 게시글로 이동합니다.";
+			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", not_URL);
+			
+			
+		}
+		else {
+			
+			String msg = "다시 시도해주세요!";
+			
+			String loc = "javascript:history.back();";
+			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", loc);
+			
+		}
+		
+		return "msg";
+	}
+
+	// 재알림 클릭 시 5분 뒤 시간으로 알림 insert -------------------------------------------------------------------------
+	@RequestMapping(value="/insertRemindNot.pet", method= {RequestMethod.POST})
+	public String insertRemindNot(HttpServletRequest req) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		
+		int not_uid = Integer.parseInt(req.getParameter("not_uid"));
+		
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		
+		paraMap.put("IDX", idx);
+		paraMap.put("NOT_UID", not_uid);
+		
+		// 회원고유번호와 알림고유번호를 통해 알림정보 가져오기
+		NotificationVO nvo = service.selectNotification(paraMap);
+		
+		// 재알림 INSERT
+		int n = service.insertRemindNot(nvo);
+		
+		if(n == 1) {
+			
+			String msg = "재알람 설정이 완료되었습니다.";
+			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", req.getContextPath()+"/notificationList.pet");
+			
+		}
+		else {
+			
+			String msg = "다시 시도해주세요!";
+			String loc = "javascript:history.back();";
+			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", loc);
+			
+		}
+		
+		return "msg";
+	}
 	
+	// 알림삭제 -------------------------------------------------------------------------
+	@RequestMapping(value="/deleteNot.pet", method= {RequestMethod.POST})
+	public String deleteNot(HttpServletRequest req) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		int idx = loginuser.getIdx();
+		
+		int not_uid = Integer.parseInt(req.getParameter("not_uid"));
+		
+		HashMap<String, Integer> paraMap = new HashMap<String, Integer>();
+		
+		paraMap.put("IDX", idx);
+		paraMap.put("NOT_UID", not_uid);
+		
+		// 알림 삭제
+		int n = service.deleteNot(paraMap);
+		
+		if(n == 1) {
+			
+			String msg = "알림이 삭제되었습니다.";
+			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", req.getContextPath()+"/notificationList.pet");
+			
+			
+		}
+		else {
+			
+			String msg = "다시 시도해주세요!";
+			String loc = "javascript:history.back();";
+			
+			req.setAttribute("msg", msg);
+			req.setAttribute("loc", loc);
+			
+		}
+		
+		return "msg";
+		
+	}
+
 }
