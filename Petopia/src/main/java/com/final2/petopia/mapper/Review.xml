@@ -333,6 +333,21 @@
 		values(seq_notification_UID.nextval, #{FK_IDX}, 4, #{NOT_MESSAGE}, #{NOT_URL}, sysdate, default, default, default)
 	</insert>
 	
+	<!-- === 2019.02.14 === -->
+	<!-- 리뷰의 주인의 idx와 status 알아오기 -->
+	<resultMap type="HashMap" id="memberInfoMap">
+		<result property="IDX"				column="idx"			javaType="String"/>
+		<result property="MEMBER_STATUS"	column="member_status"	javaType="String"/>
+	</resultMap>
+	
+	<select id="selectMemberIdxByUserId" parameterType="String" resultMap="memberInfoMap">
+		select a.idx, b.member_status
+		from member a JOIN login_log b
+		ON a.idx = b.idx
+		where userid = #{userid}
+	</select>
+	<!-- === 2019.02.14 === -->
+	
 	<!-- === 2019.02.07 === 시작 -->
 	<!-- *** 대댓글 쓰기 *** -->
 	<!-- FK_RC_ID, RC_GROUP, RC_G_ODR가 같은 값이 있는지 없는지 알아보기 -->

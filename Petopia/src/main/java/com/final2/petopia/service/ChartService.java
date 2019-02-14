@@ -90,7 +90,7 @@ public class ChartService implements InterChartService {
 		int n1 =0;
 		int n2=0;
 		int result =0; 
-		System.out.println("mlist s: "+mlist);
+		
 		String ruid =map.get("ruid");
 		
 		int reservation_type =dao.selectrtype(ruid);
@@ -178,12 +178,12 @@ public class ChartService implements InterChartService {
 	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
 	public int Updatechart(HashMap<String, String> map,ChartVO cvo,List<HashMap<String, String>> plist) {
 		
-		int n1 = dao.Updatechart(map,cvo);
+		int n1 = dao.Updatechart(cvo);
 		
 		int result =0;
 		 int n2=0;
 		if (n1== 1) {
-			 n2 = dao.Updatepre(map,plist);// 병원페이지에서 차트 수정시 처방전 수정
+			 n2 = dao.Updatepre(plist);// 병원페이지에서 차트 수정시 처방전 수정
 			
 		}
 		if (n1*n2==1) {
@@ -285,9 +285,9 @@ public class ChartService implements InterChartService {
 
 	//0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기 
 	@Override
-	public HashMap<String, String> getmyPreinfobyajax(String reservation_uid) {
+	public HashMap<String, String> getmyPreinfobyajax(String chart_uid) {
 		
-		HashMap<String, String> myPreinfobyajax = dao.getmyPreinfobyajax(reservation_uid);
+		HashMap<String, String> myPreinfobyajax = dao.getmyPreinfobyajax(chart_uid);
 		
 		return myPreinfobyajax;
 	}
@@ -306,19 +306,7 @@ public class ChartService implements InterChartService {
 		return ruidbyajax;
 	}
 
-	//0213 마이페이지 진료관리에서 처방전 작성자 이름 가져오기
-	@Override
-	public String getRx_regname(int idx) {
-		String rx_regname = dao.getRx_regname(idx);
-		return rx_regname;
-	}
-	
-	//0213 ㄴ처방전 작성자 이름으로 처방전 번호 가져오기 
-	@Override
-	public String getRx_uid(String rx_regname) {
-		String rx_uid =dao.getRx_uid(rx_regname);
-		return rx_uid;
-	}
+
 
 	//0213 마이페이지 진료관리 차트 , 결제정보가 없는 
 	@Override
@@ -326,6 +314,44 @@ public class ChartService implements InterChartService {
 		HashMap<String, String> myPreinfobyajaxnopay =dao.getmyPreinfobyajaxnopay(paramap2);
 		return myPreinfobyajaxnopay;
 	}
+
+	//0213 마이페이지에서 예약정보가 없는 개인 차트 인서트 
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public int InsertmyChartnoReserveEnd(ChartVO cvo,int idx, List<HashMap<String, String>> mlist) {
+		System.out.println("cuid:"+cvo.getChart_UID());
+		
+		int n1 =dao.InsertmyChartnoReserveEnd(cvo);
+		int n2=0;
+		int result =0;
+		 
+		if(n1==1) {
+		    n2 = dao.insertPre(mlist); //0213마이페이지에서 예약없는 처방전에 인서트하기 
+		    
+		}
+		if(n1*n2==1) {
+			result=1;
+		}
+		return result;
+	}
+
+	//0213 마이페이지에서 예약없는 차트 테이블에 cuid인서트후 처방전 테이블에 들어갈 cuid 구하기 
+	@Override
+	public String getmaxcuid() {
+	    String mcuid=dao.getmaxcuid();
+		return mcuid;
+	}
+
+	//펫이름
+	@Override
+	public HashMap<String, String> getpnames(String puid) {
+		HashMap<String, String> pnames=dao.getpnames(puid);
+		return pnames;
+	}
+
+	
+
+	
 
 
 
