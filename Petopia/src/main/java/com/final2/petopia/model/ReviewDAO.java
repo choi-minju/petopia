@@ -187,10 +187,20 @@ public class ReviewDAO implements InterReviewDAO {
 	// 알림 insert
 	@Override
 	public int insertReviewNotification(HashMap<String, String> paraMap) {
-		int result = sqlsession.insert("review.insertReviewNotification", paraMap);;
+		int result = sqlsession.insert("review.insertReviewNotification", paraMap);
 		
 		return result;
 	} // end of public int insertReviewNotification(HashMap<String, String> paraMap)
+	
+	// === 2019.02.14 === //
+	// 리뷰의 주인의 idx와 status 알아오기
+	@Override
+	public HashMap<String, String> selectMemberIdxByUserId(String userid) {
+		HashMap<String, String> memberInfo = sqlsession.selectOne("review.selectMemberIdxByUserId", userid);
+		
+		return memberInfo;
+	} // end of public int selectMemberIdxByUserId(String string)
+	// === 2019.02.14 === //
 	
 	// === 2019.02.07 === 시작 //
 	// *** 대댓글 쓰기 *** //
@@ -486,7 +496,6 @@ public class ReviewDAO implements InterReviewDAO {
 		
 		return result;
 	} // end of public int selectAvgStarPoint(int idx)
-	
 	// === 2019.02.11 ==== //
 
 }

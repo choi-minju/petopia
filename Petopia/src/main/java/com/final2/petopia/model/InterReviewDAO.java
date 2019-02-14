@@ -59,6 +59,10 @@ public interface InterReviewDAO {
 	int insertReviewComments(HashMap<String, String> paraMap); // 댓글 insert
 	int insertReviewNotification(HashMap<String, String> paraMap); // 알림 insert
 	
+	// === 2019.02.14 === //
+	HashMap<String, String> selectMemberIdxByUserId(String userid); // 리뷰의 주인의 idx와 status 알아오기
+	// === 2019.02.14 === //
+	
 	// === 2019.02.07 === 시작 //
 	// *** 대댓글 쓰기 *** //
 	int selectDupilcationByRc_groupRc_idRc_g_odr(HashMap<String, String> paraMap); // FK_RC_ID, RC_GROUP, RC_G_ODR가 같은 값이 있는지 없는지 알아보기
@@ -135,7 +139,6 @@ public interface InterReviewDAO {
 	
 	// *** 병원 상세페이지에서 리뷰 별점 평균 불러오기 *** //
 	int selectAvgStarPoint(int idx);
-	
 	// === 2019.02.11 ==== //
 	
 	
