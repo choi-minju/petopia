@@ -47,7 +47,7 @@
 	
 	function initButton(){
 		
-		// 체중 Ajax
+		// 체중 Ajax 
 		$("#changepet").click(function() {
 			
 			getWeight();
