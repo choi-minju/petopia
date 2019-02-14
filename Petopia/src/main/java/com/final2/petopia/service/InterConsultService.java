@@ -22,8 +22,6 @@ public interface InterConsultService {
 	
 	// [페이징처리 O, 검색조건 X] 기업회원 : 내가 댓글 단 글 갯수 totalCount
 	int selectBizConsultCountNoSearch(String idx);
-	// 기업회원 : 내가 댓글 단 글번호 리스트
-	//String[] selectBizConsultComment(String idx);
 	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	int selectTotalCountNoSearch();

@@ -53,14 +53,6 @@ public class ConsultService implements InterConsultService {
 		int n = dao.selectBizConsultCountNoSearch(idx);
 		return n;
 	}
-	/*
-	// 기업회원 : 내가 댓글 단 글번호 리스트
-	@Override
-	public String[] selectBizConsultComment(String idx) {
-		String[] bizArr = dao.selectBizConsultComment(idx);
-		return bizArr;
-	}
-	*/
 	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	@Override

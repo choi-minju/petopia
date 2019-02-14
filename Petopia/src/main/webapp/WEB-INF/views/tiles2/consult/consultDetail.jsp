@@ -154,7 +154,7 @@
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
 			    			  +"		<input type='text' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
-			    			  +"		<input type='text' name='fk_idx2' value='"+entry.FK_IDX+"' />"
+			    			  +"		<input type='text' name='org_fk_idx' value='"+entry.FK_IDX+"' />"
 			    			  +"		<input type='text' name='consult_fk_idx' value='"+entry.CONSULT_FK_IDX+"' />"
 			    			  +"		<input type='text' name='membertype' value='${sessionScope.loginuser.membertype}' />"
 			    			  +"		<input type='hidden' name='cmt_id' value='"+entry.CMT_ID+"' />"
@@ -192,7 +192,7 @@
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
 			    			  +"		<input type='text' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
-			    			  +"		<input type='text' name='fk_idx2' value='"+entry.FK_IDX+"' />"
+			    			  +"		<input type='text' name='org_fk_idx' value='"+entry.FK_IDX+"' />"
 			    			  +"		<input type='text' name='consult_fk_idx' value='"+entry.CONSULT_FK_IDX+"' />"
 			    			  +"		<input type='text' name='membertype' value='${sessionScope.loginuser.membertype}' />"
 			    			  +"		<input type='hidden' name='cmt_id' value='"+entry.CMT_ID+"' />"
@@ -277,10 +277,9 @@
 	
 		//var queryString = $("#"+id).next().find(document.commentByCommentAddFrm).serialize(); // form의 name이 addWriteFrm인것
 		//console.log(queryString);
-
         
 		var consult_fk_idxval = $("#"+id).find("input[name=consult_fk_idx]").val(); // 상담글의 idx
-		var fk_idx2val = $("#"+id).find("input[name=fk_idx2]").val(); // 원댓글(로그인한 사람이 댓글을 달고있는 윗댓글)의 idx
+		var org_fk_idxval = $("#"+id).find("input[name=org_fk_idx]").val(); // 원댓글(로그인한 사람이 댓글을 달고있는 윗댓글)의 idx
 		var membertypeval = $("#"+id).find("input[name=membertype]").val();
 		
 		var cmt_idval = $("#"+id).find("input[name=cmt_id]").val();
@@ -293,26 +292,9 @@
 		var fk_consult_UIDval = $("#"+id).find("input[name=fk_consult_UID]").val();
 		
 		console.log("consult_fk_idxval 상담글 "+consult_fk_idxval);
-		console.log("fk_idx2val 원댓글 "+fk_idx2val);
+		console.log("org_fk_idxval 원댓글 "+org_fk_idxval);
 		console.log("fk_idxval 댓글 "+fk_idxval);
-		<%--
-		console.log("cmt_idval"+cmt_idval);
-		console.log("fk_idxval"+fk_idxval);
-		console.log("cscmt_groupval"+cscmt_groupval);
-		console.log("cscmt_g_odrval"+cscmt_g_odrval);
-		console.log("cscmt_depthval"+cscmt_depthval);
-		console.log("cscmt_nicknameval"+cscmt_nicknameval);
-		console.log("cscmt_contentsval"+fk_idxval);
-		console.log("fk_consult_UIDval"+fk_consult_UIDval);
-		
-		var frm = document.commentByCommentAddFrm;
-		frm.cmt_id.value = cmt_idval;
-		frm.fk_idx.value = fk_idxval;
-		frm.method = "POST";
-		frm.action = "consultCommentByCommentAdd.pet";
-		frm.submit();
-		--%>
-		
+
 		// !(기업회원이거나 일반회원이지만 로그인한 사람과 상담글을 작성한 사람이 같으면 댓글쓰기 가능)
 		if( !(membertypeval==2 || (membertypeval==1 && fk_idxval==consult_fk_idxval)) ) {
 			alert("다른회원의 글에 댓글을 작성할 수 없습니다.");
@@ -325,9 +307,9 @@
 			return;
 		}
 		
-		
 		var form_data = { "fk_cmt_id":cmt_idval
 						, "fk_idx":fk_idxval
+						, "org_fk_idx":org_fk_idxval
 						, "consult_fk_idx":consult_fk_idxval
 						, "cscmt_group":cscmt_groupval
 						, "cscmt_g_odr":cscmt_g_odrval
@@ -434,7 +416,7 @@
 	<div align="center">
 		
 		<div class="col-xs-12 col-md-12" style="padding:1.5% 0% 1.5% 3%; text-align: center;">
-			<img src="<%=request.getContextPath() %>/resources/img/consultIcon/cat.jpg" class="col-xs-1 col-md-1" style="border-radius:100%;border:0px solid #999;width:4%;height:5.5%;padding:0px;" />
+			<img src="<%=request.getContextPath() %>/resources/img/member/profiles/${consultvo.fileName}" class="col-xs-1 col-md-1" style="border-radius:100%;border:0px solid #999;width:4%;height:5.5%;padding:0px;" />
 			<span class="col-xs-9 col-md-9 content" style="padding-left:2%; padding-top:0.8%; font-size:100%;">${consultvo.nickname}님 ${consultvo.cs_writeday}</span>
 			<c:if test="${consultvo.cs_secret==0}">
 				<span class="col-xs-2 col-md-2 content" style="padding-top:0.8%; font-size:110%; color:#b2b3b2;text-align:right;">
