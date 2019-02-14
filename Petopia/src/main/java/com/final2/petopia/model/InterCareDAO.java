@@ -21,19 +21,22 @@ public interface InterCareDAO {
 	int insertPetcare(CareVO cvo);
 
 	//===== 특정 반려동물 리스트 =====
-	HashMap<String, Object> getPet_info(int pet_UID);
+	HashMap<String, Object> getPet_info(HashMap<String, String> paramap);
 
 	//===== 특정 반려동물관리 상세페이지 요청(Ajax) =====
 	List<HashMap<String, String>> getWeight(String pet_UID);
 	
-	//===== 특정 반려동물관리 체중 추가 =====
-	void addWeight(HashMap<String, String> paraMap);
+	
+	void addWeight(HashMap<String, String> paraMap); //===== 특정 반려동물관리 체중 추가 =====
+	void addWeightWithPet_info(HashMap<String, String> paraMap); //===== 특정 반려동물관리 체중 추가 =====
 
 	//===== 특정 반려동물관리 진료기록(Ajax) =====
 	List<HashMap<String, String>> getChart(String pet_UID);
 
 	//===== 케어관리페이지 요청 =====
 	List<HashMap<String, String>> getPetcare(String pet_UID);
+
+	
 
 	
 
