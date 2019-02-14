@@ -119,9 +119,10 @@
 		values(#{payment_UID}, #{fk_reservation_UID}, #{payment_total} , #{payment_point}, #{payment_pay}, sysdate, 1)
 	</insert>
 	<!-- #예치금 잔액에서 결제금액만큼 감한 내용을 예치금 테이블에 insert -->
+	<!-- [190213] deposit_status 3->0으로 변경 -->
 	<update id="insertDepositMinus" parameterType="HashMap">
 		insert into deposit(deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID)
-		values(seq_deposit_UID.nextval, #{fk_idx}, #{depositcoin}, 3, 'used', sysdate, #{payment_UID})
+		values(seq_deposit_UID.nextval, #{fk_idx}, #{depositcoin}, 0, 'used', sysdate, #{payment_UID})
 	</update>
 	<!-- [190125] 포인트 set 변경 -->
 	<update id="updatePointMember" parameterType="HashMap">
@@ -183,7 +184,9 @@
 		where rno between #{rno1} and #{rno2}
 	</select>
 	
-	<!-- [190126] 예치금 히스토리 목록에서 충전/사용목록 보기 -->
+	<!-- [190126] 예치금 히스토리 목록에서 충전/사용목록 보기
+		[190213] deposit_type 비교를 배열타입으로 변경
+	-->
 	<select id="selectDepositListByIdx" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
 		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
 		from
@@ -193,7 +196,12 @@
 			(
 			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
 			from deposit
-			where fk_idx = #{idx} and deposit_status = #{type} and depositcoin != 0
+			where fk_idx = #{idx} 
+			and deposit_status in 
+			<foreach collection="typeArr" index="i" open="(" separator="," close=")">
+				${typeArr[i]}
+			</foreach>
+			and depositcoin != 0
 			order by deposit_UID desc
 			)
 		)
@@ -205,7 +213,12 @@
 	</select>
 	<!-- [190126] 예치금 히스토리 목록; 충전/사용건수 -->
 	<select id="selectDepositListTotalCount" parameterType="HashMap" resultType="int">
-		select count(*) from deposit where fk_idx=#{idx} and deposit_status=#{type} and depositcoin != 0
+		select count(*) from deposit where fk_idx=#{idx} 
+		and deposit_status in 
+			<foreach collection="typeArr" index="i" open="(" separator="," close=")">
+				${typeArr[i]}
+			</foreach>
+		and depositcoin != 0
 	</select>
 	<!-- [190126] 최초 스케줄 생성 프로시저 -->
 	<insert id="insertScheduleFirst" statementType="CALLABLE" parameterType="String">
@@ -568,14 +581,15 @@
 	
 	<!-- #관리자 예치금 히스토리 목록에서 모두보기 -->
 	<select id="selectDepositListByIdxNoneTypeForAdmin" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
-		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID, membertype
 		from
 		(
-		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID, membertype
 		from
 			(
-			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
-			from deposit
+			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID, membertype
+			from deposit join member
+			on fk_idx=idx
 			where depositcoin != 0
 			order by deposit_UID desc
 			)
@@ -583,17 +597,24 @@
 		where rno between #{rno1} and #{rno2}
 	</select>
 	
-	<!-- #관리자 예치금 히스토리 목록에서 충전/사용목록 보기 -->
+	<!-- #관리자 예치금 히스토리 목록에서 충전/사용목록 보기
+		[190213] deposit_type 비교를 배열타입으로 변경
+	-->
 	<select id="selectDepositListByIdxForAdmin" parameterType="HashMap" resultType="com.final2.petopia.model.DepositVO">
-		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		select rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID, membertype
 		from
 		(
-		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID
+		select rownum as rno, deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, deposit_date, fk_payment_UID, membertype
 		from
 			(
-			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID
-			from deposit
-			where deposit_status = #{type} and depositcoin != 0
+			select deposit_UID, fk_idx, depositcoin, deposit_status, deposit_type, to_char(deposit_date, 'yyyy-mm-dd hh24:mi') as deposit_date, fk_payment_UID, membertype
+			from deposit join member
+			on fk_idx=idx
+			where deposit_status in 
+			<foreach collection="typeArr" index="i" open="(" separator="," close=")">
+				${typeArr[i]}
+			</foreach>
+			and depositcoin != 0
 			order by deposit_UID desc
 			)
 		)
@@ -605,7 +626,11 @@
 	</select>
 	<!-- #관리자 예치금 히스토리 목록; 충전/사용건수 -->
 	<select id="selectDepositListTotalCountForAdmin" parameterType="HashMap" resultType="int">
-		select count(*) from deposit where deposit_status=#{type} and depositcoin != 0
+		select count(*) from deposit where depositcoin != 0
+		and deposit_status in 
+			<foreach collection="typeArr" index="i" open="(" separator="," close=")">
+				${typeArr[i]}
+			</foreach>
 	</select>
 	
 	<!-- #DUID로 무통장입금건 status 변경하기 -->

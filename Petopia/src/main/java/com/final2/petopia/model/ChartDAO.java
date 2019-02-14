@@ -272,8 +272,8 @@ public class ChartDAO implements InterChartDAO {
 
 	//0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기
 	@Override
-	public HashMap<String, String> getmyPreinfobyajax(HashMap<String, String> paramap2) {
-		HashMap<String, String> myPreinfobyajax =sqlsession.selectOne("chart.getmyPreinfobyajax",paramap2);
+	public HashMap<String, String> getmyPreinfobyajax(String reservation_uid) {
+		HashMap<String, String> myPreinfobyajax =sqlsession.selectOne("chart.getmyPreinfobyajax",reservation_uid);
 		return myPreinfobyajax;
 	}
 
@@ -289,6 +289,27 @@ public class ChartDAO implements InterChartDAO {
 	public String getruidbyajax(String reservedate) {
 		String ruidbyajax = sqlsession.selectOne("chart.getruidbyajax",reservedate);
 		return ruidbyajax;
+	}
+
+	//0213 마이페이지 진료관리에서 처방전 작성자 이름 가져오기
+	@Override
+	public String getRx_regname(int idx) {
+		String rx_regname = sqlsession.selectOne("chart.getRx_regname",idx);
+		return rx_regname;
+	}
+
+	//0213 ㄴ처방전 작성자 이름으로 처방전 번호 가져오기 
+	@Override
+	public String getRx_uid(String rx_regname) {
+		String rx_uid=sqlsession.selectOne("chart.getRx_uid",rx_regname);
+		return rx_uid;
+	}
+
+	//0213 마이페이지 진료관리 차트 , 결제정보가 없는 
+	@Override
+	public HashMap<String, String> getmyPreinfobyajaxnopay(HashMap<String, String> paramap2) {
+		HashMap<String, String> myPreinfobyajaxnopay =sqlsession.selectOne("chart.getmyPreinfobyajaxnopay",paramap2);
+		return myPreinfobyajaxnopay;
 	}
 
 }

@@ -12,8 +12,44 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
-		//alert("idx: "+${idx_biz});
 		var data = {"idx":${idx_biz}};
+		
+		showReviewList("1");
+		
+		$.ajax({
+			url: "<%= request.getContextPath()%>/selectAvgStarPoint.pet",
+			type: "GET",
+			data: data,
+			dataType: "JSON",
+			success: function(json) {
+				var html = '<div class="col-sm-12">';
+				var starpoint = json;
+				
+				for(var i = 0; i<starpoint; i++) {
+					html += '<img class="addStar" width="30px" height="30px" src="<%=request.getContextPath()%>/resources/img/review/star.png">';
+				}
+				
+				for(var i = 0; i<5 - starpoint; i++) {
+					html += '<img class="addStar" width="30px" height="30px" src="<%=request.getContextPath()%>/resources/img/review/star empty.png">';
+				}
+				
+				html += '</div>';
+				
+				$("#resultStarPoint").html(html);
+			},
+			error: function(request, status, error){ 
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // end of ajax 
+		
+	}); // end of $(document).ready();
+	
+	// === 2019.02.13 ==== //
+	// 리뷰 목록 보여주기
+	function showReviewList(currentPageNo) {
+		
+		var data = {"idx":${idx_biz},
+					"currentPageNo":currentPageNo};
 		
 		$.ajax({
 			url: "<%= request.getContextPath()%>/showHosReview.pet",
@@ -47,7 +83,9 @@
 										+entry.RV_CONTENTS
 									+'</div>'
 									+'<div class="col-sm-12" align="right">'
-										+'<button class="btn btn-xs" style="background-color: white; border: none;"><img src="<%=request.getContextPath()%>/resources/img/review/sms-bubble-speech.png">&nbsp;댓글보기</button>'
+										// === 2019.02.13 ==== //
+										+'<button class="btn btn-xs" onclick="goDetil('+entry.REVIEW_UID+')" style="background-color: white; border: none;"><img src="<%=request.getContextPath()%>/resources/img/review/sms-bubble-speech.png">&nbsp;댓글보기</button>'
+										// === 2019.02.13 ==== //
 									+'</div>'
 								+'</div>';
 					});
@@ -58,40 +96,68 @@
 				}
 				
 				$("#resultReview").html(html);
+				showReviewListPageBar(currentPageNo);
+			},
+			error: function(request, status, error){ 
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // end of ajax
+	} // end of function showReviewList(currentPageNo)
+	
+	// 페이지바 생성
+	function showReviewListPageBar(currentPageNo) {
+		var html = "";
+		
+		var data = {"idx":${idx_biz}};
+		
+		$.ajax({
+			url: "<%=request.getContextPath()%>/showHosReviewTotal.pet",
+			type: "GET",
+			data: data,
+			dataType: "JSON",
+			success: function(json) {
+				
+				var totalPage = json;
+				var blockSize = 10;
+				var loop = 1;
+				
+				var pageNo = Math.floor((currentPageNo - 1)/blockSize) * blockSize + 1;
+				
+				if(pageNo != 1) {
+					html += "<li><a href=\"javascript:showReviewList("+(pageNo-1)+")\">이전</a></li>";
+				} // end of if
+				
+				while(!(loop > blockSize || pageNo > totalPage)) {
+					
+					if(pageNo == currentPageNo) {
+						html += "<li><a style='color:black;'>"+pageNo+"</a></li>";
+					} else {
+						html += "<li><a href=\"javascript:showReviewList("+pageNo+")\">"+pageNo+"</a></li>";
+					} // end of if~else
+						
+					pageNo++;
+					loop++;
+					//alert("pageNo: "+pageNo+", loop: "+loop+", html: "+html);
+				} // end of while
+				
+				if(!(pageNo > totalPage)) {
+					html += "<li><a href=\"javascript:showReviewList("+(pageNo+1)+")\">다음</a></li>";
+				} // end of if
+				
+				$("#pageBar").html(html);
 			},
 			error: function(request, status, error){ 
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		}); // end of ajax
 		
-		$.ajax({
-			url: "<%= request.getContextPath()%>/selectAvgStarPoint.pet",
-			type: "GET",
-			data: data,
-			dataType: "JSON",
-			success: function(json) {
-				var html = '<div class="col-sm-12">';
-				var starpoint = json;
-				
-				for(var i = 0; i<starpoint; i++) {
-					html += '<img class="addStar" width="30px" height="30px" src="<%=request.getContextPath()%>/resources/img/review/star.png">';
-				}
-				
-				for(var i = 0; i<5 - starpoint; i++) {
-					html += '<img class="addStar" width="30px" height="30px" src="<%=request.getContextPath()%>/resources/img/review/star empty.png">';
-				}
-				
-				html += '</div>';
-				
-				$("#resultStarPoint").html(html);
-			},
-			error: function(request, status, error){ 
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		}); // end of ajax 
-		
-	}); // end of $(document).ready();
+	} // end of function showReviewListPageBar(currentPageNo)
 	
+	// 디테일 페이지로 이동
+	function goDetil(review_UID) {
+		location.href = "<%=request.getContextPath()%>/reviewDetail.pet?review_UID="+review_UID;
+	} // end of function goDetil(review_uid)
+	// === 2019.02.13 ==== //
 </script>
 
 <label style="font-weight: bold;">병원리뷰</label>
@@ -99,7 +165,10 @@
 <div class="col-sm-12">
 	<div id="resultStarPoint"></div>
 	<div id="resultReview"></div>
-	<div class="col-sm-12" align="right">
-		<button class="btn btn-xs addColor">리뷰 더보기</button>
-	</div>
+	<%-- === 2019.02.13 === --%>
+	<div class="col-sm-12" align="center">
+		<ul class="pagination pagination-sm" id="pageBar">
+	  	</ul>
+  	</div>
+  	<%-- === 2019.02.13 === --%>
 </div>

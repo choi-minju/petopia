@@ -56,9 +56,9 @@
 		// 체중 추가 버튼
 		$("#addWeight").click(function() {
 			
-			var url = "addWeight.pet?idx=${loginuser.idx}";				
+			var url = "addWeight.pet?pet_UID=${pet_UID}";				
 			window.open(url, "addWeight"
-					 , "left=500px, top=100px, width=300px, height=230px");
+					 	   , "left=500px, top=100px, width=300px, height=230px");
 			
 		});
 		
@@ -90,14 +90,13 @@
 				$.each(json, function(entryIndex, entry) {
 					html += "		<tr>"
 						  + "			<td>" + entry.PETWEIGHT_DATE + "</td>"
-						  + "			<td>" + entry.PETWEIGHT_PAST + "</td>"
+						  + "			<td>" + entry.PETWEIGHT_PAST + "kg </td>"
 						  + "			<td>" + entry.PETWEIGHT_UID + "</td>"
 						  + "		</tr>";		
 				});
 				
 					html += "	</tbody>"
 						  + "</table>";
-						
 
 				$("#table_weight").append(html);
 			},

@@ -394,15 +394,17 @@ public class ReservationController {
 			type = "-10";
 		}
 		
+		String [] typeArr = type.split(",");
+		
 		int sizePerPage = 10;	// 한 페이지 당 보여줄 댓글의 갯수
 		int rno1 = Integer.parseInt(currentShowPageNo) * sizePerPage - (sizePerPage-1);
 		int rno2 = Integer.parseInt(currentShowPageNo) * sizePerPage;
 		
-		HashMap<String, String> paraMap = new HashMap<String, String>();
+		HashMap<String, Object> paraMap = new HashMap<String, Object>();
 		paraMap.put("idx", String.valueOf(idx));
 		paraMap.put("rno1", String.valueOf(rno1));
 		paraMap.put("rno2", String.valueOf(rno2));
-		paraMap.put("type", type);
+		paraMap.put("typeArr", typeArr);
 		// [190211] 관리자 경우 추가
 		List<DepositVO> depositList = new ArrayList<DepositVO>();
 		
@@ -421,7 +423,9 @@ public class ReservationController {
 			map.put("showDepositStatus", dvo.getShowDepositStatus());
 			map.put("deposit_status", dvo.getDeposit_status());
 			map.put("fk_payment_UID", dvo.getFk_payment_UID()); // [190130] fk_payment_UID 추가
-			
+			map.put("deposit_type", dvo.getDeposit_type());	// [190213] deposit_type 추가
+			map.put("fk_idx", dvo.getFk_idx());
+			map.put("membertype", dvo.getMembertype());
 			mapList.add(map);
 		}
 		
@@ -437,6 +441,7 @@ public class ReservationController {
 		String idx = String.valueOf(loginuser.getIdx());
 		String sizePerPage = req.getParameter("sizePerPage");
 		String type = req.getParameter("type");
+		
 		if(type == null || "".equals(type)) {
 			type = "-10";
 		}
@@ -444,9 +449,11 @@ public class ReservationController {
 			sizePerPage = "10"; // [190130] 페이지바 수정
 		}
 		
-		HashMap<String, String> paraMap = new HashMap<String, String>();
+		String[] typeArr = type.split(",");
+		
+		HashMap<String, Object> paraMap = new HashMap<String, Object>();
 		paraMap.put("idx", idx);
-		paraMap.put("type", type);
+		paraMap.put("typeArr", typeArr);
 		paraMap.put("sizePerPage", sizePerPage);
 		
 		// [190211] 관리자 추가
@@ -457,14 +464,13 @@ public class ReservationController {
 		else {
 			totalCount = service.selectDepositListTotalCount(paraMap);
 		}
-
 //		총 페이지 수 구하기
 //		ex) 57.0(행 개수)/10(sizePerPage) => 5.7 => 6.0 => 6
 //		ex2) 57.0(행 개수)/5(sizePerPage) => 11.4 => 12.0 => 12
 		int totalPage = (int)Math.ceil((double)totalCount/Integer.parseInt(sizePerPage));
 
 		returnMap.put("totalPage", totalPage);
-		returnMap.put("type", Integer.parseInt(type));
+		returnMap.put("type", Integer.parseInt(typeArr[0]));
 		return returnMap;
 
 	}

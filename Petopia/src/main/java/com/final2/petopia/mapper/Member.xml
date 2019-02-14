@@ -271,4 +271,13 @@
 		where fk_userid = #{USERID}
 	</update>
 	<!-- === 2019.01.25 === 비밀번호 변경 -->
+	
+	<!-- === 2019.02.13 === -->
+	<!-- *** 아이디 찾기 *** -->
+	<select id="selectMemberIdByNamePhone" parameterType="HashMap" resultType="String">	
+		select userid
+		from member
+		where name = #{NAME} and phone = #{PHONE}
+	</select>
+	<!-- === 2019.02.13 === -->
 </mapper>

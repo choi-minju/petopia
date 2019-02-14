@@ -264,4 +264,13 @@ public class MemberDAO implements InterMemberDAO {
 	} // end of public int updateLogin_logPwdByUserid(HashMap<String, String> paramap)
 	// === 2019.01.25 === 비밀번호 변경 //
 
+	// === 2019.02.13 === //
+	// 아이디 찾기 
+	@Override
+	public String selectMemberIdByNamePhone(HashMap<String, String> paraMap) {
+		String findId = sqlsession.selectOne("member.selectMemberIdByNamePhone", paraMap);
+		
+		return findId;
+	} // end of public String selectMemberIdByNamePhone(HashMap<String, String> paraMap)
+	// === 2019.02.13 === //
 }

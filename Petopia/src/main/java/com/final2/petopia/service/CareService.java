@@ -72,7 +72,12 @@ public class CareService implements InterCareService {
 		return list; 
 	}
 
-
+	//===== 특정 반려동물관리 체중 추가 =====
+	@Override
+	public void addWeight(HashMap<String, String> paraMap) {
+		dao.addWeight(paraMap);		
+	}
+	
 	//===== 특정 반려동물관리 진료기록(Ajax) =====
 	@Override
 	public List<HashMap<String, String>> getChart(String pet_UID) {
@@ -87,6 +92,8 @@ public class CareService implements InterCareService {
 		List<HashMap<String,String>> list = dao.getPetcare(pet_UID);
 		return list;
 	}
+
+
 
 
 	
