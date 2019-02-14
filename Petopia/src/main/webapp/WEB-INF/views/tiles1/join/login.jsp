@@ -107,7 +107,12 @@
 							<label for="uPassword" class="input-group-addon glyphicon glyphicon-lock"></label>
 						</div> <!-- /.input-group -->
 					</div> <!-- /.form-group -->
-
+					
+					<%-- === 2019.02.13 === 수정 --%>
+					<div class="row">
+						<button type="button" class="btn" id="loginBtn" style="background-color: rgb(252, 118, 106); color: white; width: 90%;">Login</button>
+					</div>
+					
 					<div class="checkbox" align="left">
 						<label>
 							<input type="checkbox" name="saveUserid"
@@ -118,12 +123,18 @@
 						</label>
 					</div> <!-- /.checkbox -->
 					
+					<hr style="background-color: white; color: white; border: 2px solid white;">
+					
 					<div class="row">
-						<button type="button" class="btn" data-toggle="modal" data-target="#idFindModal" style="background-color: #F2CFAA; color: white;">아이디찾기</button>
-						<button type="button" class="btn" data-toggle="modal" data-target="#pwFindModal" style="background-color: #EBA58A; color: white;">비밀번호찾기</button>
-						<button type="button" class="btn" id="loginBtn" style="background-color: rgb(252, 118, 106); color: white;">Login</button>
+						<span data-toggle="modal" data-target="#idFindModal" style="cursor: pointer; font-size: 8pt;">아이디 찾기</span>
+						<span>&nbsp;|&nbsp;</span>
+						<span data-toggle="modal" data-target="#pwFindModal" style="cursor: pointer; font-size: 8pt;">비밀번호 찾기</span>
+						<span>&nbsp;|&nbsp;</span>
+						<span style="cursor: pointer; font-size: 8pt;" onclick="javascript:location.href='join.pet'">회원가입</span>
 					</div>
 				</form>
+				<%-- === 2019.02.13 === 수정 --%>
+				
 				<h4>OR</h4>
 				<div class="row">
 					<span>sns 로그인은 일반회원만 가능합니다.</span>
@@ -202,8 +213,8 @@
 				</div>
 	   				  
 				<!-- <button type="button" class="form-control btns" style="background-color: #2DB400; color: white; border: none;">Login with Naver</button> -->
-				<button type="button" class="form-control btns" style="background-color: #80e5ff; color: white; border: none;">Login with Google</button>
-				<button type="button" class="form-control btns" style="background-color: #3b5998; color: white; border: none;">Login with Facebook</button>
+				<!-- <button type="button" class="form-control btns" style="background-color: #80e5ff; color: white; border: none;">Login with Google</button>
+				<button type="button" class="form-control btns" style="background-color: #3b5998; color: white; border: none;">Login with Facebook</button> -->
 			</div>
 		</div>
 	</div>
@@ -227,61 +238,11 @@
 					<h4 class="modal-title">Find ID</h4>
 				</div>
 				
+				<%-- === 2019.02.13 === --%>
 				<div class="modal-body">
-					<c:if test="${status == 0}">
-						<div class="row">
-							<div class="col-sm-offset-1 col-sm-10">
-								<span style="color: #999;">이름</span>
-								<input type="text" class="form-control" id="name" name="name" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
-							</div>
-						</div>
-						
-						<div class="row" style="margin-top: 20px;">
-							<div class=" col-sm-offset-1 col-sm-10">
-								<span style="color: #999;">휴대폰번호</span>
-								<input type="text" class="form-control" id="phone" name="phone" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
-							</div>
-						</div>
-						
-						<div class="row" style="margin-top: 20px;">
-							<div class="col-sm-offset-1 col-sm-10">
-								<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">휴대폰 본인 인증하기</button>
-							</div>
-						</div>
-					</c:if>
-					
-					<!-- 인증화면 -->
-					<c:if test="${status == 2}">
-						<div class="row" style="margin-top: 20px;">
-							<div class="col-sm-offset-1 col-sm-10">
-								<span>010-1234-5678로 보낸<br> 인증번호를 입력해주세요.</span>
-							</div>
-						</div>
-						
-						<div class="row" style="margin-top: 20px;">
-							<div class=" col-sm-offset-1 col-sm-10">
-								<span style="color: #999;">인증번호</span>
-								<input type="text" class="form-control" id="useridCode" name="useridCode" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
-							</div>
-						</div>
-						
-						<div class="row" style="margin-top: 20px;">
-							<div class="col-sm-offset-1 col-sm-10">
-								<button type="button" class="form-control" style="background-color: rgb(252, 118, 106); color: white;">확인</button>
-							</div>
-						</div>
-					</c:if>
-					
-					<!-- 아이디 결과 -->
-					<c:if test="${status == 4}">
-						<div class="row" style="margin-top: 20px;">
-							<div class=" col-sm-offset-1 col-sm-10">
-								<span style="color: #999;">홍길동님의 아이디</span>
-								<input type="text" class="form-control" id="findUserid" name="userid" value="hongkd" readonly="readonly" style="border: none; border-bottom: 2px solid rgb(252, 118, 106);"/>
-							</div>
-						</div>
-					</c:if>
+					<iframe src="<%=request.getContextPath()%>/findID.pet" style="width: 100%; height: 250px; border: none; overflow: hidden;"></iframe>
 				</div>
+				<%-- === 2019.02.13 === --%>
 				
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default modalColse" data-dismiss="modal">Close</button>
@@ -304,9 +265,9 @@
 				
 				<div class="modal-body">
 					<iframe src="<%=request.getContextPath()%>/findPwd.pet" style="width: 100%; height: 250px; border: none; overflow: hidden;"></iframe>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default modalColse" data-dismiss="modal">Close</button>
-					</div>
+				</div>	
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default modalColse" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
