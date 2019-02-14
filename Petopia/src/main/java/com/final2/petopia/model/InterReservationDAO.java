@@ -58,13 +58,13 @@ public interface InterReservationDAO {
 
 //	[190125] 예치금 히스토리 목록 중 모두보기인 경우
 //	[190126] 메소드명 변경 selectDepositListByIdx -> selectDepositListByIdxNoneType
-	List<DepositVO> selectDepositListByIdxNoneType(HashMap<String, String> paraMap);
+	List<DepositVO> selectDepositListByIdxNoneType(HashMap<String, Object> paraMap);
 //	[190126] 예치금 히스토리 목록 중 충전 또는 충전 목록인 경우 
-	List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap);
+	List<DepositVO> selectDepositListByIdx(HashMap<String, Object> paraMap);
 //	#전체목록의 페이지바 만들기
-	int selectDepositListTotalCountNoneType(HashMap<String, String> paraMap);
+	int selectDepositListTotalCountNoneType(HashMap<String, Object> paraMap);
 //	#충전 또는 사용목록 페이지바 만들기
-	int selectDepositListTotalCount(HashMap<String, String> paraMap);
+	int selectDepositListTotalCount(HashMap<String, Object> paraMap);
 //	#최초 스케줄 생성 프로시저
 	void insertScheduleFirst(String idx_biz);
 //	#병원회원의 스케줄 개수 가져오기
@@ -100,7 +100,7 @@ public interface InterReservationDAO {
 //	#예약 상세 페이지
 //	[190131] 일반회원, 기업회원이 보는 예약상세 요소 분리
 	HashMap<String, String> selectRvDetailByPUIDForMember(String payment_UID);
-	HashMap<String, String> selectRvDetailByPUIDForBiz(String payment_UID);
+	HashMap<String, String> selectRvDetailForBiz(HashMap<String, String> paraMap);	// 190211 변경
 	
 //	[190202]
 //	#예약VO로 예약테이블에 insert하기; 결제O
@@ -125,6 +125,21 @@ public interface InterReservationDAO {
 
 //	#정산 후 payment status를 0으로 변경하기
 	int updatePaymentStatusTo0(HashMap<String, String> paraMap);
+	
+//	[190211]
+//	#무통장입금 계좌 정보 조회하기
+	HashMap<String, String> selectDepositDirectAccount(String deposit_UID);
+//	#관리자 예치금 히스토리 목록 중 모두보기인 경우
+	List<DepositVO> selectDepositListByIdxNoneTypeForAdmin(HashMap<String, Object> paraMap);
+//	#관리자 예치금 히스토리 목록 중 충전 또는 사용 목록인 경우 
+	List<DepositVO> selectDepositListByIdxForAdmin(HashMap<String, Object> paraMap);
+//	#관리자 전체목록의 페이지바 만들기
+	int selectDepositListTotalCountNoneTypeForAdmin(HashMap<String, Object> paraMap);
+//	#관리자 충전 또는 사용목록 페이지바 만들기
+	int selectDepositListTotalCountForAdmin(HashMap<String, Object> paraMap);
+
+	int updateDepositStatusByDUID(String deposit_UID);
+
 
 	
 

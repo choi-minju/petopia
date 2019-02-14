@@ -73,17 +73,36 @@ public interface InterChartService {
 	HashMap<String, Object> getPinfo(String puid);
 
 	//0210 마이페이지에서 진료관리 클릭시 보여지는 병원 방문 리스트 가져오기 
-	List<HashMap<String,String>> getmyreservedaylist(HashMap<String, Object> paramap);
+	List<HashMap<String,String>> getmyreservedaylist(HashMap<String, String> paramap);
 
 	//0210 가장 작은예약번호 알아오기 (마이페이지 진료관리 처방전 입력에 필요 )
-	String getminRuid(HashMap<String, Object> paramap);
+	String getminRuid(HashMap<String, String> paramap);
 
 	//0210 마이페이지에서 잔료관리 클릭시  보여지는 처방전  인서트 창에 불러올 기본 정보 
-	HashMap<String, Object> getmyPreinfo(HashMap<String, Object> paramap2);
+	HashMap<String, String> getmyPreinfo(HashMap<String, String> paramap2);
 
 	//0210 마이페이지 진료관리에서 처방전 인서트할때 필요한 차트 유아이디 
 	String getcuid(String minruid);
 
+	//0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기 
+	HashMap<String, String> getmyPreinfobyajax(String reservation_uid);
+
+	//0210 예약 날짜 및 시간과 맞는 펫 유아이디 가져오기 
+	int getpetuidbyajax(String reservedate);
+
+	//0210 예약날짜 및 시간과 맞는 예약번호 가져오기 
+	String getruidbyajax(String reservedate);
+
+	//0213 마이페이지 진료관리에서 처방전 작성자 이름 가져오기
+	String getRx_regname(int idx);
+
+	//0213 ㄴ처방전 작성자 이름으로 처방전 번호 가져오기 
+	String getRx_uid(String rx_regname);
+
+	//0213 마이페이지 진료관리 차트 , 결제정보가 없는 
+	HashMap<String, String> getmyPreinfobyajaxnopay(HashMap<String, String> paramap2);
+
+	
 	
 
 }

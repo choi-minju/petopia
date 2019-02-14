@@ -404,4 +404,14 @@ public class MemberService implements InterMemberService {
 		return result;
 	} // end of public int updateMemberPwdByUserid(HashMap<String, String> paramap)
 	// === 2019.01.25 === 비밀번호 변경 //
+
+	// === 2019.02.13 === //
+	// 아이디 찾기 
+	@Override
+	public String selectMemberIdByNamePhone(HashMap<String, String> paraMap) {
+		String findId = dao.selectMemberIdByNamePhone(paraMap);
+		
+		return findId;
+	} // end of public String selectMemberIdByNamePhone(HashMap<String, String> paraMap)
+	// === 2019.02.13 === //
 }

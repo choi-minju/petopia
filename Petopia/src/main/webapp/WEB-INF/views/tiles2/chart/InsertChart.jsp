@@ -71,7 +71,10 @@
 					  html +=    '<tr>'+
 						         '<td><input type="text" name="rx_name"/></td>'+
 				                 '<td><input type="text" name="dosage"/></td>'+
-				                 '<td><input type="text" name="dose_number"/></td>'+'</tr>';
+				                 '<td><input type="text" name="dose_number"/></td>'
+				                 +  '<td><input type="text" name="rx_cautions"/></td>'
+				       	      +'<td><input type="text" name="rx_notice"/></td>'
+				                 +'</tr>';
 				                 
 				}
 				
@@ -110,6 +113,8 @@
 	      <th>처방약</th>
 	      <th>투약 량</th>
 	      <th>하루 복용횟수</th>
+	      <th>주의 사항</th>
+	      <th>메  모</th>
 	    </tr>
 	   </thead>
 	   <tbody id="textbox1">
@@ -117,6 +122,8 @@
 	      <td><input type="text" name="rx_name"/></td>
 	      <td><input type="text" name="dosage"/></td>
 	      <td><input type="text" name="dose_number"/></td>
+	      <td><input type="text" name="rx_cautions"/></td>
+	      <td><input type="text" name="rx_notice"/></td>
 	    </tr>
 	   </tbody>
    </table>

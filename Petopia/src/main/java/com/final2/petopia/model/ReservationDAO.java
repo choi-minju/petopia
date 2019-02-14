@@ -147,25 +147,25 @@ public class ReservationDAO implements InterReservationDAO {
 //	[190125] 예치금 히스토리 목록 중 모두보기인 경우
 //	[190126] 메소드명 변경 selectDepositListByIdx -> selectDepositListByIdxNoneType
 	@Override
-	public List<DepositVO> selectDepositListByIdxNoneType(HashMap<String, String> paraMap) {
+	public List<DepositVO> selectDepositListByIdxNoneType(HashMap<String, Object> paraMap) {
 		List<DepositVO> depositList = sqlsession.selectList(ns+"selectDepositListByIdxNoneType",paraMap);
 		return depositList;
 	}
 //	[190126] 예치금 히스토리 목록 중 충전 또는 사용 목록인 경우 
 	@Override
-	public List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap) {
+	public List<DepositVO> selectDepositListByIdx(HashMap<String, Object> paraMap) {
 		List<DepositVO> depositList = sqlsession.selectList(ns+"selectDepositListByIdx",paraMap);
 		return depositList;
 	}
 //	#전체목록의 페이지바 만들기
 	@Override
-	public int selectDepositListTotalCountNoneType(HashMap<String, String> paraMap) {
+	public int selectDepositListTotalCountNoneType(HashMap<String, Object> paraMap) {
 		int totalCount = sqlsession.selectOne(ns+"selectDepositListTotalCountNoneType", paraMap);
 		return totalCount;
 	}
 //	#충전 또는 사용목록 페이지바 만들기
 	@Override
-	public int selectDepositListTotalCount(HashMap<String, String> paraMap) {
+	public int selectDepositListTotalCount(HashMap<String, Object> paraMap) {
 		int totalCount = sqlsession.selectOne(ns+"selectDepositListTotalCount", paraMap);
 		return totalCount;
 	}
@@ -259,8 +259,8 @@ public class ReservationDAO implements InterReservationDAO {
 		return resultMap;
 	}
 	@Override
-	public HashMap<String, String> selectRvDetailByPUIDForBiz(String payment_UID){
-		HashMap<String, String> resultMap = sqlsession.selectOne(ns+"selectRvDetailByPUIDForBiz", payment_UID);
+	public HashMap<String, String> selectRvDetailForBiz(HashMap<String, String> paraMap){
+		HashMap<String, String> resultMap = sqlsession.selectOne(ns+"selectRvDetailForBiz", paraMap);
 		return resultMap;
 	}
 	
@@ -318,4 +318,42 @@ public class ReservationDAO implements InterReservationDAO {
 		return result;
 	}
 
+//	[190211]
+//	#무통장입금 계좌 정보 조회하기
+	@Override
+	public HashMap<String, String> selectDepositDirectAccount(String deposit_UID) {
+		HashMap<String, String> returnMap = sqlsession.selectOne(ns+"selectDepositDirectAccount", deposit_UID);
+		return returnMap;
+	}
+
+//	#관리자 예치금 히스토리 목록 중 모두보기인 경우
+	@Override
+	public List<DepositVO> selectDepositListByIdxNoneTypeForAdmin(HashMap<String, Object> paraMap) {
+		List<DepositVO> depositList = sqlsession.selectList(ns+"selectDepositListByIdxNoneTypeForAdmin",paraMap);
+		return depositList;
+	}
+//	#관리자 예치금 히스토리 목록 중 충전 또는 사용 목록인 경우 
+	@Override
+	public List<DepositVO> selectDepositListByIdxForAdmin(HashMap<String, Object> paraMap) {
+		List<DepositVO> depositList = sqlsession.selectList(ns+"selectDepositListByIdxForAdmin",paraMap);
+		return depositList;
+	}
+//	#관리자 전체목록의 페이지바 만들기
+	@Override
+	public int selectDepositListTotalCountNoneTypeForAdmin(HashMap<String, Object> paraMap) {
+		int totalCount = sqlsession.selectOne(ns+"selectDepositListTotalCountNoneTypeForAdmin", paraMap);
+		return totalCount;
+	}
+//	#관리자 충전 또는 사용목록 페이지바 만들기
+	@Override
+	public int selectDepositListTotalCountForAdmin(HashMap<String, Object> paraMap) {
+		int totalCount = sqlsession.selectOne(ns+"selectDepositListTotalCountForAdmin", paraMap);
+		return totalCount;
+	}
+
+	@Override
+	public int updateDepositStatusByDUID(String deposit_UID) {
+		int result = sqlsession.update(ns+"updateDepositStatusByDUID", deposit_UID);
+		return result;
+	}
 }

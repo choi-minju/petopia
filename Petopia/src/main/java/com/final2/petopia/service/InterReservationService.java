@@ -49,9 +49,9 @@ public interface InterReservationService {
 
 	
 //	[190126] 예치금 히스토리 목록
-	List<DepositVO> selectDepositListByIdx(HashMap<String, String> paraMap);
+	List<DepositVO> selectDepositListByIdx(HashMap<String, Object> paraMap);
 //	[190126] 예치금 히스토리 목록 페이지바 만들기
-	int selectDepositListTotalCount(HashMap<String, String> paraMap);
+	int selectDepositListTotalCount(HashMap<String, Object> paraMap);
 //	#최초 스케줄 생성 프로시저
 	void insertScheduleFirst(String idx_biz);
 //	#병원회원의 스케줄 개수 가져오기
@@ -70,7 +70,7 @@ public interface InterReservationService {
 
 //	[190130]
 //	#예약 상세 페이지
-	HashMap<String, String> selectRvDetailByPUID(String payment_UID, String membertype);	// [190131] membertype 추가
+	HashMap<String, String> selectRvDetailByPUID(String payment_UID, String membertype, String idx);	// [190131] membertype 추가 190211 idx 추가
 
 //	[190203]
 	int selectPaymentTotalCountWithSearch(HashMap<String, String> paraMap);
@@ -90,8 +90,16 @@ public interface InterReservationService {
 
 //	[190208]
 //	#결제시 deposit테이블에 정보 insert
-	int insertChargeDeposit(HashMap<String, String> paraMap);
+	int insertDeposit(HashMap<String, String> paraMap);
 
-	
+//	[190211]
+//	#deposit테이블에서 무통장입금 계좌 정보 가져오기
+	HashMap<String, String> selectDepositDirectAccount(String deposit_UID);
+
+	List<DepositVO> selectDepositListByIdxForAdmin(HashMap<String, Object> paraMap);
+
+	int selectDepositListTotalCountForAdmin(HashMap<String, Object> paraMap);
+
+	int updateDepositStatusByDUID(String deposit_UID);
 
 }
