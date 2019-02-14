@@ -101,9 +101,11 @@ color:rgb(252, 118, 106);
 <script type="text/javascript">
     
 	$(document).ready(function(){
-		
-		showPreinfo(${myreservedaylist[0].reservation_uid});
-		
+		if(${myreservedaylist != null}){
+		  showPreinfo(${myreservedaylist[0].chart_uid});
+		}else{
+			$(".tab-content").hide();
+		}
 		//ajaxData();
 			 
 			/*  onclick -> 사진에
@@ -177,28 +179,17 @@ color:rgb(252, 118, 106);
 		    	  }); // end of ajax();
 		    	 
 		      } //end of events;
-		      
+		      ,
+		      eventClick: function(eventObj) {
+		    		var url= "<%=request.getContextPath()%>/selectmychartup.pet?chart_uid="+eventObj.id;      //팝업창 페이지 URL
+		    		var winWidth = 1200;
+		    	    var winHeight = 600;
+		    	    var popupOption= "width="+winWidth+", height="+winHeight;    //팝업창 옵션(optoin)
+		    		window.open(url,"",popupOption);
+    		  }
 		  }); // end 
-		  
-			
-		        
-		/* $(".datetab").click(function(){ //날짜 탭을 누르면 
-		
-			var tabs =$(this).attr('class');
-			//alert(tabs);
-			var str_tabs =String(tabs);
-			
-			var index=str_tabs.indexOf('rdate');
-			//alert(index);//8
-			var redate = str_tabs.substring(index+5);
-			//alert(redate);
-			
-			$("#reservedate").val(redate);
-			
-			showPreinfo(); //처방전 인서트 기본창 정보 불러오기 
-		}); */
-	 
-	//등록하기 버튼 
+	
+		  //등록하기 버튼 
 	 $("#register").click(function(){
 		 
 		var frm=document.registerFrm;
@@ -236,8 +227,8 @@ color:rgb(252, 118, 106);
     		  });
 	 }// show pet end
 	 //탭 클릭시 처방전 기본정보 불러오기 
-	 function showPreinfo(reservation_uid){
-		 var data ={"reservation_uid":reservation_uid};
+	 function showPreinfo(chart_uid){
+		 var data ={"chart_uid":chart_uid};
 		    $.ajax({
 	    		  url: "<%=request.getContextPath()%>/selectMyPreInfo.pet",
 	    		  type: "GET",
@@ -342,11 +333,10 @@ color:rgb(252, 118, 106);
 	 
 	 //개인진료기록 등록 팝업창 띄우기 
 	 
-   
   
 	function popupOpen(){
-		var url= "<%=request.getContextPath()%>/InsertmyChartnoReserve.pet";      //팝업창 페이지 URL
-		var winWidth = 700;
+		var url= "<%=request.getContextPath()%>/InsertmyChartnoReserve.pet?puid="+$("#petUidNo").val();      //팝업창 페이지 URL
+		var winWidth = 1200;
 	    var winHeight = 600;
 	    var popupOption= "width="+winWidth+", height="+winHeight;    //팝업창 옵션(optoin)
 		window.open(url,"",popupOption);
@@ -360,7 +350,7 @@ color:rgb(252, 118, 106);
 	   <c:forEach items="${pmaplist}" var="pvo" varStatus="status">
 		    <div class="col-md-3" style="display:inlineblock;float:left;">
 			    <input type="hidden" value="${pvo.pet_uid}" id="imgpuid${pvo.pet_uid}"/>
-			    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" onclick="javascript:location.href='<%=ctxPath%>/InsertMyPrescription.pet?puid=${pvo.pet_uid}'"  class="petimg petUid${pvo.pet_uid}" width="30%"style="border-radius: 50%;display:block;"/> 
+			    <img src="<%=ctxPath%>/resources/img/care/${pvo.pet_profileimg}" onclick="javascript:location.href='<%=ctxPath%>/InsertMyPrescription.pet?puid=${pvo.pet_uid}'"  class="petimg petUid${pvo.pet_uid}" width="30%"style="border-radius: 50%;display:block;"/> 
 			    <span style="font-weight: bold;padding-left: 10%;">[${pvo.pet_name}] 님</span>
 		    </div>
 	    </c:forEach>
@@ -387,10 +377,10 @@ color:rgb(252, 118, 106);
 	    <ul class="nav nav-tabs">
 		    <c:forEach items="${myreservedaylist}" var="daymap">
 		    <input type="hidden" id="redate" value="${daymap.reservedate}">
-			   <li><a data-toggle="tab" href="#home" onclick="showPreinfo('${daymap.reservation_uid}');" class="datetab">${daymap.reservation_date}-${daymap.chart_type}</a></li>
+			   <li><a data-toggle="tab" href="#home" onclick="showPreinfo('${daymap.chart_uid}');" class="datetab">${daymap.reservation_date}-${daymap.chart_type}</a></li>
 			</c:forEach>
-			
 	    </ul>
+	    
     </div>
     <form name="registerFrm">
     <div id="home" class="tab-pane fade in active" style="padding-left:2%;">
@@ -418,8 +408,7 @@ color:rgb(252, 118, 106);
       </div>
         <input type="hidden" value="${sessionScope.loginuser.name}" name="rx_regname"/>
         </form>
-        <button type="button" class="btn2" id="register">등록하기</button>
-       <!--  <button type="button" class="btn3" id="edit">수정하기</button> -->
+      
     </div> <!--  컨테이너 5 -->
    
 </div>
