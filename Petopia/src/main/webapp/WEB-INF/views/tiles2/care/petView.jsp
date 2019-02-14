@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 
 <style type="text/css">
 	
@@ -37,9 +39,10 @@
 	$(document).ready(function () {
 		
 		getWeight();
-		getChart();
+		getChart(); 
 		initButton();	
-		
+		console.log("${fn:length(petInfo)}");
+		 
 	}); // end of ready()-------------------------------------------
 	
 	function initButton(){
@@ -86,18 +89,26 @@
 						 + "		</tr>"
 						 + "	</thead>"
 						 + "	<tbody>";
-				
-				$.each(json, function(entryIndex, entry) {
+						 
+				if(json == ''){
 					html += "		<tr>"
-						  + "			<td>" + entry.PETWEIGHT_DATE + "</td>"
-						  + "			<td>" + entry.PETWEIGHT_PAST + "kg </td>"
-						  + "			<td>" + entry.PETWEIGHT_UID + "</td>"
-						  + "		</tr>";		
+						  + "			<td colspan='3' align='center'>기록이없습니다.</td>"
+						  + "		</tr>";
+				}
+		 
+				$.each(json, function(entryIndex, entry) {
+													
+						html += "		<tr>"
+							  + "			<td>" + entry.PETWEIGHT_DATE + "</td>"
+							  + "			<td>" + entry.PETWEIGHT_PAST + "kg </td>"
+							  + "			<td>" + entry.PETWEIGHT_UID + "</td>"
+							  + "		</tr>";		
+					
 				});
 				
 					html += "	</tbody>"
 						  + "</table>";
-
+				
 				$("#table_weight").append(html);
 			},
 			error: function(request, status, error){
@@ -130,6 +141,12 @@
 						 + "	</thead>"
 						 + "	<tbody>";
 				
+				if(json == ''){
+					html += "		<tr>"
+						  + "			<td colspan='3' align='center'>기록이없습니다.</td>"
+						  + "		</tr>";
+				}
+						 
 				$.each(json, function(entryIndex, entry) {
 					html += "		<tr>"
 						  + "			<td>" + entry.CHART_UID + "</td>"
@@ -159,8 +176,11 @@
 			<div class="out">
 				<div class="in" style="margin-right: 12%;">
 					<ul style="list-style-type: none;">
+					<%-- <c:if test=""> --%>
 						<li><span class="pointer changepet" onclick="javascript:location.href='petView.pet?pet_UID=${petInfo.PREVIOUSPET_UID}'">${petInfo.PREVIOUSPET_NAME}</span></li>
+						
 						<li><i class="fa fa-angle-double-left" style="font-size: 30pt;"></i></li>
+					<%-- </c:if> --%>
 					</ul>
 				</div>
 				<div class="pointer in" onclick=window.open("careCalendar.pet?pet_UID=${pet_UID}","_self")>

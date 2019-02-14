@@ -125,22 +125,29 @@ public class CareController {
 	@RequestMapping(value="/petView.pet", method={RequestMethod.GET})
 	public String view(HttpServletRequest req) {
 	
-		String str_pet_UID = "";
+		String pet_UID = "";
 		
-		try {
-		
-			str_pet_UID = req.getParameter("pet_UID");			
-			int pet_UID = Integer.parseInt(str_pet_UID); 
+		try {		
 
-			HashMap<String, Object> petInfo = service.getPet_info(pet_UID); 
+			HttpSession session = req.getSession();
+			MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+			String fk_idx = String.valueOf(loginuser.getIdx());
+
+			pet_UID = req.getParameter("pet_UID");	
 			
-			req.setAttribute("petInfo", petInfo);
+			HashMap<String, String> paramap = new HashMap<String, String>();
+			paramap.put("fk_idx", fk_idx);
+			paramap.put("pet_UID", pet_UID);
+			
+			HashMap<String, Object> petInfo = service.getPet_info(paramap); 
+			
 			req.setAttribute("pet_UID", pet_UID);
+			req.setAttribute("petInfo", petInfo);
 			
 			return "care/petView.tiles2";
 			
 		} catch (NumberFormatException e) {
-			req.setAttribute("str_pet_UID", str_pet_UID);
+			req.setAttribute("pet_UID", pet_UID);
 			return "care/petRegister.tiles2";			
 		}
 		
@@ -165,11 +172,11 @@ public class CareController {
 				submap.put("FK_PET_UID", datamap.get("FK_PET_UID"));
 				submap.put("PETWEIGHT_PAST", datamap.get("PETWEIGHT_PAST"));
 				submap.put("PETWEIGHT_DATE", datamap.get("PETWEIGHT_DATE"));
-				
+				System.out.println(datamap.get("PETWEIGHT_UID"));
 				returnmapList.add(submap);
 			}
 		}
-
+		
 		return returnmapList;
 	}
 

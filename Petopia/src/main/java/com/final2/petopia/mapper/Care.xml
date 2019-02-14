@@ -91,7 +91,7 @@
 		<result property="NEXTPET_UID"  	 column="nextpet_UID"  		javaType="String" />
 		<result property="NEXTPET_NAME"  	 column="nextpet_name"  	javaType="String" />
 	</resultMap>
-	<select id="getPet_info" parameterType="int" resultMap="Pet_InfoMap">
+	<select id="getPet_info" parameterType="HashMap" resultMap="Pet_InfoMap">
 		select previouspet_UID, previouspet_name
 		     , pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
 		     , nextpet_UID, nextpet_name
@@ -111,7 +111,7 @@
 		         , lead(pet_UID, 1) over(order by pet_UID desc) as nextpet_UID
 		         , lead(pet_name, 1) over(order by pet_UID desc) as nextpet_name
 		    from pet_info
-		    where pet_status = 1
+		    where pet_status = 1 and fk_idx = #{fk_idx}
 		) V
 		where pet_UID = #{pet_UID}
 	</select>
@@ -125,7 +125,14 @@
 		<result property="PETWEIGHT_DATE" column="petweight_date" javaType="String" />
 	</resultMap>
 	<select id="getWeight" parameterType="String" resultMap="petweightMap">
-		select petweight_UID, fk_pet_UID, petweight_past, petweight_targeted, petweight_date
+		select petweight_UID, fk_pet_UID, petweight_past, nvl(petweight_targeted, ( select petweight_past
+																			        from        
+																			        (
+																			            select petweight_past
+																			            from petweight
+																			        ) V
+																			        where rownum = 1) ) as petweight_targeted
+        	 , to_char(petweight_date, 'yyyy-mm-dd') as petweight_date
 		from petweight 
 		where fk_pet_UID = #{pet_UID}
 	</select>

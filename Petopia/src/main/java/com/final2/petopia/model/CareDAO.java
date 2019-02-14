@@ -56,8 +56,8 @@ public class CareDAO implements InterCareDAO {
 
 	//===== 특정 반려동물 리스트 =====
 	@Override
-	public HashMap<String, Object> getPet_info(int pet_UID) {
-		HashMap<String, Object> petInfo = sqlsession.selectOne("care.getPet_info", pet_UID);
+	public HashMap<String, Object> getPet_info(HashMap<String, String> paramap) {
+		HashMap<String, Object> petInfo = sqlsession.selectOne("care.getPet_info", paramap);
 		return petInfo;
 	}
 
