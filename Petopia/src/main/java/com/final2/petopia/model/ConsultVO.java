@@ -24,12 +24,14 @@ public class ConsultVO {
  	private String nextTitle;     		// 다음글제목
  	
  	private int commentCount;			// 댓글갯수
+ 	//private String profileimg;      	// 원본 프로필사진명
+ 	private String fileName;        	// 톰캣에 저장될 프로필사진명
  	
 	public ConsultVO() { }
 
 	public ConsultVO(String consult_UID, String fk_idx, String userid, String name, String nickname, String cs_pet_type,
 			String cs_title, String cs_contents, int cs_hit, String cs_writeday, String cs_secret
-			, String previous, String previousTitle, String next, String nextTitle, int commentCount) {
+			, String previous, String previousTitle, String next, String nextTitle, int commentCount, String fileName) {
 		this.consult_UID = consult_UID;
 		this.fk_idx = fk_idx;
 		this.userid = userid;
@@ -46,6 +48,7 @@ public class ConsultVO {
 		this.next = next;
 		this.nextTitle = nextTitle;
 		this.commentCount = commentCount;
+		this.fileName = fileName;
 	}
 	
 	public String getConsult_UID() {
@@ -159,6 +162,15 @@ public class ConsultVO {
 	public void setCommentCount(int commentCount) {
 		this.commentCount = commentCount;
 	}
+
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
+	
 
 	
 }

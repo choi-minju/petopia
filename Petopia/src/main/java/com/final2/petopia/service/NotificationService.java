@@ -42,11 +42,55 @@ public class NotificationService implements InterNotificationService {
 	
 	// 알림 리스트 가져오기
 	@Override
-	public List<NotificationVO> selectNotificationList(int idx) {
+	public List<NotificationVO> selectNotificationList(HashMap<String, Integer> paraMap) {
 		
-		List<NotificationVO> notificationList = dao.selectNotificationList(idx);
+		List<NotificationVO> notificationList = dao.selectNotificationList(paraMap);
 		
 		return notificationList;
+	}
+
+	// 알림번호 통해 알림 읽음 상태로 업데이트
+	@Override
+	public int updateReadcheck(HashMap<String, Integer> paraMap) {
+
+		int result = dao.updateReadcheck(paraMap);
+	
+		return result;
+	}
+	
+	// 회원고유번호와 알림고유번호를 통해 알림정보 가져오기
+	@Override
+	public NotificationVO selectNotification(HashMap<String, Integer> paraMap) {
+		
+		NotificationVO nvo = dao.selectNotification(paraMap);
+		
+		return nvo;
+	}
+
+	// 재알림 인서트
+	@Override
+	public int insertRemindNot(NotificationVO nvo) {
+		
+		int result = dao.insertRemindNot(nvo);
+		
+		return result;
+	}
+
+	// 알림삭제
+	@Override
+	public int deleteNot(HashMap<String, Integer> paraMap) {
+		
+		int result = dao.deleteNot(paraMap);
+		
+		return result;
+	}
+
+	@Override
+	public int selectTotalNotCount(int idx) {
+		
+		int result = dao.selectTotalNotCount(idx);
+		
+		return result;
 	}
 
 }
