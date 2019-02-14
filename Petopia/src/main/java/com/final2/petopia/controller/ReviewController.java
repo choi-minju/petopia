@@ -730,6 +730,7 @@ public class ReviewController {
 				result = service.insertReviewCommentsByRc_id(paraMap);
 			} else {
 				// 로그인한 아이디와 작성자가 같지 않다면 댓글 insert+알림 insert
+				paraMap.put("FK_USERID", fk_userid); // === 2019.02.14 === //
 				paraMap.put("NOT_MESSAGE", "리뷰댓글이 추가되었습니다.");
 				paraMap.put("NOT_URL", req.getContextPath()+"/reviewDetail.pet?review_UID="+review_UID);
 				
@@ -742,6 +743,7 @@ public class ReviewController {
 				result = service.insertReviewComments(paraMap);
 			} else {
 				// 로그인한 아이디와 작성자가 같지 않다면 댓글 insert+알림 insert
+				paraMap.put("FK_USERID", fk_userid); // === 2019.02.14 === //
 				paraMap.put("NOT_MESSAGE", "리뷰댓글이 추가되었습니다.");
 				paraMap.put("NOT_URL", req.getContextPath()+"/reviewDetail.pet?review_UID="+review_UID);
 				

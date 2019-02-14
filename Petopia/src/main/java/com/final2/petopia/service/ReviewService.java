@@ -193,13 +193,35 @@ public class ReviewService implements InterReviewService {
 		int result = 0;
 		
 		int n1 = dao.insertReviewComments(paraMap);
-		int n2 = dao.insertReviewNotification(paraMap);
 		
-		if(n1*n2 == 0) {
-			result = 0;
+		// === 2019.02.14 === //
+		// 리뷰의 주인의 idx와 status 알아오기
+		System.out.println("paraMap.get(\"FK_USERID\"): "+paraMap.get("FK_USERID"));
+		HashMap<String, String> memberInfo = dao.selectMemberIdxByUserId(paraMap.get("FK_USERID"));
+		
+		int n2 = 0;
+		if(memberInfo.get("MEMBER_STATUS") != null && "1".equals(memberInfo.get("MEMBER_STATUS"))) {
+			paraMap.remove("FK_IDX");
+			paraMap.put("FK_IDX", memberInfo.get("IDX"));
+			
+			n2 = dao.insertReviewNotification(paraMap);
+		} // end of if
+		
+		if(memberInfo.get("MEMBER_STATUS") != null && "1".equals(memberInfo.get("MEMBER_STATUS"))) {
+			if(n1*n2 == 0) {
+				result = 0;
+			} else {
+				result = 1;
+			} // end of if~else
 		} else {
-			result = 1;
+			if(n1 == 0) {
+				result = 0;
+			} else {
+				result = 1;
+			} // end of if~else
 		} // end of if~else
+		// === 2019.02.14 === //
+		
 		// === 2019.02.07 === 수정 //
 		return result;
 	} // end of public int insertReviewCommentsNotification(HashMap<String, String> paraMap)
@@ -262,21 +284,48 @@ public class ReviewService implements InterReviewService {
 		int n2 = dao.insertReviewCommentsByRc_id(paraMap);
 		
 		// 알림 insert
-		int n3 = dao.insertReviewNotification(paraMap);
+		// === 2019.02.14 === //
+		// 리뷰의 주인의 idx와 status 알아오기
+		HashMap<String, String> memberInfo = dao.selectMemberIdxByUserId(paraMap.get("FK_USERID"));
 		
-		if(n1 != 0) {
-			if(n1*n2 == 0) {
-				result = 0;
-			} else {
-				result = 1;
-			}// end of if~else
-		} else if(n1 == 0) {
-			if(n2 == 0) {
-				result = 0;
-			} else {
-				result = 1;
-			}// end of if~else
-		} // end of if~else if
+		int n3 = 0;
+		if(memberInfo.get("MEMBER_STATUS") != null && "1".equals(memberInfo.get("MEMBER_STATUS"))) {
+			paraMap.remove("FK_IDX");
+			paraMap.put("FK_IDX", memberInfo.get("IDX"));
+			
+			n3 = dao.insertReviewNotification(paraMap);
+		} // end of if
+		
+		if(memberInfo.get("MEMBER_STATUS") != null && "1".equals(memberInfo.get("MEMBER_STATUS"))) {
+			if(n1 != 0) {
+				if(n1*n2*n3 == 0) {
+					result = 0;
+				} else {
+					result = 1;
+				}// end of if~else
+			} else if(n1 == 0) {
+				if(n2*n3 == 0) {
+					result = 0;
+				} else {
+					result = 1;
+				}// end of if~else
+			} // end of if~else if
+		} else {
+			if(n1 != 0) {
+				if(n1*n2 == 0) {
+					result = 0;
+				} else {
+					result = 1;
+				}// end of if~else
+			} else if(n1 == 0) {
+				if(n2 == 0) {
+					result = 0;
+				} else {
+					result = 1;
+				}// end of if~else
+			} // end of if~else if
+		} // end of if~else
+		// === 2019.02.14 === //
 		
 		return result;
 	} // public int insertReviewCommentsNotificationByRc_id(HashMap<String, String> paraMap)

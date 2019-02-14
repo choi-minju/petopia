@@ -144,14 +144,14 @@ public class ChartDAO implements InterChartDAO {
 ///////////////////////////////////////////////////////////////////////////////////////
 	// 0131병원페이지에서 차트 수정하기
 	@Override
-	public int Updatechart(HashMap<String, String> map,ChartVO cvo) {
-		int n = sqlsession.update("chart.Updatechart", map);
+	public int Updatechart(ChartVO cvo) {
+		int n = sqlsession.update("chart.Updatechart", cvo);
 		return n;
 	}
 
 	// 0131병원페이지에서 차트 수정시 처방전 수정
 	@Override
-	public int Updatepre(HashMap<String, String> map,List<HashMap<String, String>> plist) {
+	public int Updatepre(List<HashMap<String, String>> plist) {
 		int result =0;
 		for (HashMap<String, String> pmap : plist) {
 			
@@ -272,8 +272,8 @@ public class ChartDAO implements InterChartDAO {
 
 	//0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기
 	@Override
-	public HashMap<String, String> getmyPreinfobyajax(String reservation_uid) {
-		HashMap<String, String> myPreinfobyajax =sqlsession.selectOne("chart.getmyPreinfobyajax",reservation_uid);
+	public HashMap<String, String> getmyPreinfobyajax(String chart_uid) {
+		HashMap<String, String> myPreinfobyajax =sqlsession.selectOne("chart.getmyPreinfobyajax",chart_uid);
 		return myPreinfobyajax;
 	}
 
@@ -291,25 +291,39 @@ public class ChartDAO implements InterChartDAO {
 		return ruidbyajax;
 	}
 
-	//0213 마이페이지 진료관리에서 처방전 작성자 이름 가져오기
-	@Override
-	public String getRx_regname(int idx) {
-		String rx_regname = sqlsession.selectOne("chart.getRx_regname",idx);
-		return rx_regname;
-	}
-
-	//0213 ㄴ처방전 작성자 이름으로 처방전 번호 가져오기 
-	@Override
-	public String getRx_uid(String rx_regname) {
-		String rx_uid=sqlsession.selectOne("chart.getRx_uid",rx_regname);
-		return rx_uid;
-	}
-
 	//0213 마이페이지 진료관리 차트 , 결제정보가 없는 
 	@Override
 	public HashMap<String, String> getmyPreinfobyajaxnopay(HashMap<String, String> paramap2) {
 		HashMap<String, String> myPreinfobyajaxnopay =sqlsession.selectOne("chart.getmyPreinfobyajaxnopay",paramap2);
 		return myPreinfobyajaxnopay;
 	}
+
+	//0213 마이페이지에서 예약정보가 없는 개인 차트 인서트 
+	@Override
+	public int InsertmyChartnoReserveEnd(ChartVO cvo) {
+		int n =sqlsession.insert("chart.InsertmyChartnoReserveEnd",cvo);
+		return n;
+	}
+
+	//0213 마이페이지에서 예약없는 차트 테이블에 cuid인서트후 처방전 테이블에 들어갈 cuid 구하기 
+	@Override
+	public String getmaxcuid() {
+		String mcuid=sqlsession.selectOne("chart.getmaxcuid");
+		return mcuid;
+	}
+
+	//펫이름 
+	@Override
+	public HashMap<String, String> getpnames(String puid) {
+		HashMap<String, String> pnames =sqlsession.selectOne("chart.getpnames",puid);
+		return pnames;
+	}
+
+	
+	
+	
+
+	
+	
 
 }
