@@ -105,8 +105,8 @@
                     			  , 'smallani', '소동물'
                                 			  , '기타') as pet_type
 		         , pet_birthday, pet_size, pet_weight
-	             , decode(pet_gender, '1', '남자'
-                             			 , '여자') as pet_gender
+	             , decode(pet_gender, '1', '수컷'
+                             			 , '암컷') as pet_gender
 		         , pet_neutral, medical_history, allergy, pet_profileimg
 		         , lead(pet_UID, 1) over(order by pet_UID desc) as nextpet_UID
 		         , lead(pet_name, 1) over(order by pet_UID desc) as nextpet_name
@@ -122,6 +122,7 @@
 		<result property="PETWEIGHT_UID"  column="petweight_UID"  javaType="String" />
 		<result property="FK_PET_UID" 	  column="fk_pet_UID" 	  javaType="String" />
 		<result property="PETWEIGHT_PAST" column="petweight_past" javaType="String" />
+		<result property="PETWEIGHT_TARGETED" column="petweight_targeted" javaType="String" />
 		<result property="PETWEIGHT_DATE" column="petweight_date" javaType="String" />
 	</resultMap>
 	<select id="getWeight" parameterType="String" resultMap="petweightMap">
@@ -135,6 +136,7 @@
         	 , to_char(petweight_date, 'yyyy-mm-dd') as petweight_date
 		from petweight 
 		where fk_pet_UID = #{pet_UID}
+		order by petweight_uid desc
 	</select>
 	
 	
@@ -146,6 +148,13 @@
 								   , #{PETWEIGHT_DATE, mode=IN} )
 		}	
 	</insert> 
+	
+	<!-- 특정 반려동물케어 체중 페이지 완료 ==== -->
+	<update id="addWeightWithPet_info" parameterType="HashMap">
+		update pet_info set pet_weight = #{PETWEIGHT_PAST}
+		where pet_UID = #{PET_UID}
+	</update>
+	
 	
 	
 	<!-- //===== 특정 반려동물관리 진료기록(Ajax) ===== -->

@@ -72,8 +72,13 @@ public class CareDAO implements InterCareDAO {
 	//===== 특정 반려동물관리 체중 추가 =====
 	@Override
 	public void addWeight(HashMap<String, String> paraMap) {
-		System.out.println("1:"+paraMap.get("PET_UID")+"2:"+paraMap.get("NAME")+"3:"+paraMap.get("PETWEIGHT_PAST")+"4:"+paraMap.get("PETWEIGHT_TARGETED")+"5:"+paraMap.get("PETWEIGHT_DATE"));
 		sqlsession.insert("care.addWeight", paraMap);
+	}
+	
+	//===== 특정 반려동물케어 체중 페이지 완료 =====
+	@Override
+	public void addWeightWithPet_info(HashMap<String, String> paraMap) {
+		sqlsession.update("care.addWeightWithPet_info", paraMap);
 	}
 	
 	//===== 특정 반려동물관리 진료기록(Ajax) =====
@@ -90,6 +95,9 @@ public class CareDAO implements InterCareDAO {
 		List<HashMap<String,String>> list = sqlsession.selectList("care.getPetcare", pet_UID);
 		return list;
 	}
+
+
+
 
 
 

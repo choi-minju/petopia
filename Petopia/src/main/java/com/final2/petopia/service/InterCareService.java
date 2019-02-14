@@ -30,7 +30,7 @@ public interface InterCareService {
 	List<HashMap<String, String>> getWeight(String pet_UID);
 
 	//===== 특정 반려동물관리 체중 추가 =====
-	void addWeight(HashMap<String, String> paraMap);
+	void addWeight(HashMap<String, String> paraMap) throws Throwable;
 	
 	//===== 특정 반려동물관리 진료기록(Ajax) =====
 	List<HashMap<String, String>> getChart(String pet_UID);

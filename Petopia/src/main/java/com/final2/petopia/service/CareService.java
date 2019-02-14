@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.final2.petopia.model.CareVO;
 import com.final2.petopia.model.InterCareDAO;
@@ -74,8 +77,12 @@ public class CareService implements InterCareService {
 
 	//===== 특정 반려동물관리 체중 추가 =====
 	@Override
-	public void addWeight(HashMap<String, String> paraMap) {
-		dao.addWeight(paraMap);		
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
+	public void addWeight(HashMap<String, String> paraMap) 
+		throws Throwable {
+		
+		dao.addWeight(paraMap);
+		dao.addWeightWithPet_info(paraMap);		
 	}
 	
 	//===== 특정 반려동물관리 진료기록(Ajax) =====
