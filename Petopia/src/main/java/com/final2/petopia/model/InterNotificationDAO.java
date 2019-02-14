@@ -12,6 +12,21 @@ public interface InterNotificationDAO {
 	List<HashMap<String, String>> selectNotificatioSimplenList(int idx);
 
 	// 알림 리스트 가져오기
-	List<NotificationVO> selectNotificationList(int idx);
+	List<NotificationVO> selectNotificationList(HashMap<String, Integer> paraMap);
+
+	// 알림번호 통해 알림 읽음 상태로 업데이트
+	int updateReadcheck(HashMap<String, Integer> paraMap);
+
+	// 회원번호, 알림번호 통해 재알림할 하나의 알림정보 가져오기
+	NotificationVO selectNotification(HashMap<String, Integer> paraMap);
+
+	// 재알림 인서트
+	int insertRemindNot(NotificationVO nvo);
+
+	// 알림 삭제
+	int deleteNot(HashMap<String, Integer> paraMap);
+
+	// 전체 알림 수 가져오기
+	int selectTotalNotCount(int idx);
 
 }

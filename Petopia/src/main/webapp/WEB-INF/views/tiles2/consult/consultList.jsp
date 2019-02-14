@@ -87,7 +87,7 @@
 		
 		
 		<div class="row">
-			<%-- 일반회원 javascript:location.href='<%=request.getContextPath()%>/consultList.pet' --%>
+			<%-- 일반회원 --%>
 			<c:if test="${sessionScope.loginuser.membertype==1}"> 
 				<div class="col-xs-12 col-md-4" style="background-color: #ffffff;">
 					<form name="myConsultFrm" >

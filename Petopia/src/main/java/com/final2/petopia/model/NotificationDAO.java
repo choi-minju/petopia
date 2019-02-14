@@ -36,11 +36,56 @@ public class NotificationDAO implements InterNotificationDAO{
 
 	// 알림 리스트 가져오기
 	@Override
-	public List<NotificationVO> selectNotificationList(int idx) {
+	public List<NotificationVO> selectNotificationList(HashMap<String, Integer> paraMap) {
 		
-		List<NotificationVO> notificationList = sqlsession.selectList("notification.selectNotificatioList", idx);
+		List<NotificationVO> notificationList = sqlsession.selectList("notification.selectNotificatioList", paraMap);
 		
 		return notificationList;
+	}
+
+	// 알림번호 통해 알림 읽음 상태로 업데이트
+	@Override
+	public int updateReadcheck(HashMap<String, Integer> paraMap) {
+		
+		
+		int result = sqlsession.update("notification.updateReadcheck", paraMap);
+		
+		return result;
+	}
+	
+	// 회원번호, 알림번호 통해 재알림할 하나의 알림정보 가져오기
+	@Override
+	public NotificationVO selectNotification(HashMap<String, Integer> paraMap) {
+		
+		NotificationVO nvo = sqlsession.selectOne("notification.selectNotification", paraMap);
+		
+		return nvo;
+	}
+
+	// 재알림 인서트
+	@Override
+	public int insertRemindNot(NotificationVO nvo) {
+		
+		int result = sqlsession.insert("notification.insertRemindNot", nvo);
+				
+		return result;
+	}
+
+	// 알림 삭제
+	@Override
+	public int deleteNot(HashMap<String, Integer> paraMap) {
+		
+		int result = sqlsession.delete("notification.deleteNot", paraMap);
+		
+		return result;
+	}
+
+	@Override
+	public int selectTotalNotCount(int idx) {
+		
+		int result = sqlsession.selectOne("notification.selectTotalNotCount", idx);
+		
+		return result;
 	}
 
 	
