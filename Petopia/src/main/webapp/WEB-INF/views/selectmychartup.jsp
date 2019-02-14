@@ -35,12 +35,28 @@
     
 	$(document).ready(function(){
 		
+		var chart_type = "${cinfo.chart_type}";
+		
+		if(chart_type == "약국") {
+			chart_type = "0";
+		} else if(chart_type == "일반진료") {
+			chart_type = "1";
+		} else if(chart_type == "예방접종") {
+			chart_type = "2";
+		} else if(chart_type == "수술") {
+			chart_type = "3";
+		} else if(chart_type == "호텔링") {
+			chart_type = "4";
+		} 
+		
+		$("#chart_type").val(chart_type);
+		
 		$("#register").click(function(){
 			var frm = document.chartFrm;
 			frm.action="<%=ctxPath%>/InsertmyChartnoReserveEnd.pet";
 			frm.method="POST";
 			frm.submit();
-			//window.close();
+			window.close();
 		});
 		
 	
@@ -87,24 +103,22 @@
 			}
 		});
 		
+	
 	});// end of $(document).ready()----------------------
 </script>
-<div class="container" style=" border:0px solid black;border-radius:10px;background-color: #eaebed"> 
-<Form name="chartFrm" >
+<div class="container" style="border:0px solid black;border-radius:10px; background-color: #eaebed"> 
+<Form name="chartFrm">
 <div class="row">  
    
    <div class="col-md-12 ">
-   <!-- <h4 style="text-align:center; padding-top: 6%;">[ ] 님의 진료기록</h4> -->
-   <h4>개인 진료 기록하기</h4>
-   <div class="span col-md-12">1.날짜: <input type="date" name="reservation_DATE"/></div>
-   <div class="span col-md-12" >2.병원 이름: <input name="biz_name"/></div>
-   <div class="span col-md-12" >3.담당의사 이름: <input name="doc_name"/></div>
-   <div class="span col-md-12">4.진료 회원 이름: <span>${sessionScope.loginuser.name}</span></div>
-   <div class="span col-md-12">5.진료 동물 종류:  ${pmap.pet_type}</div>
-   <div class="span col-md-12">6.진료 동물 이름: ${pmap.pet_name}</div>
+   <h4 style="text-align:center; padding-top: 6%;">[${cinfo.pet_name}] 님 진료기록</h4>
+   <div class="span col-md-12">1.날짜: <input type="date" name="reservation_DATE" value="${cinfo.reservation_DATE}"/></div>
+   <div class="span col-md-12" >2.병원 이름: <input name="biz_name" value="${cinfo.biz_name}"/></div>
+   <div class="span col-md-12" >3.담당의사 이름: <input name="doc_name" value="${cinfo.doc_name}"/></div>
+   <div class="span col-md-12">4.진료 회원 이름: <input value="${sessionScope.loginuser.name}"/></div>
+   <div class="span col-md-12">6.진료 동물 이름: ${cinfo.pet_name}</div>
    <div class="span col-md-12">7.진료종류: 
-      <select id="docname" name="chart_type" style="font-weight: normal;">
-          <option value=''>-- 선택 --</option>
+      <select id="chart_type" name="chart_type" style="font-weight: normal;">
 	      <option value="0">약국</option>
 	      <option value="1">일반진료</option>
 	      <option value="2">예방접종</option>
@@ -114,7 +128,7 @@
    </div>
   <div class="span col-md-12"><span>8.처방 정보</span>
     <input id="spinnerOqty1" value="1" style="width: 30px; height: 20px; padding-top: 5%;">
-   <table style="border:1px black solid;width:50%; ">
+   <table style="border:1px black solid;width:50px; ">
 	   <thead style="text-align: center;">
 	    <tr>
 	      <th>처방약</th>
@@ -125,45 +139,36 @@
 	    </tr>
 	   </thead>
 	   <tbody id="textbox1">
-	    <tr>
-	      <td><input type="text" name="rx_name"/></td>
-	      <td><input type="text" name="dosage"/></td>
-	      <td><input type="text" name="dose_number"/></td>
-	      <td><input type="text" name="rx_cautions"/></td>
-	      <td><input type="text" name="rx_notice"/></td>
-	    </tr>
+	      <c:forEach items="${pmap2list}" var="map">
+	         <tr>
+		      <td><input type="text" name="rx_name" value="${map.rx_name}"/></td>
+		      <td><input type="text" name="dosage" value="${map.dosage}"/></td>
+		      <td><input type="text" name="dose_number" value="${map.dose_number}"/></td>
+		      <td><input type="text" name="rx_cautions" value="${map.rx_cautions}"/></td>
+		      <td><input type="text" name="rx_notice" value="${map.rx_notice}"/></td>
+	         </tr>
+	      </c:forEach>
 	   </tbody>
    </table> 
    </div>
    
    <div class="span col-md-12">9.주의 사항: </div>
-   <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;"></textarea></div>
+   <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;">${cinfo.cautions}</textarea></div>
    <div class="span col-md-12">10.노트 : </div>
-   <div class="span col-md-12"><textarea  name="chart_contents" style="width:50%; height:15%;"></textarea></div>
+   <div class="span col-md-12"><textarea  name="chart_contents" style="width:50%; height:15%;">${cinfo.chart_contents}</textarea></div>
    
 	<hr style="width:100%; height:3%; color:white;"></hr>
-    <div class="span col-md-8 ">11.총 결제 금액 : <input name="totalpay"/>원</div>
+	<c:if test="${cinfo.totalpay != null}">
+     <div class="span col-md-8 ">11.총 결제 금액 : <input name="totalpay" value="${cinfo.totalpay}"/>원</div>
+    </c:if>
+    <c:if test="${cinfo.totalpay == null}">
+     <div class="span col-md-8 ">11.총 결제 금액 : <input name="totalpay" value="0"/>원</div>
+    </c:if>
    </div>
     <button type="button" id="register" class="btn1" style="margin-left: 42%; margin-top: 4%;margin-bottom:2%;
-       background-color:rgb(252, 118, 106);color:white;width:20%;height:5%;border-radius:4px;">등록하기</button> 
+       background-color:rgb(252, 118, 106);color:white;width:20%;height:5%;border-radius:4px;">수정하기</button> 
     </div>
     <input  type="hidden" name="puid" value="${puid}"/>
-<%-- <input type="hidden" name="fk_pet_UID" value="${chartmap.fk_pet_UID}"/>
-<input type="hidden" name="fk_idx" value="${chartmap.fk_idx}"/>
-<input type="hidden" name="fk_idx_biz" value="${chartmap.fk_idx_biz}"/>
-<input type="hidden" name="chart_UID" value="${chartmap.chart_UID}"/>
-<input type="hidden" name="chart_type" value="${chartmap.reservation_type}"/>
-<input type="hidden" name="bookingdate" value="${chartmap.bookingdate}"/>
-<input type="hidden" name="reservation_DATE" value="${chartmap.reservation_DATE}"/>
-<input type="hidden" name="biz_name" value="${sessionScope.loginuser.name}"/>
-<input type="hidden" name="name" value="${chartmap.name}"/>
-<input type="hidden" name="pet_type" value="${chartmap.pet_type}"/>
-<input type="hidden" name="pet_name" value="${chartmap.pet_name}"/>
-<input type="hidden" name="reservation_type" value="${chartmap.reservation_type}"/>
-<input type="hidden" name="rx_regName" value="${sessionScope.loginuser.name}"/> 
-<c:if test="${rtype==3}">
-<input type="hidden" name="totalpay" id="totalpay" value=""/>
-</c:if>
- --%>
+
 </Form>
 </div>
