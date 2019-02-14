@@ -46,7 +46,7 @@
 	}); // end of ready()-------------------------------------------
 	
 	function initButton(){
-		
+		 
 		// 체중 Ajax 
 		$("#changepet").click(function() {
 			
