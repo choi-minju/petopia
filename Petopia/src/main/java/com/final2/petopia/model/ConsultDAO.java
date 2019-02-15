@@ -44,14 +44,6 @@ public class ConsultDAO implements InterConsultDAO {
 		return n;
 	}
 	
-	/*
-	// 기업회원 : 내가 댓글 단 글번호 리스트
-	@Override
-	public String[] selectBizConsultComment(String idx) {
-		String[] bizArr = sqlsession.selectOne("consult.selectBizConsultComment", idx);
-		return bizArr;
-	}*/
-	
 	// [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount
 	@Override
 	public int selectTotalCountNoSearch() {
@@ -130,7 +122,40 @@ public class ConsultDAO implements InterConsultDAO {
 	// [notification] 댓글작성 알림 insert
 	@Override
 	public int insertCommentNotification(ConsultCommentVO commentvo) {
-		int n = sqlsession.insert("consult.insertCommentNotification", commentvo);
+	
+		/*
+		membertype==1 (fk_idx 가 회원일경우)
+		fk_idx==org_fk_idx 알림 X
+		fk_idx!=org_fk_idx 알림 O insert org_fk_idx
+		
+		membertype==2 (fk_idx 가 수의사일경우)
+		fk_idx!=org_fk_idx && org_fk_idx==consult_fk_idx 일반회원일 경우 insert org_fk_idx
+		fk_idx!=org_fk_idx && org_fk_idx!=consult_fk_idx 다른 수의사일 경우 insert org_fk_idx, consult_fk_idx 
+		*/
+		
+		int n1 = 0;
+		int n2 = 0;
+		
+		if ( !commentvo.getFk_idx().equals(commentvo.getOrg_fk_idx()) ) {
+			System.out.println("org_fk_idx : "+commentvo.getOrg_fk_idx());
+			n1 = sqlsession.insert("consult.insertCommentNotification", commentvo);
+			if( commentvo.getMembertype().equals("2") && !commentvo.getOrg_fk_idx().equals(commentvo.getConsult_fk_idx()) ) {
+				System.out.println("consult_fk_idx : "+commentvo.getConsult_fk_idx());
+				n2 = sqlsession.insert("consult.insertCommentNotification2", commentvo);
+			}else {
+				n2=1;
+			}
+		}else {
+			if(commentvo.getMembertype().equals("2")) {
+				n1 = sqlsession.insert("consult.insertCommentNotification2", commentvo);
+			}else {
+				n1=1;
+			}
+		}
+		
+		int n=0;
+		if(n1*n2 == 1) n=1;
+		
 		return n;
 	}
 	

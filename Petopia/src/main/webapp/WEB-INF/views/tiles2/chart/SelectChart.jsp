@@ -17,8 +17,9 @@
     
 	$(document).ready(function(){
 		
-		//var dname=${cmap.doc_name} 
-		//$("#docname").val(dname);
+		var dname="${cmap.doc_name}";
+		$("#docname").val(dname);
+		alert(dname);
 		
 		$("#Edit").click(function(){
 			var frm = document.chartFrm;
@@ -71,9 +72,9 @@
 		
 	});// end of $(document).ready()----------------------
 </script>
-<div class="container"> 
-<Form name="chartFrm" 
-  style="margin-left:18%; border:0px solid black;border-radius:10px;width:70%; background-color: #eaebed">
+<div class="container" style=" border:0px solid black;border-radius:10px;margin-bottom:1%; background-color: #eaebed"> 
+<Form name="chartFrm">
+  
 <div class="row">  
    
    <div class="col-md-12 ">
@@ -82,8 +83,7 @@
    <div class="span col-md-12" >2.병원 이름: <span>${sessionScope.loginuser.name}</span></div>
    <div class="span col-md-12" >3.담당의사 이름: 
      <select id="docname" name="doc_name" style="font-weight: normal;">
-          <option value='' selected>${cmap.doc_name}</option>
-          <option value=''>-- 선택 --</option>
+           
 	      <c:forEach var="map" items="${doclist}">
 	       <option value="${map.DOCNAME}">${map.DOCNAME}</option>
 	      </c:forEach>
@@ -109,7 +109,7 @@
 	   <tbody id="textbox1">
 	     <c:forEach var="pmap" items="${pmap2list}">
 	     <tr>
-	      <td><input type="text" name="rx_name" value="${pmap.rx_name}"/></td>
+	      <td><input type="hidden" name="rx_uid" value="${pmap.rx_uid}"/><input type="text" name="rx_name" value="${pmap.rx_name}"/></td>
 	      <td><input type="text" name="dosage" value="${pmap.dosage}"/></td>
 	      <td><input type="text" name="dose_number" value="${pmap.dose_number}"/></td>
 	      <td><input type="text" name="rx_cautions" value="${pmap.rx_cautions}"/></td>
