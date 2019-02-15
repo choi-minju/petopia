@@ -153,10 +153,10 @@
 			    			  +"<div style='margin:0px;'>"
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
-			    			  +"		<input type='text' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
-			    			  +"		<input type='text' name='org_fk_idx' value='"+entry.FK_IDX+"' />"
-			    			  +"		<input type='text' name='consult_fk_idx' value='"+entry.CONSULT_FK_IDX+"' />"
-			    			  +"		<input type='text' name='membertype' value='${sessionScope.loginuser.membertype}' />"
+			    			  +"		<input type='hidden' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
+			    			  +"		<input type='hidden' name='org_fk_idx' value='"+entry.FK_IDX+"' />"
+			    			  +"		<input type='hidden' name='consult_fk_idx' value='"+entry.CONSULT_FK_IDX+"' />"
+			    			  +"		<input type='hidden' name='membertype' value='${sessionScope.loginuser.membertype}' />"
 			    			  +"		<input type='hidden' name='cmt_id' value='"+entry.CMT_ID+"' />"
 			    			  +"		<input type='hidden' name='cscmt_group' value='"+entry.CSCMT_GROUP+"' />"
 			    			  +"		<input type='hidden' name='cscmt_g_odr' value='"+entry.CSCMT_G_ODR+"' />"
@@ -191,10 +191,10 @@
 			    			  +"<div style='margin:0px; background-color:#EAEAEA;'>"
 			    			  +"	<hr align='center' width='100%' style='border:0.5px dotted #999; margin:0px;'>"
 			    			  +"	<div class='col-xs-12 col-md-12' id='hide"+entryIndex+"' style='background-color:#EAEAEA;'>"
-			    			  +"		<input type='text' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
-			    			  +"		<input type='text' name='org_fk_idx' value='"+entry.FK_IDX+"' />"
-			    			  +"		<input type='text' name='consult_fk_idx' value='"+entry.CONSULT_FK_IDX+"' />"
-			    			  +"		<input type='text' name='membertype' value='${sessionScope.loginuser.membertype}' />"
+			    			  +"		<input type='hidden' name='fk_idx' value='${sessionScope.loginuser.idx}' />"
+			    			  +"		<input type='hidden' name='org_fk_idx' value='"+entry.FK_IDX+"' />"
+			    			  +"		<input type='hidden' name='consult_fk_idx' value='"+entry.CONSULT_FK_IDX+"' />"
+			    			  +"		<input type='hidden' name='membertype' value='${sessionScope.loginuser.membertype}' />"
 			    			  +"		<input type='hidden' name='cmt_id' value='"+entry.CMT_ID+"' />"
 			    			  +"		<input type='hidden' name='cscmt_group' value='"+entry.CSCMT_GROUP+"' />"
 			    			  +"		<input type='hidden' name='cscmt_g_odr' value='"+entry.CSCMT_G_ODR+"' />"
@@ -513,7 +513,7 @@
 				</c:if>
 				<!-- 작성자가 기업회원이라면 뒤에 수의사 붙이기 -->
 				<c:if test="${sessionScope.loginuser.membertype==2}">
-					<input type="text" name="cscmt_nickname" value="${sessionScope.loginuser.nickname} 수의사" style="margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F8F8F8;" readonly/>
+					<input type="text" name="cscmt_nickname" value="${sessionScope.loginuser.nickname}" style="margin-left:30px; color:#fc766b; border:0px solid #999; background-color:#F8F8F8;" readonly/>
 				</c:if>
 			</span>
 			<span class="col-xs-12 col-md-12 " style="margin-right:2%; margin-bottom:3%; ">상담하기

@@ -43,14 +43,12 @@
 </style>
 
 <script type="text/javascript">
-
 	$(document).ready(function () {
 		
 		getWeight();
 		getChart(); 
 		initButton();
 		 
-
 		
 	}); // end of ready()-------------------------------------------
 	
@@ -117,10 +115,8 @@
 								, data: Number(json[i].PETWEIGHT_PAST)};	// 퍼센트 계산을 위해 반드시 Number로 변환
 					resultArr.push(obj);
 				}
-
 				
 					var i = 0;	
-
 					
 				$.each(json, function(entryIndex, entry) {
 					
@@ -199,12 +195,10 @@
 			dataType : "JSON",
 			success : function(json) {
 				
-
 			},
 			error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}      
-
 		
  		});
 		
@@ -250,7 +244,6 @@
 				
 					html += "	</tbody>"
 						  + "</table>";
-
 				$("#table_chart").append(html);
 			},
 			error: function(request, status, error){
@@ -368,4 +361,4 @@
 	</div> 
 
 
-</div>    
+</div>

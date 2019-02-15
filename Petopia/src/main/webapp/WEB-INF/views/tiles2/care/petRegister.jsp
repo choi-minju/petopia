@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <style type="text/css">
-
    form {
       margin: 0 auto;
    }
@@ -105,18 +104,15 @@
 <script type="text/javascript">
    $(document).ready(function() {
       $(".upload-hidden").hide();
-
       // 이미지 크기 맞춤
       $('.profile').css('height', $(".profile").width() - 1);
       $('.radius-box').css('width', $(".profile").width());
       $('.radius-box').css('height', $(".radius-box").width() - 1);
-
       $(window).resize(function() {
          $('.profile').css('height', $(".profile").width());
          $('.radius-box').css('height', $(".profile").width());
          $('.radius-box').css('width', $(".profile").width());
       });
-
       // profile에 이미지 띄우기
       var imgTarget = $('.preview-image .upload-hidden');
       imgTarget.on('change', function() {
@@ -131,25 +127,20 @@
                parent.prepend('<div class="profile upload-display"><div class="upload-thumb-wrap"><img width="100%" src="' + src + '" class="upload-thumb radius-box"></div></div>');
             }
             reader.readAsDataURL($(this)[0].files[0]);
-
             $(".profile").css('background-color', '#f2f2f2');
          }
       }); // end of imgChange
-
       $(function() {
          $("#datepicker").datepicker();
       });
-
       // 등록버튼
       $("#btnRegister").click(function() {
-
          //폼 submit
          var registerFrm = document.registerFrm;
          registerFrm.action = "petRegisterEnd.pet";
          registerFrm.method = "POST";
          registerFrm.submit();
       });
-
    }); // end of ready()-------------------------------------------
 </script>
 

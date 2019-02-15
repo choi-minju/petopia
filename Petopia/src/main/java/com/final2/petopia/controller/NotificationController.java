@@ -171,7 +171,7 @@ public class NotificationController {
 	
 	// 알림 내용 클릭 시 not_readcheck 컬럼 1로 변경 -------------------------------------------------------------------------
 	@RequestMapping(value="/updateReadcheck.pet", method= {RequestMethod.POST})
-	public String requireLogin_updateReadcheck(HttpServletRequest req) {
+	public String requireLogin_updateReadcheck(HttpServletRequest req, HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -213,7 +213,7 @@ public class NotificationController {
 
 	// 재알림 클릭 시 5분 뒤 시간으로 알림 insert -------------------------------------------------------------------------
 	@RequestMapping(value="/insertRemindNot.pet", method= {RequestMethod.POST})
-	public String requireLogin_insertRemindNot(HttpServletRequest req) {
+	public String requireLogin_insertRemindNot(HttpServletRequest req, HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -255,7 +255,7 @@ public class NotificationController {
 	
 	// 알림삭제 -------------------------------------------------------------------------
 	@RequestMapping(value="/deleteNot.pet", method= {RequestMethod.POST})
-	public String requireLogin_deleteNot(HttpServletRequest req) {
+	public String requireLogin_deleteNot(HttpServletRequest req, HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
