@@ -123,7 +123,7 @@ public class CareController {
 	
 	//===== 특정 반려동물관리 상세페이지 요청 =====
 	@RequestMapping(value="/petView.pet", method={RequestMethod.GET})
-	public String view(HttpServletRequest req) {
+	public String requireLogin_view(HttpServletRequest req, HttpServletResponse res) {
 	
 		String pet_UID = "";
 		

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>	
-
+<% String ctxPath = request.getContextPath(); %>
 <style>
 
 	div #title {
@@ -133,7 +133,7 @@
 </style>
 
 
-<script>
+<script type="text/javascript">
 
 	$(document).ready(function() {
 		
@@ -282,8 +282,13 @@
 	          }         
 	      });
 	      
-	} // end of function getPetcareWithCalendar()-------------------------------------------	   
-	  
+	} // end of function getPetcareWithCalendar()-------------------------------------------
+	
+//	#엑셀로 업로드하기
+	function goExcelUpload(idx){
+		var url = "<%=ctxPath%>/excelUploadCare.pet?idx="+idx;
+		window.open(url, "엑셀파일 업로드", "left=350px, top=100px, width=350px, height=200px");
+	}  
 </script>
 
 
@@ -338,7 +343,17 @@
 					<p>
 						<input type='checkbox' id='drop-remove' />
 						<label for='drop-remove'>remove after drop</label>
-					</p> 
+					</p>
+					<%-- #펫케어 excel로 입력하기 --%> 
+					<div class="col-md-8 col-md-offset-2">
+						<div class="excel" style="font-weight: bold;">엑셀 입력하기</div>
+						<p>xls파일로 케어를 직접 입력하여 업로드할 수 있습니다.<br/>
+						아래 양식을 다운로드하여 작성바랍니다.</p>
+						<p>
+						<a class="btn btn-rounder" href="<%= request.getContextPath() %>/downCareFile.pet">양식다운로드</a><br/><br/>
+					    <button type="button" class="btn btn-rounder" onClick="goExcelUpload(${sessionScope.loginuser.idx});">엑셀 업로드</button>
+					    </p>
+					</div>
 			    </div>
 	    	</div> 
 		 
