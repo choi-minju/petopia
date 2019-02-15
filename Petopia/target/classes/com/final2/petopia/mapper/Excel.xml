@@ -16,18 +16,12 @@
 	
 	<insert id="insertExcelCare" parameterType="HashMap">
 	    insert into petcare(care_UID, fk_pet_UID, fk_caretype_UID, care_contents, care_memo, care_start, care_end, care_alarm, care_date)
-		values
-		<foreach collection="excelContent" item="item" separator=",">
-	        (  seq_petcare_UID.nextval,
-	            #{item.B},
-	            #{item.C, jdbcType=VARCHAR},
-	            #{item.D},
-	            #{item.E},
-	            #{item.F},
-	            #{item.G},
-	            #{item.H},
-	            to_char(to_date(#{item.G}, 'yyyy-mm-dd hh24:mi') - #{item.H}*1/24/60, 'yyyy-mm-dd hh24:mi')
-	         )
-	    </foreach>
+		select seq_petcare_UID.nextval, A.* from(
+		<foreach collection="excelContent" item="item" separator="UNION ALL ">
+	       select #{item.B} as fk_pet_UID, #{item.C} as fk_caretype_UID, #{item.D, jdbcType=VARCHAR} as care_contents
+	       		, #{item.E} as care_memo, #{item.F} as care_start, #{item.G} as care_end, #{item.H} as care_alarm,
+	            to_char(to_date(#{item.G}, 'yyyy-mm-dd hh24:mi') - #{item.H}*1/24/60, 'yyyy-mm-dd hh24:mi') as care_date
+	       from dual
+	    </foreach>) A
   </insert>
 </mapper>

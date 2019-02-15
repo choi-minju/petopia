@@ -52,39 +52,26 @@ public class ConsultController {
 	
 	// 1:1상담 글쓰기 완료 -------------------------------------------------------------------------------------------
 	@RequestMapping(value="/consultAddEnd.pet", method= {RequestMethod.POST})
-	public String requireLogin_consultAddEnd(HttpServletRequest req, HttpServletResponse res, ConsultVO consultvo) {
+	public String consultAddEnd(HttpServletRequest req, HttpServletResponse res, ConsultVO consultvo) {
+		// - 1:1상담 글쓰기 consult:insert
+		int n = service.insertConsultByCvo(consultvo);
 		
-		HttpSession session = req.getSession();
-		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
-		
-		if(!loginuser.getNickname().equals(consultvo.getNickname())) {
-			String msg = "로그인부터 하셔야죠~";
-			String loc = req.getContextPath()+"/login.pet";
-			
-			req.setAttribute("msg", msg);
-			req.setAttribute("loc", loc);
-			
-			return "msg";
+		String msg = "";
+		String loc = "";
+		if(n==1) {
+			// 글쓰기 성공시 글목록 보이기
+			loc = req.getContextPath()+"/consultList.pet";
 		}
 		else {
-			// - 1:1상담 글쓰기 consult:insert
-			int n = service.insertConsultByCvo(consultvo);
-			
-			String loc = "";
-			if(n==1) {
-				// 글쓰기 성공시 글목록 보이기
-				loc = req.getContextPath()+"/consultList.pet";
-			}
-			else {
-				// 글쓰기 실패시 글쓰기로
-				loc = req.getContextPath()+"/consultAdd.pet";
-			}
-			
-			req.setAttribute("n", n);
-			req.setAttribute("loc", loc);
-			
-			return "consult/consultAddEnd.tiles2";
+			// 글쓰기 실패시 글쓰기로
+			loc = req.getContextPath()+"/consultAdd.pet";
 		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+		
 	}
 	
 	
