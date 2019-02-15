@@ -117,6 +117,9 @@ public interface InterChartDAO {
 	//0214 펫이름 
 	HashMap<String, String> getpnames(String puid);
 
+	//0214 마이페이지에서 예약이 없는 차트 업데이트 하기 
+	int Updatemychart(ChartVO cvo);
+
 
 
 
