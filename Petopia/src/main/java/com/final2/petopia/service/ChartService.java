@@ -349,6 +349,24 @@ public class ChartService implements InterChartService {
 		return pnames;
 	}
 
+	// 0214 마이 페이지 예약없는 차트 수정하기 
+	@Override
+	public int Updatemychart(ChartVO cvo, List<HashMap<String, String>> plist) {
+        int n1 = dao.Updatemychart(cvo);
+       
+		int result =0;
+		 int n2=0;
+		if (n1== 1) {
+			 n2 = dao.Updatepre(plist);//  차트 수정시 처방전 수정
+			
+		}
+		if (n1*n2==1) {
+			result=1;
+		}
+		return result;
+		
+	}
+
 	
 
 	
