@@ -601,4 +601,13 @@
       from pet_info
       where pet_uid=#{puid}
     </select>
+    
+    <!-- //0214 마이페이지에서 예약이 없는 차트 업데이트 하기 -->
+    <update id="Updatemychart" parameterType="com.final2.petopia.model.ChartVO">
+      update chart set  doc_name=#{doc_name},cautions=#{cautions}
+             , chart_contents=#{chart_contents},totalpay=#{totalpay}
+      where chart_UID=#{chart_UID}
+   </update>
+  
+
 </mapper>

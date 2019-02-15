@@ -51,12 +51,14 @@
 		
 		$("#chart_type").val(chart_type);
 		
-		$("#register").click(function(){
+		$("#edit").click(function(){
 			var frm = document.chartFrm;
-			frm.action="<%=ctxPath%>/InsertmyChartnoReserveEnd.pet";
+			frm.action="<%=ctxPath%>/UpdatemyChart.pet?chart_uid="+${cinfo.chart_uid};
 			frm.method="POST";
 			frm.submit();
-			window.close();
+			opener.reloadPage();
+			//window.close();
+
 		});
 		
 	
@@ -105,6 +107,11 @@
 		
 	
 	});// end of $(document).ready()----------------------
+	
+	function reloadPage() {
+	    location.reload(); 
+	}
+	
 </script>
 <div class="container" style="border:0px solid black;border-radius:10px; background-color: #eaebed"> 
 <Form name="chartFrm">
@@ -141,7 +148,7 @@
 	   <tbody id="textbox1">
 	      <c:forEach items="${pmap2list}" var="map">
 	         <tr>
-		      <td><input type="text" name="rx_name" value="${map.rx_name}"/></td>
+		      <td><input type="hidden" name="rx_uid" value="${map.rx_uid}"/><input type="text" name="rx_name" value="${map.rx_name}"/></td>
 		      <td><input type="text" name="dosage" value="${map.dosage}"/></td>
 		      <td><input type="text" name="dose_number" value="${map.dose_number}"/></td>
 		      <td><input type="text" name="rx_cautions" value="${map.rx_cautions}"/></td>
@@ -165,10 +172,10 @@
      <div class="span col-md-8 ">11.총 결제 금액 : <input name="totalpay" value="0"/>원</div>
     </c:if>
    </div>
-    <button type="button" id="register" class="btn1" style="margin-left: 42%; margin-top: 4%;margin-bottom:2%;
+    <button type="button" id="edit" class="btn1" style="margin-left: 42%; margin-top: 4%;margin-bottom:2%;
        background-color:rgb(252, 118, 106);color:white;width:20%;height:5%;border-radius:4px;">수정하기</button> 
     </div>
     <input  type="hidden" name="puid" value="${puid}"/>
-
+    <input  type="hidden" name="cuid" value="${cuid}"/>
 </Form>
 </div>

@@ -51,7 +51,7 @@
 	<!-- *** 로그인 *** -->
 	<!-- 로그인 -->
 	<select id="loginSelectByUseridPwd" parameterType="HashMap" resultType="com.final2.petopia.model.MemberVO">
-		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.membertype, b.lastlogindate, b.member_status
+		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.membertype, a.phone, b.lastlogindate, b.member_status
 				, trunc(months_between(sysdate, lastlogindate)) AS lastlogindategap
 		from member a JOIN login_log b
 		ON a.idx = b.idx
@@ -271,4 +271,13 @@
 		where fk_userid = #{USERID}
 	</update>
 	<!-- === 2019.01.25 === 비밀번호 변경 -->
+	
+	<!-- === 2019.02.13 === -->
+	<!-- *** 아이디 찾기 *** -->
+	<select id="selectMemberIdByNamePhone" parameterType="HashMap" resultType="String">	
+		select userid
+		from member
+		where name = #{NAME} and phone = #{PHONE}
+	</select>
+	<!-- === 2019.02.13 === -->
 </mapper>
