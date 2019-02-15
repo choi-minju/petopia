@@ -3,7 +3,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>	
 <% String ctxPath = request.getContextPath(); %>
 <style>
-
 	div #title {
 		text-align: center; 
 		margin-top: 5%;
@@ -52,7 +51,6 @@
 	.info {
 		margin: 0px auto;
 	}
-
 	#external-events {
 		float: center;
 		 margin: 0px auto;
@@ -62,13 +60,11 @@
 		/* background: #eee; */
 		text-align: center;
 	}
-
 	#external-events h4 {
 		font-size: 16px;
 		margin-top: 0;
 		padding-top: 1em;
 	}
-
 	#external-events .fc-event {
 		display: inline-block;
 		margin: 0px auto;
@@ -79,18 +75,15 @@
 		color: black;
 		cursor: pointer;
 	}
-
 	#external-events p {
 		margin: 1.5em 0;
 		font-size: 11px;
 		color: #666;
 	}
-
 	#external-events p input {
 		margin: 0;
 		vertical-align: middle;
 	}
-
 	#calendar {
 		float: left;
 		width: 70%;
@@ -134,7 +127,6 @@
 
 
 <script type="text/javascript">
-
 	$(document).ready(function() {
 		
 		getPet();
@@ -145,7 +137,6 @@
 	function getPet() { 
 	      
 	      var form_data = {fk_idx : "${fk_idx}"}; 
-
 	      $.ajax({
 	         url : "getPet.pet",   
 	         type :"GET",                              
@@ -179,7 +170,6 @@
 	function getPetcare() { 
 	      
 	      var form_data = {pet_UID : "${pet_UID}"}; 
-
 	      var str = "";
 	      
 	      $.ajax({
@@ -202,7 +192,6 @@
 				    	              };
 							resultArr.push(obj); // 배열속에 값을 넣기
 					} // end of for
-
 					////////////////////////////// FullCalendar 시작 //////////////////////////////
 	         		$('#external-events .fc-event').each(function() {
 	         	
@@ -245,11 +234,9 @@
 	         			eventRender: function(event, element) { 
 	         			      eventsdate = moment(event.start).format('hh:mm a'); 
 	         			      eventedate = moment(event.end).format('hh:mm a'); 
-
 	         			      element.find('.fc-time').html(eventsdate + " - " + eventedate + "<br>"); 
 	         			}
 	         			// [19-02-11. 수정 끝_hyunjae]	 
-
 	         		});
 					//////////////////////////////FullCalendar 끝 //////////////////////////////
 	         		// [19-02-08. 수정 끝_hyunjae]	                 
@@ -399,12 +386,4 @@
 
  
 </div>
-<!-- container 끝 -->	 
-
-
-
-
-
-
-
-
+<!-- container 끝 -->
