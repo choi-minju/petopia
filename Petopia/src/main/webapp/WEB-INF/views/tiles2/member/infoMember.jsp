@@ -281,7 +281,7 @@
 	<div class="col-sm-12" style="background-color: #f2f2f2; margin-top: 5%;">
 		
 		<div class="col-sm-12" align="center">
-			<h2>일반회원 회원가입</h2>
+			<h2>일반회원 회원수정</h2> <%-- === 2019.02.15 === 제목 수정 --%>
 		</div> 
 		<div class="col-sm-12">
 			<form name="editFrm" enctype="multipart/form-data">

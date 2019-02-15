@@ -60,10 +60,12 @@ public class ConsultController {
 		String loc = "";
 		if(n==1) {
 			// 글쓰기 성공시 글목록 보이기
+			msg = "글쓰기 성공!";
 			loc = req.getContextPath()+"/consultList.pet";
 		}
 		else {
 			// 글쓰기 실패시 글쓰기로
+			msg = "글쓰기 실패!";
 			loc = req.getContextPath()+"/consultAdd.pet";
 		}
 		

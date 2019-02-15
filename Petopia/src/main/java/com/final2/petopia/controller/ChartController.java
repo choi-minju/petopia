@@ -419,7 +419,7 @@ public class ChartController {
 	@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
 	public String requireLoginBiz_InsertChart(HttpServletRequest req, HttpServletResponse res) {
 
-		String ruid = req.getParameter("fk_reservation_UID");
+		String ruid = req.getParameter("reservation_UID");
 		String cuid = service.getChartuid(); // 차트번호 채번
 		
 		HashMap<String, String> chartmap = new HashMap<String, String>();
@@ -742,7 +742,7 @@ public class ChartController {
 		
 //		      #120. 페이지바 만들기(MyUtil에 있는 static메소드 사용)
 		String pageBar = "<ul class='pagination'>";
-		pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "reservationList.pet");
+		pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "bizReservationList.pet");
 		pageBar += "</ul>";
 
 		session.setAttribute("readCountPermission", "yes");

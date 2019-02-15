@@ -104,6 +104,11 @@ public class SearchDAO implements InterSearchDAO {
 		else {
 			// 예약기록이 있다면
 			bizmemList = sqlsession.selectList("search.getBizmemListByRecord", map);
+			
+			// 예약기록이 있지만 해당 병원에 다른 예약자가 없는 경우
+	         if(bizmemList == null || bizmemList.isEmpty()) {
+	            bizmemList = sqlsession.selectList("search.getBizmemListByidx", map);
+	         }
 		}
 		
 		return bizmemList;
@@ -126,6 +131,11 @@ public class SearchDAO implements InterSearchDAO {
 		else {
 			// 예약기록이 있다면
 			cnt = sqlsession.selectOne("search.RecordCount", loginuser_idx);
+			
+			// 예약기록이 있지만 해당 병원에 다른 예약자가 없는 경우
+	         if(cnt == 0) {
+	            cnt = sqlsession.selectOne("search.recommCount", loginuser_idx);
+	         }
 		}
 		return cnt;
 	}

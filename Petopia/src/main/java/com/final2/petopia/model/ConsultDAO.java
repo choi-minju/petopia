@@ -119,7 +119,17 @@ public class ConsultDAO implements InterConsultDAO {
 		return n;
 	}
 
-	// [notification] 댓글작성 알림 insert
+	// 댓글 : [notification] 댓글작성 알림 insert
+   @Override
+   public int insertConsultCommentNotification(ConsultCommentVO commentvo) {
+      int n = 0;
+      if( !commentvo.getFk_idx().equals(commentvo.getConsult_fk_idx()) ) {
+         n = sqlsession.insert("consult.insertCommentNotification2", commentvo);
+      }
+      return n;
+   }
+   
+	// 대댓글 : [notification] 댓글작성 알림 insert
 	@Override
 	public int insertCommentNotification(ConsultCommentVO commentvo) {
 	
