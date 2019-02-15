@@ -19,7 +19,7 @@
   display: none;
   position: absolute;
   background-color: white;
-  min-width: 280px;
+  min-width: 320px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
   padding: 20%;
@@ -27,7 +27,6 @@
 
 .notmassage {
   display: block;
-  padding: 5%;
 }
 
 .notmassage:hover {
@@ -56,6 +55,94 @@
 <script type="text/javascript" src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js" charset="utf-8"></script>
 <script type="text/javascript">
 	
+$(document).ready(function(){
+	
+	// 로그인 시(관리자가 아닐 경우) 알림 아이콘 생성
+	if(${sessionScope.loginuser != null && sessionScope.loginuser.membertype != 3}){
+		loopShowNotificationCount();
+	} // if
+	
+	// 알림 아이콘 호버 -> 심플 알림창 생성
+	$(".notdropbtn").hover(function(){
+		
+		$.ajax({
+			url:"<%=ctxPath%>/notificationSimpleList.pet", 
+			type:"GET",
+			//data:form_data,
+			dataType:"JSON",
+			success:function(json){ 
+				
+				var html = "";
+				
+				if(json.length > 0){
+					$.each(json, function(entryIndex, entry){
+						html += "<a class='notmassage' style='color: #fc766b;' href='<%= ctxPath %>/notificationList.pet'>"+entry.SIMPLEMSG+"["+entry.COUNT+"]</a>";
+					});
+				}
+				else{
+					html += "<a class='notmassage' style='color: #fc766b;' href='<%= ctxPath %>/notificationList.pet'>새 알림이 없습니다.</a>";
+				}
+				html += "<hr align='center' width='100%' style='border:0.5px solid #fc766b; margin-top: 20%;'>"
+					 + "<a class='notmassage' style='color: #fc766b; border: 0px solid; margin-top: -5%; margin-left: 35%;' href='<%= ctxPath %>/notificationList.pet'>더보기</a>";
+				
+				$("#notSimpleList").empty().html(html);
+			},
+			error: function(request, status, error){
+			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // $.ajax({
+		
+	}); // $(".notdropbtn").hover(function(){
+	
+}); // $(document).ready(function(){
+
+function logOut(){ 
+	// 카카오 로그아웃
+	Kakao.init('b5a80832c3cb255d6b0092b12fa51f95');
+	Kakao.Auth.getAccessToken();
+} // end of logOut
+
+function showNotificationCount(){ // 안읽은 알림 갯수
+	
+	var form_data = {count : $("#count").val() };
+	
+	$.ajax({
+		url:"<%=ctxPath%>/unreadNotificationCount.pet", 
+		type:"GET",
+		data:form_data,
+		dataType:"JSON",
+		success:function(json){
+			if(json.UNREADNOTIFICATIONCOUNT > 0) {
+				
+				$("#badge").show();
+				
+				var unreadnotificationcount = json.UNREADNOTIFICATIONCOUNT;
+		    	$("#badge").empty().html(unreadnotificationcount);
+		    	
+		    	$("#count").val(unreadnotificationcount);
+			}
+			else {
+				$("#badge").hide();
+			}
+			
+		},
+		error: function(request, status, error){
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+	}); // $.ajax({
+} // function showNotificationCount(){
+
+function loopShowNotificationCount(){ // 매초마다 안읽은 알림 갯수 갱신
+			
+	showNotificationCount();
+	
+	var timeCycle = 1000;   // 1초 마다 자동 갱신
+	
+	setTimeout(function() {
+		loopShowNotificationCount();	
+		}, timeCycle);
+
+} // function loopShowNotificationCount(){
 
 </script>
 
@@ -77,20 +164,13 @@
         <li><a style="color: #ffffff;" href="<%= ctxPath %>/login.pet" >로그인</a></li>
         </c:if>
         <c:if test="${sessionScope.loginuser != null }">
-        	<c:if test="${sessionScope.loginuser.userid != 'admin@naver.com'}">
+        	<c:if test="${sessionScope.loginuser.membertype != 3}">
 				<li class="notdropdown">
 					<span class="notdropbtn">
 						<img src="<%=request.getContextPath() %>/resources/img/notification/icon.png" style="margin-left: 50%; margin-top: 20%; width: 40%;" />
-						<%-- <c:if test=""> --%>
-							<span id="badge" class="badge">5</span>
-						<%-- </c:if> --%>
+							<span id="badge" class="badge"></span>
 					</span>
-						<div class="notdropdown-content">
-							<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">게시판에 새 댓글이 있습니다.</a>
-							<a class="notmassage" style="color: #fc766b;" href="<%= ctxPath %>/index.pet">화상상담 코드가 도착했습니다.</a>
-							<hr align="center" width="100%" style="border:1px solid #fc766b; margin-top: 5%;">
-							<a class="notmassage" style="color: #fc766b; border: 0px solid; margin-top: -5%; margin-left: 35%;" href="<%= ctxPath %>/notificationList.pet">더보기</a>
-							
+						<div class="notdropdown-content" id="notSimpleList">
 						</div>
 				</li>
 			</c:if>

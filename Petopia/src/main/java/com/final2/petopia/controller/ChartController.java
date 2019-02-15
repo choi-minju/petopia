@@ -38,15 +38,6 @@ public class ChartController {
 	@Autowired
 	private AES256 aes;
 	
-	//0213 마이페이지 -진료관리 셀렉트 화면 
-	@RequestMapping(value = "/SelectMyPrescription.pet", method = { RequestMethod.GET })
-	public String requireLogin_SelectMyChart(HttpServletRequest req, HttpServletResponse res) {
-
-		
-		return "chart/SelectMyPrescription.tiles2"; // 안나옴
-
-	} // 차트 디테일 불러오기 (마이페이지에서 )
-	
 	//0209  0211 0213마이페이지 진료관리 클릭시 바로 보여지는 입력 화면 (펫정보와 진료 기록은 puid가 가장 작은 펫의 정보 )
 	@RequestMapping(value = "/InsertMyPrescription.pet", method = { RequestMethod.GET })
 	public String requireLogin_InsertMyChart(HttpServletRequest req,HttpServletResponse res) {
@@ -83,7 +74,7 @@ public class ChartController {
 				puid = service.getMinpuidbyidx(idx);
 			} // if~else
 		} // end of if~else
-		System.out.println("puid"+puid);
+		
         // 0202 반려동물의 이미지와 이름을 리스트로 보여주기(첫 칸)
         List<HashMap<String, String>> pmaplist = new ArrayList<HashMap<String, String>>();
         pmaplist = service.getPmapListbyidx(idx);
@@ -96,10 +87,12 @@ public class ChartController {
         HashMap<String,String> paramap= new HashMap<String,String>();
         paramap.put("idx", String.valueOf(idx));
         paramap.put("minpuid", String.valueOf(puid));
+        paramap.put("puid", req.getParameter("puid"));
         
         List<HashMap<String,String>> myreservedaylist = new ArrayList<HashMap<String,String>>();
         myreservedaylist =service.getmyreservedaylist(paramap);
         
+      
         //0210 0213 마이페이지에서 진료 관리 클릭시 가장 먼저 보여지는 처방전의 정보(결제 정보포함) minpuid기준으로 가져오기 
         String minruid=service.getminRuid(paramap); //가장  회원이 보유한 첫번째예약번호 알아오기 
         
@@ -108,22 +101,9 @@ public class ChartController {
         paramap2.put("idx",String.valueOf(idx));
         paramap2.put("minpuid",String.valueOf(puid));
         
-        HashMap<String,String> mypreinfo =new HashMap<String,String>();
+       /* HashMap<String,String> mypreinfo =new HashMap<String,String>();
         mypreinfo = service.getmyPreinfo(paramap2);//마이페이지 처방전에서 보여지는 정보 
-        
-        //0213 마이페이지 진료관리 처방전에 입력한 내용이 있으면 불러오기 
-        //rx_regname 알아오기(처방전 작성자 )
-        String rx_regname = service.getRx_regname(idx);
-        //String ruid =service.getruidby
-        if(rx_regname != loginuser.getName() || rx_regname==null ) {
-        	
-        }else {
-        	  //처방전 작성자 이름으로 처방전 번호 가져오기 
-            String rx_uid=service.getRx_uid(rx_regname);
-        }
-      
-        
-        req.setAttribute("mypreinfo", mypreinfo);
+*/        
         req.setAttribute("myreservedaylist", myreservedaylist);
         req.setAttribute("minpinfo", minpinfo);
         req.setAttribute("minpuid", puid);
@@ -138,7 +118,7 @@ public class ChartController {
     //0209 해당회원이 보유한 동물의 정보  펫이미지 버튼 클릭시 보여질 정보 
 	@RequestMapping(value = "/getPinfobyminpuid.pet", method = { RequestMethod.GET })
 	@ResponseBody
-	public HashMap<String,Object> getPinfobyminpuid(HttpServletRequest req) {
+	public HashMap<String,Object> requireLogin_getPinfobyminpuid(HttpServletRequest req,HttpServletResponse res) {
 
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
@@ -146,7 +126,7 @@ public class ChartController {
 		int idx = loginuser.getIdx();
 
 		String puid = req.getParameter("fk_pet_uid");
-		System.out.println("puid: "+puid);
+		
 		
 		HashMap<String,Object> pinfo = service.getPinfo(puid);
 		
@@ -157,13 +137,12 @@ public class ChartController {
 	// 0201 캘린더에 넣을 정보 리스트 불러오기
 	@RequestMapping(value = "/selectMyPrescription.pet", method = { RequestMethod.GET })
 	@ResponseBody
-	public List<HashMap<String, String>> selectMyPrescription(HttpServletRequest req) {
+	public List<HashMap<String, String>> requireLogin_selectMyPrescription(HttpServletRequest req,HttpServletResponse res) {
 
 		String fk_pet_uid = req.getParameter("fk_pet_uid");
 		List<HashMap<String, String>> callist = new ArrayList<HashMap<String, String>>();
 		callist = service.selectMyPrescription(fk_pet_uid);
 
-		System.out.println("callist: "+callist.get(0).get("reservation_date"));
 
 		return callist;
 	} //
@@ -171,27 +150,27 @@ public class ChartController {
 	//0211 0213 마이페이지에서 처방전 샐렉트창에 기본정보 불러오기
 	@RequestMapping(value = "/selectMyPreInfo.pet", method = { RequestMethod.GET })
 	@ResponseBody
-	public HashMap<String, String> selectMyPreInfo(HttpServletRequest req) {
+	public HashMap<String, String> requireLogin_selectMyPreInfo(HttpServletRequest req,HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
 
 		int idx = loginuser.getIdx();
-		String reservation_uid =req.getParameter("reservation_uid");
-		System.out.println("reservation_uid : "+reservation_uid);
+		String chart_uid =req.getParameter("chart_uid");
+		
 		
 		HashMap<String,String> mypreinfo =null;
-		mypreinfo = service.getmyPreinfobyajax(reservation_uid);//마이페이지 처방전에서 보여지는 정보 (병원차트내용)
+		mypreinfo = service.getmyPreinfobyajax(chart_uid);//마이페이지 처방전에서 보여지는 정보 (병원차트내용)
 		
-		System.out.println("mypreinfo:"+mypreinfo);
-		System.out.println("reservation_uid: "+reservation_uid);
+		
+		
 		return mypreinfo;
 	}
 	
  //0213 
 	@RequestMapping(value = "/getMediinfo.pet", method = { RequestMethod.GET })
 	@ResponseBody
-	public List<HashMap<String, String>> getMediinfo(HttpServletRequest req) {
+	public List<HashMap<String, String>> requireLogin_getMediinfo(HttpServletRequest req,HttpServletResponse res) {
 		List<HashMap<String, String>> medicineList = null;
 		
 		String cuid= req.getParameter("chart_uid");
@@ -206,9 +185,9 @@ public class ChartController {
 	
 	
 	
-	//0210 마이페이지 - 진료관리에서 일반회원이 처방전 입력하기 
+	//0210 마이페이지 - 진료관리에서 일반회원이 처방전 입력하기 (지워야함...)
 	@RequestMapping(value = "/InsertMyChartEnd.pet", method = { RequestMethod.POST })
-	public String InsertMyChartEnd(HttpServletRequest req) {
+	public String requireLogin_InsertMyChartEnd(HttpServletRequest req,HttpServletResponse res) {
 
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
@@ -263,7 +242,7 @@ public class ChartController {
 	//0210 마이페이지 진료관리에서 처방전 셀렉트 하기 
 	@RequestMapping(value = "/insertMyPrescription.pet", method = { RequestMethod.GET })
 	@ResponseBody
-	public List<HashMap<String, String>> selectmychart(HttpServletRequest req) {
+	public List<HashMap<String, String>> requireLogin_selectmychart(HttpServletRequest req,HttpServletResponse res) {
 	
 		List<HashMap<String, String>> selectmychartlist= new ArrayList<HashMap<String,String>>();
 		
@@ -272,19 +251,121 @@ public class ChartController {
 	
 	}
 	
-	//0213 마이페이지 개인진료 차트 등록하기 !!!예약없이 
+	//0213 마이페이지 개인진료 차트 창 띄우기 !!!예약없이 
 	@RequestMapping(value = "/InsertmyChartnoReserve.pet", method = { RequestMethod.GET })
 	public String requireLogin_InsertChart(HttpServletRequest req, HttpServletResponse res) {
 		
+		String puid = req.getParameter("puid");
+		//창 띄우기  펫이름 
+		HashMap<String,String> pmap=service.getpnames(puid);
 		
+		
+		req.setAttribute("pmap", pmap);
+	     req.setAttribute("puid", puid);
 		return "InsertmyChartnoReserve";
 	}
+	
+	//0213 마이페이지 개인진료 차트 등록하기 !!!예약없이 왜.... ㅠㅠㅠㅠ 
+	@RequestMapping(value = "/InsertmyChartnoReserveEnd.pet", method = { RequestMethod.POST })
+	public String requireLogin_InsertmyChartnoReserveEnd(HttpServletRequest req, HttpServletResponse res,ChartVO cvo) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		
+		int idx = loginuser.getIdx();
+		String cuid=service.getChartuid(); //차트 번호 채번하기
+		String puid = req.getParameter("puid");
+		cvo.setChart_UID(Integer.parseInt(cuid));
+		cvo.setFk_pet_UID(Integer.parseInt(puid));
+		cvo.setFk_idx(idx);
+		
+		HashMap<String,String> map =new HashMap<String,String>(); //차트 인서트시 필요하다.
+		map.put("idx", String.valueOf(idx));
+		map.put("cuid",cuid);
+		map.put("puid",puid);
+		
+		System.out.println("puid:"+puid);
+		List<HashMap<String, String>> mlist = new ArrayList<HashMap<String, String>>();
+
+		String[] rx_name = req.getParameterValues("rx_name");
+		String[] dosage = req.getParameterValues("dosage");
+		String[] dose_number = req.getParameterValues("dose_number");
+        String[] rx_cautions=req.getParameterValues("rx_cautions");
+        String[] rx_notice=req.getParameterValues("rx_notice");
+
+        String mcuid =service.getmaxcuid();
+		for (int i = 0; i < rx_name.length; i++) {
+			HashMap<String, String> map2 = new HashMap<String, String>();
+			map2.put("rx_regName", cvo.getDoc_name());
+			map2.put("chart_UID",mcuid);
+			map2.put("rx_name", rx_name[i]);
+			map2.put("dosage", dosage[i]);
+			map2.put("dose_number", dose_number[i]);
+			map2.put("rx_cautions",rx_cautions[i]);
+			map2.put("rx_notice",rx_notice[i]);
+			mlist.add(map2);
+		}
+		
+		int n = service.InsertmyChartnoReserveEnd(cvo,idx,mlist);
+		
+		String msg = "";
+		String loc = "";
+		if(n==1) {
+			msg="차트등록 성공";
+			loc="javascript:location.href='"+req.getContextPath()+"/InsertMyPrescription.pet'";
+		}else {
+			msg="차트 등록 실패";
+			loc="javascript:history.back();";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+	}
+	
+	//0214 마이페이지에서 예약없이 셀렉트 창 띄우기 
+	@RequestMapping(value = "/selectmychartup.pet", method = { RequestMethod.GET })
+	public String requireLogin_selectmychartup(HttpServletRequest req, HttpServletResponse res) {
+		
+		String cuid = req.getParameter("chart_uid");
+		
+		HashMap<String,String> cinfo =service.getmyPreinfobyajax(cuid);
+		
+		HashMap<String,String> map = new HashMap<String,String>();
+		map.put("cuid", cuid);
+		
+
+		String[] rx_name = req.getParameterValues("rx_name");
+		String[] dosage = req.getParameterValues("dosage");
+		String[] dose_number = req.getParameterValues("dose_number");
+		String[] rx_cautions=req.getParameterValues("rx_cautions"); 
+		String[] rx_notice=req.getParameterValues("rx_notice"); 
+		List<HashMap<String, String>> plist = new ArrayList<HashMap<String, String>>();
+		
+		for (int i = 0; i < plist.size(); i++) {
+			HashMap<String, String> pmap1 = new HashMap<String, String>();
+			pmap1.put("rx_name", rx_name[i]);
+			pmap1.put("dosage", dosage[i]);
+			pmap1.put("dose_number", dose_number[i]);
+			pmap1.put("rx_cautions", rx_cautions[i]);
+			pmap1.put("rx_notice", rx_notice[i]);
+			plist.add(pmap1);
+		}
+		List<HashMap<String, String>> pmap2list = new ArrayList<HashMap<String, String>>();
+		pmap2list = service.selectPre(map); 
+		
+	    req.setAttribute("cinfo", cinfo);
+	    req.setAttribute("pmap2list", pmap2list);
+		return "selectmychartup";
+	}
+	
 	
 	// 01.24 0130 0131 병원 회원 페이지에서 인서트 창띄우기
 	@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
 	public String requireLoginBiz_InsertChart(HttpServletRequest req, HttpServletResponse res) {
 
-		String ruid = req.getParameter("reservation_UID");
+		String ruid = req.getParameter("fk_reservation_UID");
 		String cuid = service.getChartuid(); // 차트번호 채번
 		
 		HashMap<String, String> chartmap = new HashMap<String, String>();
@@ -348,7 +429,6 @@ public class ChartController {
 		String[] dosage = req.getParameterValues("dosage");
 		String[] dose_number = req.getParameterValues("dose_number");
         String[] rx_cautions=req.getParameterValues("rx_cautions");
-        
         String[] rx_notice=req.getParameterValues("rx_notice");
 
 		for (int i = 0; i < rx_name.length; i++) {
@@ -384,9 +464,9 @@ public class ChartController {
 
 	} // 진료 차트 인서트 완료 (기업회원페이지에서)
 
-	// 0131 병원 페이지에서 차트 셀렉트 하기
+	// 0131 병원 페이지에서 차트 셀렉트 및 수정  하기
 	@RequestMapping(value = "/SelectChart.pet", method = { RequestMethod.GET })
-	public String requireLogin_SelectChart(HttpServletRequest req, HttpServletResponse res) {
+	public String requireLoginBiz_SelectChart(HttpServletRequest req, HttpServletResponse res) {
 
 		String ruid = req.getParameter("reservation_UID");//예약번호 알아오기 
 		String cuid = service.getChartuidbyruid(ruid); // 차트번호 알아오기
@@ -405,7 +485,8 @@ public class ChartController {
 		String[] rx_name = req.getParameterValues("rx_name");
 		String[] dosage = req.getParameterValues("dosage");
 		String[] dose_number = req.getParameterValues("dose_number");
-
+		String[] rx_cautions=req.getParameterValues("rx_cautions"); 
+		String[] rx_notice=req.getParameterValues("rx_notice"); 
 		List<HashMap<String, String>> plist = new ArrayList<HashMap<String, String>>();
 		
 		for (int i = 0; i < plist.size(); i++) {
@@ -413,8 +494,8 @@ public class ChartController {
 			pmap1.put("rx_name", rx_name[i]);
 			pmap1.put("dosage", dosage[i]);
 			pmap1.put("dose_number", dose_number[i]);
-
-			
+			pmap1.put("rx_cautions", rx_cautions[i]);
+			pmap1.put("rx_notice", rx_notice[i]);
 			plist.add(pmap1);
 		}
 		List<HashMap<String, String>> pmap2list = new ArrayList<HashMap<String, String>>();
@@ -431,40 +512,40 @@ public class ChartController {
 	} // 기업회원 페이지에서 차트불러오기
 
 	@RequestMapping(value = "/EditChart.pet", method = { RequestMethod.POST })
+	public String requireLoginBiz_EditChart(HttpServletRequest req, HttpServletResponse res,ChartVO cvo) {
 
-	public String requireLoginBiz_EditChart(ChartVO cvo,HttpServletRequest req, HttpServletResponse res) {
-
-		String ruid = req.getParameter("fk_reservation_UID");
 		String cuid = req.getParameter("chart_UID");
-
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("ruid", ruid);
+        
+		
+        HashMap<String, String> map = new HashMap<String, String>();
 		map.put("cuid", cuid);
-
-		HashMap<String, String> cmap = new HashMap<String, String>();
-		cmap = service.selectChart(map); // 차트 페이지에서 차트 내용 셀렉트
-
+        
+		cvo.setChart_UID(Integer.parseInt(cuid));
+		
+		String[] rx_uid = req.getParameterValues("rx_uid");
 		String[] rx_name = req.getParameterValues("rx_name");
 		String[] dosage = req.getParameterValues("dosage");
 		String[] dose_number = req.getParameterValues("dose_number");
-
+        String[] rx_cautions =req.getParameterValues("rx_cautions");
+        String[] rx_notice=req.getParameterValues("rx_notice");
 		List<HashMap<String, String>> plist = new ArrayList<HashMap<String, String>>();
 		
-		for (int i = 0; i < plist.size(); i++) {
+		for (int i = 0; i < rx_name.length; i++) {
 			HashMap<String, String> pmap1 = new HashMap<String, String>();
 			pmap1.put("rx_name", rx_name[i]);
 			pmap1.put("dosage", dosage[i]);
 			pmap1.put("dose_number", dose_number[i]);
-
+			pmap1.put("rx_cautions",rx_cautions[i]);
+			pmap1.put("rx_notice",rx_notice[i]);
+			pmap1.put("rx_uid", rx_uid[i]);
 			pmap1.put("cuid", cuid);
+			
 			plist.add(pmap1);
 		}
-		
+		System.out.println("plist:"+plist);
 		int n = service.Updatechart(map,cvo,plist);
-		String cautions = req.getParameter("cautions");
-		String chart_contents=req.getParameter("chart_contents");
-		System.out.println("cautions: "+cautions);
-		System.out.println("chart_contents: "+chart_contents);
+		
+		
 		String msg = "";
 		String loc = "";
 		
@@ -486,7 +567,7 @@ public class ChartController {
 
 	//0209
 	@RequestMapping(value = "/SelectReserveChart.pet", method = { RequestMethod.GET })
-	public String SelectReserveChart(HttpServletRequest req) {
+	public String requireLoginBiz_SelectReserveChart(HttpServletRequest req,HttpServletResponse res) {
 
 		//고객의 예약 /및 진료 날짜  가져오기 
 		 List<HashMap<String,String>> daylist =new ArrayList<HashMap<String,String>>();
@@ -538,7 +619,7 @@ public class ChartController {
 	 */
 //   #예약목록
 	@RequestMapping(value = "/bizReservationList.pet", method = { RequestMethod.GET })
-	public String requireLogin_biz_rvchartList(HttpServletRequest req, HttpServletResponse res) {
+	public String requireLoginBiz_biz_rvchartList(HttpServletRequest req, HttpServletResponse res) {
 		
 		List<HashMap<String, String>> rvchartList = null;
 		String str_currentShowPageNo = req.getParameter("currentShowPageNo");
