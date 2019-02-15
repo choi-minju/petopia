@@ -93,14 +93,22 @@ public interface InterChartService {
 	//0210 예약날짜 및 시간과 맞는 예약번호 가져오기 
 	String getruidbyajax(String reservedate);
 
-	//0213 마이페이지 진료관리에서 처방전 작성자 이름 가져오기
-	String getRx_regname(int idx);
-
-	//0213 ㄴ처방전 작성자 이름으로 처방전 번호 가져오기 
-	String getRx_uid(String rx_regname);
-
 	//0213 마이페이지 진료관리 차트 , 결제정보가 없는 
 	HashMap<String, String> getmyPreinfobyajaxnopay(HashMap<String, String> paramap2);
+
+	//0213 마이페이지에서 예약정보가 없는 개인 차트 인서트 
+	int InsertmyChartnoReserveEnd(ChartVO cvo, int idx, List<HashMap<String, String>> mlist);
+
+	//0213 마이페이지에서 예약없는 차트 테이블에 cuid인서트후 처방전 테이블에 들어갈 cuid 구하기 
+	String getmaxcuid();
+
+	//0214 펫이름 
+	HashMap<String, String> getpnames(String puid);
+
+
+	
+
+	
 
 	
 	

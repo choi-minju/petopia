@@ -132,4 +132,34 @@ public class NotificationVO {
 		
 	}
 	
+	public String getShowNot_message() {
+		
+		String result = "";
+		
+		switch (not_type) {
+		case "0":
+			result = "";
+			break;
+		case "1":
+			result = "";
+			break;
+		case "2":
+			result = "";
+			break;
+		case "3":
+			result = "";
+			break;
+		case "4":
+			result = "";
+			break;
+		case "5":
+			result = "";
+			break;
+		default:
+			break;
+		}
+		
+		return result;
+	}
+	
 }

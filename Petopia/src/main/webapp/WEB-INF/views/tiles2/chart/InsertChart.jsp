@@ -85,9 +85,9 @@
 		
 	});// end of $(document).ready()----------------------
 </script>
-<div class="container"> 
-<Form name="chartFrm" 
-  style="margin-left:18%; border:0px solid black;border-radius:10px;width:70%; background-color: #eaebed">
+<div class="container" style=" border:0px solid black;border-radius:10px;margin-bottom:1%; background-color: #eaebed"> 
+<Form name="chartFrm" >
+  
 <div class="row">  
    
    <div class="col-md-12 ">
