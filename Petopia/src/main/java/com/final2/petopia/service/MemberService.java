@@ -112,7 +112,6 @@ public class MemberService implements InterMemberService {
 	@Override
 	public MemberVO loginSelectByUseridPwd(HashMap<String, String> loginMap) {
 		MemberVO loginuser = dao.loginSelectByUseridPwd(loginMap);
-		
 		if(loginuser == null) {
 			return null;
 		} else if(loginuser.getLastlogindategap() >= 12) {

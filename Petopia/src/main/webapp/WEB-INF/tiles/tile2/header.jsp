@@ -154,6 +154,9 @@
 			type:"GET",
 			data:form_data,
 			dataType:"JSON",
+			beforeSend : function(xmlHttpRequest){
+				xmlHttpRequest.setRequestHeader("AJAX", "true");
+			},
 			success:function(json){
 				if(json.UNREADNOTIFICATIONCOUNT > 0) {
 					
@@ -170,7 +173,13 @@
 				
 			},
 			error: function(request, status, error){
-			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				if(request.status==400){
+					location.href="<%=ctxPath%>/login.pet";
+				}
+				else {
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+				
 			}
 		}); // $.ajax({
 	} // function showNotificationCount(){
