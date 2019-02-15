@@ -227,6 +227,11 @@ public class MemberController {
 			msg = "로그인 한 지 1년이 지나서 휴면계정이 되었습니다. 관리자에게 문의 바랍니다.";
 			loc = "javascript:history.back();";
 		} else {
+			try {
+				loginuser.setPhone(aes.decrypt(loginuser.getPhone()));
+			} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+				e.printStackTrace();
+			}
 			HttpSession session = req.getSession();
 			session.setAttribute("loginuser", loginuser);
 			

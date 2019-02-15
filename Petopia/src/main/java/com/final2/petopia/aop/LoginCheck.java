@@ -41,21 +41,25 @@ public class LoginCheck {
 		String loc = "";
 		if(loginuser==null) {
 			try {
-//			2) 로그인 하지 않은 경우 로그인 페이지로 이동
-				msg="로그인 후 이용 가능 합니다.";
-				loc=req.getContextPath()+"/login.pet";
-				
-				req.setAttribute("msg", msg);
-				req.setAttribute("loc", loc);
-//			3) 로그인 성공 후 로그인 전 페이지로 돌아가는 작업; req에 담겨있는 add.action URL 가져와서 세션에 저장
-				String url = MyUtil.getCurrentURL(req);
-				session.setAttribute("goBackURL", url);
-				
-//			4) 메시지와 함께 디스패쳐로 뷰 페이지로 보내기
-				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/msg.jsp");
-				dispatcher.forward(req, res);
-				
-				return;
+				String ajaxCall = (String) req.getHeader("AJAX");
+				if("true".equals(ajaxCall)){
+					res.sendError(901);
+				}else{
+					
+					msg="로그인 후 이용 가능 합니다.";
+					loc=req.getContextPath()+"/login.pet";
+					
+					req.setAttribute("msg", msg);
+					req.setAttribute("loc", loc);
+					
+					String url = MyUtil.getCurrentURL(req);
+					session.setAttribute("goBackURL", url);
+					
+					RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/views/msg.jsp");
+					dispatcher.forward(req, res);
+					
+					return;
+				}
 			} catch (ServletException | IOException e) {
 				e.printStackTrace();
 			}

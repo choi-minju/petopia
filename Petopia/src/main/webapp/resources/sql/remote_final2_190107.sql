@@ -40,34 +40,91 @@ select * from user_sequences;
 select * from user_constraints;
 
 -- 테이블 삭제 명령문
-drop table schedule purge;
+drop table member_level purge;
+drop table member purge;
+drop table login_log purge;
+drop table biz_info purge;
+drop table biz_info_img purge;
+drop table recommend_tag purge;
+drop table review_comment purge;
 drop table reservation purge;
+drop table pet_info purge;
+drop table vaccine purge;
+drop table shots purge;
+drop table pet_list purge;
+drop table petcare purge;
+drop table caretype purge;
+drop table chart purge;
 drop table payment purge;
 drop table deposit purge;
 drop table refund purge;
+drop table notification purge;
 drop table withdraw purge;
 drop table dep_use purge;
+drop table prescription purge;
+drop table video_advice purge;
+drop table consult purge;
+drop table consult_comment purge;
+drop table petcare_img purge;
+drop table board_group purge;
+drop table board_post purge;
+drop table board_comment purge;
+
+drop table PETWEIGHT purge;
+drop table RESERVATION purge;
+drop table SCHEDULE purge;
+drop table REVIEW purge;
+drop table HAVE_TAG purge;
+drop table RECOMMEND_TAG purge;
+drop table DOCTORS purge;
+drop table BIZ_INFO purge;
+drop table MEMBER purge;
 
 -- 시퀀스 삭제 명령문
-drop sequence seq_schedule_schedule_UID;
-drop sequence SEQ_RESERVATION_RESERV_UID;
-drop sequence seq_payment_schedule_UID;
-drop sequence seq_deposit_deposit_UID;
+drop sequence seq_member;
+drop sequence biz_info_img_seq;
+drop sequence seq_doctors_UID;
+drop sequence seq_recommend_tag_UID;
+drop sequence hava_tag;
+drop sequence review;
+drop sequence seq_review_UID;
+drop sequence seq_rc_UID;
+drop sequence seq_schedule_UID;
+drop sequence seq_reservation_UID;
+drop sequence seq_pet_info_UID;
+drop sequence seq_vaccine_UID;
+drop sequence seq_shots_UID;
+drop sequence seq_petcare_UID;
+drop sequence seq_caretype_UID;
+drop sequence chart_seq;
+drop sequence seq_payment_UID;
+drop sequence seq_deposit_UID;
 drop sequence seq_refund_refund_UID;
-drop sequence seq_withdraw_withdraw_UID;
-drop sequence seq_dep_use_dep_use_UID;
+drop sequence seq_notification_UID;
+drop sequence seq_withdraw_UID;
+drop sequence seq_dep_use_UID;
+drop sequence seq_prescription_UID;
+drop sequence seq_video_advice_UID;
+drop sequence seq_consult_UID;
+drop sequence seq_consult_comment;
+drop sequence petcare_img_seq;
+drop sequence board_group_seq;
+drop sequence seq_board_post;
+drop sequence board_comment_seq;
+drop sequence comment_seq;
+drop sequence SEQ_PETWEIGHT_UID;
 
 -------------------------------------------------------------------------------
-CREATE TABLE member_level (
-   level_UID      NUMBER   NOT NULL, -- 등급번호
-   level_name     VARCHAR2(20) NOT NULL, -- 등급명
-   level_limit    NUMBER   NOT NULL, -- 등급조건
-   level_contents VARCHAR2(100) NOT NULL  -- 등급설명
-    
-    ,CONSTRAINT PK_level PRIMARY KEY (level_UID)
-);
-
-drop table member_level purge;
+--CREATE TABLE member_level (
+--   level_UID      NUMBER   NOT NULL, -- 등급번호
+--   level_name     VARCHAR2(20) NOT NULL, -- 등급명
+--   level_limit    NUMBER   NOT NULL, -- 등급조건
+--   level_contents VARCHAR2(100) NOT NULL  -- 등급설명
+--    
+--    ,CONSTRAINT PK_level PRIMARY KEY (level_UID)
+--);
+--
+--drop table member_level purge;
 
 -- 회원
 CREATE TABLE member (
@@ -99,7 +156,6 @@ add fileName   VARCHAR2(100)  NOT NULL;
 ALTER TABLE member DROP COLUMN fk_level_UID;
 
 
-
 CREATE TABLE login_log (
    idx           NUMBER   NOT NULL, -- 회원고유번호
    fk_userid     VARCHAR2(255) NOT NULL, -- 이메일아이디
@@ -112,8 +168,6 @@ CREATE TABLE login_log (
     , CONSTRAINT FK_member_TO_login_log FOREIGN KEY (idx) REFERENCES member (idx)
 );
 
-
-
 -- 회원 시퀀스
 -- drop sequence seq_member;
 create sequence seq_member
@@ -124,7 +178,6 @@ nominvalue
 nocycle
 nocache;
 
-        
 -- 기업회원상세
 CREATE TABLE biz_info (
    idx_biz    NUMBER    NOT NULL, -- 병원/약국고유번호
@@ -258,9 +311,58 @@ nominvalue
 nocycle
 nocache;
 
+-- 태그 insert
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시설상태', '깨끗함');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시설상태', '세련됨');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시설상태', '동물친화적');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시설상태', '대형병원');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시설상태', '종합병원');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시설상태', '편안한');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시설상태', '무선인터넷');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시설상태', '주차');
+
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '서비스', '친절한');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '서비스', '세심한');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '서비스', '잘봐주는');
+
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '가격', '가성비');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '가격', '가심비');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '가격', '프리미엄');
+
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '슬개골전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '노령전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '중성화수술전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '심장전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '재활전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '한방전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '안과전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '암전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '치아전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '강아지전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '고양이전문');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '전문분야', '소동물전문');
+
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시간', '야간');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시간', '주말');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시간', '24시간');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '시간', '공휴일');
+
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '편의시설', '호텔');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '편의시설', '간식');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '편의시설', '용품');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '편의시설', '미용');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '편의시설', '분양');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '편의시설', '동물카페');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '편의시설', '훈련');
+insert into recommend_tag(tag_UID, tag_type, tag_name) values(seq_recommend_tag_UID.nextval, '편의시설', '건강검진센터');
+
+commit;
+
+-- 병원 또는 일반 회원 보유 태그
+drop table have_tag purge;
 CREATE TABLE have_tag (
-   fk_tag_UID  NUMBER   NOT NULL, -- 태그번호
-   fk_tag_name VARCHAR2(100) NOT NULL,  -- 태그이름
+    fk_tag_UID  NUMBER   NOT NULL, -- 태그번호
+    fk_tag_name VARCHAR2(100) NOT NULL,  -- 태그이름
     fk_idx      NUMBER   NOT NULL -- 회원고유번호
 );
 
@@ -276,7 +378,6 @@ ALTER TABLE have_tag
 ADD CONSTRAINT FK_have_tag_ide FOREIGN KEY(fk_idx) 
 REFERENCES member(idx);
 
-
 -- 리뷰
 CREATE TABLE review (
 	review_UID         NUMBER   NOT NULL, -- 리뷰코드
@@ -287,8 +388,8 @@ CREATE TABLE review (
 	fk_userid          VARCHAR2(255) NOT NULL, -- 작성자아이디
 	fk_nickname        VARCHAR2(100) NOT NULL, -- 작성자닉네임
 	rv_contents        CLOB     NOT NULL, -- 한줄리뷰내용
-	rv_status          NUMBER(1)   NOT NULL, -- 리뷰상태
-	rv_blind           NUMBER(1)   NOT NULL, -- 리뷰블라인드사유 0 없음 1 욕설 2 기업회원요청 3 신고누적 4 기타
+	rv_status          NUMBER(1) default 1  NOT NULL, -- 리뷰상태
+	rv_blind           NUMBER(1) default 0 NOT NULL, -- 리뷰블라인드사유 0 없음 1 욕설 2 기업회원요청 3 신고누적 4 기타
 	rv_writeDate       date     default sysdate NOT NULL  -- 리뷰날짜
     ,CONSTRAINT PK_review PRIMARY KEY (review_UID)
     ,CONSTRAINT ck_review_status -- 리뷰상태 체크제약
@@ -482,6 +583,27 @@ nominvalue
 nocycle
 nocache;
 
+-- 케어타입 insert
+insert into caretype(caretype_UID, caretype_name, caretype_info)
+values(seq_caretype_UID.nextval, '식사', '<p>각 항목 작성 안내사항<br/></br>[식사의 경우]<br/>블라블라</p>');
+
+insert into caretype(caretype_UID, caretype_name, caretype_info)
+values(seq_caretype_UID.nextval, '용변', '<p>각 항목 작성 안내사항<br/></br>[용변 경우]<br/>블라블라</p>');
+
+insert into caretype(caretype_UID, caretype_name, caretype_info)
+values(seq_caretype_UID.nextval, '양치', '<p>각 항목 작성 안내사항<br/></br>[양치 경우]<br/>블라블라</p>');
+
+insert into caretype(caretype_UID, caretype_name, caretype_info)
+values(seq_caretype_UID.nextval, '목욕', '<p>각 항목 작성 안내사항<br/></br>[목욕 경우]<br/>블라블라</p>');
+
+insert into caretype(caretype_UID, caretype_name, caretype_info)
+values(seq_caretype_UID.nextval, '달력', '<p>각 항목 작성 안내사항<br/></br>[목욕 경우]<br/>블라블라</p>');
+
+insert into caretype(caretype_UID, caretype_name, caretype_info)
+values(seq_caretype_UID.nextval, '메모', '<p>각 항목 작성 안내사항<br/></br>[목욕 경우]<br/>블라블라</p>');
+
+commit;
+
 -- *** 반려동물케어
 -- drop table petcare purge;
 CREATE TABLE petcare (
@@ -525,7 +647,7 @@ create table petweight
 ,petweight_past     NUMBER  NOT NULL    -- 반려동물 몸무게
 ,petweight_targeted NUMBER              -- 반려동물 목표 몸무게d
 ,petweight_date     DATE    NOT NULL    -- 등록일자
-)
+);
 /*	
     [19-02-11] 반려동물 목표체중 컬럼 추가 
     alter table petweight
@@ -541,47 +663,47 @@ nominvalue
 nocycle;
 
 -- 백신
-CREATE TABLE vaccine (
-	vaccine_UID  NUMBER    NOT NULL, -- 백신코드
-	vaccine_name VARCHAR2(100)  NOT NULL, -- 백신명
-	dog          NUMBER(1) NOT NULL, -- 강아지
-	cat          NUMBER(1) NOT NULL, -- 고양이
-	smallani     NUMBER(1) NOT NULL  -- 소동물
-    ,CONSTRAINT PK_vaccine -- 백신 기본키
-		PRIMARY KEY (vaccine_UID)
-    ,CONSTRAINT ck_vaccine_dog -- 강아지 체크제약
-		check(dog in(1,0))
-    ,CONSTRAINT ck_vaccine_cat -- 고양이 체크제약
-		check(cat in(1,0))
-    ,CONSTRAINT ck_vaccine_smallani -- 소동물 체크제약
-		check(smallani in(1,0))
-);
-
-create sequence seq_vaccine_UID  --백신
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache;
+--CREATE TABLE vaccine (
+--	vaccine_UID  NUMBER    NOT NULL, -- 백신코드
+--	vaccine_name VARCHAR2(100)  NOT NULL, -- 백신명
+--	dog          NUMBER(1) NOT NULL, -- 강아지
+--	cat          NUMBER(1) NOT NULL, -- 고양이
+--	smallani     NUMBER(1) NOT NULL  -- 소동물
+--    ,CONSTRAINT PK_vaccine -- 백신 기본키
+--		PRIMARY KEY (vaccine_UID)
+--    ,CONSTRAINT ck_vaccine_dog -- 강아지 체크제약
+--		check(dog in(1,0))
+--    ,CONSTRAINT ck_vaccine_cat -- 고양이 체크제약
+--		check(cat in(1,0))
+--    ,CONSTRAINT ck_vaccine_smallani -- 소동물 체크제약
+--		check(smallani in(1,0))
+--);
+--
+--create sequence seq_vaccine_UID  --백신
+--start with 1
+--increment by 1
+--nomaxvalue
+--nominvalue
+--nocycle
+--nocache;
 
 -- 접종내용
-CREATE TABLE shots (
-	shots_UID      NUMBER   NOT NULL, -- 접종코드
-	fk_pet_UID     NUMBER   NOT NULL, -- 반려동물코드
-	fk_vaccine_UID NUMBER   NOT NULL, -- 백신코드
-	vaccine_name   VARCHAR2(100) NOT NULL  -- 백신명
-    ,CONSTRAINT PK_shots -- 접종내용 기본키
-		PRIMARY KEY (shots_UID)
-);
-        
-create sequence seq_shots_UID  --접종
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache;
+--CREATE TABLE shots (
+--	shots_UID      NUMBER   NOT NULL, -- 접종코드
+--	fk_pet_UID     NUMBER   NOT NULL, -- 반려동물코드
+--	fk_vaccine_UID NUMBER   NOT NULL, -- 백신코드
+--	vaccine_name   VARCHAR2(100) NOT NULL  -- 백신명
+--    ,CONSTRAINT PK_shots -- 접종내용 기본키
+--		PRIMARY KEY (shots_UID)
+--);
+--        
+--create sequence seq_shots_UID  --접종
+--start with 1
+--increment by 1
+--nomaxvalue
+--nominvalue
+--nocycle
+--nocache;
 
 select fk_idx_biz from reservation group by fk_idx_biz;
 
@@ -680,30 +802,30 @@ nocycle
 nocache; 
 
 -- 환불
-CREATE TABLE refund (
-	refund_UID     NUMBER NOT NULL, -- 환불코드
-	fk_payment_UID NUMBER   NOT NULL, -- 결제코드
-	fk_idx         NUMBER   NOT NULL, -- 환불받을회원번호
-	fk_idx_biz     NUMBER   NOT NULL, -- 병원번호
-	refund_DATE    DATE     default sysdate NOT NULL, -- 환불신청일자
-	add_DATE       DATE     NOT NULL, -- 사용일자
-	refund_reason  VARCHAR2(255) NOT NULL, -- 환불사유
-	refund_money   NUMBER   NOT NULL, -- 환불금액
-	refund_status  NUMBER(1)   default 0 NOT NULL  -- 승인여부 1확인 0미확인
-    ,CONSTRAINT PK_refund -- 환불 기본키
-		PRIMARY KEY (refund_UID)
-    ,CONSTRAINT CK_refund_status -- 승인여부 체크제약
-		check(refund_status in(0,1))
-);
-
--- 환불 
-create sequence seq_refund_refund_UID
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache; 
+--CREATE TABLE refund (
+--	refund_UID     NUMBER NOT NULL, -- 환불코드
+--	fk_payment_UID NUMBER   NOT NULL, -- 결제코드
+--	fk_idx         NUMBER   NOT NULL, -- 환불받을회원번호
+--	fk_idx_biz     NUMBER   NOT NULL, -- 병원번호
+--	refund_DATE    DATE     default sysdate NOT NULL, -- 환불신청일자
+--	add_DATE       DATE     NOT NULL, -- 사용일자
+--	refund_reason  VARCHAR2(255) NOT NULL, -- 환불사유
+--	refund_money   NUMBER   NOT NULL, -- 환불금액
+--	refund_status  NUMBER(1)   default 0 NOT NULL  -- 승인여부 1확인 0미확인
+--    ,CONSTRAINT PK_refund -- 환불 기본키
+--		PRIMARY KEY (refund_UID)
+--    ,CONSTRAINT CK_refund_status -- 승인여부 체크제약
+--		check(refund_status in(0,1))
+--);
+--
+---- 환불 
+--create sequence seq_refund_refund_UID
+--start with 1
+--increment by 1
+--nomaxvalue
+--nominvalue
+--nocycle
+--nocache; 
 
 select *
 from notification;
@@ -739,7 +861,7 @@ alter table notification
 add not_time DATE default sysdate NOT NULL; -- 예약알림 예정시간
 
 alter table notification
-add not_URL VARCHAR2(200) default 'http://localhost:9090/petopia/alarm.pet' NOT NULL; -- 이동url
+add not_URL VARCHAR2(200) default 'http://localhost:9090/petopia/notificationList.pet' NOT NULL; -- 이동url
 
 -- 190130
 alter table notification
@@ -758,47 +880,46 @@ nocycle
 nocache;
 
 -- 예치금출금
-CREATE TABLE withdraw (
-	withdraw_UID    NUMBER NOT NULL, -- 출금코드
-	fk_deposit_UID  NUMBER NOT NULL, -- 예치금코드
-	withdraw_money  NUMBER NOT NULL, -- 출금요청금액
-	withdraw_status NUMBER(1) default 0 NOT NULL  -- 출금상태 1 완료 / 0 대기
-    ,CONSTRAINT PK_withdraw -- 예치금출금 기본키
-		PRIMARY KEY (withdraw_UID)
-    ,CONSTRAINT CK_withdraw_status -- 출금상태 체크제약
-		check(withdraw_status in(0,1))
-);
-
--- 예치금출금 
-create sequence seq_withdraw_UID
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache; 
-
+--CREATE TABLE withdraw (
+--	withdraw_UID    NUMBER NOT NULL, -- 출금코드
+--	fk_deposit_UID  NUMBER NOT NULL, -- 예치금코드
+--	withdraw_money  NUMBER NOT NULL, -- 출금요청금액
+--	withdraw_status NUMBER(1) default 0 NOT NULL  -- 출금상태 1 완료 / 0 대기
+--    ,CONSTRAINT PK_withdraw -- 예치금출금 기본키
+--		PRIMARY KEY (withdraw_UID)
+--    ,CONSTRAINT CK_withdraw_status -- 출금상태 체크제약
+--		check(withdraw_status in(0,1))
+--);
+--
+---- 예치금출금 
+--create sequence seq_withdraw_UID
+--start with 1
+--increment by 1
+--nomaxvalue
+--nominvalue
+--nocycle
+--nocache; 
 
 -- 예치금 사용내역
-CREATE TABLE dep_use (
-	dep_use_UID        NUMBER NOT NULL, -- 사용내역코드
-	fk_deposit_UID     NUMBER NOT NULL,     -- 예치금코드
-	fk_payment_UID     NUMBER NOT NULL,     -- 결제코드
-	fk_reservation_UID NUMBER NOT NULL,     -- 예약코드
-	depu_money         NUMBER NOT NULL,     -- 사용금액
-	deposit_usedate    DATE   default sysdate NOT NULL  -- 사용일자
-    ,CONSTRAINT PK_dep_use -- 예치금 사용내역 기본키
-		PRIMARY KEY (dep_use_UID)
-);
-
--- 사용내역 
-create sequence seq_dep_use_UID
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache; 
+--CREATE TABLE dep_use (
+--	dep_use_UID        NUMBER NOT NULL, -- 사용내역코드
+--	fk_deposit_UID     NUMBER NOT NULL,     -- 예치금코드
+--	fk_payment_UID     NUMBER NOT NULL,     -- 결제코드
+--	fk_reservation_UID NUMBER NOT NULL,     -- 예약코드
+--	depu_money         NUMBER NOT NULL,     -- 사용금액
+--	deposit_usedate    DATE   default sysdate NOT NULL  -- 사용일자
+--    ,CONSTRAINT PK_dep_use -- 예치금 사용내역 기본키
+--		PRIMARY KEY (dep_use_UID)
+--);
+--
+---- 사용내역 
+--create sequence seq_dep_use_UID
+--start with 1
+--increment by 1
+--nomaxvalue
+--nominvalue
+--nocycle
+--nocache; 
 
 -- 처방전
 CREATE TABLE prescription (
@@ -1179,48 +1300,48 @@ ALTER TABLE pet_info
 		);
 
 -- 접종내용
-ALTER TABLE shots
-	ADD
-		CONSTRAINT FK_vaccine_TO_shots -- 백신 -> 접종내용
-		FOREIGN KEY (
-			fk_vaccine_UID -- 백신코드
-		)
-		REFERENCES vaccine ( -- 백신
-			vaccine_UID -- 백신코드
-		);
+--ALTER TABLE shots
+--	ADD
+--		CONSTRAINT FK_vaccine_TO_shots -- 백신 -> 접종내용
+--		FOREIGN KEY (
+--			fk_vaccine_UID -- 백신코드
+--		)
+--		REFERENCES vaccine ( -- 백신
+--			vaccine_UID -- 백신코드
+--		);
 
 -- 접종내용
-ALTER TABLE shots
-	ADD
-		CONSTRAINT FK_pet_info_TO_shots -- 반려동물정보 -> 접종내용
-		FOREIGN KEY (
-			fk_pet_UID -- 반려동물코드
-		)
-		REFERENCES pet_info ( -- 반려동물정보
-			pet_UID -- 반려동물코드
-		);
+--ALTER TABLE shots
+--	ADD
+--		CONSTRAINT FK_pet_info_TO_shots -- 반려동물정보 -> 접종내용
+--		FOREIGN KEY (
+--			fk_pet_UID -- 반려동물코드
+--		)
+--		REFERENCES pet_info ( -- 반려동물정보
+--			pet_UID -- 반려동물코드
+--		);
 
 -- 반려동물목록
-ALTER TABLE pet_list
-	ADD
-		CONSTRAINT FK_member_TO_pet_list -- 회원 -> 반려동물목록
-		FOREIGN KEY (
-			fk_idx -- 회원고유번호
-		)
-		REFERENCES member ( -- 회원
-			idx -- 회원고유번호
-		);
+--ALTER TABLE pet_list
+--	ADD
+--		CONSTRAINT FK_member_TO_pet_list -- 회원 -> 반려동물목록
+--		FOREIGN KEY (
+--			fk_idx -- 회원고유번호
+--		)
+--		REFERENCES member ( -- 회원
+--			idx -- 회원고유번호
+--		);
 
 -- 반려동물목록
-ALTER TABLE pet_list
-	ADD
-		CONSTRAINT FK_pet_info_TO_pet_list -- 반려동물정보 -> 반려동물목록
-		FOREIGN KEY (
-			fk_pet_UID -- 반려동물코드
-		)
-		REFERENCES pet_info ( -- 반려동물정보
-			pet_UID -- 반려동물코드
-		);
+--ALTER TABLE pet_list
+--	ADD
+--		CONSTRAINT FK_pet_info_TO_pet_list -- 반려동물정보 -> 반려동물목록
+--		FOREIGN KEY (
+--			fk_pet_UID -- 반려동물코드
+--		)
+--		REFERENCES pet_info ( -- 반려동물정보
+--			pet_UID -- 반려동물코드
+--		);
 
 -- 반려동물케어
 ALTER TABLE petcare
@@ -1289,15 +1410,15 @@ ALTER TABLE deposit
 		);
 
 -- 환불
-ALTER TABLE refund
-	ADD
-		CONSTRAINT FK_payment_TO_refund -- 예치금결제 -> 환불
-		FOREIGN KEY (
-			fk_payment_UID -- 결제코드
-		)
-		REFERENCES payment ( -- 예치금결제
-			payment_UID -- 결제코드
-		);
+--ALTER TABLE refund
+--	ADD
+--		CONSTRAINT FK_payment_TO_refund -- 예치금결제 -> 환불
+--		FOREIGN KEY (
+--			fk_payment_UID -- 결제코드
+--		)
+--		REFERENCES payment ( -- 예치금결제
+--			payment_UID -- 결제코드
+--		);
 
 
 -- 1:1상담
@@ -1323,48 +1444,48 @@ ALTER TABLE notification
 		);
 
 -- 예치금출금
-ALTER TABLE withdraw
-	ADD
-		CONSTRAINT FK_deposit_TO_withdraw -- 예치금 -> 예치금출금
-		FOREIGN KEY (
-			fk_deposit_UID -- 예치금코드
-		)
-		REFERENCES deposit ( -- 예치금
-			deposit_UID -- 예치금코드
-		);
+--ALTER TABLE withdraw
+--	ADD
+--		CONSTRAINT FK_deposit_TO_withdraw -- 예치금 -> 예치금출금
+--		FOREIGN KEY (
+--			fk_deposit_UID -- 예치금코드
+--		)
+--		REFERENCES deposit ( -- 예치금
+--			deposit_UID -- 예치금코드
+--		);
 
 -- 예치금 사용내역
-ALTER TABLE dep_use
-	ADD
-		CONSTRAINT FK_deposit_TO_dep_use -- 예치금 -> 예치금 사용내역
-		FOREIGN KEY (
-			fk_deposit_UID -- 예치금코드
-		)
-		REFERENCES deposit ( -- 예치금
-			deposit_UID -- 예치금코드
-		);
+--ALTER TABLE dep_use
+--	ADD
+--		CONSTRAINT FK_deposit_TO_dep_use -- 예치금 -> 예치금 사용내역
+--		FOREIGN KEY (
+--			fk_deposit_UID -- 예치금코드
+--		)
+--		REFERENCES deposit ( -- 예치금
+--			deposit_UID -- 예치금코드
+--		);
 
 -- 예치금 사용내역
-ALTER TABLE dep_use
-	ADD
-		CONSTRAINT FK_payment_TO_dep_use -- 예치금결제 -> 예치금 사용내역
-		FOREIGN KEY (
-			fk_payment_UID -- 결제코드
-		)
-		REFERENCES payment ( -- 예치금결제
-			payment_UID -- 결제코드
-		);
+--ALTER TABLE dep_use
+--	ADD
+--		CONSTRAINT FK_payment_TO_dep_use -- 예치금결제 -> 예치금 사용내역
+--		FOREIGN KEY (
+--			fk_payment_UID -- 결제코드
+--		)
+--		REFERENCES payment ( -- 예치금결제
+--			payment_UID -- 결제코드
+--		);
 
 -- 예치금 사용내역
-ALTER TABLE dep_use
-	ADD
-		CONSTRAINT FK_reservation_TO_dep_use -- 예약 -> 예치금 사용내역
-		FOREIGN KEY (
-			fk_reservation_UID -- 예약코드
-		)
-		REFERENCES reservation ( -- 예약
-			reservation_UID -- 예약코드
-		);
+--ALTER TABLE dep_use
+--	ADD
+--		CONSTRAINT FK_reservation_TO_dep_use -- 예약 -> 예치금 사용내역
+--		FOREIGN KEY (
+--			fk_reservation_UID -- 예약코드
+--		)
+--		REFERENCES reservation ( -- 예약
+--			reservation_UID -- 예약코드
+--		);
 
 -- 처방전
 ALTER TABLE prescription
@@ -1519,37 +1640,37 @@ ALTER TABLE board_comment
 		);
 
 -- 유기동물후원이미지
-ALTER TABLE funding_img
-	ADD
-		CONSTRAINT FK_funding_TO_funding_img -- 유기동물후원 -> 유기동물후원이미지
-		FOREIGN KEY (
-			fk_fd_id -- 후원코드
-		)
-		REFERENCES funding ( -- 유기동물후원
-			fd_id -- 후원코드
-		);
+--ALTER TABLE funding_img
+--	ADD
+--		CONSTRAINT FK_funding_TO_funding_img -- 유기동물후원 -> 유기동물후원이미지
+--		FOREIGN KEY (
+--			fk_fd_id -- 후원코드
+--		)
+--		REFERENCES funding ( -- 유기동물후원
+--			fd_id -- 후원코드
+--		);
 
 -- 펀딩결제
-ALTER TABLE funding_payment
-	ADD
-		CONSTRAINT FK_funding_TO_funding_payment -- 유기동물후원 -> 펀딩결제
-		FOREIGN KEY (
-			fk_fd_id -- 후원코드
-		)
-		REFERENCES funding ( -- 유기동물후원
-			fd_id -- 후원코드
-		);
+--ALTER TABLE funding_payment
+--	ADD
+--		CONSTRAINT FK_funding_TO_funding_payment -- 유기동물후원 -> 펀딩결제
+--		FOREIGN KEY (
+--			fk_fd_id -- 후원코드
+--		)
+--		REFERENCES funding ( -- 유기동물후원
+--			fd_id -- 후원코드
+--		);
 
 -- 펀딩환불
-ALTER TABLE funding_refund
-	ADD
-		CONSTRAINT FK_funding_payment_TO_funding_refund -- 펀딩결제 -> 펀딩환불
-		FOREIGN KEY (
-			fk_payment_UID -- 결제코드
-		)
-		REFERENCES funding_payment ( -- 펀딩결제
-			payment_UID -- 결제코드
-		);
+--ALTER TABLE funding_refund
+--	ADD
+--		CONSTRAINT FK_funding_payment_TO_funding_refund -- 펀딩결제 -> 펀딩환불
+--		FOREIGN KEY (
+--			fk_payment_UID -- 결제코드
+--		)
+--		REFERENCES funding_payment ( -- 펀딩결제
+--			payment_UID -- 결제코드
+--		);
         
 
 -- 관리자 회원 리스트 프로시저(검색X 정렬X) ++ [190125] 프로시저 where절 추가
@@ -1766,8 +1887,8 @@ begin
         );
 end;
 
-insert into caretype(caretype_UID, caretype_name, caretype_info)
-values(seq_caretype_UID.nextval, '식사', '<p>각 항목 작성 안내사항<br/>[식사의 경우]</p>');
+--insert into caretype(caretype_UID, caretype_name, caretype_info)
+--values(seq_caretype_UID.nextval, '식사', '<p>각 항목 작성 안내사항<br/>[식사의 경우]</p>');
 
 commit;
 
