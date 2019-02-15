@@ -31,7 +31,7 @@
 	<!-- member 테이블 insert -->
 	<insert id="insertMemberByMvo" parameterType="com.final2.petopia.model.Biz_MemberVO">
 		insert into member(idx, userid, pwd, name, nickname, birthday, phone, profileimg, fileName, membertype)
-		values(#{idx_biz}, #{userid}, #{pwd}, #{name}, #{name}, sysdate, #{phone}, #{profileimg}, #{fileName}, 2)
+		values(#{idx_biz}, #{userid}, #{pwd}, #{name}, #{name}, to_char(sysdate, 'yyyy-mm-dd'), #{phone}, #{profileimg}, #{fileName}, 2)
 	</insert>
 	
 	<insert id="insertLogin_logByMvo" parameterType="com.final2.petopia.model.Biz_MemberVO">
