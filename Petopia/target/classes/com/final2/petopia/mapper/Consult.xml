@@ -34,26 +34,11 @@
 	select count(*)
 	from
 	(
-	    select distinct fk_consult_UID
-	    from 
-	    (
-	        select *
-	        from consult_comment
-	        where fk_idx = #{idx}
-	    ) T
+     select distinct fk_consult_UID
+     from consult_comment
+     where fk_idx = #{idx}
 	) V
 </select>
-<!-- 기업회원 : 내가 댓글 단 글번호 리스트 
-<select id="selectBizConsultComment" parameterType="String" resultMap="String[]">
-	select distinct fk_consult_UID
-    from 
-    (
-        select *
-        from consult_comment
-        where fk_idx = #{idx}
-    ) T
-</select>
--->
 
 <!-- [페이징처리 O, 검색조건 X] 전체글 갯수 totalCount -->
 <select id="selectTotalCountNoSearch" resultType="int">
@@ -93,13 +78,13 @@
 <!-- [조회수 증가 X] 글 상세보기 -->
 <select id="selectConsultDetailNoCount" parameterType="String" resultType="com.final2.petopia.model.ConsultVO">
 	select previous, previousTitle
-		 , consult_UID, fk_idx, userid, name, nickname, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
+		 , consult_UID, fk_idx, userid, name, nickname, fileName, cs_pet_type, cs_title, cs_contents, cs_hit, cs_writeday, cs_secret
 		 , next, nextTitle, commentCount
 	from 
 	(
 	    select lag(consult_UID,1) over(order by consult_UID desc) as previous
 	         , lag(cs_title,1) over(order by consult_UID desc) as previousTitle
-	         , consult_UID, fk_idx, M.userid, M.name, M.nickname, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
+	         , consult_UID, fk_idx, M.userid, M.name, M.nickname, M.fileName, cs_pet_type, cs_title, cs_contents, cs_hit, to_char(cs_writeday, 'yyyy-mm-dd') AS cs_writeday, cs_secret
 	         , lead(consult_UID,1) over(order by consult_UID desc) as next
 	         , lead(cs_title,1) over(order by consult_UID desc) as nextTitle
 	         , commentCount
@@ -184,6 +169,10 @@
 
 <!-- [notification] 댓글작성 알림 insert -->
 <insert id="insertCommentNotification" parameterType="com.final2.petopia.model.ConsultCommentVO">
+	insert into notification(not_UID, fk_idx, not_type, not_message, not_date, not_readcheck, not_remindstatus, not_time, not_URL)
+	values (seq_notification_UID.nextval, #{org_fk_idx}, 4, #{cscmt_contents}, default, default, default, default, 'http://localhost:9090/petopia/consultDetail.pet?consult_UID='||#{fk_consult_UID}||'&amp;gobackURL=consultList.pet?null')
+</insert>
+<insert id="insertCommentNotification2" parameterType="com.final2.petopia.model.ConsultCommentVO">
 	insert into notification(not_UID, fk_idx, not_type, not_message, not_date, not_readcheck, not_remindstatus, not_time, not_URL)
 	values (seq_notification_UID.nextval, #{consult_fk_idx}, 4, #{cscmt_contents}, default, default, default, default, 'http://localhost:9090/petopia/consultDetail.pet?consult_UID='||#{fk_consult_UID}||'&amp;gobackURL=consultList.pet?null')
 </insert>

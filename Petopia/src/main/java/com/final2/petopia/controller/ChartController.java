@@ -312,7 +312,7 @@ public class ChartController {
 		String loc = "";
 		if(n==1) {
 			msg="차트등록 성공";
-			loc="javascript:location.href='"+req.getContextPath()+"/InsertMyPrescription.pet'";
+			loc="javascript:self.close();";
 		}else {
 			msg="차트 등록 실패";
 			loc="javascript:history.back();";
@@ -360,7 +360,61 @@ public class ChartController {
 		return "selectmychartup";
 	}
 	
+	//0214  마이페이지에서 예약없이입력한 차트 수정하기 
+	@RequestMapping(value = "/UpdatemyChart.pet", method = { RequestMethod.POST })
+	public String requireLogin_UpdatemyChart(HttpServletRequest req, HttpServletResponse res,ChartVO cvo) {
+       
+		String cuid = req.getParameter("chart_uid");
+        
+        HashMap<String, String> map = new HashMap<String, String>();
+		map.put("cuid", cuid);
+        
+		cvo.setChart_UID(Integer.parseInt(cuid));
+		
+		String[] rx_uid = req.getParameterValues("rx_uid");
+		String[] rx_name = req.getParameterValues("rx_name");
+		String[] dosage = req.getParameterValues("dosage");
+		String[] dose_number = req.getParameterValues("dose_number");
+        String[] rx_cautions =req.getParameterValues("rx_cautions");
+        String[] rx_notice=req.getParameterValues("rx_notice");
+		List<HashMap<String, String>> plist = new ArrayList<HashMap<String, String>>();
+		
+		for (int i = 0; i < rx_name.length; i++) {
+			HashMap<String, String> pmap1 = new HashMap<String, String>();
+			pmap1.put("rx_name", rx_name[i]);
+			pmap1.put("dosage", dosage[i]);
+			pmap1.put("dose_number", dose_number[i]);
+			pmap1.put("rx_cautions",rx_cautions[i]);
+			pmap1.put("rx_notice",rx_notice[i]);
+			pmap1.put("rx_uid", rx_uid[i]);
+			pmap1.put("cuid", cuid);
+			
+			plist.add(pmap1);
+		}
+		System.out.println("plist:"+plist);
+		int n = service.Updatemychart(cvo,plist);
+		
+		
+		String msg = "";
+		String loc = "";
+		
+		if(n==1) {
+			msg="차트수정 성공";
+			//loc="javascript:location.href='"+req.getContextPath()+"/InsertMyPrescription.pet'";
+			loc="javascript:self.close();";
+		}else {
+			msg="차트 수정 실패";
+			loc="javascript:history.back();";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+		
+
 	
+	}
 	// 01.24 0130 0131 병원 회원 페이지에서 인서트 창띄우기
 	@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
 	public String requireLoginBiz_InsertChart(HttpServletRequest req, HttpServletResponse res) {
