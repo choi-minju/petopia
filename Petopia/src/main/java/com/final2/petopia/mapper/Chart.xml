@@ -69,7 +69,7 @@
    <select id="getTotalCountNoSearch" parameterType="int" resultType="int">
       select count(*) as cnt
       from reservation
-      where fk_idx = #{idx_biz}
+      where fk_idx_biz = #{idx_biz}
    </select>
    
    <!-- 0207 예약 타입 불러오기  -->
