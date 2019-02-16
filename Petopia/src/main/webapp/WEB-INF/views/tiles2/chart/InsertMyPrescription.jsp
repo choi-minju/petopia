@@ -30,7 +30,7 @@ display:inline-block;
 /* 펫정보*/
 border: 1px solid gray; 
 witdh:80%; 
-height:20%; 
+height:25%; 
 margin-top:3%;
 padding-left:1%;
 background-color:white;
@@ -229,6 +229,7 @@ color:rgb(252, 118, 106);
 	 //탭 클릭시 처방전 기본정보 불러오기 
 	 function showPreinfo(chart_uid){
 		 var data ={"chart_uid":chart_uid};
+		 if(chart_uid != null){
 		    $.ajax({
 	    		  url: "<%=request.getContextPath()%>/selectMyPreInfo.pet",
 	    		  type: "GET",
@@ -236,7 +237,14 @@ color:rgb(252, 118, 106);
 	    		  dataType: "JSON",
 	    		  success: function(json){ 
 						//alert(json.biz_name);
-	    			  var html = '<div>'
+						
+						var html= '';
+				if(json.chart_uid== null) {
+	   				   html += '<tr>'
+	   				  			+'<td colspan="3">병원에서 입력한 차트가 없습니다.</td>'
+	   						+'</tr>';
+	   			  }else{
+	    			 html += '<div>'
 									+'<h3>'+json.biz_name+'</h3>'
 									+'<p>진료예약일자: '+json.bookingdate+' </p>'
 			    			 	    +'<p>방문일자: '+json.reservation_DATE+'</p>'
@@ -270,15 +278,15 @@ color:rgb(252, 118, 106);
 			    			      +'<div class="span col-md-10"><p>주의사항: </p>'+json.cautions+'</div>'
 			    			      +'<div class="span col-md-10"><p>내  용: </p>'+json.chart_contents+'</div>'
 			    			      +'<hr style="width:100%; height:2%;"></hr>';
-			    		if(json.payment_point != null && json.payment_point != "0" && json.payment_point != "") {
+			    		if(json.payment_pay != null && json.payment_pay != "0" && json.payment_pay != "") {
 			    			html +='<div style="margin-left: 70%;" >'
 				    			 	  +'<p>결제 포인트: '+json.payment_point+' POINT</p>'
 				    			 	  +'<p>본인 부담금: '+json.addpay+' 원</p>'
 				    			 	  +'<p>실제 결제 금액: '+json.payment_pay+' 원</p>'
-				    			 	  +'<p>진료비 총액: '+json.payment_total+' 원</p>'
+				    			 	  +'<p>진료비 총액: '+json.totalpay+' 원</p>'
 			    			      +'</div>';
 			    		}
-	    			           
+				}        
 	    			  $("#home").empty().append(html);
 	    			  
 	    			  showMedicine(json.chart_uid);
@@ -287,6 +295,7 @@ color:rgb(252, 118, 106);
 			        else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		                }
 	    		  });
+		 }
 	 } // end
 	
 	 
@@ -317,7 +326,7 @@ color:rgb(252, 118, 106);
 			   				    +'</td>'
 			   				 +'<td>'+entry.rx_cautions
 			   				    +'</td>'
-			   				 +'<td>'+entry.rx_noice
+			   				 +'<td>'+entry.rx_notice
 			   				    +'</td>'
 	   				         +'</tr>';
 	   			  });
@@ -350,8 +359,8 @@ color:rgb(252, 118, 106);
 	   <c:forEach items="${pmaplist}" var="pvo" varStatus="status">
 		    <div class="col-md-3" style="display:inlineblock;float:left;">
 			    <input type="hidden" value="${pvo.pet_uid}" id="imgpuid${pvo.pet_uid}"/>
-			    <img src="<%=ctxPath%>/resources/img/care/${pvo.pet_profileimg}" onclick="javascript:location.href='<%=ctxPath%>/InsertMyPrescription.pet?puid=${pvo.pet_uid}'"  class="petimg petUid${pvo.pet_uid}" width="30%"style="border-radius: 50%;display:block;"/> 
-			    <span style="font-weight: bold;padding-left: 10%;">[${pvo.pet_name}] 님</span>
+			    <img src="<%=ctxPath%>/resources/img/chart/${pvo.pet_profileimg}" onclick="javascript:location.href='<%=ctxPath%>/InsertMyPrescription.pet?puid=${pvo.pet_uid}'"  class="petimg petUid${pvo.pet_uid}" width="50%"style="border-radius: 50%;display:block;"/> 
+			    <span style="font-weight: bold;padding-left: 15%;">[${pvo.pet_name}] 님</span>
 		    </div>
 	    </c:forEach>
   
@@ -360,7 +369,7 @@ color:rgb(252, 118, 106);
   <div class="divbox3">
   <input type="hidden" id="petUidNo" value="${minpuid}"/>
 	   <div id="container" Style="width:100%; padding-top: 1%;">
-			  <p style="padding-top:1.5%;">생년월일: ${minpinfo.pet_birthday}</p>
+			  <p style="padding-top:1%;">생년월일: ${minpinfo.pet_birthday}</p>
 			  <p>성별:   ${minpinfo.pet_gender}</p>
 			  <p>몸무게: ${minpinfo.pet_weight} kg</p>
 	   </div>
@@ -373,6 +382,7 @@ color:rgb(252, 118, 106);
 
  
 <div class="tab-content divbox5 container">
+   <h4 style="margin-left: 2%;">병원 예약 진료 기록</h4>
    <div class="container" Style="width:100%;">
 	    <ul class="nav nav-tabs">
 		    <c:forEach items="${myreservedaylist}" var="daymap">
