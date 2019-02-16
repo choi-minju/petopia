@@ -149,7 +149,7 @@ public class ConsultService implements InterConsultService {
 			result2 = dao.updateConsultCommentCount(commentvo.getFk_consult_UID()); // - [consult]commentCount 원글의 댓글갯수 1 update
 		}
 		if(result2==1) {
-			result3 = dao.insertCommentNotification(commentvo); // - [notification] 댓글작성 알림 insert
+			result3 = dao.insertConsultCommentNotification(commentvo); // - [notification] 댓글작성 알림 insert
 		}
 		
 		return result3;

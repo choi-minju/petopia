@@ -93,7 +93,7 @@
 						}
 					});
 					
-					$("#notificationList").append(html);
+					$("#notificationList").html(html);
 					$("#btnMoreList").val(parseInt(start) + listLength);
 				}
 				else{

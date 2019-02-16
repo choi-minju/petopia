@@ -367,32 +367,6 @@
 		<div class="row">
 			<div id="displayPetcare" class="col-sm-12">
 			
-			<!-- 
-			<table class="table table-sm">
-				<thead>
-					<tr>
-						<th colspan="3">Handle</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Mark</td>
-						<td>Otto</td>
-						<td>@mdo</td>
-					</tr>
-					<tr>
-						<td>Jacob</td>
-						<td>Thornton</td>
-						<td>@fat</td>
-					</tr>
-					<tr>
-						<td colspan="2">Larry the Bird</td>
-						<td>@twitter</td>
-					</tr>
-				</tbody>
-			</table> 
-			-->
-			
 			</div>
 		</div>
 	</fieldset>
