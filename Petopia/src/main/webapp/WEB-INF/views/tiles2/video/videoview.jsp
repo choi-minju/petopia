@@ -38,26 +38,6 @@
 		
 	}); // end of document.ready
 	
-	function createcode(idx) {
-		
-		var yn = confirm("코드를 생성하시겠습니까?");
-		if(!yn) return;
-		var form_data = {"idx":"${loginuser.idx}"};
-		$.ajax({
-			url:"createcode.pet",
-			type:"GET",
-			data:form_data,
-			dataType:"JSON",
-			success:function(json) {
-					alert("코드가 생성 되었습니다. \n"+json.code);
-					location.reload();
-			},
-			error:function() {
-				alert("코드생성에 실패했습니다.");
-			}
-		});
-	}
-	
 </script>
 
 <form name="chatFrm">
@@ -82,9 +62,8 @@
 		<span style="font-weight: bold;">ㆍ이용문의 :</span> 010-1234-5678
 		</span>
 		
-		<button type="button" class="btn2" data-toggle="modal" data-target="#videochat" data-dismiss="modal" >상담하기</button>
 		<c:if test="${MemberType == 1}">
-	  	<button type="button" class="btn2" onClick="createcode(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담코드 생성</button>
+	  	<button type="button" class="btn2" data-toggle="modal" data-target="#createcode" data-dismiss="modal" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담코드 생성</button>
 	  	</c:if>
 	  	<c:if test="${MemberType == 2}">
 	  	<%-- <button type="button" class="btn2" onClick="viewlog(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담로그 보기</button> --%>
@@ -94,15 +73,15 @@
 	  
 	</div>
 	
-	<div class="modal fade" id="videochat" role="dialog">
+	<div class="modal fade" id="createcode" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
 			 <div class="modal-header">
 				<button type="button" class="close myclose" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">화상상담 코드 입력</h4>
+				<h4 class="modal-title">화상상담 코드 생성</h4>
 			 </div>
 			 <div class="modal-body" style="height: 150px; width: 100%;">
-			 	<iframe class="iframe" style="border: none; width: 100%; height: 120px;" src="<%= request.getContextPath() %>/chatcode.pet"></iframe>
+			 	<iframe class="iframe" style="border: none; width: 100%; height: 120px;" src="<%= request.getContextPath() %>/videocode.pet"></iframe>
 			 </div>
 			 <div class="modal-footer">
 			 	<button type="button" class="btn btn-default myclose" data-dismiss="modal">닫기</button>

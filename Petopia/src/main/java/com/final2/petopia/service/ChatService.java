@@ -25,6 +25,17 @@ public class ChatService implements InterChatService {
 		return n;
 	}
 	
+	// 랜덤비디오코드 생성
+		@Override
+		public int createvideocode(HashMap<String, Object> returnmap) throws Throwable{
+			
+			int n = 0;
+			
+			n = dao.addvideocode(returnmap);
+			
+			return n;
+		}
+	
 	// 채팅 뷰
 	@Override
 	public String viewcode(String code) throws Throwable {

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface InterChatDAO {
 
 	int addcode(HashMap<String, String> map);
+	
+	int addvideocode(HashMap<String, Object> returnmap);
 
 	String viewcode(String code);
 

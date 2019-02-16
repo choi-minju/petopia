@@ -45,6 +45,7 @@
 <!-- JSON.stringify() 는 값을 그 값을 나타내는 JSON 표기법의 문자열로 변환해주는 것인데 이것을 사용하기 위해서는 json2.js 가 필요하다. -->
 <script src="http://26.42.136.15:3000/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
 <script type="text/javascript" >
 
     // === !!! WebSocket 통신은 스크립트로 작성하는 것이다. !!! === //
@@ -113,7 +114,7 @@
         <button type="button" class="btn2" onClick="javascript:location.href='<%= ctxPath %>/home.pet'">종료하기</button>
     </div>
 	
-    <div class="box">
+    <div style="display: none" class="box">
         <span>설정 변경</span>
         <select id="sdpSemantics">
             <option selected value="">Default</option>
@@ -124,8 +125,8 @@
     
 </div>
 </form>
-
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="<%=ctxPath%>/resources/js/videochat.js" async></script>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
 
 </body>
