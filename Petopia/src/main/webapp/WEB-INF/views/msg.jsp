@@ -11,4 +11,8 @@
 	if("${script != ''}") {
 		${script}
 	}
+	
+	if("${script1 != ''}") {
+		${script1}
+	}
 </script>

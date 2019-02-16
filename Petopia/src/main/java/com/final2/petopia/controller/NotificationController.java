@@ -1,19 +1,24 @@
  package com.final2.petopia.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.final2.petopia.common.MyUtil;
 import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.MemberVO;
 import com.final2.petopia.model.NotificationVO;
@@ -32,11 +37,10 @@ public class NotificationController {
 	@RequestMapping(value="/unreadNotificationCount.pet", method= {RequestMethod.GET})
 	@ResponseBody
 	public HashMap<String, Integer> unreadNotificationCount(HttpServletRequest req, HttpServletResponse res) throws Throwable {
-		
 		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
 		
 		HttpSession session = req.getSession();
-		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");		
 		int idx = loginuser.getIdx();
 		
 		// 회원의 고유번호를 이용한 안읽은 알림 갯수 나타내기
@@ -53,7 +57,7 @@ public class NotificationController {
 	// (안읽은 알림만 생성)
 	@RequestMapping(value="/notificationSimpleList.pet", method= {RequestMethod.GET})
 	@ResponseBody
-	public List<HashMap<String, String>> notificationSimpleList(HttpServletRequest req, HttpServletResponse res) throws Throwable {
+	public List<HashMap<String, String>> requireLogin_notificationSimpleList(HttpServletRequest req, HttpServletResponse res) throws Throwable {
 		
 		List<HashMap<String, String>> notificationSimpleList = new ArrayList<HashMap<String, String>>();
 		
@@ -167,7 +171,7 @@ public class NotificationController {
 	
 	// 알림 내용 클릭 시 not_readcheck 컬럼 1로 변경 -------------------------------------------------------------------------
 	@RequestMapping(value="/updateReadcheck.pet", method= {RequestMethod.POST})
-	public String updateReadcheck(HttpServletRequest req) {
+	public String requireLogin_updateReadcheck(HttpServletRequest req, HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -209,7 +213,7 @@ public class NotificationController {
 
 	// 재알림 클릭 시 5분 뒤 시간으로 알림 insert -------------------------------------------------------------------------
 	@RequestMapping(value="/insertRemindNot.pet", method= {RequestMethod.POST})
-	public String insertRemindNot(HttpServletRequest req) {
+	public String requireLogin_insertRemindNot(HttpServletRequest req, HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -251,7 +255,7 @@ public class NotificationController {
 	
 	// 알림삭제 -------------------------------------------------------------------------
 	@RequestMapping(value="/deleteNot.pet", method= {RequestMethod.POST})
-	public String deleteNot(HttpServletRequest req) {
+	public String requireLogin_deleteNot(HttpServletRequest req, HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");

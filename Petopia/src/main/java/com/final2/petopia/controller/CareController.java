@@ -33,8 +33,8 @@ public class CareController {
 	@Autowired
 	private InterMemberService member_service;
 	
-	// [19-01-24. 수정 시작_hyunjae]
-	// ===== 반려동물 리스트페이지 요청 =====
+
+	//===== 반려동물 리스트 페이지 요청 ===== 
 	@RequestMapping(value="/petList.pet", method={RequestMethod.GET})
 	public String requireLogin_petList(HttpServletRequest req, HttpServletResponse res) {
 		
@@ -51,14 +51,14 @@ public class CareController {
 		return "care/petList.tiles2";
 	}
 	
-	// ===== 반려동물 리스트 가져오기(Ajax) =====
+	//===== 반려동물 리스트 가져오기(Ajax) =====
 	@RequestMapping(value="/getPet.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> getPet(HttpServletRequest req) {
-	
-		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
 
 		String fk_idx = req.getParameter("fk_idx");
+		
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
 		
 		List<HashMap<String,String>> list = service.getPet_infoList(Integer.parseInt(fk_idx));
 		
@@ -84,18 +84,15 @@ public class CareController {
 		
 		return returnmapList;
 	}
-	// [19-01-24. 수정 끝_hyunjae]
-
 	
-	//===== 반려동물 등록페이지 요청 =====
+	
+	//===== 반려동물 등록 페이지 요청 ===== 
 	@RequestMapping(value="/petRegister.pet", method={RequestMethod.GET})
 	public String register(HttpServletRequest req) {
 		
 		return "care/petRegister.tiles2";
 	}
-	
-	// [19-01-24. 수정 시작_hyunjae]
-	//===== 반려동물 등록 요청완료 =====
+	//===== 반려동물 등록 페이지 완료 =====
 	@RequestMapping(value="/petRegisterEnd.pet", method={RequestMethod.POST})
 	public String registerEnd(PetVO pvo, HttpServletRequest req) {
 	
@@ -118,10 +115,9 @@ public class CareController {
 
 		return "msg";
 	}
-	// [19-01-24. 수정 끝_hyunjae]
 	
 	
-	//===== 특정 반려동물관리 상세페이지 요청 =====
+	//===== 특정 반려동물관리 상세정보 페이지 요청 =====
 	@RequestMapping(value="/petView.pet", method={RequestMethod.GET})
 	public String view(HttpServletRequest req) {
 	
@@ -153,15 +149,14 @@ public class CareController {
 		
 	}
 	
-	// [19-01-30. 수정 시작_hyunjae]
 	//===== 특정 반려동물관리 몸무게(Ajax) 가져오기 =====
 	@RequestMapping(value="/getWeight.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> getWeight(HttpServletRequest req) {
 		
-		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
-
 		String pet_UID = req.getParameter("pet_UID");
+		
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
 		
 		List<HashMap<String,String>> list = service.getWeight(pet_UID);
 		
@@ -179,9 +174,8 @@ public class CareController {
 		
 		return returnmapList;
 	}
-
 	
-	//===== 특정 반려동물케어 체중 페이지 요청 =====
+	//===== 특정 반려동물케어 몸무게 추가 페이지 요청 =====
 	@RequestMapping(value="/addWeight.pet", method={RequestMethod.GET})
 	public String addWeight(HttpServletRequest req) {
 		
@@ -198,8 +192,7 @@ public class CareController {
 		
 		return "care/addWeight.notiles";
 	}
-	
-	//===== 특정 반려동물케어 체중 페이지 완료 =====
+	//===== 특정 반려동물케어 몸무게 추가 페이지 완료 =====
 	@RequestMapping(value="/addWeightEnd.pet", method={RequestMethod.POST})       
 	public String addWeightEnd(HttpServletRequest req) 
 		throws Throwable {
@@ -217,37 +210,42 @@ public class CareController {
 		paraMap.put("PETWEIGHT_TARGETED", petweight_targeted);
 		paraMap.put("PETWEIGHT_DATE", petweight_date);
 
-		service.addWeight(paraMap);
-/*		
 		// 3. Service 단으로 HashMap 을 넘긴다.
 		String msg = "";
+		String loc = "";
+		
 		try {
+			
 			service.addWeight(paraMap);
-//			msg = "회원가입 성공!!";
-//			req.setAttribute("msg", msg);
-			return "/petList.pet";
+			msg = "체중 추가 성공!!";
+			loc = "/petopia/petView.pet?pet_UID" + pet_UID;
+			String script = "javascript:opener.parent.location='/petopia/petView.pet?pet_UID=" + pet_UID + "'";
+			String script1 = "javascript:self.close();";
+			req.setAttribute("script", script);
+			req.setAttribute("script1", script1);
+			
 		} catch(Exception e) { 
-//			msg = "회원가입 실패!!";
-//			req.setAttribute("msg", msg);
-			System.out.println("익셉션");
-			return "register/mybatisTest17AddEnd";
+			
+			msg = "체중 추가 실패!!";
+			loc = "/petopia/addWeight.pet?pet_UID=" + pet_UID;
+			
 		}
-*/
-		return "care/petList.tiles2";
-	//   /WEB-INF/views/register/mybatisTest17AddEnd.jsp 를 파일을 생성한다.
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";	
+	}
 
-	}	
-
-
-	//===== 특정 반려동물관리 진료기록(Ajax) =====
+	//===== 특정 반려동물관리 진료기록(Ajax) 가져오기 =====
 	@RequestMapping(value="/getChart.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> getChart(HttpServletRequest req) {
-		
-		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
 
 		String pet_UID = req.getParameter("pet_UID");
 		
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
+
 		List<HashMap<String,String>> list = service.getChart(pet_UID);
 		
 		if(list != null) {
@@ -265,9 +263,7 @@ public class CareController {
 	}
 	
 	
-	// [19-01-25. 수정 시작_hyunjae]
-	// [19-02-08. 수정 시작_hyunjae]
-	//===== 케어관리페이지 요청 =====
+	//===== 케어 건강수첩 페이지 요청 =====
 	@RequestMapping(value="/careCalendar.pet", method={RequestMethod.GET})
 	public String calendar(HttpServletRequest req) {
 		
@@ -289,18 +285,15 @@ public class CareController {
 		
 		return "care/careCalendar.tiles2";
 	}
-	// [19-02-08. 수정 시작_hyunjae]
-	// [19-01-30. 수정 끝_hyunjae]
 	
-	// [19-01-31. 수정 끝_hyunjae]
-	// ===== 반려동물 리스트 가져오기(Ajax) =====
+	// ===== 반려동물 리스트(Ajax) 가져오기 =====
 	@RequestMapping(value="/getPetcare.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> getPetcare(HttpServletRequest req) {
 	
-		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
-		
 		String pet_UID = req.getParameter("pet_UID");
+		
+		List<HashMap<String, Object>> returnmapList = new ArrayList<HashMap<String, Object>>(); 
 		
 		List<HashMap<String,String>> list = service.getPetcare(pet_UID);
 		
@@ -328,8 +321,7 @@ public class CareController {
 	}
 	
 	
-	// [19-01-24. 수정 시작_hyunjae]
-	//===== 케어관리 등록페이지 요청 =====
+	//===== 케어 건강수첩 등록 페이지 요청 =====
 	@RequestMapping(value="/careRegister.pet", method={RequestMethod.GET})
 	public String careRegister(HttpServletRequest req) {
 		
@@ -343,11 +335,10 @@ public class CareController {
 		
 		req.setAttribute("caretypeList", caretypeList);
 		
-		
 		return "care/careRegister.tiles2";
 	}
 	
-	//===== 케어타입 코드 =====
+	//===== 케어 건강수첩 코드 가져오기 =====
 	@RequestMapping(value="/getCaretype_info.pet", method={RequestMethod.GET})
 	@ResponseBody
 	public List<HashMap<String, Object>> getCaretype_info(HttpServletRequest req) {
@@ -369,8 +360,7 @@ public class CareController {
 		return returnmapList;
 	}
 	
-	
-	//===== 케어 등록페이지 요청완료 =====
+	//===== 케어 건강수첩 등록 페이지 요청 완료 =====
 	@RequestMapping(value="/careRegisterEnd.pet", method={RequestMethod.POST})
 	public String careRegisterEnd(CareVO cvo, HttpServletRequest req) {
 	
@@ -393,8 +383,6 @@ public class CareController {
 
 		return "msg";		
 	}
-	// [19-01-24. 수정 끝_hyunjae]
-	// [19-01-25. 수정 끝_hyunjae]
 	
 	
 } // end of class CareController

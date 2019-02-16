@@ -51,7 +51,7 @@
 	<!-- *** 로그인 *** -->
 	<!-- 로그인 -->
 	<select id="loginSelectByUseridPwd" parameterType="HashMap" resultType="com.final2.petopia.model.MemberVO">
-		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.membertype, b.lastlogindate, b.member_status
+		select a.idx, a.userid, a.pwd, a.name, a.nickname, a.membertype, a.phone, b.lastlogindate, b.member_status
 				, trunc(months_between(sysdate, lastlogindate)) AS lastlogindategap
 		from member a JOIN login_log b
 		ON a.idx = b.idx

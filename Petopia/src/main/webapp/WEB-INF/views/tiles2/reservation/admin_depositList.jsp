@@ -239,7 +239,7 @@
 
 	function used(currentShowPageNo){
 		var form_data = {"currentShowPageNo":currentShowPageNo
-						, "type": "3,0"};	// [190129] 타입 숫자 변경
+						, "type": "3"};	// [190129] 타입 숫자 변경
 		
 		$.ajax({
 			url: "<%= ctxPath %>/depositHistory.pet",
@@ -455,8 +455,8 @@
 <%-- [190213] 탭 이름 수정 --%>
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" id="all" href="#home">전체</a></li>
-    <li><a data-toggle="tab" id="charged" href="#menu1">일반회원 입금내역</a></li>
-    <li><a data-toggle="tab" id="used" href="#menu2">기업회원 출금내역</a></li>
+    <li><a data-toggle="tab" id="charged" href="#menu1">입금내역</a></li>
+    <li><a data-toggle="tab" id="used" href="#menu2">출금내역</a></li>
   </ul>
 
   <div class="tab-content">

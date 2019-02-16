@@ -318,6 +318,19 @@ public class ChartDAO implements InterChartDAO {
 		HashMap<String, String> pnames =sqlsession.selectOne("chart.getpnames",puid);
 		return pnames;
 	}
+	//0214 마이페이지에서 예약이 없는 차트 업데이트 하기 
+	@Override
+	public int Updatemychart(ChartVO cvo) {
+		int n = sqlsession.update("chart.Updatemychart", cvo);
+		return n;
+	}
+
+	//0216
+	@Override
+	public int updateNoshow(String reservation_UID) {
+		int n = sqlsession.update("chart.updateNoshow",reservation_UID);
+		return n;
+	}
 
 	
 	
