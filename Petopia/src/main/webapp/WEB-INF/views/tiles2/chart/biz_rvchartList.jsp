@@ -106,17 +106,20 @@ th{
         	</c:if>
         </td>
           <td>
-          <c:if test="${rmap.reservation_status=='4'}">
-        	<button type="button" class="btn btn-rounder btnmenu" onclick="location.href='<%=ctxPath%>/SelectChart.pet?reservation_UID=${rmap.reservation_UID}'">노쇼</button>
-            <input type="hidden" name="reservation_UID" value="reservation_UID"/>
-          </c:if>
-        </td>
+	          <c:if test="${rmap.reservation_status=='4'}">
+	        	<button type="button" class="btn btn-rounder btnmenu" onclick="goNoshow()">노쇼</button>
+	            <input type="hidden" name="reservation_UID" id="noshow" value="${rmap.reservation_UID}"/>
+	          </c:if>
+	           <c:if test="${rmap.reservation_status=='5'}">
+	           <a class="btn btn-rounder btnmenu" style="color: white; background-color: gray; cursor: default;">노쇼</a>
+	          </c:if>
+         </td>
       </tr>
 	  </c:forEach>
     </tbody>
   </table>
   <div class="text-center">${pageBar}</div>
-  <p>Note that we start the search in tbody, to prevent filtering the table headers.</p>
+ 
 </div>
 
 
@@ -128,5 +131,28 @@ $(document).ready(function(){
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
+  
+   
 });
+
+function goNoshow(){
+	   var data ={"reservation_UID":$("#noshow").val()};
+	$.ajax({
+		  url: "<%=request.getContextPath()%>/goNoshow.pet",
+		  type: "GET",
+		  data: data,
+		  dataType: "JSON",
+		  success: function(json){
+			
+				 alert("노쇼 처리되었습니다.");
+				
+			  
+		  },
+		  error: function(request, status, error){
+  			if(request.readyState == 0 || request.status == 0) return;
+  			else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+  		}
+	  }); // end of ajax();
+	
+} //end of  gonoshow
 </script>
