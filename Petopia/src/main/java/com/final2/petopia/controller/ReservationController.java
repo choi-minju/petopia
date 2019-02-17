@@ -656,13 +656,13 @@ public class ReservationController {
 		String fk_schedule_UID = req.getParameter("fk_schedule_UID");
 		String reservation_status = req.getParameter("reservation_status");
 		String reservation_type = req.getParameter("reservation_type");
-
+		String reservation_DATE = req.getParameter("reservation_DATE");
 		paraMap.put("reservation_UID", reservation_UID);
 		paraMap.put("fk_schedule_UID", fk_schedule_UID);
 		paraMap.put("fk_idx", fk_idx);
 		paraMap.put("reservation_status", reservation_status);
 		paraMap.put("reservation_type", reservation_type);
-		
+		paraMap.put("reservation_DATE", reservation_DATE);
 		int result = 0;
 		if(reservation_status.equals("2") && reservation_type.equals("3")) {
 			result = service.updateRvAndScdStatusCancleForSurgery(paraMap);

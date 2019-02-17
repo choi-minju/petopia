@@ -53,7 +53,7 @@
 	<select id="selectSumDepositByIdx" parameterType="String" resultType="Integer">
 		select nvl(sum(depositcoin), 0) as n
 		from deposit
-		where fk_idx = #{idx}
+		where fk_idx = #{idx} and deposit_status!=-1
 	</select>
 	<!-- #회원번호로 회원 포인트 가져오기 -->
 	<select id="selectPointByIdx" parameterType="String" resultType="Integer">

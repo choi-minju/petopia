@@ -277,7 +277,8 @@
 						</div>
 						<div class="column" id="consult">
 							<a href="<%= ctxPath %>/consultList.pet">1:1 문의상담</a>
-							<a href="<%= ctxPath %>/chat.pet">화상진료</a>
+							<a href="<%= ctxPath %>/chat.pet">화상채팅진료</a>
+							<a href="<%= ctxPath %>/video.pet">화상진료</a>
 						</div>
 						<div class="column" id="petCare">
 							<!-- [19-01-25] /careIndex.pet -> petList.pet 수정 -->
@@ -323,7 +324,8 @@
 						</div>
 						<div class="column" id="bizConsult">
 							<a href="<%= ctxPath %>/consultList.pet">1:1 문의상담</a>
-							<a href="<%= ctxPath %>/bizchat.pet">화상진료</a>
+							<a href="<%= ctxPath %>/chat.pet">화상채팅진료</a>
+							<a href="<%= ctxPath %>/video.pet">화상진료</a>
 						</div>
 						<div class="column" id="bizBoard">
 							<a href="#">공지사항</a>

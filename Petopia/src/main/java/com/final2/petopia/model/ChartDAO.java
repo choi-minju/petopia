@@ -325,6 +325,13 @@ public class ChartDAO implements InterChartDAO {
 		return n;
 	}
 
+	//0216
+	@Override
+	public int updateNoshow(String reservation_UID) {
+		int n = sqlsession.update("chart.updateNoshow",reservation_UID);
+		return n;
+	}
+
 	
 	
 	
