@@ -84,7 +84,7 @@
 	}
 
 </script>
-
+<%-- 
 <body style="background-color: rgb(252, 118, 106);">
 <form name="videochatFrm" style="background-color: rgb(252, 118, 106);">
 	<div id="div_code" align="center">
@@ -96,4 +96,23 @@
 		<button id="join-button"  onclick="viewcode();" type="button" class="btn btn-default myclose" data-dismiss="modal">확인</button>
 	</div>
 </form>
+</body>
+ --%>
+<body style="background-color: white;">
+<div class="container">
+<form name="videochatFrm">
+	<div id="div_code" align="center">
+		<span style="color: black; font-size: 12pt;">상담을 위한 코드를 입력해주세요</span><br/><br/>
+		<div class="row text-center">
+			<div class="col-xs-offset-4 col-xs-3" style="padding-right: 0;">
+				<input type="text" class="form-control" name="code" id="code" size="15" placeholder="123456-12" required />
+				<%-- <input type="text" value="zzz" style="display: none"/> --%>
+			</div>
+			<div class="col-xs-3" id="div_input" align="left" style="padding-left: 0;">
+				<button id="join-button"  onclick="viewcode();" type="button" class="btn btn-rounder myclose" data-dismiss="modal">확인</button>
+			</div>
+		</div>
+	</div>
+</form>
+</div>
 </body>
