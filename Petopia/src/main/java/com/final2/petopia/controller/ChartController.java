@@ -266,6 +266,7 @@ public class ChartController {
 	}
 	
 	//0213 마이페이지 개인진료 차트 등록하기 !!!예약없이 왜.... ㅠㅠㅠㅠ 
+	//0216  수정
 	@RequestMapping(value = "/InsertmyChartnoReserveEnd.pet", method = { RequestMethod.POST })
 	public String requireLogin_InsertmyChartnoReserveEnd(HttpServletRequest req, HttpServletResponse res,ChartVO cvo) {
 		
@@ -284,7 +285,7 @@ public class ChartController {
 		map.put("cuid",cuid);
 		map.put("puid",puid);
 		
-		System.out.println("puid:"+puid);
+		//System.out.println("puid:"+puid);
 		List<HashMap<String, String>> mlist = new ArrayList<HashMap<String, String>>();
 
 		String[] rx_name = req.getParameterValues("rx_name");
@@ -297,7 +298,7 @@ public class ChartController {
 		for (int i = 0; i < rx_name.length; i++) {
 			HashMap<String, String> map2 = new HashMap<String, String>();
 			map2.put("rx_regName", cvo.getDoc_name());
-			map2.put("chart_UID",mcuid);
+			map2.put("chart_UID",String.valueOf(cvo.getChart_UID()));
 			map2.put("rx_name", rx_name[i]);
 			map2.put("dosage", dosage[i]);
 			map2.put("dose_number", dose_number[i]);
@@ -305,14 +306,14 @@ public class ChartController {
 			map2.put("rx_notice",rx_notice[i]);
 			mlist.add(map2);
 		}
-		
+		//map2.put("chart_UID",mcuid);
 		int n = service.InsertmyChartnoReserveEnd(cvo,idx,mlist);
 		
 		String msg = "";
 		String loc = "";
 		if(n==1) {
 			msg="차트등록 성공";
-			loc="javascript:location.href='"+req.getContextPath()+"/InsertMyPrescription.pet'";
+			loc="javascript:self.close();";
 		}else {
 			msg="차트 등록 실패";
 			loc="javascript:history.back();";
@@ -360,12 +361,66 @@ public class ChartController {
 		return "selectmychartup";
 	}
 	
+	//0214  마이페이지에서 예약없이입력한 차트 수정하기 
+	@RequestMapping(value = "/UpdatemyChart.pet", method = { RequestMethod.POST })
+	public String requireLogin_UpdatemyChart(HttpServletRequest req, HttpServletResponse res,ChartVO cvo) {
+       
+		String cuid = req.getParameter("chart_uid");
+        
+        HashMap<String, String> map = new HashMap<String, String>();
+		map.put("cuid", cuid);
+        
+		cvo.setChart_UID(Integer.parseInt(cuid));
+		
+		String[] rx_uid = req.getParameterValues("rx_uid");
+		String[] rx_name = req.getParameterValues("rx_name");
+		String[] dosage = req.getParameterValues("dosage");
+		String[] dose_number = req.getParameterValues("dose_number");
+        String[] rx_cautions =req.getParameterValues("rx_cautions");
+        String[] rx_notice=req.getParameterValues("rx_notice");
+		List<HashMap<String, String>> plist = new ArrayList<HashMap<String, String>>();
+		
+		for (int i = 0; i < rx_name.length; i++) {
+			HashMap<String, String> pmap1 = new HashMap<String, String>();
+			pmap1.put("rx_name", rx_name[i]);
+			pmap1.put("dosage", dosage[i]);
+			pmap1.put("dose_number", dose_number[i]);
+			pmap1.put("rx_cautions",rx_cautions[i]);
+			pmap1.put("rx_notice",rx_notice[i]);
+			pmap1.put("rx_uid", rx_uid[i]);
+			pmap1.put("cuid", cuid);
+			
+			plist.add(pmap1);
+		}
+		System.out.println("plist:"+plist);
+		int n = service.Updatemychart(cvo,plist);
+		
+		
+		String msg = "";
+		String loc = "";
+		
+		if(n==1) {
+			msg="차트수정 성공";
+			//loc="javascript:location.href='"+req.getContextPath()+"/InsertMyPrescription.pet'";
+			loc="javascript:self.close();";
+		}else {
+			msg="차트 수정 실패";
+			loc="javascript:history.back();";
+		}
+		
+		req.setAttribute("msg", msg);
+		req.setAttribute("loc", loc);
+		
+		return "msg";
+		
+
 	
+	}
 	// 01.24 0130 0131 병원 회원 페이지에서 인서트 창띄우기
 	@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
 	public String requireLoginBiz_InsertChart(HttpServletRequest req, HttpServletResponse res) {
 
-		String ruid = req.getParameter("fk_reservation_UID");
+		String ruid = req.getParameter("reservation_UID");
 		String cuid = service.getChartuid(); // 차트번호 채번
 		
 		HashMap<String, String> chartmap = new HashMap<String, String>();
@@ -688,7 +743,7 @@ public class ChartController {
 		
 //		      #120. 페이지바 만들기(MyUtil에 있는 static메소드 사용)
 		String pageBar = "<ul class='pagination'>";
-		pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "reservationList.pet");
+		pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "bizReservationList.pet");
 		pageBar += "</ul>";
 
 		session.setAttribute("readCountPermission", "yes");
@@ -707,5 +762,25 @@ public class ChartController {
 		req.setAttribute("currentURL", currentURL);
 		return "chart/biz_rvchartList.tiles2";
 	}
+	//0216
+	@RequestMapping(value = "/goNoshow.pet", method = { RequestMethod.GET })
+	@ResponseBody
+	public int requireLoginbiz_goNoshow(HttpServletRequest req, HttpServletResponse res) {
+	    int result =0;
+	    
+	   String reservation_UID=req.getParameter("reservation_UID");
+	   result= service.updateNoshow(reservation_UID);
+	   
+	   System.out.println("result: "+result);
+	   return result;
+	}
+
+
+
+
+
+	
+
+
 
 }// end of controller

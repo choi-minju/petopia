@@ -31,8 +31,7 @@
 		weightFrm.action = "addWeightEnd.pet"
 		weightFrm.method = "POST";
 		weightFrm.submit();
-		//self.close();
-		 
+
 	}
 	
 </script> 

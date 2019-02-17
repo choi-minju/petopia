@@ -22,12 +22,12 @@
 	</resultMap>
 	<select id="getPet_infoList" resultMap="getPet_infoListMap" parameterType="int">	
 		select pet_UID, fk_idx, pet_name
-		     , decode(pet_type, 'dog', '개'
+		     , decode(pet_type, 'dog', '강아지'
 		                      , 'cat', '고양이'
 		                      , 'smallani', '소동물'
 		                                  , '기타') as pet_type, pet_birthday, pet_size, pet_weight
-		     , decode(pet_gender, '1', '남자'
-		                             , '여자') as pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		     , decode(pet_gender, '1', '수컷'
+		                             , '암컷') as pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
 		from pet_info
 		where fk_idx = #{fk_idx} and
 		      pet_status in('1','2')
@@ -91,7 +91,7 @@
 		<result property="NEXTPET_UID"  	 column="nextpet_UID"  		javaType="String" />
 		<result property="NEXTPET_NAME"  	 column="nextpet_name"  	javaType="String" />
 	</resultMap>
-	<select id="getPet_info" parameterType="int" resultMap="Pet_InfoMap">
+	<select id="getPet_info" parameterType="HashMap" resultMap="Pet_InfoMap">
 		select previouspet_UID, previouspet_name
 		     , pet_UID, fk_idx, pet_name, pet_type, pet_birthday, pet_size, pet_weight, pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
 		     , nextpet_UID, nextpet_name
@@ -100,18 +100,18 @@
 		    select lag(pet_UID, 1) over(order by pet_UID desc) as previouspet_UID
 		         , lag(pet_name, 1) over(order by pet_UID desc) as previouspet_name
 		         , pet_UID, fk_idx, pet_name
-                 , decode(pet_type, 'dog', '개'
+                 , decode(pet_type, 'dog', '강아지'
                     			  , 'cat', '고양이'
                     			  , 'smallani', '소동물'
                                 			  , '기타') as pet_type
 		         , pet_birthday, pet_size, pet_weight
-	             , decode(pet_gender, '1', '남자'
-                             			 , '여자') as pet_gender
+	             , decode(pet_gender, '1', '수컷'
+                             			 , '암컷') as pet_gender
 		         , pet_neutral, medical_history, allergy, pet_profileimg
 		         , lead(pet_UID, 1) over(order by pet_UID desc) as nextpet_UID
 		         , lead(pet_name, 1) over(order by pet_UID desc) as nextpet_name
 		    from pet_info
-		    where pet_status = 1
+		    where pet_status = 1 and fk_idx = #{fk_idx}
 		) V
 		where pet_UID = #{pet_UID}
 	</select>
@@ -122,13 +122,39 @@
 		<result property="PETWEIGHT_UID"  column="petweight_UID"  javaType="String" />
 		<result property="FK_PET_UID" 	  column="fk_pet_UID" 	  javaType="String" />
 		<result property="PETWEIGHT_PAST" column="petweight_past" javaType="String" />
+		<result property="PETWEIGHT_TARGETED" column="petweight_targeted" javaType="String" />
 		<result property="PETWEIGHT_DATE" column="petweight_date" javaType="String" />
 	</resultMap>
 	<select id="getWeight" parameterType="String" resultMap="petweightMap">
-		select petweight_UID, fk_pet_UID, petweight_past, petweight_date
+		select petweight_UID, fk_pet_UID, petweight_past, nvl(petweight_targeted, ( select petweight_past
+																			        from        
+																			        (
+																			            select petweight_past
+																			            from petweight
+																			        ) V
+																			        where rownum = 1) ) as petweight_targeted
+        	 , to_char(petweight_date, 'yyyy-mm-dd') as petweight_date
 		from petweight 
 		where fk_pet_UID = #{pet_UID}
+		order by petweight_uid desc
 	</select>
+	
+	
+	<!-- // ***** Mybatis 에서 프로시저 호출해서 사용하기 ***** // #프로시저는 항상 좌중괄호, 우중괄호 -->
+	<insert id="addWeight" statementType="CALLABLE" parameterType="HashMap">
+		{ call PCD_PETWEIGHT_INSERT( #{PET_UID, mode=IN}
+								   , #{PETWEIGHT_PAST, mode=IN}
+								   , #{PETWEIGHT_TARGETED, mode=IN}
+								   , #{PETWEIGHT_DATE, mode=IN} )
+		}	
+	</insert> 
+	
+	<!-- 특정 반려동물케어 체중 페이지 완료 ==== -->
+	<update id="addWeightWithPet_info" parameterType="HashMap">
+		update pet_info set pet_weight = #{PETWEIGHT_PAST}
+		where pet_UID = #{PET_UID}
+	</update>
+	
 	
 	
 	<!-- //===== 특정 반려동물관리 진료기록(Ajax) ===== -->

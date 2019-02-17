@@ -102,4 +102,6 @@ public interface InterReservationService {
 
 	int updateDepositStatusByDUID(String deposit_UID);
 
+	int sendSms(HashMap<String, String> paraMap) throws Exception;
+
 }

@@ -52,7 +52,9 @@ public interface InterConsultDAO {
 	// [consult]commentCount 원글의 댓글갯수 1 update
 	int updateConsultCommentCount(String fk_consult_UID);
 
-	// [notification] 댓글작성 알림 insert
+	// 댓글 : [notification] 댓글작성 알림 insert
+	int insertConsultCommentNotification(ConsultCommentVO commentvo);
+	// 대댓글 : [notification] 댓글작성 알림 insert
 	int insertCommentNotification(ConsultCommentVO commentvo);
 		
 	// 댓글리스트 select
@@ -81,6 +83,8 @@ public interface InterConsultDAO {
 
 	// - 알림 테이블에 board로 notification:insert
 	int insertConsultNotification(String idx);
+
+	
 
 
 	

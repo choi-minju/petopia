@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.final2.petopia.common.MyUtil;
+import com.final2.petopia.coolsms.Coolsms;
 import com.final2.petopia.model.Biz_MemberVO;
 import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.MemberVO;
@@ -654,13 +656,13 @@ public class ReservationController {
 		String fk_schedule_UID = req.getParameter("fk_schedule_UID");
 		String reservation_status = req.getParameter("reservation_status");
 		String reservation_type = req.getParameter("reservation_type");
-
+		String reservation_DATE = req.getParameter("reservation_DATE");
 		paraMap.put("reservation_UID", reservation_UID);
 		paraMap.put("fk_schedule_UID", fk_schedule_UID);
 		paraMap.put("fk_idx", fk_idx);
 		paraMap.put("reservation_status", reservation_status);
 		paraMap.put("reservation_type", reservation_type);
-		
+		paraMap.put("reservation_DATE", reservation_DATE);
 		int result = 0;
 		if(reservation_status.equals("2") && reservation_type.equals("3")) {
 			result = service.updateRvAndScdStatusCancleForSurgery(paraMap);
@@ -923,7 +925,16 @@ public class ReservationController {
 			
 			String msg = "";
 			String loc = "";
-			if(n==1) {
+			int m = 0;
+			try {
+				paraMap.put("text", "[PETOPIA] 무통장입금 신청 성공! 24시간 이내에 신한 "+accountNumber+"으로 "+depositCoin+"원을 입금해주세요.");
+				paraMap.put("to", loginuser.getPhone());
+				m = service.sendSms(paraMap);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			if(n*m==1) {
 				msg = "무통장입금 신청 성공! 24시간 이내에 신한 "+accountNumber+"으로 입금 바랍니다.";
 				loc = "javascript:self.close(); opener.close(); opener.opener.location.href='"+req.getContextPath()+"/deposit.pet';";
 			}

@@ -49,9 +49,7 @@
 		getWeight();
 		getChart(); 
 		initButton();
-		 
 
-		
 	}); // end of ready()-------------------------------------------
 	
 	function initButton(){
@@ -60,11 +58,10 @@
 		$("#changepet").click(function() {
 			
 			getWeight();
-			getGraph();
 			getChart();
+			initButton();
 			
 		});
-		
 		
 		// 체중 추가 버튼
 		$("#addWeight").click(function() {
@@ -90,10 +87,7 @@
 			success : function(json) {
 				$("#table_weight").empty();
 				$("#graph").empty();
-				
-				
-				
-				
+			
 				var html = "<table class='table table-hover'>"
 						 + "	<thead>"
 						 + "		<tr>"		
@@ -104,27 +98,16 @@
 						 + "	</thead>"
 						 + "	<tbody>";
 						 
-				if(json == ''){
+				if(json == '') {
 					html += "		<tr>"
-						  + "			<td colspan='3' align='center'>기록이없습니다.</td>"
+						  + "			<td colspan='3' align='center'>기록이 없습니다.</td>"
 						  + "		</tr>";
 				}
-		 
-				
-				var resultArr = [];
-				for(var i=0; i<json.length; i++){
-					var obj = {name: '현재 체중'
-								, data: Number(json[i].PETWEIGHT_PAST)};	// 퍼센트 계산을 위해 반드시 Number로 변환
-					resultArr.push(obj);
-				}
-
-				
-					var i = 0;	
-
+						
+				var i = 0;
 					
 				$.each(json, function(entryIndex, entry) {
 					
-			
 					i++;
 					
 						html += "		<tr>"
@@ -141,9 +124,24 @@
 				
 					html += "	</tbody>"
 						  + "</table>";
-				console.log(json);
 					  
 				$("#table_weight").append(html);
+
+				var resultArr1 = [];
+				var resultArr2 = [];
+				var resultArr3 = [];
+				
+				for(var i=0; i<json.length; i++){
+					var obj1 = Number(json[i].PETWEIGHT_PAST);	// 퍼센트 계산을 위해 반드시 Number로 변환
+					var obj2 = Number(json[i].PETWEIGHT_TARGETED);
+					var obj3 = json[i].PETWEIGHT_DATE;
+					resultArr1.push(obj1);
+					resultArr2.push(obj2);
+					resultArr3.push(obj3);
+				}
+ 
+				console.log(resultArr1);
+				console.log(resultArr2);
 				
 				Highcharts.chart('graph', {
 				    chart: {
@@ -152,17 +150,21 @@
 				    title: {
 				        text: '체중 그래프'
 				    },
-		/* 		    subtitle: {
+/*
+		 		    subtitle: {
 				        text: 'Source: WorldClimate.com'
-				    }, */
+				    }, 
+*/				    
 				    xAxis: {
-				        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-				    },
+				        categories: resultArr3 
+				    }, 
+/*		  		    
 				    yAxis: {
 				        title: {
 				            text: 'Temperature (°C)'
 				        }
 				    },
+*/
 				    plotOptions: {
 				        line: {
 				            dataLabels: {
@@ -171,45 +173,24 @@
 				            enableMouseTracking: false
 				        }
 				    },
-				    series: [resultArr/*,  {
-				        name: 'London',
-				        data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-				    } */]
-				
+				    series: [{
+				        name: '현재 체중',
+				        data: resultArr1
+				    }, { 
+				        name: '목표 체중',
+				        data: resultArr2 
+				    }]
+				 
 				});
-				
-				
-				
-			},
-			error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}      
-		});
-		
-	} // end of function getWeight()-------------------------------------------
-	
-	function getGraph() {
-		
-		
- 		$.ajax({
-			
-			url : "getWeight.pet",   
-			type : "GET",                               
-			data : form_data,   
-			dataType : "JSON",
-			success : function(json) {
-				
 
 			},
 			error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}      
-
 		
  		});
 		
-	} // end of graph
-	
+	} // end of function getWeight()-------------------------------------------
 	
 	function getChart() {
 		
@@ -236,7 +217,7 @@
 				
 				if(json == ''){
 					html += "		<tr>"
-						  + "			<td colspan='3' align='center'>기록이없습니다.</td>"
+						  + "			<td colspan='3' align='center'>기록이 없습니다.</td>"
 						  + "		</tr>";
 				}
 						 
@@ -258,10 +239,10 @@
 			}      
 		});
 		
-	} // end of function getWeight()-------------------------------------------
-	
+	} // end of function getChart()-------------------------------------------
 	
 </script>
+
 
 <div class="container" style="margin-top: 10px;">
 	
@@ -313,58 +294,44 @@
 	</div>
 	
 	<div class="col-sm-12">
-	<div class="row" style="margin-top: 8%;">
-		<div class="out">
-			
-			<div class="in col-md-4" >
-				현재 체중 : ${petInfo.PET_WEIGHT}kg / 목표 체중 : <span id="weight_targeted"></span> kg
+		<div class="row" style="margin-top: 8%;">
+			<div class="out">
 				
-				<div id="graph" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+				<div class="in col-md-4" >
 				
-				<div id="table_weight">
-
-				</div>
-				<button id="addWeight" type="button">제충추가</button>				
-			</div>	
+					현재 체중 : ${petInfo.PET_WEIGHT}kg / 목표 체중 : <span id="weight_targeted"></span> kg
+					
+					<div id="graph" style="min-width: 310px; height: 400px; margin: 0 auto">
+					
+					</div>
+					
+					
+							
+				</div>	
+					
+				<div class="in col-md-4">
 				
-			<div class="in col-md-4">
-				<div class="alarm">
-					<div>
-						Simple Title
+					<div id="table_weight">
+					
 					</div>
+					
 					<div>
-						content
-					</div>
-				</div>
-				
-				<div class="alarm">
-					<div>
-						Simple Title
-					</div>
-					<div>
-						content
-					</div>
-				</div>
-				
-				<div class="alarm">
-					<div>
-						Simple Title
-					</div>
-					<div>
-						content
-					</div>
-				</div>				
-			</div>	
-			
-			<div class="in col-md-4">
-				최근 진료 기록
-				<div id="table_chart">
+						<button id="addWeight" type="button">제충추가</button>		
+					</div>	
 					
 				</div>
-			</div>
 				
+				<div class="in col-md-4">
+				
+					최근 진료 기록
+					<div id="table_chart">
+						
+					</div>
+					
+				</div>
+					
+			</div>
 		</div>
-	</div>
 	</div> 
 
 

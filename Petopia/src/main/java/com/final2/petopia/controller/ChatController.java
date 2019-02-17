@@ -29,7 +29,7 @@ public class ChatController extends TextWebSocketHandler{
 	@Autowired
 	private InterChatService service;
 	
-	//화상진료인트로
+	//화상채팅진료인트로
 	@RequestMapping(value="/chat.pet", method= {RequestMethod.GET})
 	public String requireLogin_chatview(HttpServletRequest req, HttpServletResponse res) {
 		
@@ -55,18 +55,25 @@ public class ChatController extends TextWebSocketHandler{
 		return "chat/viewlog.tiles2";
 	}
 	
-	//화상진료페이지
+	//화상채팅진료페이지
 	@RequestMapping(value="/videochat.pet", method= {RequestMethod.GET})
 	public String videochat(HttpServletRequest req, HttpServletResponse res) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String name = loginuser.getName();
 		
 		ChatVO chatvo = new ChatVO();
 		
 		String chatcode = chatvo.getChatcode();
 		
 		req.setAttribute("chatcode", chatcode);
+		req.setAttribute("Name", name);
 	
 		return "chat/videochat.tiles2";
 	}
+	
+	
 	
 	//랜덤코드 생성
 	@RequestMapping(value="/createcode.pet", method= {RequestMethod.GET})
@@ -152,7 +159,7 @@ public class ChatController extends TextWebSocketHandler{
 	}
 	
 	//코드 입력
-	@RequestMapping(value="/videocode.pet", method= {RequestMethod.GET})
+	@RequestMapping(value="/chatcode.pet", method= {RequestMethod.GET})
 	public String videocode(HttpServletRequest req, HttpServletResponse res) {
 		
 		HttpSession session = req.getSession();
@@ -160,8 +167,10 @@ public class ChatController extends TextWebSocketHandler{
 		
 		req.setAttribute("chatcode", chatcode);
 		
-		return "chat/videocode.notiles";
+		return "chat/chatcode.notiles";
 	}
+	
+	
 	
 	//정보출력
 	@RequestMapping(value="/log.pet", method= {RequestMethod.GET})
@@ -195,4 +204,75 @@ public class ChatController extends TextWebSocketHandler{
 		return returnmapList;
 	} // end of viewlog
 	
+	/////////////////////////////////////////////////////////////////////
+	// 02.14 
+	
+	//화상상담
+	@RequestMapping(value="/video.pet", method= {RequestMethod.GET})
+	public String requireLogin_video(HttpServletRequest req, HttpServletResponse res) {
+		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String MemberType = loginuser.getMembertype();
+		
+		req.setAttribute("MemberType", MemberType);
+		
+		return "video/videoview.tiles2";
+	}
+	
+		//화상진료페이지
+		@RequestMapping(value="/selectchat.pet", method= {RequestMethod.GET})
+		public String selectchat(HttpServletRequest req, HttpServletResponse res) {
+			
+			ChatVO chatvo = new ChatVO();
+			
+			String chatcode = chatvo.getChatcode();
+			
+			req.setAttribute("chatcode", chatcode);
+		
+			return "video/video.tiles2";
+		}
+		
+		//코드 생성
+		@RequestMapping(value="/videocode.pet", method= {RequestMethod.GET})
+		public String chatcode(HttpServletRequest req, HttpServletResponse res) {
+			
+			HttpSession session = req.getSession();
+			String chatcode = (String)session.getAttribute("chatcode");
+			
+			req.setAttribute("chatcode", chatcode);
+			
+			return "chat/videocode.notiles";
+		}
+		
+		
+		// 비디오코드에 대해 접속
+		@RequestMapping(value="/viewvideocode.pet", method= {RequestMethod.GET})
+		@ResponseBody
+		public HashMap<String, Object> viewvideocode(HttpServletRequest req, HttpServletResponse res) throws Throwable {
+			
+			HttpSession session = req.getSession();
+			
+			MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+				String usercode = req.getParameter("code");
+				
+				HashMap<String, Object> returnMap = new HashMap<String, Object>();
+			
+				returnMap.put("code", usercode);
+				returnMap.put("URL", "http://26.42.136.15:9090/petopia/selectchat.pet?"+usercode);
+
+				
+				System.out.println(returnMap);
+				
+				int result = service.createvideocode(returnMap);
+				System.out.println(result);
+				if(result != 1) {
+					String msg = "";
+					msg = "정보 insert 실패";
+					req.setAttribute("msg", msg);
+				}
+				return returnMap;
+		}
+			
 }
+

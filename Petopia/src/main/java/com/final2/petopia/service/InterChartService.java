@@ -105,6 +105,12 @@ public interface InterChartService {
 	//0214 펫이름 
 	HashMap<String, String> getpnames(String puid);
 
+	// 0214 마이 페이지 예약없는 차트 수정하기 
+	int Updatemychart(ChartVO cvo, List<HashMap<String, String>> plist);
+
+	//0216
+	int updateNoshow(String reservation_UID);
+
 
 	
 

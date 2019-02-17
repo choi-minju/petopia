@@ -463,10 +463,10 @@
 		    <button type="button" class="btn btn-default" onClick="goExcelDownload();">xls파일로 받기</button>
 		  </form>
 		</div>
-		<div>
+		<%-- <div>
 			<a href="<%= request.getContextPath() %>/downCareFile.pet">양식다운로드</a>
 		    <button type="button" class="btn btn-default" onClick="goExcelUpload(${sessionScope.loginuser.idx});">xls파일 업로드</button>
-		</div>
+		</div> --%>
 	</div>
 <%-- 190206 끝 --%>
   <ul class="nav nav-tabs">
