@@ -363,6 +363,8 @@ public class CareController {
 	//===== 케어 건강수첩 등록 페이지 요청 완료 =====
 	@RequestMapping(value="/careRegisterEnd.pet", method={RequestMethod.POST})
 	public String careRegisterEnd(CareVO cvo, HttpServletRequest req) {
+		
+		String pet_UID = req.getParameter("fk_pet_UID");
 	
 		int n = service.insertPetcare(cvo);
 		
@@ -371,7 +373,7 @@ public class CareController {
 		 
 		if(n == 1) {
 			msg = "케어 등록 성공!!";
-			loc = "/petopia/careCalendar.pet";
+			loc = "/petopia/careCalendar.pet?pet_UID="+pet_UID;
 		}
 		else {
 			msg = "케어 등록 실패!!";
