@@ -243,7 +243,7 @@ body {
 .footer {
   padding: 20px; /* Some padding */
   text-align: center; /* Center text*/
-  background: #ddd; /* Grey background */
+ /*  background: #ddd; */ /* Grey background */
 }
 </style>
 </head>

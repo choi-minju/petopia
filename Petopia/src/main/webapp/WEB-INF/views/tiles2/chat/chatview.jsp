@@ -58,24 +58,6 @@
 		});
 	}
 	
-	function viewlog(idx) {
-		
-		var form_data = {"idx":"${loginuser.idx}"};
-		
-		$.ajax({
-			url:"log.pet",
-			type:"GET",
-			data:form_data,
-			dataType:"JSON",
-			success:function(json) {
-				location.href="<%= ctxPath %>/viewlog.pet";
-			},
-			error:function() {
-				alert("정보를 불러오는데 실패했습니다.");
-			}
-		});
-	}
-	
 </script>
 
 <form name="chatFrm">
@@ -106,7 +88,7 @@
 	  	</c:if>
 	  	<c:if test="${MemberType == 2}">
 	  	<%-- <button type="button" class="btn2" onClick="viewlog(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담로그 보기</button> --%>
-	  	<button type="button" class="btn2" onClick="javascript:location.href='<%= ctxPath %>/viewlog.pet';" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담로그 보기</button>
+	  	<button type="button" class="btn2" onClick="javascript:location.href='<%= ctxPath %>/viewlog.pet?idx=${sessionScope.loginuser.idx}';" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담로그 보기</button>
 		</c:if>
 	  </div>  
 	  
@@ -120,7 +102,7 @@
 				<h4 class="modal-title">화상상담 코드 입력</h4>
 			 </div>
 			 <div class="modal-body" style="height: 150px; width: 100%;">
-			 	<iframe class="iframe" style="border: none; width: 100%; height: 120px;" src="<%= request.getContextPath() %>/videocode.pet"></iframe>
+			 	<iframe class="iframe" style="border: none; width: 100%; height: 120px;" src="<%= request.getContextPath() %>/chatcode.pet"></iframe>
 			 </div>
 			 <div class="modal-footer">
 			 	<button type="button" class="btn btn-default myclose" data-dismiss="modal">닫기</button>
