@@ -85,15 +85,20 @@
 
 </script>
 
-<body style="background-color: rgb(252, 118, 106);">
-<form name="videochatFrm" style="background-color: rgb(252, 118, 106);">
+<body style="background-color: white;">
+<form name="videochatFrm">
 	<div id="div_code" align="center">
-		<span style="color: white; font-size: 12pt;">상담을 위한 코드를 입력해주세요</span><br/>
-		<input type="text" name="code" id="code" size="15" placeholder="123456" required />
-		<input type="text" value="zzz" style="display: none" />
+		<span style="color: black; font-size: 12pt;">상담을 위한 코드를 입력해주세요</span><br/><br/>
+		<div class="row">
+			<div class="col-md-3">
+				<input type="text" class="form-control" name="code" id="code" size="15" placeholder="123456" required />
+				<input type="text" value="zzz" style="display: none"/>
+			</div>
+			<div class="col-md-2" id="div_input" align="center" style="margin-top: 5%;">
+				<button id="join-button"  onclick="viewcode();" type="button" class="btn btn-rounder myclose" data-dismiss="modal">확인</button>
+			</div>
+		</div>
 	</div>
-	<div id="div_input" align="center">
-		<button id="join-button"  onclick="viewcode();" type="button" class="btn btn-default myclose" data-dismiss="modal">확인</button>
-	</div>
+	
 </form>
 </body>
