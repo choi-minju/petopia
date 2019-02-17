@@ -284,7 +284,7 @@
 <!-- 알림 테이블에 board로 notification:insert -->
 <insert id="insertConsultNotification" parameterType="String">
 	insert into notification(not_UID, fk_idx, not_type, not_message, not_date, not_readcheck, not_remindstatus, not_time, not_URL)
-	values (seq_withdraw_UID.nextval, #{idx}, 4, '1:1상담에 대한 답변을 요청드립니다!', default, default, default, default, 'http://localhost:9090/petopia/consultList.pet')
+	values (seq_notification_UID.nextval, #{idx}, 4, '1:1상담에 대한 답변을 요청드립니다!', default, default, default, default, 'http://localhost:9090/petopia/consultList.pet')
 </insert>
 
 
