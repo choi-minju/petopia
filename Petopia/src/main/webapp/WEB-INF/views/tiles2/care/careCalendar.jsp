@@ -8,6 +8,10 @@
 		text-align: center; 
 		margin-top: 5%;
 	}
+		
+	.pointer {
+		cursor: pointer;
+	}
 	
 	.pet-box {
 		display: inline-block;
@@ -140,8 +144,15 @@
 		getPet();
 		getPetcare(); 
 		
+		$("#changepet").click(function() {
+			
+			getPet();
+			getPetcare(); 
+			
+		});
+		
 	});// end of $(document).ready()----------------------------------------
-	
+		
 	function getPet() { 
 	      
 	      var form_data = {fk_idx : "${fk_idx}"}; 
@@ -159,13 +170,16 @@
 	                  $.each(json, function(entryIndex, entry) { 
 	                      
 	                     html += "<div align='center' class='pet-box'>"
-	                     	   + "	<span class='petname'>" + entry.PET_NAME + "</span>"
+	                     	   + "	<span class='pointer changepet petname' onclick='javascript:location.href=\"careCalendar.pet?pet_UID="+ entry.PET_UID +"\"'>" + entry.PET_NAME + "</span>"
 	                     	   + "	<div class='img' style='display: block; text-align: left;'><img src='resources/img/care/" + entry.PET_PROFILEIMG + "' /></div>"
 	                     	   + "</div>";
 	                  	                  
 	                  });
 	                     
-	                  	html += "<a href='petRegister.pet'><img src='resources/img/care/petAdd.png' width='40px;' height='40px;'></a>";
+	                  	html += "<div align='center' class='pet-box'>"
+	                     	  + "	<span class='pointer petname' onclick='javascript:location.href=\"petRegister.pet\"'>반려동물 추가하기</span>"
+			                  + "	<div class='img' style='display: block; text-align: left;'><a href='petRegister.pet'><img src='resources/img/care/petAdd.png' width='40px;' height='40px;' style='border-radius: 0%'></a></div>"
+	                  		  + "</div>";
 	                  	
 	                  $("#displayPetList").append(html);
 	          },
