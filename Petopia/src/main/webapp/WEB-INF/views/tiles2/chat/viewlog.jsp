@@ -71,8 +71,7 @@
 		line-height: 1;
 	}
 	.event-list > li > .info {
-		padding-left: 3%;
-		padding-top: 3%;
+		padding: 3% 3% 0% 3%;
 	}
 	
 	.event-list > li > .info > .title {
@@ -123,7 +122,12 @@
 		color: rgb(30, 30, 30);
 		background-color: rgb(200, 200, 200);
 	}
-
+	.fa{
+		font-size: 15pt;
+	}
+	.colums{
+		font-weight: bold;
+	}
 </style>
 
 <script type="text/javascript">
@@ -149,13 +153,13 @@
 							html += "<span class='day'>" +entry.time+"</span>";
 							html += "</time>";
 							html += "<div class='info'>";
-							html += "<h2 class='title'>상담회원 아이디: "+entry.fk_userid+"</h2></br>";
-							html += "<p class='desc'>상담코드: "+entry.chatcode+"</p>";
-							html += "<p class='desc'>담당병원: "+entry.fk_name_biz+"</p></br>";
-							html += "<h2 class='title'>담당수의사: "+entry.fk_docname+"</h2>";
-							html += "<ul>";
-							html += "<li style='width:50%;'><a href='#website'><span class='fa fa-globe'></span>빈도수 보기</a></li>";
-							html += "<li style='width:50%;'><span class='fa fa-money'></span>예치금 내역 보기</li>";
+							html += "<p class='desc'><span class='colums' style='padding-right: 2%;'>상담회원아이디</span>"+entry.fk_userid+"</p>";
+							html += "<p class='desc'><span class='colums' style='padding-right: 10%;'>상담코드</span>"+entry.chatcode+"</p>";
+							html += "<p class='desc'><span class='colums' style='padding-right: 10%;'>담당병원</span>"+entry.fk_name_biz+"</p></br>";
+							html += "<p class='desc'><span class='colums' style='padding-right: 7.2%;'>담당수의사</span>"+entry.fk_docname+"</p>";
+							html += "<ul style='margin-top: 5%;'>";
+							html += "<li style='width:50%; padding: 2% 0% 2% 0%;'><a href='#website'><span class='fa fa-globe'></span>빈도수 보기</a></li>";
+							html += "<li style='width:50%; padding: 2% 0% 2% 0%;'><span class='fa fa-money'></span>예치금 내역 보기</li>";
 							html += "</ul>";
 							html += "</div>";
 							html += "</li>";
@@ -171,18 +175,20 @@
 </script>
 
 <form name="chatFrm" action="<%=ctxPath%>/log.pet">
-  <div class="container" style="margin-left: 20%; margin-top: 10%; min-height: 70%;">
+  <div class="container" style="margin-left: 20%; margin-top: 10%;">
 	<div class="row">
-	  <div class="chat" >
+	  <div class="chat" style="margin-bottom: 5%;">
 	    	<h2>화상 진료 내역</h2>
 	  </div>
 	</div>
-	  <div class="chatbody" style="weight: 100%; height: 100%; padding:40px; border-top: 1px solid #dfdfdf; border-bottom: 1px solid #dfdfdf; margin-right: 20%; background-color: #fbfbfb;">
-	  	<span style="font-weight: bold; font-size: 18px;">
-	  		온라인 채팅ㆍ화상 상담 내역</br></br>
-	  	</span>
-	   <ul class="event-list">
-	   </ul>
+	  <div class="chatbody" style="weight: 100%; height: 100%; padding:40px; border-top: 1px solid #dfdfdf; border-bottom: 1px solid #dfdfdf; background-color: #fbfbfb;">
+	  	<div class="col-md-offset-2 col-md-8" style="font-weight: bold; font-size: 18px; margin-bottom: 3%;">
+	  		온라인 채팅ㆍ화상 상담 내역
+	  	</div>
+	  	<div class="col-md-offset-2 col-md-8 col-lg-8 col-sm-12">
+		   <ul class="event-list">
+		   </ul>
+	   </div>
 	  </div>
   </div>
 	
