@@ -544,7 +544,7 @@
 								// 데이터넣고
 								html += "<div class='card text-left border-secondary' >";
 								html += "  <input type='hidden' class='idx_biz' value='"+entry.idx_biz+"'/>";
-								html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
+								html += "  <img class='card-img-top' src='<%=request.getContextPath()%>/resources/img/member/prontimg/"+entry.prontimg+"' alt='Card image cap'>";
 								html += "  	<div class='card-body'>";
 								html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
 								html += "	    <p class='card-text'>평점&nbsp;";
@@ -824,7 +824,7 @@
 												
 												html += "<div class='card text-left border-secondary' >";
 												html += "  <input type='hidden' class='idx_biz' value='"+entry.idx_biz+"'/>";
-												html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
+												html += "  <img class='card-img-top' src='<%=request.getContextPath()%>/resources/img/member/prontimg/"+entry.prontimg+"' alt='Card image cap'>";
 												html += "  	<div class='card-body'>";
 												html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
 												html += "	    <p class='card-text'>평점&nbsp;";
@@ -1189,7 +1189,7 @@
 				  		<c:forEach items="${ bizmemList }" var="biz_mem">
 				  			<div class="card text-left">
 				  			  <input type="hidden" class="idx_biz" value="${biz_mem.idx_biz }"/>
-							  <img class="card-img-top" src="<%= ctxPath %>/resources/img/hospitalimg/${biz_mem.prontimg}" alt="Card image cap" onclick="javascript:location.href='<%= ctxPath%>/bizDetail.pet?idx_biz=${biz_mem.idx_biz}'" />
+							  <img class="card-img-top" src="<%=request.getContextPath()%>/resources/img/member/prontimg/${biz_mem.prontimg}" alt="Card image cap" onclick="javascript:location.href='<%= ctxPath%>/bizDetail.pet?idx_biz=${biz_mem.idx_biz}'" />
 							  	<div class="card-body">
 								    <h5 class="card-title" onclick="javascript:location.href='<%= ctxPath%>/bizDetail.pet?idx_biz=${biz_mem.idx_biz}'">${biz_mem.name }</h5>
 								    <p class="card-text">평점

@@ -71,13 +71,13 @@
 							<!-- Wrapper for slides -->
 							<div class="carousel-inner">
 								<div class="item active">
-									<img src="<%=request.getContextPath()%>/resources/img/member/prontimg/${bizmvo.prontimg}" style="width: 100%;">
+									<img src="<%=request.getContextPath()%>/resources/img/member/prontimg/${bizmvo.prontimg}" style="width: 100%; height: 400px;">
 								</div>
 								
 								<c:if test="${imgList != null}">
 									<c:forEach items="${imgList}" var="img">
 										<div class="item">
-											<img src="<%=request.getContextPath()%>/resources/img/member/addimg/${img}" style="width: 100%;">
+											<img src="<%=request.getContextPath()%>/resources/img/member/addimg/${img}" style="width: 100%; height: 400px;">
 										</div>
 									</c:forEach>
 								</c:if>
