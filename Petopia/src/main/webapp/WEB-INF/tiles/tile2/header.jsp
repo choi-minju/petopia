@@ -283,7 +283,7 @@
 						<div class="column" id="petCare">
 							<!-- [19-01-25] /careIndex.pet -> petList.pet 수정 -->
 							<a href="<%= ctxPath %>/petList.pet">반려동물관리</a>
-							<a href="<%= ctxPath %>/careCalendar.pet">반려동물케어</a>
+							<%-- <a href="<%= ctxPath %>/careCalendar.pet">반려동물케어</a> --%>
 							<a href="<%= ctxPath %>/InsertMyPrescription.pet">진료기록관리</a>
 							<a href="<%= ctxPath %>/myReviewList.pet">나의 병원리뷰</a>
 						</div>
@@ -346,7 +346,7 @@
 					<div class="col-md-3"></div>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">회원관리</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">예치금관리</button>
-					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">리뷰관리</button>
+					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;" onClick="javascript: location.href='<%= ctxPath %>/adminReviewList.pet'">리뷰관리</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">상담</button>
 					<button type="button" class="btnmenu dropbtn" style="font-size: 16px;">커뮤니티관리</button>
 				</div>
@@ -371,7 +371,6 @@
 						<div class="column" id="adminBoard">
 							<a href="#">공지사항</a>
 							<a href="#">이벤트</a>
-							<a href="<%= ctxPath %>/adminReviewList.pet">전체리뷰</a>
 							<a href="#">자유게시판</a>
 						</div>
 					</div>

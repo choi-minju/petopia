@@ -35,12 +35,31 @@
     
 	$(document).ready(function(){
 		
-		$("#register").click(function(){
-			var frm = document.chartFrm;
-			frm.action="<%=ctxPath%>/InsertmyChartnoReserveEnd.pet";
-			frm.method="POST";
-			frm.submit();
-			//window.close();
+			
+			$("#register").click(function(){
+				// 유효성 검사
+				var flag = false;
+			      $(".must").each(function() {
+			            var data = $(this).val().trim();
+			            if(data == ""){
+			               alert("필수입력사항입니다.");
+			               flag = true;
+			               $(this).focus();
+			               return false;
+			            } else {
+			            	flag = false;
+			            }
+			      });// end of $(".must").each();
+			      
+					if(flag == true) {
+						return;
+					} else {
+						var frm = document.chartFrm;
+						frm.action="<%=ctxPath%>/InsertmyChartnoReserveEnd.pet";
+						frm.method="POST";
+						frm.submit();
+						//window.close();
+			}
 		});
 		
 	
@@ -64,7 +83,7 @@
 			var html ="";
 			var spinnerOqtyVal = $("#spinnerOqty1").val();
 			
-			if(spinnerOqtyVal == "1") {
+			if(spinnerOqtyVal == "0") {
 				$("#textbox1").empty();
 				return;
 			}
@@ -73,11 +92,11 @@
 				for(var i=0; i<parseInt(spinnerOqtyVal); i++) {
 				
 					  html +=    '<tr>'+
-						         '<td><input type="text" name="rx_name"/></td>'+
-				                 '<td><input type="text" name="dosage"/></td>'+
-				                 '<td><input type="text" name="dose_number"/></td>'
-				                 +  '<td><input type="text" name="rx_cautions"/></td>'
-				       	      +'<td><input type="text" name="rx_notice"/></td>'
+						         '<td><input type="text" class="must" name="rx_name"/></td>'+
+				                 '<td><input type="text" class="must" name="dosage"/></td>'+
+				                 '<td><input type="text" class="must" name="dose_number"/></td>'
+				                 +  '<td><input type="text" class="must" name="rx_cautions"/></td>'
+				       	      +'<td><input type="text" class="must" name="rx_notice"/></td>'
 				                 +'</tr>';
 				                 
 				}
@@ -88,6 +107,7 @@
 		});
 		
 	});// end of $(document).ready()----------------------
+
 </script>
 <div class="container" style=" border:0px solid black;border-radius:10px;background-color: #eaebed"> 
 <Form name="chartFrm" >
@@ -96,9 +116,9 @@
    <div class="col-md-12 ">
    <!-- <h4 style="text-align:center; padding-top: 6%;">[ ] 님의 진료기록</h4> -->
    <h4>개인 진료 기록하기</h4>
-   <div class="span col-md-12">1.날짜: <input type="date" name="reservation_DATE"/></div>
-   <div class="span col-md-12" >2.병원 이름: <input name="biz_name"/></div>
-   <div class="span col-md-12" >3.담당의사 이름: <input name="doc_name"/></div>
+   <div class="span col-md-12">1.날짜: <input type="date" class="must" name="reservation_DATE"/></div>
+   <div class="span col-md-12" >2.병원 이름: <input name="biz_name" class="must" /></div>
+   <div class="span col-md-12" >3.담당의사 이름: <input name="doc_name" class="must" /></div>
    <div class="span col-md-12">4.진료 회원 이름: <span>${sessionScope.loginuser.name}</span></div>
    <div class="span col-md-12">5.진료 동물 종류:  ${pmap.pet_type}</div>
    <div class="span col-md-12">6.진료 동물 이름: ${pmap.pet_name}</div>
@@ -126,20 +146,20 @@
 	   </thead>
 	   <tbody id="textbox1">
 	    <tr>
-	      <td><input type="text" name="rx_name"/></td>
-	      <td><input type="text" name="dosage"/></td>
-	      <td><input type="text" name="dose_number"/></td>
-	      <td><input type="text" name="rx_cautions"/></td>
-	      <td><input type="text" name="rx_notice"/></td>
+	      <td><input type="text" class="must" name="rx_name"/></td>
+	      <td><input type="text" class="must" name="dosage"/></td>
+	      <td><input type="text" class="must" name="dose_number"/></td>
+	      <td><input type="text" class="must" name="rx_cautions"/></td>
+	      <td><input type="text" class="must" name="rx_notice"/></td>
 	    </tr>
 	   </tbody>
    </table> 
    </div>
    
    <div class="span col-md-12">9.주의 사항: </div>
-   <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;"></textarea></div>
+   <div class="span col-md-12"><textarea  name="cautions" class="must" style="width:50%; height:15%;"></textarea></div>
    <div class="span col-md-12">10.노트 : </div>
-   <div class="span col-md-12"><textarea  name="chart_contents" style="width:50%; height:15%;"></textarea></div>
+   <div class="span col-md-12"><textarea  name="chart_contents" class="must" style="width:50%; height:15%;"></textarea></div>
    
 	<hr style="width:100%; height:3%; color:white;"></hr>
     <div class="span col-md-8 ">11.총 결제 금액 : <input name="totalpay"/>원</div>

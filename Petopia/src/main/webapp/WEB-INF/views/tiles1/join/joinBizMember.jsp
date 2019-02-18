@@ -343,7 +343,7 @@
 
 			isphone = regExp_phone.test(phone);
 			
-			if(phone.length != 0 && (!isphone || !(phone.length == 11 || phone.length == 10) ) ) {
+			if(phone.length != 0 && (!isphone || !phone.length >=6 ) ) {
 				$(".phoneError").show();
 				$(this).val("");
 				return;
@@ -638,7 +638,7 @@
 	               </div>
 	               
                <div class="col-sm-4 text-left">
-                  <label style="color: #999;">사업자번호</label><BR>
+                  <label style="color: #999;">사업자번호(- 없이 숫자만 입력하세요)</label><BR>
                   <input type="text" class="form-control must" id="biznumber" name="biznumber"/>
                   <span class="error">필수입력 사항입니다.</span>
                </div>
@@ -646,10 +646,10 @@
             
             <div class="row" style="padding-top: 20px;" >
                <div class="col-sm-4">
-                  <label style="color: #999;">대표 연락처</label>
+                  <label style="color: #999;">대표 연락처(- 없이 숫자만 입력하세요)</label>
                   <input type="text" class="form-control must" id="phone" name="phone" style="width: 80%;"/>
                   <span class="error">필수입력 사항입니다.</span>
-                  <span class="phoneError" style="color: red;">대표연락처는 10~11자 숫자만 가능합니다.</span>
+                  <span class="phoneError" style="color: red;">대표연락처는 6자 이상 숫자만 가능합니다.</span>
                </div>
             </div>
             

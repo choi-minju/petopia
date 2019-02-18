@@ -209,6 +209,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	<!-- === 2019.01.31 ==== -->
 	
@@ -233,6 +234,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- 기간O검색X -->
@@ -256,6 +258,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- 기간O검색O -->
@@ -280,6 +283,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	<!-- === 2019.02.01 === -->
 	
@@ -523,6 +527,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	<!-- === 2019.02.11 === 수정 -->
 	
@@ -547,6 +552,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- 기간O검색X -->
@@ -570,6 +576,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- 기간O검색O -->
@@ -594,6 +601,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- *** 기업 회원이 블라인드 처리 요청 *** -->
@@ -695,6 +703,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- 기간X검색O -->
@@ -718,6 +727,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- 기간O검색X -->
@@ -741,6 +751,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- 기간O검색O -->
@@ -765,6 +776,7 @@
 		    )T
 		)W
 		where orderIdx between #{STARTRNO} and #{ENDRNO}
+		order by rno desc
 	</select>
 	
 	<!-- *** 블라인드 처리 *** -->
