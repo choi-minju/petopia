@@ -69,7 +69,7 @@
    <select id="getTotalCountNoSearch" parameterType="int" resultType="int">
       select count(*) as cnt
       from reservation
-      where fk_idx = #{idx_biz}
+      where fk_idx_biz = #{idx_biz}
    </select>
    
    <!-- 0207 예약 타입 불러오기  -->
@@ -515,7 +515,7 @@
       where reservation_uid=#{minruid}
      </select>
      
-     <!-- 0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기 -->
+     <!-- 0211 ajax로  탭 클릭시 마이페이지 처방전 기본정보 불러오기 0216-->
      <select id="getmyPreinfobyajax" parameterType="String" resultMap="myPreinfo">
        select  c.chart_uid, a.pet_name, decode(a.pet_type,'cat','고양이','dog','강아지','smallani','소동물','etc','기타동물') as pet_type
 		        , c.cautions, c.chart_contents
@@ -609,5 +609,9 @@
       where chart_UID=#{chart_UID}
    </update>
   
-
+	<!-- 0216 -->
+	<update id="updateNoshow" parameterType="String">
+	  update reservation set reservation_status =5
+	  where reservation_UID =#{reservation_UID}
+	</update>
 </mapper>

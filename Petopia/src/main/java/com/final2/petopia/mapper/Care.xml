@@ -22,12 +22,12 @@
 	</resultMap>
 	<select id="getPet_infoList" resultMap="getPet_infoListMap" parameterType="int">	
 		select pet_UID, fk_idx, pet_name
-		     , decode(pet_type, 'dog', '개'
+		     , decode(pet_type, 'dog', '강아지'
 		                      , 'cat', '고양이'
 		                      , 'smallani', '소동물'
 		                                  , '기타') as pet_type, pet_birthday, pet_size, pet_weight
-		     , decode(pet_gender, '1', '남자'
-		                             , '여자') as pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
+		     , decode(pet_gender, '1', '수컷'
+		                             , '암컷') as pet_gender, pet_neutral, medical_history, allergy, pet_profileimg
 		from pet_info
 		where fk_idx = #{fk_idx} and
 		      pet_status in('1','2')
@@ -100,7 +100,7 @@
 		    select lag(pet_UID, 1) over(order by pet_UID desc) as previouspet_UID
 		         , lag(pet_name, 1) over(order by pet_UID desc) as previouspet_name
 		         , pet_UID, fk_idx, pet_name
-                 , decode(pet_type, 'dog', '개'
+                 , decode(pet_type, 'dog', '강아지'
                     			  , 'cat', '고양이'
                     			  , 'smallani', '소동물'
                                 			  , '기타') as pet_type

@@ -316,6 +316,7 @@ public class ChartService implements InterChartService {
 	}
 
 	//0213 마이페이지에서 예약정보가 없는 개인 차트 인서트 
+	//0216 수정
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation= Isolation.READ_COMMITTED, rollbackFor={Throwable.class})
 	public int InsertmyChartnoReserveEnd(ChartVO cvo,int idx, List<HashMap<String, String>> mlist) {
@@ -365,6 +366,13 @@ public class ChartService implements InterChartService {
 		}
 		return result;
 		
+	}
+	
+//0216
+	@Override
+	public int updateNoshow(String reservation_UID) {
+		int n = dao.updateNoshow(reservation_UID);
+		return n;
 	}
 
 	

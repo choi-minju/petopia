@@ -50,10 +50,10 @@ th{
 	
 	});
 
-	function goRsvCancle(reservation_UID, fk_schedule_UID, reservation_status, reservation_type){
+	function goRsvCancle(reservation_UID, fk_schedule_UID, reservation_status, reservation_type, reservation_DATE){
 		var flag = confirm("예약을 취소 하시겠습니까?");
 		if(flag){
-			window.location.href="<%=ctxPath%>/goCancleReservationMember.pet?reservation_UID="+reservation_UID+"&fk_schedule_UID="+fk_schedule_UID+"&reservation_status="+reservation_status+"&reservation_type="+reservation_type;
+			window.location.href="<%=ctxPath%>/goCancleReservationMember.pet?reservation_UID="+reservation_UID+"&fk_schedule_UID="+fk_schedule_UID+"&reservation_status="+reservation_status+"&reservation_type="+reservation_type+"&reservation_DATE="+reservation_DATE;
 		}
 		else{
 			return false;
@@ -106,7 +106,7 @@ th{
         </td>
         <td>
         	<c:if test="${rmap.reservation_status=='1'|| rmap.reservation_status=='2'}">
-        	<button type="button" class="btn btn-rounder btnmenu" onClick="goRsvCancle(${rmap.reservation_UID}, ${rmap.fk_schedule_UID}, ${rmap.reservation_status}, ${rmap.reservation_type})">취소</button>
+        	<button type="button" class="btn btn-rounder btnmenu" onClick="goRsvCancle(${rmap.reservation_UID}, ${rmap.fk_schedule_UID}, ${rmap.reservation_status}, ${rmap.reservation_type}, ${rmap.reservation_DATE})">취소</button>
         	</c:if>
         	<c:if test="${rmap.reservation_status=='3' || rmap.reservation_status=='4' || rmap.reservation_status=='5'}">
         	<a class="btn btn-rounder btnmenu" style="color: white; background-color: gray; cursor: default;">취소</a>

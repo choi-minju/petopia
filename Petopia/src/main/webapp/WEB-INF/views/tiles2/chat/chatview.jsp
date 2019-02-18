@@ -9,8 +9,18 @@
 
 <style type="text/css">
 	.chatbody {font-family: NanumGothic, 나눔 고딕, 맑은 고딕, dotum;}
+	.modal {
+	  display: none; /* Hidden by default */
+	  position: fixed; /* Stay in place */
+	  padding-top: 100px; /* Location of the box */
+	  left: 0;
+	  top: 0;
+	  width: 100%; /* Full width */
+	  height: 100%; /* Full height */
+	}
 	.modal-header {background-color: rgb(252, 118, 106);}
-	.modal-body {background-color: rgb(252, 118, 106);}
+	.modal-body {background-color: white;
+				color: black;}
 	.modal-footer {background-color: rgb(252, 118, 106);}
 	.modal-title {
     color: white;
@@ -25,10 +35,27 @@
 		  cursor: pointer; 
 		  margin-top:60%; 
 		  float:right;
+		  border-radius: 10px;
+		  padding: 1% 2% 1% 2%;
     }
     .btn2:hover{
 		  background:white;
 		  color:#ff9577;
+	}
+	
+	/* The Close Button */
+	.close {
+	  color: white;
+	  float: right;
+	  font-size: 20px;
+	  font-weight: normal;
+	}
+	
+	.close:hover,
+	.close:focus {
+	  color: gray;
+	  text-decoration: none;
+	  cursor: pointer;
 	}
 
 </style>
@@ -58,24 +85,6 @@
 		});
 	}
 	
-	function viewlog(idx) {
-		
-		var form_data = {"idx":"${loginuser.idx}"};
-		
-		$.ajax({
-			url:"log.pet",
-			type:"GET",
-			data:form_data,
-			dataType:"JSON",
-			success:function(json) {
-				location.href="<%= ctxPath %>/viewlog.pet";
-			},
-			error:function() {
-				alert("정보를 불러오는데 실패했습니다.");
-			}
-		});
-	}
-	
 </script>
 
 <form name="chatFrm">
@@ -85,7 +94,7 @@
 	    	<h2>화상 진료</h2>
 	  </div>
 	</div>
-	  <div class="chatbody" style="weight: 100%; height: 100%; padding:40px; border-top: 1px solid #dfdfdf; border-bottom: 1px solid #dfdfdf; margin-right: 20%; background-color: #fbfbfb;">
+	  <div class="chatbody" style="weight: 100%; height: 100%; padding:40px; border-top: 1px solid #dfdfdf; border-bottom: 1px solid #dfdfdf; background-color: #fbfbfb;">
 		<img src="<%=ctxPath%>/resources/img/chat/chat1.png" style="margin-top: 8%; position: absolute;">
 	  	<span style="font-weight: bold; font-size: 18px;">
 	  		온라인 채팅ㆍ화상 상담</br></br>
@@ -101,12 +110,12 @@
 		</span>
 		
 		<button type="button" class="btn2" data-toggle="modal" data-target="#videochat" data-dismiss="modal" >상담하기</button>
-		<c:if test="${MemberType == 1}">
+		<c:if test='${MemberType == "1"}'>
 	  	<button type="button" class="btn2" onClick="createcode(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담코드 생성</button>
 	  	</c:if>
-	  	<c:if test="${MemberType == 2}">
+	  	<c:if test='${MemberType == "2"}'>
 	  	<%-- <button type="button" class="btn2" onClick="viewlog(${sessionScope.loginuser.idx});" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담로그 보기</button> --%>
-	  	<button type="button" class="btn2" onClick="javascript:location.href='<%= ctxPath %>/viewlog.pet';" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담로그 보기</button>
+	  	<button type="button" class="btn2" onClick="javascript:location.href='<%= ctxPath %>/viewlog.pet?idx=${sessionScope.loginuser.idx}';" style="cursor: pointer; margin-top:60%; margin-right:5%; float:right;">상담로그 보기</button>
 		</c:if>
 	  </div>  
 	  
@@ -120,10 +129,10 @@
 				<h4 class="modal-title">화상상담 코드 입력</h4>
 			 </div>
 			 <div class="modal-body" style="height: 150px; width: 100%;">
-			 	<iframe class="iframe" style="border: none; width: 100%; height: 120px;" src="<%= request.getContextPath() %>/videocode.pet"></iframe>
+			 	<iframe class="iframe" style="border: none; width: 100%; height: 120px;" src="<%= request.getContextPath() %>/chatcode.pet"></iframe>
 			 </div>
 			 <div class="modal-footer">
-			 	<button type="button" class="btn btn-default myclose" data-dismiss="modal">닫기</button>
+			 	<button type="button" class="btn myclose close" data-dismiss="modal" style="opacity: 2;">close</button>
 			 </div>
 			</div>
 		</div>

@@ -22,6 +22,13 @@ public class ChatDAO implements InterChatDAO {
 		return n;
 	}
 	
+	@Override
+	public int addvideocode(HashMap<String, Object> returnmap) {
+		
+		int n = sqlsession.insert("chat.addvideocode", returnmap);
+		
+		return n;
+	}
 	
 	@Override
 	public String viewcode(String code) {

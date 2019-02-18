@@ -266,6 +266,7 @@ public class ChartController {
 	}
 	
 	//0213 마이페이지 개인진료 차트 등록하기 !!!예약없이 왜.... ㅠㅠㅠㅠ 
+	//0216  수정
 	@RequestMapping(value = "/InsertmyChartnoReserveEnd.pet", method = { RequestMethod.POST })
 	public String requireLogin_InsertmyChartnoReserveEnd(HttpServletRequest req, HttpServletResponse res,ChartVO cvo) {
 		
@@ -284,7 +285,7 @@ public class ChartController {
 		map.put("cuid",cuid);
 		map.put("puid",puid);
 		
-		System.out.println("puid:"+puid);
+		//System.out.println("puid:"+puid);
 		List<HashMap<String, String>> mlist = new ArrayList<HashMap<String, String>>();
 
 		String[] rx_name = req.getParameterValues("rx_name");
@@ -297,7 +298,7 @@ public class ChartController {
 		for (int i = 0; i < rx_name.length; i++) {
 			HashMap<String, String> map2 = new HashMap<String, String>();
 			map2.put("rx_regName", cvo.getDoc_name());
-			map2.put("chart_UID",mcuid);
+			map2.put("chart_UID",String.valueOf(cvo.getChart_UID()));
 			map2.put("rx_name", rx_name[i]);
 			map2.put("dosage", dosage[i]);
 			map2.put("dose_number", dose_number[i]);
@@ -305,7 +306,7 @@ public class ChartController {
 			map2.put("rx_notice",rx_notice[i]);
 			mlist.add(map2);
 		}
-		
+		//map2.put("chart_UID",mcuid);
 		int n = service.InsertmyChartnoReserveEnd(cvo,idx,mlist);
 		
 		String msg = "";
@@ -419,7 +420,7 @@ public class ChartController {
 	@RequestMapping(value = "/InsertChart.pet", method = { RequestMethod.GET })
 	public String requireLoginBiz_InsertChart(HttpServletRequest req, HttpServletResponse res) {
 
-		String ruid = req.getParameter("fk_reservation_UID");
+		String ruid = req.getParameter("reservation_UID");
 		String cuid = service.getChartuid(); // 차트번호 채번
 		
 		HashMap<String, String> chartmap = new HashMap<String, String>();
@@ -742,7 +743,7 @@ public class ChartController {
 		
 //		      #120. 페이지바 만들기(MyUtil에 있는 static메소드 사용)
 		String pageBar = "<ul class='pagination'>";
-		pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "reservationList.pet");
+		pageBar += MyUtil.getPageBar(sizePerPage, blockSize, totalPage, currentShowPageNo, "bizReservationList.pet");
 		pageBar += "</ul>";
 
 		session.setAttribute("readCountPermission", "yes");
@@ -761,5 +762,25 @@ public class ChartController {
 		req.setAttribute("currentURL", currentURL);
 		return "chart/biz_rvchartList.tiles2";
 	}
+	//0216
+	@RequestMapping(value = "/goNoshow.pet", method = { RequestMethod.GET })
+	@ResponseBody
+	public int requireLoginbiz_goNoshow(HttpServletRequest req, HttpServletResponse res) {
+	    int result =0;
+	    
+	   String reservation_UID=req.getParameter("reservation_UID");
+	   result= service.updateNoshow(reservation_UID);
+	   
+	   System.out.println("result: "+result);
+	   return result;
+	}
+
+
+
+
+
+	
+
+
 
 }// end of controller
