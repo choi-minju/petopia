@@ -445,13 +445,14 @@
 	     <result property="chart_type"       column="CHART_TYPE"        javaType="String"/>
 	     <result property="reservedate"       column="RESERVEDATE"        javaType="String"/>
 	     <result property="reservation_uid"       column="RESERVATION_UID"        javaType="String"/>
- 		<result property="chart_uid"       column="CHART_UID"        javaType="String"/>    
+ 		<result property="chart_uid"       column="CHART_UID"        javaType="String"/>  
+ 		<result property="fk_idx"       column="FK_IDX"        javaType="String"/>  
       </resultMap>
      <select id="getmyreservedaylist" parameterType="HashMap" resultMap="myday_typeList">
        select to_char(c.reservation_date,'mm-dd') as reservation_date
               ,to_char(r.reservation_date,'yyyy-mm-dd hh24:mi:ss') as reservedate
               ,decode(c.chart_type,0, '약국',1,'진료', 2,'예방접종',3,'수술',4,'호텔링')as chart_type
-              , r.reservation_uid,c.chart_uid
+              , r.reservation_uid,c.chart_uid,c.fk_idx
             from chart c join reservation r
             on c.fk_reservation_uid = r.reservation_uid
             where to_char(c.reservation_date,'yyyy-mm') = to_char(sysdate,'yyyy-mm') 

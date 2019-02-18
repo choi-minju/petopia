@@ -82,7 +82,7 @@
 			var html ="";
 			var spinnerOqtyVal = $("#spinnerOqty1").val();
 			
-			if(spinnerOqtyVal == "1") {
+			if(spinnerOqtyVal == "0") {
 				$("#textbox1").empty();
 				return;
 			}

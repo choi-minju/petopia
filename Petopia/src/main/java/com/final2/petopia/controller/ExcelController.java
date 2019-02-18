@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.service.ExcelService;
 
@@ -136,6 +137,65 @@ public class ExcelController {
 				objCell = objRow.createCell(3);
 				objCell.setCellValue(dvo.getDeposit_status());
 				objCell.setCellStyle(styleContent);
+				index++;
+			}
+
+			for (int i = 0; i < rowList.size(); i++) {
+				objSheet.autoSizeColumn(i);
+			}
+		} else if ("chart".equals(type)) {
+			List<ChartVO> rowList = service.selectChartListForMember(paraMap);
+
+			// 1행
+			objRow = objSheet.createRow(0);
+			objRow.setHeight((short) 0x150);
+
+			objCell = objRow.createCell(0);
+			objCell.setCellValue("차트번호");
+			objCell.setCellStyle(styleHd);
+
+			objCell = objRow.createCell(1);
+			objCell.setCellValue("방문날짜");
+			objCell.setCellStyle(styleHd);
+
+			objCell = objRow.createCell(2);
+			objCell.setCellValue("병원/약국");
+			objCell.setCellStyle(styleHd);
+
+			objCell = objRow.createCell(3);
+			objCell.setCellValue("진료 타입");
+			objCell.setCellStyle(styleHd);
+
+			objCell = objRow.createCell(4);
+			objCell.setCellValue("총 결제 금액");
+			objCell.setCellStyle(styleHd);
+			
+			int index = 1;
+			for (ChartVO cvo : rowList) {
+				objRow = objSheet.createRow(index);
+				objRow.setHeight((short) 0x150);
+
+				objCell = objRow.createCell(0);
+				objCell.setCellValue(cvo.getChart_UID());
+				objCell.setCellStyle(styleContent);
+
+				objCell = objRow.createCell(1);
+				objCell.setCellValue(cvo.getReservation_DATE());
+				objCell.setCellStyle(styleContent);
+
+				objCell = objRow.createCell(2);
+				objCell.setCellValue(cvo.getBiz_name());
+				objCell.setCellStyle(styleContent);
+
+				objCell = objRow.createCell(3);
+				objCell.setCellValue(cvo.getChart_type());
+				objCell.setCellStyle(styleContent);
+				
+				objCell = objRow.createCell(4);
+				objCell.setCellValue(cvo.getTotalpay());
+				objCell.setCellStyle(styleContent);
+
+				
 				index++;
 			}
 
