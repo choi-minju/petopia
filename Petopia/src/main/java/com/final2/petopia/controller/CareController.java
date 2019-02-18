@@ -325,15 +325,26 @@ public class CareController {
 	@RequestMapping(value="/careRegister.pet", method={RequestMethod.GET})
 	public String careRegister(HttpServletRequest req) {
 		
+		HttpSession session = req.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String fk_idx = String.valueOf(loginuser.getIdx());
+		
 		String fk_pet_UID = req.getParameter("fk_pet_UID");
 		String fk_caretype_UID = req.getParameter("fk_caretype_UID");
 		
 		List<HashMap<String,String>> caretypeList = service.getCaretypeList();
 		
+		HashMap<String, String> paramap = new HashMap<String, String>();
+		paramap.put("fk_idx", fk_idx);
+		paramap.put("pet_UID", fk_pet_UID);
+		
+		HashMap<String, Object> petInfo = service.getPet_info(paramap);		
+		
 		req.setAttribute("fk_pet_UID", fk_pet_UID);
 		req.setAttribute("fk_caretype_UID", fk_caretype_UID);
 		
 		req.setAttribute("caretypeList", caretypeList);
+		req.setAttribute("petInfo", petInfo);
 		
 		return "care/careRegister.tiles2";
 	}

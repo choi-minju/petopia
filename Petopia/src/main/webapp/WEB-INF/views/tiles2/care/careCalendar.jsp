@@ -171,7 +171,7 @@
 	                      
 	                     html += "<div align='center' class='pet-box'>"
 	                     	   + "	<span class='pointer changepet petname' onclick='javascript:location.href=\"careCalendar.pet?pet_UID="+ entry.PET_UID +"\"'>" + entry.PET_NAME + "</span>"
-	                     	   + "	<div class='img' style='display: block; text-align: left;'><img src='resources/img/care/" + entry.PET_PROFILEIMG + "' /></div>"
+	                     	   + "	<div class='img' style='display: block; text-align: left;'><span class='pointer changepet petname' onclick='javascript:location.href=\"careCalendar.pet?pet_UID="+ entry.PET_UID +"\"'><img src='resources/img/care/" + entry.PET_PROFILEIMG + "' /></span></div>"
 	                     	   + "</div>";
 	                  	                  
 	                  });
@@ -333,11 +333,12 @@
 			<!-- info 사이드 시작 -->
 			<div class="col-sm-3" >			 
 				<div align='center'>
+				<!--  
 					<span class="petname">케어명</span>
 					<div><img src="resources/img/care/feeding-a-dog.png" style="height: 100px; width: 100px;" /></div>
 					<div class="petname info" align='center'>케어경고알림</div>
 		  		</div>
-		  			
+		  		-->	
 				<div id='external-events' align="center">
 					<li>
 				      	<div>
@@ -377,6 +378,7 @@
 	</div>
 
 	<!-- File Button -->
+	<!--  
 	<fieldset>
 		<div class="row">
 			<div id="displayPetcare" class="col-sm-12">
@@ -384,7 +386,7 @@
 			</div>
 		</div>
 	</fieldset>
-
+	-->
  
 </div>
 <!-- container 끝 -->	 
