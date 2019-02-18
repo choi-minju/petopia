@@ -22,10 +22,28 @@
 	$(document).ready(function(){
 		
 		$("#register").click(function(){
-			var frm = document.chartFrm;
-			frm.action="<%=ctxPath%>/InsertChartEnd.pet";
-			frm.method="POST";
-			frm.submit();
+			// 유효성 검사
+			var flag = false;
+		      $(".must").each(function() {
+		            var data = $(this).val().trim();
+		            if(data == ""){
+		               alert("필수입력사항입니다.");
+		               flag = true;
+		               $(this).focus();
+		               return false;
+		            } else {
+		            	flag = false;
+		            }
+		      });// end of $(".must").each();
+		      
+				if(flag == true) {
+					return;
+				} else {
+					var frm = document.chartFrm;
+					frm.action="<%=ctxPath%>/InsertChartEnd.pet";
+					frm.method="POST";
+					frm.submit();
+				}
 		});
 		
 		  $("#btnplus").click(function(){
@@ -60,7 +78,7 @@
 			var html ="";
 			var spinnerOqtyVal = $("#spinnerOqty1").val();
 			
-			if(spinnerOqtyVal == "1") {
+			if(spinnerOqtyVal == "0") {
 				$("#textbox1").empty();
 				return;
 			}
@@ -69,11 +87,11 @@
 				for(var i=0; i<parseInt(spinnerOqtyVal); i++) {
 				
 					  html +=    '<tr>'+
-						         '<td><input type="text" name="rx_name"/></td>'+
-				                 '<td><input type="text" name="dosage"/></td>'+
-				                 '<td><input type="text" name="dose_number"/></td>'
-				                 +  '<td><input type="text" name="rx_cautions"/></td>'
-				       	      +'<td><input type="text" name="rx_notice"/></td>'
+						         '<td><input type="text" class="must" name="rx_name"/></td>'+
+				                 '<td><input type="text" class="must" name="dosage"/></td>'+
+				                 '<td><input type="text" class="must" name="dose_number"/></td>'
+				                 +  '<td><input type="text" class="must" name="rx_cautions"/></td>'
+				       	      +'<td><input type="text" class="must" name="rx_notice"/></td>'
 				                 +'</tr>';
 				                 
 				}
@@ -83,6 +101,9 @@
 			}
 		});
 		
+		
+	      
+	      
 	});// end of $(document).ready()----------------------
 </script>
 <div class="container" style=" border:0px solid black;border-radius:10px;margin-bottom:1%; background-color: #eaebed"> 
@@ -106,7 +127,7 @@
    <div class="span col-md-12">6.진료 동물 이름: <span>${chartmap.pet_name}</span></div>
    <div class="span col-md-12">7.진료종류: <span>${chartmap.reservation_type}</span></div>
   <div class="span col-md-12"><span>8.처방 정보</span>
-    <input id="spinnerOqty1" value="1" style="width: 30px; height: 20px; padding-top: 5%;">
+    <input id="spinnerOqty1"  class="must" value="1" style="width: 30px; height: 20px; padding-top: 5%;">
    <table style="border:1px black solid;">
 	   <thead style="text-align: center;">
 	    <tr>
@@ -119,26 +140,26 @@
 	   </thead>
 	   <tbody id="textbox1">
 	    <tr>
-	      <td><input type="text" name="rx_name"/></td>
-	      <td><input type="text" name="dosage"/></td>
-	      <td><input type="text" name="dose_number"/></td>
-	      <td><input type="text" name="rx_cautions"/></td>
-	      <td><input type="text" name="rx_notice"/></td>
+	      <td><input type="text"  class="must" name="rx_name"/></td>
+	      <td><input type="text" class="must" name="dosage"/></td>
+	      <td><input type="text" class="must" name="dose_number"/></td>
+	      <td><input type="text" class="must" name="rx_cautions"/></td>
+	      <td><input type="text" class="must" name="rx_notice"/></td>
 	    </tr>
 	   </tbody>
    </table>
    </div>
    
    <div class="span col-md-12">9.주의 사항: </div>
-   <div class="span col-md-12"><textarea  name="cautions" style="width:50%; height:15%;"></textarea></div>
+   <div class="span col-md-12"><textarea  name="cautions" class="must" style="width:50%; height:15%;"></textarea></div>
    <div class="span col-md-12">10.노트 : </div>
-   <div class="span col-md-12"><textarea  name="chart_contents" style="width:50%; height:15%;"></textarea></div>
+   <div class="span col-md-12"><textarea  name="chart_contents" class="must"  style="width:50%; height:15%;"></textarea></div>
    
 	<hr style="width:100%; height:3%; color:white;"></hr>
 	<c:if test="${rtype==3}">
 		<div class="span col-md-8 ">11.사용한 예치금 : <span id="pament_pay"> ${chartmap.payment_pay}원 </span></div>
 		<div class="span col-md-8 ">12.사용한 포인트 : <span id="">${chartmap.payment_point} POINT</span></div>
-		<div class="span col-md-8 ">13.본인 부담금 :   <span> <input type="number"  id="addpay" name="addpay" value="0"/>원</span>
+		<div class="span col-md-8 ">13.본인 부담금 :   <span> <input type="number" class="must"  id="addpay" name="addpay" value="0"/>원</span>
 		 <button type="button" id="btnplus">총합</button></div>
 		<div class="span col-md-8 ">14.총     합 : <span id="paytotal"></span>원</div>
     </c:if>

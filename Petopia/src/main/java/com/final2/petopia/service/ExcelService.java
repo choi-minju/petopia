@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.final2.petopia.common.ExcelRead;
 import com.final2.petopia.common.ExcelReadOption;
+import com.final2.petopia.model.ChartVO;
 import com.final2.petopia.model.DepositVO;
 import com.final2.petopia.model.ExcelDAO;
 
@@ -44,6 +45,12 @@ public class ExcelService {
 			e.printStackTrace();
 		}
 
+	}
+
+	public List<ChartVO> selectChartListForMember(HashMap<String, Object> paraMap) {
+		List<ChartVO> chartList = dao.selectChartListForMember(paraMap);
+		return chartList;
+		
 	}
 
 }
