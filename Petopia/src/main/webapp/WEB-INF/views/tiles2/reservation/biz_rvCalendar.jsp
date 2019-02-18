@@ -241,13 +241,13 @@
 	    <h4>우리 병원의 스케줄을 확인할 수 있습니다.</h4>
 	  </div>
 	  <div class="row slideanim">
-	    <div class="col-sm-4 col-xs-12" id="makeSchedule">
+	    <div class="col-sm-4 col-xs-12 col-md-offset-4" id="makeSchedule">
 	      <div class="panel panel-default text-center">
 	        <div class="panel-heading">
-	          <h3>My Pet Info</h3> 
+	          <h3>Create Schedule</h3> 
 	        </div>
 	        <%-- [190128] 스케줄 버튼 및 정렬 수정 --%>
-	        <div class="panel-body text-center" id="makeSchedule">
+	        <div class="panel-body text-center">
 				<p>최근 2주 내 스케줄이 없습니다.</p>
 				<p><button type="button" id="btnMakeSchedule" class="btn btn-default">스케줄 생성하기</button></p>
 				<ul class="text-left">

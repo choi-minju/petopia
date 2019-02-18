@@ -108,9 +108,15 @@
 	</div>
 	<input type="text" id="zzz" value="zzz" style="display:none;"/>
     <div class="box" style="padding-left: 16%;">
-        <img src="<%=ctxPath%>/resources/img/chat/computer-screen.png" id="startButton" style="height: 10%; width: 5%;">
-        <img src="<%=ctxPath%>/resources/img/chat/phone.png" style="margin-left: 40px; height: 10%; width: 5%;" id="callButton">
-        <img src="<%=ctxPath%>/resources/img/chat/phone-call.png" id="hangupButton" style="margin-left: 40px; height: 10%; width: 5%;">
+    	<button type="button" class="btn btn-default" id="callButton">
+          <span class="glyphicon glyphicon-facetime-video"></span>화면출력
+        </button>
+        <button type="button" class="btn btn-info" id="startButton">
+          <span class="glyphicon glyphicon-earphone"></span>연결하기
+        </button>
+        <button type="button" class="btn btn-danger" id="hangupButton">
+          <span class="glyphicon glyphicon-ban-circle"></span>연결끊기
+        </button>
         <button type="button" class="btn2" onClick="javascript:location.href='<%= ctxPath %>/home.pet'">종료하기</button>
     </div>
 	
