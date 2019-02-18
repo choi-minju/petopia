@@ -123,13 +123,6 @@ public class ChatController extends TextWebSocketHandler{
 			String fk_name_biz = service.viewname_biz(idx);
 			String fk_docname = service.viewdocname(idx);
 			
-			System.out.println(idx);
-			System.out.println(code);
-			System.out.println(fk_userid);
-			System.out.println(fk_name_biz);
-			System.out.println(fk_docname);
-			
-			
 			HashMap<String, Object> returnMap = new HashMap<String, Object>();
 		
 			returnMap.put("idx", idx);
@@ -137,6 +130,8 @@ public class ChatController extends TextWebSocketHandler{
 			returnMap.put("fk_userid", fk_userid);
 			returnMap.put("fk_name_biz", fk_name_biz);
 			returnMap.put("fk_docname", fk_docname);
+			
+			System.out.println(returnMap);
 			
 			int result = service.insertall(returnMap);
 			if(result != 1) {
@@ -260,6 +255,7 @@ public class ChatController extends TextWebSocketHandler{
 			
 				returnMap.put("code", usercode);
 				returnMap.put("URL", "http://26.42.136.15:9090/petopia/selectchat.pet?"+usercode);
+				 // 본인아이피로 변경해주세요
 
 				
 				System.out.println(returnMap);

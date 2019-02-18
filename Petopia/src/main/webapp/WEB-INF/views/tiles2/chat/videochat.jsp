@@ -48,10 +48,9 @@
 
 <script type="text/javascript" >
 
-    // === !!! WebSocket 통신은 스크립트로 작성하는 것이다. !!! === //
     $(document).ready(function(){
     		
-    	var socket = io("http://26.42.136.15:3000");
+    	var socket = io("http://26.42.136.15:3000"); // 본인 아이피로 변경해주세요
         
         //msg에서 키를 누를떄
         $("#message").keydown(function(key){
@@ -108,10 +107,10 @@
 	</div>
 	<input type="text" id="zzz" value="zzz" style="display:none;"/>
     <div class="box" style="padding-left: 16%;">
-    	<button type="button" class="btn btn-default" id="callButton">
+    	<button type="button" class="btn btn-default" id="startButton">	
           <span class="glyphicon glyphicon-facetime-video"></span>화면출력
         </button>
-        <button type="button" class="btn btn-info" id="startButton">
+        <button type="button" class="btn btn-info" id="callButton">
           <span class="glyphicon glyphicon-earphone"></span>연결하기
         </button>
         <button type="button" class="btn btn-danger" id="hangupButton">
