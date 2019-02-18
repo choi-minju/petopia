@@ -14,6 +14,14 @@
 		)
 	</select>
 	
+	<select id="selectChartListForMember" parameterType="HashMap" resultType="com.final2.petopia.model.ChartVO">
+           select reservation_date ,chart_UID
+             ,decode(chart_type,'0','약국','1','일반 진료','2','예방접종','3','수술','4','호텔링') as chart_type
+             ,totalpay,biz_name 
+          from chart 
+          where fk_idx = #{fk_idx}
+	</select>
+	
 	<insert id="insertExcelCare" parameterType="HashMap">
 	    insert into petcare(care_UID, fk_pet_UID, fk_caretype_UID, care_contents, care_memo, care_start, care_end, care_alarm, care_date)
 		select seq_petcare_UID.nextval, A.* from(
