@@ -251,7 +251,7 @@ public class ReservationController {
 
 		if(depositAmount<100000) {
 			req.setAttribute("msg", "예치금 잔액이 부족합니다. 예치금 충전 후 예약목록에서 예치금 결제를 진행하세요.");
-			req.setAttribute("loc", req.getContextPath()+"/chargeDeposit.pet?idx="+idx);	// 190207 depositcoin 삭제, Coin 삭제
+			req.setAttribute("loc", req.getContextPath()+"/chargeDepositPage.pet?idx="+idx);	// 190207 depositcoin 삭제, Coin 삭제
 			return "msg";
 		}
 		else {
@@ -656,13 +656,13 @@ public class ReservationController {
 		String fk_schedule_UID = req.getParameter("fk_schedule_UID");
 		String reservation_status = req.getParameter("reservation_status");
 		String reservation_type = req.getParameter("reservation_type");
-
+		String reservation_DATE = req.getParameter("reservation_DATE");
 		paraMap.put("reservation_UID", reservation_UID);
 		paraMap.put("fk_schedule_UID", fk_schedule_UID);
 		paraMap.put("fk_idx", fk_idx);
 		paraMap.put("reservation_status", reservation_status);
 		paraMap.put("reservation_type", reservation_type);
-		
+		paraMap.put("reservation_DATE", reservation_DATE);
 		int result = 0;
 		if(reservation_status.equals("2") && reservation_type.equals("3")) {
 			result = service.updateRvAndScdStatusCancleForSurgery(paraMap);
@@ -871,6 +871,20 @@ public class ReservationController {
 		req.setAttribute("depositAmount", depositAmount);
 		
 		return "tiles2/reservation/chargeDeposit";
+	}
+	
+//	[190217]
+//	#예치금 충전하기 페이지
+	@RequestMapping(value="chargeDepositPage.pet", method= {RequestMethod.GET})
+	public String requireLogin_chargeDepositPage(HttpServletRequest req, HttpServletResponse res) {
+		
+		String idx = req.getParameter("idx");
+		int depositAmount = service.selectSumDepositByIdx(idx);
+		
+		req.setAttribute("idx", idx);
+		req.setAttribute("depositAmount", depositAmount);
+		
+		return "reservation/chargeDeposit2.tiles2";
 	}
 	
 //	#PG결제 연결하기

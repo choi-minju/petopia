@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 public interface InterChatService {
 
 	int createcode(HashMap<String, String> map) throws Throwable; // 랜덤 코드 생성
+	
+	int createvideocode(HashMap<String, Object> returnMap) throws Throwable; // 코드 생성 및 insert
 
 	String viewcode(String code) throws Throwable; // 채팅 뷰
 
