@@ -544,7 +544,7 @@
 								// 데이터넣고
 								html += "<div class='card text-left border-secondary' >";
 								html += "  <input type='hidden' class='idx_biz' value='"+entry.idx_biz+"'/>";
-								html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
+								html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/member/prontimg/"+entry.prontimg+"' alt='Card image cap' style='width: 500px; height: 350px;'>";
 								html += "  	<div class='card-body'>";
 								html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
 								html += "	    <p class='card-text'>평점&nbsp;";
@@ -553,8 +553,10 @@
 									html += "<span class='glyphicon glyphicon-star'></span>&nbsp;"; 
 								}
 								
+								if(entry.biztype == 1) {
+									html += "</p><a href='<%= ctxPath %>/reservation.pet?idx_biz="+entry.idx_biz+"' class='btn btn-primary'>예약하기</a>";	
+								}
 								
-								html += "</p><a href='<%= ctxPath %>/reservation.pet?idx_biz="+entry.idx_biz+"' class='btn btn-primary'>예약하기</a>";
 								html += "</div></div>";
 								
 							});
@@ -824,7 +826,7 @@
 												
 												html += "<div class='card text-left border-secondary' >";
 												html += "  <input type='hidden' class='idx_biz' value='"+entry.idx_biz+"'/>";
-												html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/hospitalimg/"+entry.prontimg+"' alt='Card image cap'>";
+												html += "  <img class='card-img-top' src='<%= ctxPath %>/resources/img/member/prontimg/"+entry.prontimg+"' alt='Card image cap' style='width: 500px; height: 350px;'>";
 												html += "  	<div class='card-body'>";
 												html += "	    <h5 class='card-title'>"+entry.name+"</h5>";
 												html += "	    <p class='card-text'>평점&nbsp;";
@@ -832,9 +834,11 @@
 												for(var i=0;i<entry.avg_startpoint;i++) {
 													html += "<span class='glyphicon glyphicon-star'></span>&nbsp;"; 
 												}
+
+												if(entry.biztype == 1) {
+													html += "</p><a href='<%= ctxPath %>/reservation.pet?idx_biz="+entry.idx_biz+"' class='btn btn-primary'>예약하기</a>";	
+												}
 												
-												
-												html += "</p><a href='<%= ctxPath %>/reservation.pet?idx_biz="+entry.idx_biz+"' class='btn btn-primary'>예약하기</a>";
 												html += "</div></div>";
 												
 											});
