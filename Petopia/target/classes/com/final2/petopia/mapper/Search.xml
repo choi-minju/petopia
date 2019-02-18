@@ -39,10 +39,10 @@
 	</select>
 	
 	<select id="getBizmemListByword" parameterType="map" resultType="com.final2.petopia.model.Biz_MemberVO">		
-		select distinct name, idx_biz, latitude, longitude, prontimg, startpoint as avg_startpoint
+		select distinct name, idx_biz, latitude, longitude, prontimg, biztype, startpoint as avg_startpoint
 		from
 		(
-		select name, idx_biz, latitude, longitude, prontimg
+		select name, idx_biz, latitude, longitude, prontimg, biztype
 		from biz_info B JOIN member M
 		on B.idx_biz = M.idx
 		FULL JOIN review R
@@ -82,10 +82,10 @@
 	</select>
 	
 	<select id="getBizmemListByidx" parameterType="map" resultType="com.final2.petopia.model.Biz_MemberVO">		
-		select fk_idx as idx_biz, name, latitude, longitude, prontimg, startpoint as avg_startpoint
+		select fk_idx as idx_biz, name, latitude, longitude, prontimg, biztype, startpoint as avg_startpoint
 		from
 		(
-		    select fk_idx, name, latitude, longitude, prontimg, cnt
+		    select fk_idx, name, latitude, longitude, prontimg, biztype, cnt
 		    from
 		    (
 		        select fk_idx, count(*) as cnt
@@ -96,7 +96,7 @@
 		        order by cnt desc
 		    ) V JOIN
 		    (
-		        select idx, name, latitude, longitude, prontimg
+		        select idx, name, latitude, longitude, prontimg, biztype
 		        from member M JOIN biz_info B
 		        on M.idx = B.idx_biz
 		    ) T
@@ -134,10 +134,10 @@
 	</select>
 	
 	<select id="getBizmemListByRecord" parameterType="map" resultType="com.final2.petopia.model.Biz_MemberVO">
-	    select fk_idx_biz as idx_biz, name, latitude, longitude, prontimg, startpoint as avg_startpoint
+	    select fk_idx_biz as idx_biz, name, latitude, longitude, prontimg, biztype, startpoint as avg_startpoint
 	    from
 	        (
-	            select fk_idx_biz, name, latitude, longitude, prontimg, cnt
+	            select fk_idx_biz, name, latitude, longitude, prontimg, biztype, cnt
 	            from 
 	            (
 	                select fk_idx_biz, count(*) as cnt 
@@ -154,7 +154,7 @@
 	                order by cnt desc
 	            ) V JOIN
 	            (
-	                select idx, name, latitude, longitude, prontimg
+	                select idx, name, latitude, longitude, prontimg, biztype
 	                from member M JOIN biz_info B
 	                on M.idx = B.idx_biz
 	            ) T

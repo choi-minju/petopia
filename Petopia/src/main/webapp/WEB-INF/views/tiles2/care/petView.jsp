@@ -294,7 +294,7 @@
                <ul style="list-style-type: none;">
                <c:if test="${petInfo.PREVIOUSPET_UID > 0}">
                   <li><span class="pointer changepet" onclick="javascript:location.href='petView.pet?pet_UID=${petInfo.PREVIOUSPET_UID}'">${petInfo.PREVIOUSPET_NAME}</span></li>
-                  <li><i class="fa fa-angle-double-left" style="font-size: 30pt;"></i></li>
+                  <li><span class="pointer changepet" onclick="javascript:location.href='petView.pet?pet_UID=${petInfo.PREVIOUSPET_UID}'"><i class="fa fa-angle-double-left" style="font-size: 30pt;"></i></span></li>
                </c:if> 
                </ul>
             </div>
@@ -315,7 +315,7 @@
                <ul style="list-style-type: none;">
                <c:if test="${petInfo.NEXTPET_UID > 0}">
                   <li><span class="pointer changepet" onclick="javascript:location.href='petView.pet?pet_UID=${petInfo.NEXTPET_UID}'">${petInfo.NEXTPET_NAME}</span></li>
-                  <li><i class="fa fa-angle-double-right" style="font-size: 30pt;"></i></li>
+                  <li><span class="pointer changepet" onclick="javascript:location.href='petView.pet?pet_UID=${petInfo.NEXTPET_UID}'"><i class="fa fa-angle-double-right" style="font-size: 30pt;"></i></span></li>
                </c:if> 
                </ul>
             </div>
