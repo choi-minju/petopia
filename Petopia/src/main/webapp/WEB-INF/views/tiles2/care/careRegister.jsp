@@ -127,6 +127,16 @@
 <script type="text/javascript">
    $(document).ready(function() {
       
+	    $('.profile').css('height', $(".profile").width()-1);
+	    $('.radius-box').css('width', $(".profile").width());
+	    $('.radius-box').css('height', $(".radius-box").width()-1);
+	    
+		$(window).resize(function() { 
+			$('.profile').css('height', $(".profile").width());
+			$('.radius-box').css('height', $(".profile").width());
+			$('.radius-box').css('width', $(".profile").width());
+	    });  
+	   
       var fileTarget = $('.filebox .upload-hidden');
 
        fileTarget.on('change', function(){
@@ -241,7 +251,7 @@
 
 <div class="container">
    <div class="col-sm-12">
-      <div class="" style="background-color: #f2f2f2;">
+      <div class="col-sm-offset-2 col-md-8" style="background-color: #f2f2f2;">
          <div class="col-sm-12" align="center">
             <h2>케어등록/수정</h2>
          </div>
@@ -255,8 +265,10 @@
                   <div class="row">
                      <div class="col-sm-3">
                         <div class="profile" style="background-color: #d9d9d9; height: 150px; border-radius: 100%;" align="center">
-                           <label for="input-file">프로필</label> 
-                           <input type="file" id="input-file" class="upload-hidden must" name="" />
+                           <!-- 
+                           <label for="input-file">프로필</label>  
+                           -->
+                           <img id="beforeProfile" width="100%" src="resources/img/care/${petInfo.PET_PROFILEIMG}" class="upload-thumb radius-box" style="border-radius: 100%;"> 
                         </div>
                      </div>
                      <div class="col-sm-9">

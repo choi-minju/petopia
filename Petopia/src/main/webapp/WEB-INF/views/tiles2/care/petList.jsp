@@ -126,15 +126,15 @@
                           + "   </div>"
                           + "   <div>" + entry.PET_NAME + "</div>"
                           + "   <div>"
-                          + "      <span>" + entry.PET_BIRTHDAY + "</span> | <span>개월수</span>"
+                          + "      <span>" + entry.PET_BIRTHDAY + "</span>"
                           + "   </div>"
                           + "   <div>"
-                          + "      <span>" + entry.PET_SIZE + "</span> | <span>" + entry.PET_GENDER + "</span> | <span>" + entry.PET_WEIGHT + "</span>"
+                          + "      <span>" + entry.PET_SIZE + "</span> | <span>" + entry.PET_GENDER + "</span> | <span>" + entry.PET_WEIGHT + " kg</span>"
                           + "   </div>"
                           + "   <div class=\"pet-hover\"><br/>"
                           + "      <div class=\"pointer\" onclick=window.open(\"index.pet\",\"_self\" style=\"margin-top:10%;\")>정보수정</div>"
                           + "      <div class=\"pointer\" onclick=window.open(\"petView.pet?pet_UID=" + entry.PET_UID + "\",\"_self\") style=\"margin-top:10%;\">관리</div>"
-                          + "      <div class=\"pointer\" onclick=window.open(\"index.pet\",\"_self\") style=\"margin-top:10%;\">무지개다리</div>"
+                          + "      <div class=\"pointer\" onclick=window.open(\"index.pet\",\"_self\") style=\"margin-top:10%;\">지우기</div>"
                           + "   </div>"
                           + "</div>";
                      

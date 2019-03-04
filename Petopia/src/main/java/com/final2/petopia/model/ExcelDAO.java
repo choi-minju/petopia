@@ -23,5 +23,9 @@ public class ExcelDAO {
 		sqlsession.insert(ns+"insertExcelCare", paraMap);
 		
 	}
+	public List<ChartVO> selectChartListForMember(HashMap<String, Object> paraMap) {
+		List<ChartVO> chartList = sqlsession.selectList(ns+"selectChartListForMember", paraMap);
+		return chartList;
+	}
 
 }

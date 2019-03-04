@@ -148,7 +148,7 @@
 
 <div class="container">
    <div class="col-sm-12">
-      <div class="" style="background-color: #f2f2f2;">
+      <div class="col-sm-offset-2 col-md-8" style="background-color: #f2f2f2;">
          <div class="col-sm-12" align="center">
             <h2>반려동물 등록</h2>
          </div>
